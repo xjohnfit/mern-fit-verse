@@ -3,9 +3,41 @@ import asyncHandler from 'express-async-handler';
 import User from '../models/userModel';
 import generateToken from '../utils/generateToken';
 
+// Types import
+import { IUser } from '../models/userModel';
+
+// Custom request interface with user property
+interface AuthenticatedRequest extends Request {
+    user?: IUser;
+}
+
+// Request body interfaces for better type safety
+interface RegisterUserBody {
+    name: string;
+    username: string;
+    email: string;
+    password: string;
+    goal: string;
+    photo?: string;
+}
+
+interface AuthUserBody {
+    email: string;
+    password: string;
+}
+
+interface UpdateUserBody {
+    name?: string;
+    username?: string;
+    email?: string;
+    password?: string;
+    goal?: string;
+    photo?: string;
+}
+
 // Register New User
 export const registerUser = asyncHandler(
-    async (req: Request, res: Response) => {
+    async (req: Request<{}, {}, RegisterUserBody>, res: Response): Promise<void> => {
         const { name, username, email, password, goal, photo } = req.body;
         const userExists = await User.findOne({ email });
         if (userExists) {
@@ -38,38 +70,42 @@ export const registerUser = asyncHandler(
 );
 
 // Authenticate User
-export const authUser = asyncHandler(async (req: Request, res: Response) => {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
+export const authUser = asyncHandler(
+    async (req: Request<{}, {}, AuthUserBody>, res: Response): Promise<void> => {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
 
-    if (user && (await user.matchPassword(password))) {
-        generateToken(res, user._id.toString());
-        res.status(201).json({
-            _id: user._id,
-            name: user.name,
-            username: user.username,
-            email: user.email,
-            goal: user.goal,
-            photo: user.photo,
-        });
-    } else {
-        res.status(400);
-        throw new Error('Invalid email or password');
+        if (user && (await user.matchPassword(password))) {
+            generateToken(res, user._id.toString());
+            res.status(201).json({
+                _id: user._id,
+                name: user.name,
+                username: user.username,
+                email: user.email,
+                goal: user.goal,
+                photo: user.photo,
+            });
+        } else {
+            res.status(400);
+            throw new Error('Invalid email or password');
+        }
     }
-});
+);
 
 // Logout User
-export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
-    res.cookie('fit-verse-token', '', {
-        httpOnly: true,
-        expires: new Date(0),
-    });
-    res.status(200).json({ message: 'User logged out successfully' });
-});
+export const logoutUser = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+        res.cookie('fit-verse-token', '', {
+            httpOnly: true,
+            expires: new Date(0),
+        });
+        res.status(200).json({ message: 'User logged out successfully' });
+    }
+);
 
 // Get user profile
 export const getUserProfile = asyncHandler(
-    async (req: Request, res: Response) => {
+    async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         const { _id, name, username, email, goal, photo } = req.user!;
         res.status(200).json({
             _id,
@@ -84,8 +120,7 @@ export const getUserProfile = asyncHandler(
 
 // Update user profile
 export const updateUserProfile = asyncHandler(
-    async (req: Request, res: Response) => {
-
+    async (req: Request<{}, {}, UpdateUserBody> & AuthenticatedRequest, res: Response): Promise<void> => {
         const user = await User.findById(req.user!._id);
         if (!user) {
             res.status(404);
