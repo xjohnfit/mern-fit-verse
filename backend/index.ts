@@ -1,11 +1,12 @@
 // Dependencies imports
 import express, { Application } from 'express';
+import connectDB from './config/dbConnection';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+import { notFound, errorHandler } from './middlewares/errorMiddleware';
 
 // Routes imports
 import userRoutes from './routes/userRoutes';
-import connectDB from './config/dbConnection';
 
 // Configurations
 dotenv.config({
@@ -15,10 +16,12 @@ dotenv.config({
 const app: Application = express();
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
 
-// Middleware
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(notFound);
+app.use(errorHandler);
 
 // Routes
 app.use('/api/users', userRoutes);
