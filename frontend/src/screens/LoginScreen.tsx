@@ -1,4 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLoginMutation } from '@/slices/usersApiSlice';
+import { setCredentials } from '@/slices/authSlice';
+import { toast } from "sonner"
 
 const LoginScreen = () => {
     const [formData, setFormData] = useState({
@@ -7,6 +12,18 @@ const LoginScreen = () => {
     });
 
     const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const [login, { isLoading }] = useLoginMutation();
+
+    const { userInfo, isAuthenticated } = useSelector((state: any) => state.auth);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -16,10 +33,17 @@ const LoginScreen = () => {
         }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle login logic here
-        console.log('Login attempt:', formData);
+        
+        try {
+            const res = await login(formData).unwrap();
+            dispatch(setCredentials({ ...res }));
+            toast.success("Login Successful.");
+            navigate('/dashboard');
+        } catch (err: string | any) {
+            toast.error(err?.data.message);
+        }
     };
 
     return (

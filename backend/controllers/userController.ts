@@ -92,7 +92,7 @@ export const authUser = asyncHandler(
             });
         } else {
             res.status(400);
-            throw new Error('Invalid email or password');
+            throw new Error('Invalid E-mail or Password');
         }
     }
 );
