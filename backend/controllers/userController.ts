@@ -17,6 +17,7 @@ interface RegisterUserBody {
     username: string;
     email: string;
     password: string;
+    gender: string;
     goal: string;
     photo?: string;
 }
@@ -31,6 +32,7 @@ interface UpdateUserBody {
     username?: string;
     email?: string;
     password?: string;
+    gender?: string;
     goal?: string;
     photo?: string;
 }
@@ -38,7 +40,7 @@ interface UpdateUserBody {
 // Register New User
 export const registerUser = asyncHandler(
     async (req: Request<{}, {}, RegisterUserBody>, res: Response): Promise<void> => {
-        const { name, username, email, password, goal, photo } = req.body;
+        const { name, username, email, password, gender, goal, photo } = req.body;
         const userExists = await User.findOne({ email });
         if (userExists) {
             res.status(400);
@@ -49,6 +51,7 @@ export const registerUser = asyncHandler(
             username,
             email,
             password,
+            gender,
             goal,
             photo,
         });
@@ -59,6 +62,7 @@ export const registerUser = asyncHandler(
                 name: user.name,
                 username: user.username,
                 email: user.email,
+                gender: user.gender,
                 goal: user.goal,
                 photo: user.photo,
             });
@@ -82,6 +86,7 @@ export const authUser = asyncHandler(
                 name: user.name,
                 username: user.username,
                 email: user.email,
+                gender: user.gender,
                 goal: user.goal,
                 photo: user.photo,
             });
@@ -106,12 +111,13 @@ export const logoutUser = asyncHandler(
 // Get user profile
 export const getUserProfile = asyncHandler(
     async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-        const { _id, name, username, email, goal, photo } = req.user!;
+        const { _id, name, username, email, gender, goal, photo } = req.user!;
         res.status(200).json({
             _id,
             name,
             username,
             email,
+            gender,
             goal,
             photo,
         });
@@ -130,6 +136,7 @@ export const updateUserProfile = asyncHandler(
         user.name = req.body.name || user.name;
         user.username = req.body.username || user.username;
         user.email = req.body.email || user.email;
+        user.gender = req.body.gender || user.gender;
         user.goal = req.body.goal || user.goal;
         user.photo = req.body.photo || user.photo;
 
@@ -143,6 +150,7 @@ export const updateUserProfile = asyncHandler(
             name: updatedUser.name,
             username: updatedUser.username,
             email: updatedUser.email,
+            gender: updatedUser.gender,
             goal: updatedUser.goal,
             photo: updatedUser.photo,
         });
