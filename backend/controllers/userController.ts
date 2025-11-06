@@ -16,10 +16,9 @@ interface RegisterUserBody {
     name: string;
     username: string;
     email: string;
+    dob: Date;
     password: string;
     gender: string;
-    goal: string;
-    photo?: string;
 }
 
 interface AuthUserBody {
@@ -28,19 +27,25 @@ interface AuthUserBody {
 }
 
 interface UpdateUserBody {
-    name?: string;
-    username?: string;
-    email?: string;
-    password?: string;
-    gender?: string;
-    goal?: string;
-    photo?: string;
+    name: string;
+    username: string;
+    email: string;
+    dob: Date;
+    password: string;
+    gender: string;
+    height: number;
+    weight: number;
+    goal: string;
+    photo: string;
 }
 
 // Register New User
 export const registerUser = asyncHandler(
-    async (req: Request<{}, {}, RegisterUserBody>, res: Response): Promise<void> => {
-        const { name, username, email, password, gender, goal, photo } = req.body;
+    async (
+        req: Request<{}, {}, RegisterUserBody>,
+        res: Response
+    ): Promise<void> => {
+        const { name, username, email, dob, password, gender } = req.body;
         const userExists = await User.findOne({ email });
         if (userExists) {
             res.status(400);
@@ -50,22 +55,14 @@ export const registerUser = asyncHandler(
             name,
             username,
             email,
+            dob,
             password,
             gender,
-            goal,
-            photo,
         });
         if (user) {
             generateToken(res, user._id.toString());
-            res.status(201).json({
-                _id: user._id,
-                name: user.name,
-                username: user.username,
-                email: user.email,
-                gender: user.gender,
-                goal: user.goal,
-                photo: user.photo,
-            });
+            const newUser = await User.findById(user._id).select('-password');
+            res.status(201).json(newUser);
         } else {
             res.status(400);
             throw new Error('Invalid user data');
@@ -75,21 +72,17 @@ export const registerUser = asyncHandler(
 
 // Authenticate User
 export const authUser = asyncHandler(
-    async (req: Request<{}, {}, AuthUserBody>, res: Response): Promise<void> => {
+    async (
+        req: Request<{}, {}, AuthUserBody>,
+        res: Response
+    ): Promise<void> => {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
 
         if (user && (await user.matchPassword(password))) {
             generateToken(res, user._id.toString());
-            res.status(201).json({
-                _id: user._id,
-                name: user.name,
-                username: user.username,
-                email: user.email,
-                gender: user.gender,
-                goal: user.goal,
-                photo: user.photo,
-            });
+            const authUser = await User.findById(user._id).select('-password');
+            res.status(201).json(authUser);
         } else {
             res.status(400);
             throw new Error('Invalid E-mail or Password');
@@ -111,48 +104,49 @@ export const logoutUser = asyncHandler(
 // Get user profile
 export const getUserProfile = asyncHandler(
     async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-        const { _id, name, username, email, gender, goal, photo } = req.user!;
-        res.status(200).json({
-            _id,
-            name,
-            username,
-            email,
-            gender,
-            goal,
-            photo,
-        });
+        const user = req.user!;
+        res.status(200).json(user);
     }
 );
 
 // Update user profile
 export const updateUserProfile = asyncHandler(
-    async (req: Request<{}, {}, UpdateUserBody> & AuthenticatedRequest, res: Response): Promise<void> => {
+    async (
+        req: Request<{}, {}, UpdateUserBody> & AuthenticatedRequest,
+        res: Response
+    ): Promise<void> => {
         const user = await User.findById(req.user!._id);
+
         if (!user) {
             res.status(404);
             throw new Error('User not found');
         }
 
+        // Check if username or email is being updated to an existing one
+        if (req.body.username && req.body.username !== user.username) {
+            const usernameExists = await User.findOne({ username: req.body.username });
+            if (usernameExists) {
+                res.status(400);
+                throw new Error('Username already in use');
+            }
+        }
+
         user.name = req.body.name || user.name;
         user.username = req.body.username || user.username;
         user.email = req.body.email || user.email;
+        user.dob = req.body.dob || user.dob;
         user.gender = req.body.gender || user.gender;
         user.goal = req.body.goal || user.goal;
         user.photo = req.body.photo || user.photo;
+        user.height = req.body.height || user.height;
+        user.weight = req.body.weight || user.weight;
 
         if (req.body.password) {
             user.password = req.body.password;
         }
 
-        const updatedUser = await user.save();
-        res.status(200).json({
-            _id: updatedUser._id,
-            name: updatedUser.name,
-            username: updatedUser.username,
-            email: updatedUser.email,
-            gender: updatedUser.gender,
-            goal: updatedUser.goal,
-            photo: updatedUser.photo,
-        });
+        const updateUser = await user.save();
+        const updatedUser = await User.findById(updateUser._id).select('-password');
+        res.status(200).json(updatedUser);
     }
 );

@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { useRegisterMutation } from '@/slices/usersApiSlice';
 import { setCredentials } from '@/slices/authSlice';
+import { useUpdateUserProfileMutation } from '@/slices/usersApiSlice';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, User, Target } from 'lucide-react';
 
+//Utils functions imports
+import { formatDateToInputValue } from '@/lib/formatDate';
 
-const RegisterScreen = () => {
-    const [formData, setFormData] = useState({
+const ProfileScreen = () => {
+    const [profileData, setProfileData] = useState({
         name: '',
         username: '',
         email: '',
@@ -16,87 +17,72 @@ const RegisterScreen = () => {
         confirmPassword: '',
         dob: '',
         gender: '',
+        photo: '',
+        height: '',
+        weight: '',
+        goal: '',
     });
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [errors, setErrors] = useState<{ [key: string]: string; }>({});
 
     const dispatch = useDispatch();
-    const navigate = useNavigate();
+    const { userInfo } = useSelector((state: any) => state.auth);
 
-    const [register, { isLoading }] = useRegisterMutation();
-
-    const { isAuthenticated } = useSelector((state: any) => state.auth);
+    const [updateUserProfile, { isLoading }] = useUpdateUserProfileMutation();
 
     useEffect(() => {
-        if (isAuthenticated) {
-            navigate('/dashboard');
+        if (userInfo) {
+            setProfileData((prev) => ({
+                ...prev,
+                name: userInfo.name || '',
+                username: userInfo.username || '',
+                email: userInfo.email || '',
+                dob: formatDateToInputValue(userInfo.dob) || '',
+                gender: userInfo.gender || '',
+                photo: userInfo.photo || '',
+                height: userInfo.height || '',
+                weight: userInfo.weight || '',
+                goal: userInfo.goal || '',
+            }));
         }
-    }, [isAuthenticated, navigate]);
+    }, [userInfo]);
 
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
+        setProfileData((prev) => ({
             ...prev,
             [name]: value,
         }));
-
-        // Clear error when user starts typing
-        if (errors[name]) {
-            setErrors((prev) => ({
-                ...prev,
-                [name]: '',
-            }));
-        }
     };
 
-    const validateForm = () => {
-        const newErrors: { [key: string]: string; } = {};
-
-        if (!formData.name.trim()) newErrors.name = 'Name is required';
-        if (!formData.username.trim())
-            newErrors.username = 'Username is required';
-        if (!formData.email.trim()) newErrors.email = 'Email is required';
-        if (!formData.password) newErrors.password = 'Password is required';
-        if (!formData.confirmPassword)
-            newErrors.confirmPassword = 'Please confirm your password';
-        if (!formData.dob) newErrors.dob = 'Date of birth is required';
-        if (!formData.gender) newErrors.gender = 'Please select your gender';
-
-        if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = 'Passwords do not match';
-        }
-
-        if (formData.password && formData.password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (validateForm()) {
-            if (formData.password === formData.confirmPassword) {
-                try {
-                    const res = await register(formData).unwrap();
-                    dispatch(setCredentials({ ...res }));
-                    toast.success('Registration Successful.');
-                    navigate('/dashboard');
-                } catch (err: string | any) {
-                    toast.error(err?.data.message);
-                }
-            } else {
-                setErrors((prev) => ({
-                    ...prev,
-                    confirmPassword: 'Passwords do not match',
-                }));
-                toast.error('Passwords do not match');
-            }
+
+        if (profileData.password !== profileData.confirmPassword) {
+            toast.error('Passwords do not match');
+            return;
+        }
+
+        try {
+            const res = await updateUserProfile({
+                _id: userInfo._id,
+                name: profileData.name,
+                username: profileData.username,
+                email: profileData.email,
+                password: profileData.password,
+                dob: profileData.dob,
+                gender: profileData.gender,
+                height: Number(profileData.height),
+                weight: Number(profileData.weight),
+                goal: profileData.goal,
+            }).unwrap();
+            dispatch(setCredentials({ ...res }));
+            toast.success('Profile updated successfully');
+        } catch (err: string | any) {
+            toast.error(err?.data?.message || err.message);
         }
     };
 
@@ -106,18 +92,59 @@ const RegisterScreen = () => {
                 {/* Header */}
                 <div className='text-center'>
                     <h1 className='text-4xl font-bold bg-linear-to-r from-[#38bdf8] via-[#818cf8] to-[#c084fc] bg-clip-text text-transparent mb-2'>
-                        Join FitVerse
+                        Update Your Profile
                     </h1>
-                    <p className='text-gray-400 text-lg'>
-                        Create your fitness journey today
-                    </p>
                 </div>
-
-                {/* Registration Form */}
                 <div className='bg-gray-800 rounded-xl p-8 border-[#38bdf8] shadow-[0_0_20px_rgba(56,189,248,0.3),0_0_40px_rgba(129,140,248,0.2),0_0_60px_rgba(192,132,252,0.1)] hover:shadow-[0_0_30px_rgba(56,189,248,0.4),0_0_60px_rgba(129,140,248,0.3),0_0_90px_rgba(192,132,252,0.2)] transition-all duration-300'>
+
+                    {/* Update Profile Form */}
                     <form
-                        onSubmit={handleSubmit}
+                        onSubmit={handleUpdate}
                         className='space-y-5'>
+                        {/* Profile Picture & Goal Section */}
+                        <div className='flex flex-col md:flex-row items-center gap-8 mb-6'>
+                            {/* Profile Picture */}
+                            <div className='flex justify-center'>
+                                <div className='relative'>
+                                    <div className='w-36 h-36 rounded-full bg-gray-700 border-4 border-[#38bdf8] overflow-hidden shadow-[0_0_20px_rgba(56,189,248,0.3)]'>
+                                        {profileData.photo ? (
+                                            <img
+                                                src={profileData.photo}
+                                                alt='Profile'
+                                                className='w-full h-full object-cover'
+                                            />
+                                        ) : (
+                                            <div className='w-full h-full flex items-center justify-center'>
+                                                <User className='w-16 h-16 text-gray-400' />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Goal Field */}
+                            <div className='flex-1 w-full md:w-auto'>
+                                <label
+                                    htmlFor='goal'
+                                    className='block text-sm font-medium text-[#22d3ee] mb-2'>
+                                    Fitness Goal
+                                </label>
+                                <div className='relative'>
+                                    <input
+                                        id='goal'
+                                        name='goal'
+                                        type='text'
+                                        value={profileData.goal}
+                                        onChange={handleInputChange}
+                                        className='w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 border-gray-600 focus:border-[#22d3ee] focus:shadow-[0_0_15px_rgba(34,211,238,0.5)]'
+                                        placeholder='e.g., Lose weight, Build muscle, Stay healthy'
+                                    />
+                                    <div className='absolute inset-y-0 right-0 pr-3 flex items-center'>
+                                        <Target className='h-5 w-5 text-gray-400' />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         {/* Name & Username Row */}
                         <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                             {/* Name Field */}
@@ -132,13 +159,9 @@ const RegisterScreen = () => {
                                         id='name'
                                         name='name'
                                         type='text'
-                                        required
-                                        value={formData.name}
+                                        value={profileData.name}
                                         onChange={handleInputChange}
-                                        className={`w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 ${errors.name
-                                            ? 'border-red-500 focus:border-red-500'
-                                            : 'border-gray-600 focus:border-[#38bdf8] focus:shadow-[0_0_15px_rgba(56,189,248,0.5)]'
-                                            }`}
+                                        className='w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 border-gray-600 focus:border-[#38bdf8] focus:shadow-[0_0_15px_rgba(56,189,248,0.5)]'
                                         placeholder='Enter your full name'
                                     />
                                     <div className='absolute inset-y-0 right-0 pr-3 flex items-center'>
@@ -156,11 +179,6 @@ const RegisterScreen = () => {
                                         </svg>
                                     </div>
                                 </div>
-                                {errors.name && (
-                                    <p className='mt-1 text-sm text-red-400'>
-                                        {errors.name}
-                                    </p>
-                                )}
                             </div>
 
                             {/* Username Field */}
@@ -175,13 +193,10 @@ const RegisterScreen = () => {
                                         id='username'
                                         name='username'
                                         type='text'
-                                        required
-                                        value={formData.username}
+                                        autoComplete='username'
+                                        value={profileData.username}
                                         onChange={handleInputChange}
-                                        className={`w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 ${errors.username
-                                            ? 'border-red-500 focus:border-red-500'
-                                            : 'border-gray-600 focus:border-[#818cf8] focus:shadow-[0_0_15px_rgba(129,140,248,0.5)]'
-                                            }`}
+                                        className='w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 border-gray-600 focus:border-[#818cf8] focus:shadow-[0_0_15px_rgba(129,140,248,0.5)]'
                                         placeholder='Choose a username'
                                     />
                                     <div className='absolute inset-y-0 right-0 pr-3 flex items-center'>
@@ -205,11 +220,6 @@ const RegisterScreen = () => {
                                         </svg>
                                     </div>
                                 </div>
-                                {errors.username && (
-                                    <p className='mt-1 text-sm text-red-400'>
-                                        {errors.username}
-                                    </p>
-                                )}
                             </div>
                         </div>
 
@@ -227,13 +237,10 @@ const RegisterScreen = () => {
                                         id='email'
                                         name='email'
                                         type='email'
-                                        required
-                                        value={formData.email}
+                                        autoComplete='email'
+                                        value={profileData.email}
                                         onChange={handleInputChange}
-                                        className={`w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 ${errors.email
-                                            ? 'border-red-500 focus:border-red-500'
-                                            : 'border-gray-600 focus:border-[#c084fc] focus:shadow-[0_0_15px_rgba(192,132,252,0.5)]'
-                                            }`}
+                                        className='w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 border-gray-600 focus:border-[#818cf8] focus:shadow-[0_0_15px_rgba(129,140,248,0.5)]'
                                         placeholder='Enter your email'
                                     />
                                     <div className='absolute inset-y-0 right-0 pr-3 flex items-center'>
@@ -251,11 +258,6 @@ const RegisterScreen = () => {
                                         </svg>
                                     </div>
                                 </div>
-                                {errors.email && (
-                                    <p className='mt-1 text-sm text-red-400'>
-                                        {errors.email}
-                                    </p>
-                                )}
                             </div>
 
                             {/* Gender Field */}
@@ -268,13 +270,10 @@ const RegisterScreen = () => {
                                 <select
                                     id='gender'
                                     name='gender'
-                                    required
-                                    value={formData.gender}
+                                    value={profileData.gender}
                                     onChange={handleInputChange}
-                                    className={`w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white focus:ring-0 focus:outline-none transition-all duration-300 ${errors.gender
-                                        ? 'border-red-500 focus:border-red-500'
-                                        : 'border-gray-600 focus:border-[#e879f9] focus:shadow-[0_0_15px_rgba(232,121,249,0.5)]'
-                                        }`}>
+                                    className='w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white focus:ring-0 focus:outline-none transition-all duration-300 border-gray-600 focus:border-[#e879f9] focus:shadow-[0_0_15px_rgba(232,121,249,0.5)]'
+                                >
                                     <option value=''>Select Gender</option>
                                     <option value='male'>Male</option>
                                     <option value='female'>Female</option>
@@ -283,11 +282,6 @@ const RegisterScreen = () => {
                                         Prefer not to say
                                     </option>
                                 </select>
-                                {errors.gender && (
-                                    <p className='mt-1 text-sm text-red-400'>
-                                        {errors.gender}
-                                    </p>
-                                )}
                             </div>
                         </div>
 
@@ -298,23 +292,20 @@ const RegisterScreen = () => {
                                 <label
                                     htmlFor='password'
                                     className='block text-sm font-medium text-[#22d3ee] mb-2'>
-                                    Password
+                                    Change Password
                                 </label>
                                 <div className='relative'>
                                     <input
                                         id='password'
                                         name='password'
+                                        autoComplete='new-password'
                                         type={
                                             showPassword ? 'text' : 'password'
                                         }
-                                        required
-                                        value={formData.password}
+                                        value={profileData.password}
                                         onChange={handleInputChange}
-                                        className={`w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 ${errors.password
-                                            ? 'border-red-500 focus:border-red-500'
-                                            : 'border-gray-600 focus:border-[#22d3ee] focus:shadow-[0_0_15px_rgba(34,211,238,0.5)]'
-                                            }`}
-                                        placeholder='Create a password'
+                                        className='w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 border-gray-600 focus:border-[#22d3ee] focus:shadow-[0_0_15px_rgba(34,211,238,0.5)]'
+                                        placeholder='Change password'
                                     />
                                     <button
                                         type='button'
@@ -357,11 +348,6 @@ const RegisterScreen = () => {
                                         )}
                                     </button>
                                 </div>
-                                {errors.password && (
-                                    <p className='mt-1 text-sm text-red-400'>
-                                        {errors.password}
-                                    </p>
-                                )}
                             </div>
 
                             {/* Confirm Password Field */}
@@ -369,25 +355,22 @@ const RegisterScreen = () => {
                                 <label
                                     htmlFor='confirmPassword'
                                     className='block text-sm font-medium text-[#38bdf8] mb-2'>
-                                    Confirm Password
+                                    Confirm Change Password
                                 </label>
                                 <div className='relative'>
                                     <input
                                         id='confirmPassword'
                                         name='confirmPassword'
+                                        autoComplete='new-password'
                                         type={
                                             showConfirmPassword
                                                 ? 'text'
                                                 : 'password'
                                         }
-                                        required
-                                        value={formData.confirmPassword}
+                                        value={profileData.confirmPassword}
                                         onChange={handleInputChange}
-                                        className={`w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 ${errors.confirmPassword
-                                            ? 'border-red-500 focus:border-red-500'
-                                            : 'border-gray-600 focus:border-[#38bdf8] focus:shadow-[0_0_15px_rgba(56,189,248,0.5)]'
-                                            }`}
-                                        placeholder='Confirm your password'
+                                        className='w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 border-gray-600 focus:border-[#38bdf8] focus:shadow-[0_0_15px_rgba(56,189,248,0.5)]'
+                                        placeholder='Confirm change password'
                                     />
                                     <button
                                         type='button'
@@ -432,71 +415,102 @@ const RegisterScreen = () => {
                                         )}
                                     </button>
                                 </div>
-                                {errors.confirmPassword && (
-                                    <p className='mt-1 text-sm text-red-400'>
-                                        {errors.confirmPassword}
-                                    </p>
-                                )}
                             </div>
                         </div>
 
-                        {/* Date of Birth Field */}
-                        <div>
-                            <label
-                                htmlFor='dob'
-                                className='block text-sm font-medium text-[#818cf8] mb-2'>
-                                Date of Birth
-                            </label>
-                            <input
-                                id='dob'
-                                name='dob'
-                                type='date'
-                                required
-                                value={formData.dob}
-                                onChange={handleInputChange}
-                                className={`w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white focus:ring-0 focus:outline-none transition-all duration-300 ${errors.dob
-                                    ? 'border-red-500 focus:border-red-500'
-                                    : 'border-gray-600 focus:border-[#818cf8] focus:shadow-[0_0_15px_rgba(129,140,248,0.5)]'
-                                    }`}
-                            />
-                            {errors.dob && (
-                                <p className='mt-1 text-sm text-red-400'>
-                                    {errors.dob}
-                                </p>
-                            )}
+                        {/* Date of Birth, Height & Weight Row */}
+                        <div className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
+                            {/* Date of Birth Field */}
+                            <div>
+                                <label
+                                    htmlFor='dob'
+                                    className='block text-sm font-medium text-[#818cf8] mb-2'>
+                                    Date of Birth
+                                </label>
+                                <input
+                                    id='dob'
+                                    name='dob'
+                                    type='date'
+                                    value={profileData.dob}
+                                    onChange={handleInputChange}
+                                    className='w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white focus:ring-0 focus:outline-none transition-all duration-300 border-gray-600 focus:border-[#818cf8] focus:shadow-[0_0_15px_rgba(129,140,248,0.5)]'
+                                />
+                            </div>
+
+                            {/* Height Field */}
+                            <div>
+                                <label
+                                    htmlFor='height'
+                                    className='block text-sm font-medium text-[#c084fc] mb-2'>
+                                    Height (cm)
+                                </label>
+                                <div className='relative'>
+                                    <input
+                                        id='height'
+                                        name='height'
+                                        type='number'
+                                        value={profileData.height}
+                                        onChange={handleInputChange}
+                                        className='w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 border-gray-600 focus:border-[#e879f9] focus:shadow-[0_0_15px_rgba(232,121,249,0.5)]'
+                                        placeholder='Enter your height'
+                                    />
+                                    <div className='absolute inset-y-0 right-0 pr-3 flex items-center'>
+                                        <svg
+                                            className='h-5 w-5 text-gray-400'
+                                            fill='none'
+                                            stroke='currentColor'
+                                            viewBox='0 0 24 24'>
+                                            <path
+                                                strokeLinecap='round'
+                                                strokeLinejoin='round'
+                                                strokeWidth={2}
+                                                d='M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m0 0V3a1 1 0 011 1v6a1 1 0 01-1 1H8a1 1 0 01-1-1V4a1 1 0 011-1V2m8 2v16l-4-2-4 2V4'
+                                            />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Weight Field */}
+                            <div>
+                                <label
+                                    htmlFor='weight'
+                                    className='block text-sm font-medium text-[#e879f9] mb-2'>
+                                    Weight (kg)
+                                </label>
+                                <div className='relative'>
+                                    <input
+                                        id='weight'
+                                        name='weight'
+                                        type='number'
+                                        value={profileData.weight}
+                                        onChange={handleInputChange}
+                                        className='w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 border-gray-600 focus:border-[#e879f9] focus:shadow-[0_0_15px_rgba(232,121,249,0.5)]'
+                                        placeholder='Enter your weight'
+                                    />
+                                    <div className='absolute inset-y-0 right-0 pr-3 flex items-center'>
+                                        <svg
+                                            className='h-5 w-5 text-gray-400'
+                                            fill='none'
+                                            stroke='currentColor'
+                                            viewBox='0 0 24 24'>
+                                            <path
+                                                strokeLinecap='round'
+                                                strokeLinejoin='round'
+                                                strokeWidth={2}
+                                                d='M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3'
+                                            />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Terms and Conditions */}
-                        <div className='flex items-center'>
-                            <input
-                                id='terms'
-                                name='terms'
-                                type='checkbox'
-                                required
-                                className='h-4 w-4 text-[#38bdf8] bg-gray-700 border-gray-600 rounded focus:ring-[#38bdf8] focus:ring-2'
-                            />
-                            <label
-                                htmlFor='terms'
-                                className='ml-2 block text-sm text-gray-300'>
-                                I agree to the{' '}
-                                <a
-                                    href='#'
-                                    className='text-[#38bdf8] hover:text-[#818cf8] transition-colors duration-300'>
-                                    Terms of Service
-                                </a>{' '}
-                                and{' '}
-                                <a
-                                    href='#'
-                                    className='text-[#c084fc] hover:text-[#e879f9] transition-colors duration-300'>
-                                    Privacy Policy
-                                </a>
-                            </label>
-                        </div>
                         {/* Submit Button */}
                         <button
                             disabled={isLoading}
                             type='submit'
-                            className='w-full bg-linear-to-r from-[#38bdf8] via-[#818cf8] to-[#c084fc] text-white py-3 px-4 rounded-lg font-medium hover:from-[#818cf8] hover:via-[#c084fc] hover:to-[#e879f9] focus:outline-none focus:ring-2 focus:ring-[#38bdf8] focus:ring-offset-2 focus:ring-offset-gray-800 transform hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(56,189,248,0.4)] hover:shadow-[0_0_30px_rgba(129,140,248,0.6)]'>
+                            className='cursor-pointer w-full bg-linear-to-r from-[#38bdf8] via-[#818cf8] to-[#c084fc] text-white py-3 px-4 rounded-lg font-medium hover:from-[#818cf8] hover:via-[#c084fc] hover:to-[#e879f9] focus:outline-none focus:ring-2 focus:ring-[#38bdf8] focus:ring-offset-2 focus:ring-offset-gray-800 transform hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(56,189,248,0.4)] hover:shadow-[0_0_30px_rgba(129,140,248,0.6)]'>
                             {isLoading ? (
 
                                 <div className='flex items-center justify-center space-x-2'>
@@ -509,79 +523,16 @@ const RegisterScreen = () => {
 
                             ) : (
                                 <div className='flex items-center justify-center space-x-2'>
-                                    <span>Sign Up</span>
+                                    <span>Update Details</span>
                                     <ArrowRight className='inline-block h-6 w-6' />
                                 </div>
                             )}
                         </button>
                     </form>
-
-                    {/* Divider */}
-                    <div className='mt-6'>
-                        <div className='relative'>
-                            <div className='absolute inset-0 flex items-center'>
-                                <div className='w-full border-t border-gray-600'></div>
-                            </div>
-                            <div className='relative flex justify-center text-sm'>
-                                <span className='px-2 bg-gray-800 text-gray-400'>
-                                    Or register with
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Social Registration */}
-                    <div className='mt-6 grid grid-cols-2 gap-3'>
-                        <button className='w-full inline-flex justify-center py-2 px-4 border-2 border-gray-600 rounded-lg bg-gray-700 text-sm font-medium text-gray-300 hover:bg-gray-600 hover:border-[#38bdf8] hover:text-white transition-all duration-300'>
-                            <svg
-                                className='w-5 h-5'
-                                fill='currentColor'
-                                viewBox='0 0 24 24'>
-                                <path
-                                    d='M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z'
-                                    fill='#4285F4'
-                                />
-                                <path
-                                    d='M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z'
-                                    fill='#34A853'
-                                />
-                                <path
-                                    d='M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z'
-                                    fill='#FBBC05'
-                                />
-                                <path
-                                    d='M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z'
-                                    fill='#EA4335'
-                                />
-                            </svg>
-                            <span className='ml-2'>Google</span>
-                        </button>
-                        <button className='w-full inline-flex justify-center py-2 px-4 border-2 border-gray-600 rounded-lg bg-gray-700 text-sm font-medium text-gray-300 hover:bg-gray-600 hover:border-[#818cf8] hover:text-white transition-all duration-300'>
-                            <svg
-                                className='w-5 h-5'
-                                fill='#1877F2'
-                                viewBox='0 0 24 24'>
-                                <path d='M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z' />
-                            </svg>
-                            <span className='ml-2'>Facebook</span>
-                        </button>
-                    </div>
-                </div>
-
-                {/* Login Link */}
-                <div className='text-center'>
-                    <p className='text-gray-400'>
-                        Already have an account?{' '}
-                        <a
-                            href='/login'
-                            className='text-[#38bdf8] hover:text-[#818cf8] font-medium transition-colors duration-300'>
-                            Sign in here
-                        </a>
-                    </p>
                 </div>
             </div>
         </div>
     );
 };
 
-export default RegisterScreen;
+export default ProfileScreen;

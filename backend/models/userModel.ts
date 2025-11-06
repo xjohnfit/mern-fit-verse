@@ -6,8 +6,11 @@ export interface IUser {
     name: string;
     username: string;
     email: string;
+    dob: Date;
     password: string;
     gender: string;
+    height?: number;
+    weight?: number;
     goal?: string;
     photo?: string;
     createdAt: Date;
@@ -22,10 +25,13 @@ const userSchema = new Schema<IUser>(
         name: { type: String, required: true },
         username: { type: String, required: true, unique: true },
         email: { type: String, required: true, unique: true },
+        dob: { type: Date, required: true },
         password: { type: String, required: true },
         gender: { type: String, required: true },
-        goal: { type: String, required: true },
-        photo: { type: String },
+        goal: { type: String, required: false, default: '' },
+        photo: { type: String, default: '' },
+        height: { type: Number, default: null },
+        weight: { type: Number, default: null },
     },
     { timestamps: true }
 );
