@@ -4,9 +4,7 @@ export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({ baseUrl: '' }),
     tagTypes: ['User', 'Workout', 'Exercise'],
-    endpoints: (_builder) => ({
-        // Define your API endpoints here
-    }),
+    endpoints: (builder) => ({}),
 });
 
 export default apiSlice;

@@ -69,21 +69,21 @@ pipeline {
                 }
             }
         }     
-        // stage("9. Trivy Image Scan") {
-	    //     steps {
-        //         script {
-	    //             sh ('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image xjohnfit/nextjs14-portfolio:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table > trivyimage.txt')
-        //         }
-        //     }
-        // }
-	    // stage("10. Cleanup Artifacts") {
-	    //     steps {
-        //         script {
-        //             sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
-        //             sh "docker rmi ${IMAGE_NAME}:latest"
-        //         }
-        //     }
-        // }
+        stage("9. Trivy Image Scan") {
+	        steps {
+                script {
+	                sh ('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image xjohnfit/nextjs14-portfolio:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table > trivyimage.txt')
+                }
+            }
+        }
+	    stage("10. Cleanup Artifacts") {
+	        steps {
+                script {
+                    sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "docker rmi ${IMAGE_NAME}:latest"
+                }
+            }
+        }
         // stage("11. Update Kubernetes Deployment for ArgoCD") {
         //     steps {
         //         withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
