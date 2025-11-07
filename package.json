@@ -7,7 +7,6 @@
         "backend": "nodemon --exec ts-node ./backend/index.ts",
         "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
         "start": "ts-node ./backend/index.ts",
-        "start:prod": "node dist/backend/index.js",
         "build": "tsc"
     },
     "author": "",

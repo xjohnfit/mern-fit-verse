@@ -48,4 +48,4 @@ ENV PORT=5003
 EXPOSE 5003
 
 # Start backend server using compiled JavaScript
-CMD ["npm", "run", "start:prod"]
+CMD ["npm", "run", "start"]
