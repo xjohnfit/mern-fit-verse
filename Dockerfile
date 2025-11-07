@@ -7,9 +7,10 @@ COPY frontend/package.json frontend/package-lock.json ./
 RUN npm install -g patch-package
 RUN npm ci
 COPY frontend/ ./
-# Set public environment variables for Vite build
-ENV MODE=development
-RUN npm run build
+# Set environment variables for Vite build
+ENV NODE_ENV=production
+# Run build with debug output
+RUN npm run build --verbose
 
 # --- Backend Build Stage ---
 FROM node:20-alpine AS backend-build
