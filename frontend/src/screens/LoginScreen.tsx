@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLoginMutation } from '@/slices/usersApiSlice';
 import { setCredentials } from '@/slices/authSlice';
@@ -18,7 +18,7 @@ const LoginScreen = () => {
 
     const [login, { isLoading }] = useLoginMutation();
 
-    const { userInfo, isAuthenticated } = useSelector(
+    const { isAuthenticated } = useSelector(
         (state: any) => state.auth
     );
 
