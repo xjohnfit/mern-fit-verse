@@ -28,8 +28,10 @@ pipeline {
         stage("3. SonarQube Analysis") {
             steps {
                 withSonarQubeEnv('sonarqube-server') {
-                    sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=FitVerse \
-                    -Dsonar.projectKey=FitVerse'''
+                    sh '''$SCANNER_HOME/bin/sonar-scanner 
+                    -Dsonar.projectName=FitVerse \
+                    -Dsonar.projectKey=FitVerse \
+                    -Dsonar.token=sqp_d12c532d699ee8e230974b762a06f8f6383d4650'''
                 }
             }
         }
