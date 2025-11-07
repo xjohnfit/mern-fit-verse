@@ -91,7 +91,7 @@ if (process.env.NODE_ENV === 'production') {
     app.use(express.static(staticPath));
 
     // Catch all handler: send back React's index.html file for SPA routing
-    app.get('*', (req, res) => {
+    app.use((req, res) => {
         res.sendFile(indexPath);
     });
 } else {
