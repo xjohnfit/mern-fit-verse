@@ -105,7 +105,7 @@ const HomeScreen = () => {
                                 </>
                             ) : (
                                 <>
-                                    <Button asChild size="lg" className="bg-gradient-to-r from-[#38bdf8] to-[#818cf8] hover:from-[#818cf8] hover:to-[#c084fc] text-white border-none text-lg px-8 py-4 h-auto">
+                                    <Button asChild size="lg" className="bg-linear-to-r from-[#38bdf8] to-[#818cf8] hover:from-[#818cf8] hover:to-[#c084fc] text-white border-none text-lg px-8 py-4 h-auto">
                                         <Link to="/register" className="flex items-center gap-2">
                                             <Play className="w-5 h-5" />
                                             Start Your Journey
@@ -128,7 +128,7 @@ const HomeScreen = () => {
                             const IconComponent = feature.icon;
                             return (
                                 <div key={index} className="bg-black/20 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:bg-black/30 transition-all duration-300 hover:scale-105">
-                                    <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#38bdf8] to-[#818cf8] rounded-lg mb-4">
+                                    <div className="flex items-center justify-center w-12 h-12 bg-linear-to-r from-[#38bdf8] to-[#818cf8] rounded-lg mb-4">
                                         <IconComponent className="w-6 h-6 text-white" />
                                     </div>
                                     <h3 className="text-white font-semibold text-lg mb-2">{feature.title}</h3>
@@ -184,21 +184,21 @@ const HomeScreen = () => {
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                                 <div className="text-center">
-                                    <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#38bdf8] to-[#818cf8] rounded-full text-white font-bold text-xl mb-4 mx-auto">
+                                    <div className="flex items-center justify-center w-12 h-12 bg-linear-to-r from-[#38bdf8] to-[#818cf8] rounded-full text-white font-bold text-xl mb-4 mx-auto">
                                         1
                                     </div>
                                     <h3 className="text-white font-semibold text-lg mb-2">Sign Up</h3>
                                     <p className="text-white/70">Create your free FitVerse account in seconds</p>
                                 </div>
                                 <div className="text-center">
-                                    <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#818cf8] to-[#c084fc] rounded-full text-white font-bold text-xl mb-4 mx-auto">
+                                    <div className="flex items-center justify-center w-12 h-12 bg-linear-to-r from-[#818cf8] to-[#c084fc] rounded-full text-white font-bold text-xl mb-4 mx-auto">
                                         2
                                     </div>
                                     <h3 className="text-white font-semibold text-lg mb-2">Set Goals</h3>
                                     <p className="text-white/70">Define your fitness objectives and preferences</p>
                                 </div>
                                 <div className="text-center">
-                                    <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#c084fc] to-[#e879f9] rounded-full text-white font-bold text-xl mb-4 mx-auto">
+                                    <div className="flex items-center justify-center w-12 h-12 bg-linear-to-r from-[#c084fc] to-[#e879f9] rounded-full text-white font-bold text-xl mb-4 mx-auto">
                                         3
                                     </div>
                                     <h3 className="text-white font-semibold text-lg mb-2">Start Training</h3>
