@@ -25,21 +25,21 @@ pipeline {
                 credentialsId: 'github'
             }
         }
-        // stage("3. SonarQube Analysis") {
-        //     steps {
-        //         withSonarQubeEnv('sonarqube-server') {
-        //             sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=FitVerse \
-        //             -Dsonar.projectKey=FitVerse'''
-        //         }
-        //     }
-        // }
-        // stage("4. Quality Gate") {
-        //     steps {
-        //         script {
-        //             waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube-token'
-        //         }
-        //     }
-        // }
+        stage("3. SonarQube Analysis") {
+            steps {
+                withSonarQubeEnv('sonarqube-server') {
+                    sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=FitVerse \
+                    -Dsonar.projectKey=FitVerse'''
+                }
+            }
+        }
+        stage("4. Quality Gate") {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube-token'
+                }
+            }
+        }
         stage("5. Install Dependencies") {
             steps {
                 sh "npm install"
