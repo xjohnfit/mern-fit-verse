@@ -29,24 +29,41 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'OK',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV
+    });
+});
+
 // Routes
 app.use('/api/users', userRoutes);
 // app.use('/api/exercises', exerciseRoutes);
 // app.use('/api/food', foodRoutes);
 
-// Error middlewares (should be placed AFTER routes)
-app.use(notFound);
-app.use(errorHandler);
-
 if (process.env.NODE_ENV === 'production') {
+    // Serve static files from the React app
     app.use(express.static(path.join(__dirname, '../frontend/dist')));
-    // Use `app.use` instead of `app.get('*')`
+    
+    // Catch all handler: send back React's index.html file for SPA routing
     app.use((req, res) => {
         res.sendFile(
             path.resolve(__dirname, '../frontend', 'dist', 'index.html')
         );
     });
+} else {
+    // In development, provide a simple root route
+    app.get('/', (req, res) => {
+        res.json({ message: 'API is running in development mode' });
+    });
 }
+
+// Error middlewares (should be placed AFTER all routes)
+app.use(notFound);
+app.use(errorHandler);
 
 // Server startup with error handling
 const startServer = async (): Promise<void> => {
