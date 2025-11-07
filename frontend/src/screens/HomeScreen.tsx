@@ -1,9 +1,23 @@
 import { WavyBackground } from '@/components/ui/wavy-background';
+import { Button } from '@/components/ui/button';
 import AlertModal from '@/components/AlertModal';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router';
+import { useSelector } from 'react-redux';
+import {
+    Dumbbell,
+    Target,
+    TrendingUp,
+    Users,
+    ArrowRight,
+    Play,
+    Star,
+    CheckCircle
+} from 'lucide-react';
 
 const HomeScreen = () => {
     const [alertVisible, setAlertVisible] = useState(false);
+    const { isAuthenticated, userInfo } = useSelector((state: any) => state.auth);
 
     useEffect(() => {
         const hasSeenAlert = localStorage.getItem('hasSeenExperimentalWarning');
@@ -16,16 +30,211 @@ const HomeScreen = () => {
         }
     }, []);
 
+    const features = [
+        {
+            icon: Dumbbell,
+            title: "Workout Tracking",
+            description: "Log your workouts, track sets, reps, and weights with our intuitive interface."
+        },
+        {
+            icon: Target,
+            title: "Goal Setting",
+            description: "Set personalized fitness goals and track your progress towards achieving them."
+        },
+        {
+            icon: TrendingUp,
+            title: "Progress Analytics",
+            description: "Visualize your fitness journey with detailed charts and performance metrics."
+        },
+        {
+            icon: Users,
+            title: "Community Support",
+            description: "Connect with like-minded fitness enthusiasts and share your achievements."
+        }
+    ];
+
+    const testimonials = [
+        {
+            name: "Sarah Johnson",
+            comment: "FitVerse transformed my fitness routine. I've never been more motivated!",
+            rating: 5
+        },
+        {
+            name: "Mike Chen",
+            comment: "The progress tracking features are amazing. I can see my improvements daily.",
+            rating: 5
+        },
+        {
+            name: "Emily Davis",
+            comment: "User-friendly interface and great workout suggestions. Highly recommended!",
+            rating: 5
+        }
+    ];
+
     return (
         <>
             {alertVisible && <AlertModal setAlertVisible={setAlertVisible} />}
             <WavyBackground containerClassName="relative">
-                <p className='text-2xl md:text-4xl lg:text-7xl text-white font-bold inter-var text-center max-w-4xl mx-auto'>
-                    Welcome to FitVerse
-                </p>
-                <p className='text-base md:text-lg mt-4 text-white font-normal inter-var text-center max-w-2xl mx-auto'>
-                    Your ultimate fitness companion for tracking workouts, monitoring progress, and achieving your health goals.
-                </p>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* Hero Section */}
+                    <div className="text-center mb-16">
+                        <h1 className='text-3xl md:text-5xl lg:text-7xl text-white font-bold inter-var mb-6 max-w-4xl mx-auto'>
+                            {isAuthenticated ? `Welcome back, ${userInfo?.name?.split(' ')[0]}!` : 'Welcome to FitVerse'}
+                        </h1>
+                        <p className='text-lg md:text-xl mt-4 text-white/90 font-normal inter-var max-w-3xl mx-auto mb-8'>
+                            Your ultimate fitness companion for tracking workouts, monitoring progress, and achieving your health goals.
+                        </p>
+
+                        {/* CTA Buttons */}
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                            {isAuthenticated ? (
+                                <>
+                                    <Button asChild size="lg" className="bg-linear-to-r from-[#38bdf8] to-[#818cf8] hover:from-[#818cf8] hover:to-[#c084fc] text-white border-none text-lg px-8 py-4 h-auto">
+                                        <Link to="/dashboard" className="flex items-center gap-2">
+                                            <Dumbbell className="w-5 h-5" />
+                                            Go to Dashboard
+                                            <ArrowRight className="w-5 h-5" />
+                                        </Link>
+                                    </Button>
+                                    <Button asChild variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 hover:text-white bg-transparent text-lg px-8 py-4 h-auto">
+                                        <Link to="/profile" className="flex items-center gap-2">
+                                            <Target className="w-5 h-5" />
+                                            View Profile
+                                        </Link>
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <Button asChild size="lg" className="bg-gradient-to-r from-[#38bdf8] to-[#818cf8] hover:from-[#818cf8] hover:to-[#c084fc] text-white border-none text-lg px-8 py-4 h-auto">
+                                        <Link to="/register" className="flex items-center gap-2">
+                                            <Play className="w-5 h-5" />
+                                            Start Your Journey
+                                            <ArrowRight className="w-5 h-5" />
+                                        </Link>
+                                    </Button>
+                                    <Button asChild variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-4 h-auto">
+                                        <Link to="/login" className="flex items-center gap-2">
+                                            Already have an account? Sign In
+                                        </Link>
+                                    </Button>
+                                </>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Features Section */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+                        {features.map((feature, index) => {
+                            const IconComponent = feature.icon;
+                            return (
+                                <div key={index} className="bg-black/20 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:bg-black/30 transition-all duration-300 hover:scale-105">
+                                    <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#38bdf8] to-[#818cf8] rounded-lg mb-4">
+                                        <IconComponent className="w-6 h-6 text-white" />
+                                    </div>
+                                    <h3 className="text-white font-semibold text-lg mb-2">{feature.title}</h3>
+                                    <p className="text-white/70 text-sm leading-relaxed">{feature.description}</p>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Stats Section */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-16">
+                        <div className="text-center">
+                            <div className="text-4xl md:text-5xl font-bold text-white mb-2">10K+</div>
+                            <div className="text-white/70">Active Users</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-4xl md:text-5xl font-bold text-white mb-2">50K+</div>
+                            <div className="text-white/70">Workouts Completed</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-4xl md:text-5xl font-bold text-white mb-2">95%</div>
+                            <div className="text-white/70">User Satisfaction</div>
+                        </div>
+                    </div>
+
+                    {/* Testimonials Section */}
+                    {!isAuthenticated && (
+                        <div className="mb-16">
+                            <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">
+                                What Our Users Say
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                {testimonials.map((testimonial, index) => (
+                                    <div key={index} className="bg-black/20 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:bg-black/30 transition-all duration-300">
+                                        <div className="flex items-center gap-1 mb-4">
+                                            {[...Array(testimonial.rating)].map((_, i) => (
+                                                <Star key={i} className="w-4 h-4 fill-[#38bdf8] text-[#38bdf8]" />
+                                            ))}
+                                        </div>
+                                        <p className="text-white/80 mb-4 italic">"{testimonial.comment}"</p>
+                                        <div className="text-white font-semibold">{testimonial.name}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Quick Start Guide for New Users */}
+                    {!isAuthenticated && (
+                        <div className="bg-black/20 backdrop-blur-sm border border-white/10 rounded-xl p-8 mb-16">
+                            <h2 className="text-2xl md:text-3xl font-bold text-white text-center mb-8">
+                                Get Started in 3 Easy Steps
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div className="text-center">
+                                    <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#38bdf8] to-[#818cf8] rounded-full text-white font-bold text-xl mb-4 mx-auto">
+                                        1
+                                    </div>
+                                    <h3 className="text-white font-semibold text-lg mb-2">Sign Up</h3>
+                                    <p className="text-white/70">Create your free FitVerse account in seconds</p>
+                                </div>
+                                <div className="text-center">
+                                    <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#818cf8] to-[#c084fc] rounded-full text-white font-bold text-xl mb-4 mx-auto">
+                                        2
+                                    </div>
+                                    <h3 className="text-white font-semibold text-lg mb-2">Set Goals</h3>
+                                    <p className="text-white/70">Define your fitness objectives and preferences</p>
+                                </div>
+                                <div className="text-center">
+                                    <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#c084fc] to-[#e879f9] rounded-full text-white font-bold text-xl mb-4 mx-auto">
+                                        3
+                                    </div>
+                                    <h3 className="text-white font-semibold text-lg mb-2">Start Training</h3>
+                                    <p className="text-white/70">Begin your fitness journey with personalized workouts</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Features List for Authenticated Users */}
+                    {isAuthenticated && (
+                        <div className="bg-black/20 backdrop-blur-sm border border-white/10 rounded-xl p-8">
+                            <h2 className="text-2xl md:text-3xl font-bold text-white text-center mb-8">
+                                Your Fitness Hub Awaits
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="flex items-center gap-3 text-white">
+                                    <CheckCircle className="w-5 h-5 text-[#38bdf8]" />
+                                    <span>Track your daily workouts and exercises</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-white">
+                                    <CheckCircle className="w-5 h-5 text-[#38bdf8]" />
+                                    <span>Monitor your fitness progress over time</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-white">
+                                    <CheckCircle className="w-5 h-5 text-[#38bdf8]" />
+                                    <span>Set and achieve personalized goals</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-white">
+                                    <CheckCircle className="w-5 h-5 text-[#38bdf8]" />
+                                    <span>Access your data from anywhere</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </WavyBackground>
         </>
     );
