@@ -43,7 +43,7 @@ function Header() {
             await logoutApiCall().unwrap();
             dispatch(clearCredentials());
             toast.success('Logged out successfully');
-            navigate('/');
+            navigate('/login');
             setIsMobileMenuOpen(false); // Close mobile menu after logout
         } catch (err: string | any) {
             toast.error(
@@ -74,67 +74,76 @@ function Header() {
         <>
             <header className='w-screen bg-gray-800 text-white p-4 z-20 relative border-[#38bdf8] shadow-[0_0_10px_#38bdf8,0_0_20px_#818cf8,0_0_30px_#c084fc,0_0_40px_#e879f9,0_0_50px_#22d3ee] hover:shadow-[0_0_15px_#38bdf8,0_0_30px_#818cf8,0_0_45px_#c084fc,0_0_60px_#e879f9,0_0_75px_#22d3ee] transition-all duration-300'>
                 <div className='container mx-auto flex justify-between items-center'>
-                    <Link to='/'>
+                    <Link to='/' className='flex flex-col'>
                         <h1 className='text-2xl font-bold'>FitVerse</h1>
+                        <p className='text-sm text-gray-300 font-light mt-1'>Your all-in-one fitness app</p>
                     </Link>
 
                     {/* Desktop Navigation */}
                     <nav className='hidden lg:flex space-x-6'>
                         {isAuthenticated ? (
-                            <NavigationMenu className='dark'>
-                                <NavigationMenuList className='flex flex-wrap gap-10'>
-                                    <NavigationMenuItem>
-                                        <NavigationMenuLink
-                                            asChild
-                                            className={`${navigationMenuTriggerStyle()} bg-gray-700 text-white hover:bg-gray-700/80 hover:shadow-md hover:text-white focus:bg-gray-600 focus:text-white data-active:bg-gray-700 data-[state=open]:bg-gray-700 transition-all duration-300 ease-in-out`}>
-                                            <Link to='/dashboard'>Dashboard</Link>
-                                        </NavigationMenuLink>
-                                    </NavigationMenuItem>
-                                    <NavigationMenuItem>
-                                        <NavigationMenuLink
-                                            asChild
-                                            className={`${navigationMenuTriggerStyle()} bg-gray-700 text-white hover:bg-gray-700/80 hover:shadow-md hover:text-white focus:bg-gray-600 focus:text-white data-active:bg-gray-700 data-[state=open]:bg-gray-700 transition-all duration-300 ease-in-out`}>
-                                            <Link to='/food'>Food</Link>
-                                        </NavigationMenuLink>
-                                    </NavigationMenuItem>
-                                    <NavigationMenuItem>
-                                        <NavigationMenuLink
-                                            asChild
-                                            className={`${navigationMenuTriggerStyle()} bg-gray-700 text-white hover:bg-gray-700/80 hover:shadow-md hover:text-white focus:bg-gray-600 focus:text-white data-active:bg-gray-700 data-[state=open]:bg-gray-700 transition-all duration-300 ease-in-out`}>
-                                            <Link to='/workout'>Workout</Link>
-                                        </NavigationMenuLink>
-                                    </NavigationMenuItem>
-                                    <NavigationMenuItem className='block'>
-                                        <NavigationMenuTrigger className='cursor-pointer bg-transparent'>
-                                            {avatar}
-                                        </NavigationMenuTrigger>
-                                        <NavigationMenuContent className='bg-gray-800 border-gray-700'>
-                                            <ul className='grid w-[200px] gap-2 p-2'>
-                                                <li>
-                                                    <NavigationMenuLink asChild>
-                                                        <Link
-                                                            to='/profile'
-                                                            className='flex flex-row items-center gap-2 rounded-md text-white hover:bg-gray-900/70 hover:shadow-lg active:bg-gray-900 transition-all duration-300 ease-in-out'>
-                                                            <User className='w-4 h-4' />
-                                                            Profile
-                                                        </Link>
-                                                    </NavigationMenuLink>
-                                                </li>
-                                                <li>
-                                                    <NavigationMenuLink asChild>
-                                                        <button
-                                                            onClick={logoutHandler}
-                                                            className='cursor-pointer flex flex-row items-center gap-2 rounded-md text-white hover:bg-gray-900/70 hover:shadow-lg active:bg-gray-900 transition-all duration-300 ease-in-out w-full p-3 text-left'>
-                                                            <LogOut className='w-4 h-4' />
-                                                            Logout
-                                                        </button>
-                                                    </NavigationMenuLink>
-                                                </li>
-                                            </ul>
-                                        </NavigationMenuContent>
-                                    </NavigationMenuItem>
-                                </NavigationMenuList>
-                            </NavigationMenu>
+                            <div className='flex items-center gap-5'>
+                                <NavigationMenu className='dark' viewport={false}>
+                                    <NavigationMenuList className='flex flex-wrap gap-5'>
+                                        <NavigationMenuItem>
+                                            <NavigationMenuLink
+                                                asChild
+                                                className={`${navigationMenuTriggerStyle()} bg-gray-700 text-white hover:bg-gray-700/80 hover:shadow-md hover:text-white focus:bg-gray-600 focus:text-white data-active:bg-gray-700 data-[state=open]:bg-gray-700 transition-all duration-300 ease-in-out`}>
+                                                <Link to='/dashboard'>Dashboard</Link>
+                                            </NavigationMenuLink>
+                                        </NavigationMenuItem>
+                                        <NavigationMenuItem>
+                                            <NavigationMenuLink
+                                                asChild
+                                                className={`${navigationMenuTriggerStyle()} bg-gray-700 text-white hover:bg-gray-700/80 hover:shadow-md hover:text-white focus:bg-gray-600 focus:text-white data-active:bg-gray-700 data-[state=open]:bg-gray-700 transition-all duration-300 ease-in-out`}>
+                                                <Link to='/food'>Food</Link>
+                                            </NavigationMenuLink>
+                                        </NavigationMenuItem>
+                                        <NavigationMenuItem>
+                                            <NavigationMenuLink
+                                                asChild
+                                                className={`${navigationMenuTriggerStyle()} bg-gray-700 text-white hover:bg-gray-700/80 hover:shadow-md hover:text-white focus:bg-gray-600 focus:text-white data-active:bg-gray-700 data-[state=open]:bg-gray-700 transition-all duration-300 ease-in-out`}>
+                                                <Link to='/workout'>Workout</Link>
+                                            </NavigationMenuLink>
+                                        </NavigationMenuItem>
+                                    </NavigationMenuList>
+                                </NavigationMenu>
+
+                                {/* Avatar Dropdown - Separate NavigationMenu for proper positioning */}
+                                <NavigationMenu className='dark' viewport={false}>
+                                    <NavigationMenuList>
+                                        <NavigationMenuItem className='relative'>
+                                            <NavigationMenuTrigger className='cursor-pointer bg-transparent p-0 h-auto'>
+                                                {avatar}
+                                            </NavigationMenuTrigger>
+                                            <NavigationMenuContent className='bg-gray-800 border-gray-700 absolute right-0 top-full mt-2 z-50 rounded-lg shadow-lg border' style={{ width: '208px' }}>
+                                                <ul className='grid gap-1 p-3'>
+                                                    <li>
+                                                        <NavigationMenuLink asChild>
+                                                            <Link
+                                                                to='/profile'
+                                                                className='flex flex-row items-center gap-3 rounded-md text-white hover:bg-linear-to-r hover:from-gray-700 hover:to-gray-600 hover:shadow-lg hover:scale-105 active:bg-gray-900 active:scale-95 transition-all duration-200 ease-in-out p-3 whitespace-nowrap group'>
+                                                                <User className='w-4 h-4 group-hover:text-blue-400 transition-colors duration-200' />
+                                                                Profile
+                                                            </Link>
+                                                        </NavigationMenuLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavigationMenuLink asChild>
+                                                            <button
+                                                                onClick={logoutHandler}
+                                                                className='cursor-pointer flex flex-row items-center gap-3 rounded-md text-white hover:bg-gray-700/80 hover:shadow-lg hover:scale-105 active:bg-gray-900 active:scale-95 transition-all duration-200 ease-in-out w-full p-3 text-left whitespace-nowrap group'>
+                                                                <LogOut className='w-4 h-4 group-hover:text-red-400 transition-colors duration-200' />
+                                                                Logout
+                                                            </button>
+                                                        </NavigationMenuLink>
+                                                    </li>
+                                                </ul>
+                                            </NavigationMenuContent>
+                                        </NavigationMenuItem>
+                                    </NavigationMenuList>
+                                </NavigationMenu>
+                            </div>
                         ) : (
                             <>
                                 <Link

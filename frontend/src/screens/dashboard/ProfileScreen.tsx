@@ -124,6 +124,13 @@ const ProfileScreen = () => {
 
                             {/* Goal Field */}
                             <div className='flex-1 w-full md:w-auto'>
+                                {/* Welcome User Name */}
+                                <div className='mb-3'>
+                                    <h3 className='text-2xl font-semibold text-white'>
+                                        {userInfo?.name || 'User'}
+                                    </h3>
+                                    <p className='text-gray-400'>Update your profile information below.</p>
+                                </div>
                                 <label
                                     htmlFor='goal'
                                     className='block text-sm font-medium text-[#22d3ee] mb-2'>

@@ -7,7 +7,7 @@ function App() {
   return (
     <div>
       <Toaster position="bottom-right" richColors toastOptions={{
-        style:{
+        style: {
           fontSize: '16px',
         }
       }} />
@@ -15,7 +15,7 @@ function App() {
       <Outlet />
       <Footer />
     </div>
-  )
+  );
 }
- 
-export default App
+
+export default App;
