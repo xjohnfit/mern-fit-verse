@@ -2,10 +2,10 @@
 # --- Frontend Build Stage ---
 FROM node:20-alpine AS frontend-build
 WORKDIR /app/frontend
-COPY frontend/package.json ./
+COPY frontend/package.json frontend/package-lock.json ./
 # Install patch-package globally to handle postinstall scripts
 RUN npm install -g patch-package
-RUN npm install
+RUN npm ci
 COPY frontend/ ./
 # Set public environment variables for Vite build
 ENV MODE=development
