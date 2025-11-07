@@ -158,7 +158,7 @@ export const WavyBackground = ({
       }}
     >
       <canvas
-        className="absolute inset-0 z-0 w-full h-full"
+        className="absolute inset-0 z-0 w-full h-full md:block hidden"
         ref={canvasRef}
         id="canvas"
         style={{
@@ -167,6 +167,8 @@ export const WavyBackground = ({
           pointerEvents: 'none', // Prevent canvas from intercepting touch events
         }}
       ></canvas>
+      {/* Plain black background for mobile/tablet */}
+      <div className="absolute inset-0 z-0 bg-black md:hidden"></div>
       <div className={cn("relative z-10 px-4 py-16", className)} {...props}>
         {children}
       </div>
