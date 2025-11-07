@@ -167,13 +167,6 @@ export const WavyBackground = ({
           pointerEvents: 'none', // Prevent canvas from intercepting touch events
         }}
       ></canvas>
-      {/* Use box-shadow insets to hide blur borders without blocking animation */}
-      <div
-        className="absolute inset-0 z-1 md:hidden pointer-events-none"
-        style={{
-          boxShadow: 'inset 8px 0 0 black, inset -8px 0 0 black, inset 0 -8px 0 black'
-        }}
-      ></div>
       <div className={cn("relative z-10 px-4 py-16", className)} {...props}>
         {children}
       </div>

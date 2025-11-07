@@ -112,7 +112,7 @@ const HomeScreen = () => {
                                             <ArrowRight className="w-5 h-5" />
                                         </Link>
                                     </Button>
-                                    <Button asChild variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-4 h-auto">
+                                    <Button asChild variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 hover:text-white bg-transparent text-lg px-8 py-4 h-auto">
                                         <Link to="/login" className="flex items-center gap-2">
                                             Already have an account? Sign In
                                         </Link>

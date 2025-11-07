@@ -43,7 +43,7 @@ function Header() {
             await logoutApiCall().unwrap();
             dispatch(clearCredentials());
             toast.success('Logged out successfully');
-            navigate('/login');
+            navigate('/');
             setIsMobileMenuOpen(false); // Close mobile menu after logout
         } catch (err: string | any) {
             toast.error(
