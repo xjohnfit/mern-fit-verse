@@ -2,32 +2,40 @@
 # --- Frontend Build Stage ---
 FROM node:20-alpine AS frontend-build
 WORKDIR /app/frontend
-COPY ./frontend/package.json frontend/package-lock.json ./
-RUN npm ci
+COPY ./frontend/package.json ./
+RUN npm install
 COPY frontend/ ./
- # Set public environment variables for Vite build
- ENV MODE=development
- RUN npm run build
+# Set public environment variables for Vite build
+ENV MODE=development
+RUN npm run build
 
 # --- Backend Build Stage ---
 FROM node:20-alpine AS backend-build
 WORKDIR /app
-COPY backend/package.json backend/package-lock.json ./backend/
-RUN npm ci --omit=dev --prefix backend
+# Copy root package.json since backend doesn't have its own
+COPY package.json ./
+COPY tsconfig.json ./
+RUN npm install
 COPY backend/ ./backend/
+# Build TypeScript
+RUN npm run build
 
 # Copy frontend build to backend
 COPY --from=frontend-build /app/frontend/dist ./frontend/dist
 
 # --- Production Stage ---
 FROM node:20-alpine AS production
-WORKDIR /app/backend
+WORKDIR /app
 
-# Copy backend files
-COPY --from=backend-build /app/backend .
+# Install production dependencies
+COPY package.json ./
+RUN npm install --omit=dev
+
+# Copy built backend files
+COPY --from=backend-build /app/backend ./backend/
 
 # Copy frontend build
-COPY --from=frontend-build /app/frontend/dist ../frontend/dist
+COPY --from=frontend-build /app/frontend/dist ./frontend/dist
 
 # Set environment variables (override in Kubernetes as needed)
 ENV NODE_ENV=production
@@ -36,5 +44,5 @@ ENV PORT=5003
 # Expose backend port
 EXPOSE 5003
 
-# Start backend server
-CMD ["node", "src/index.js"]
+# Start backend server using ts-node since it's in dependencies
+CMD ["npm", "start"]
