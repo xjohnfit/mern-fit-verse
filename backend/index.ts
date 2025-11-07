@@ -1,6 +1,7 @@
 // Dependencies imports
 import express, { Application } from 'express';
 import cors from 'cors';
+import path from 'path';
 import connectDB from './config/dbConnection';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
@@ -34,6 +35,14 @@ app.use('/api/users', userRoutes);
 // Error middlewares (should be placed AFTER routes)
 app.use(notFound);
 app.use(errorHandler);
+
+if(process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '../frontend/dist')));
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, '../frontend', 'dist', 'index.html'));
+    });
+}
+
 
 // Server startup with error handling
 const startServer = async (): Promise<void> => {

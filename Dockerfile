@@ -2,8 +2,10 @@
 # --- Frontend Build Stage ---
 FROM node:20-alpine AS frontend-build
 WORKDIR /app/frontend
-COPY ./frontend/package.json ./
-RUN npm install
+COPY ./frontend/package.json ./frontend/package-lock.json ./
+# Install patch-package globally to handle postinstall scripts
+RUN npm install -g patch-package
+RUN npm ci
 COPY frontend/ ./
 # Set public environment variables for Vite build
 ENV MODE=development
@@ -13,9 +15,9 @@ RUN npm run build
 FROM node:20-alpine AS backend-build
 WORKDIR /app
 # Copy root package.json since backend doesn't have its own
-COPY package.json ./
+COPY package.json package-lock.json ./
 COPY tsconfig.json ./
-RUN npm install
+RUN npm ci
 COPY backend/ ./backend/
 # Build TypeScript
 RUN npm run build
@@ -28,8 +30,8 @@ FROM node:20-alpine AS production
 WORKDIR /app
 
 # Install production dependencies
-COPY package.json ./
-RUN npm install --omit=dev
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
 
 # Copy built backend files
 COPY --from=backend-build /app/backend ./backend/
