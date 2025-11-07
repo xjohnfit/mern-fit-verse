@@ -31,11 +31,39 @@ app.use(cookieParser());
 
 // Health check endpoint
 app.get('/health', (req, res) => {
+    const fs = require('fs');
+    const staticPath = path.join(__dirname, '../../frontend/dist');
+    const indexPath = path.resolve(
+        __dirname,
+        '../../frontend',
+        'dist',
+        'index.html'
+    );
+
+    let filesInfo: any = {};
+    try {
+        filesInfo = {
+            staticPathExists: fs.existsSync(staticPath),
+            indexPathExists: fs.existsSync(indexPath),
+            staticPath: staticPath,
+            indexPath: indexPath,
+            currentDir: __dirname,
+            workingDir: process.cwd(),
+        };
+
+        if (fs.existsSync(staticPath)) {
+            filesInfo.staticPathContents = fs.readdirSync(staticPath);
+        }
+    } catch (error: any) {
+        filesInfo.error = error?.message || 'Unknown error';
+    }
+
     res.status(200).json({
         status: 'OK',
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
-        environment: process.env.NODE_ENV
+        environment: process.env.NODE_ENV,
+        filesystem: filesInfo,
     });
 });
 
@@ -46,13 +74,25 @@ app.use('/api/users', userRoutes);
 
 if (process.env.NODE_ENV === 'production') {
     // Serve static files from the React app
-    app.use(express.static(path.join(__dirname, '../frontend/dist')));
-    
+    // In container, frontend files are at /app/frontend/dist
+    // Backend compiled files are at /app/dist/backend/
+    const staticPath = path.join(__dirname, '../../frontend/dist');
+    const indexPath = path.resolve(
+        __dirname,
+        '../../frontend',
+        'dist',
+        'index.html'
+    );
+
+    console.log('Static files path:', staticPath);
+    console.log('Index.html path:', indexPath);
+    console.log('Current __dirname:', __dirname);
+
+    app.use(express.static(staticPath));
+
     // Catch all handler: send back React's index.html file for SPA routing
-    app.use((req, res) => {
-        res.sendFile(
-            path.resolve(__dirname, '../frontend', 'dist', 'index.html')
-        );
+    app.get('*', (req, res) => {
+        res.sendFile(indexPath);
     });
 } else {
     // In development, provide a simple root route
