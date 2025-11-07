@@ -20,7 +20,7 @@ COPY package.json package-lock.json ./
 COPY tsconfig.json ./
 RUN npm ci
 COPY backend/ ./backend/
-# Build TypeScript
+# Build TypeScript to JavaScript
 RUN npm run build
 
 # Copy frontend build to backend
@@ -34,8 +34,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
-# Copy built backend files
-COPY --from=backend-build /app/backend ./backend/
+# Copy compiled JavaScript files from build stage
+COPY --from=backend-build /app/dist ./dist
 
 # Copy frontend build
 COPY --from=frontend-build /app/frontend/dist ./frontend/dist
@@ -47,5 +47,5 @@ ENV PORT=5003
 # Expose backend port
 EXPOSE 5003
 
-# Start backend server using ts-node since it's in dependencies
-CMD ["npm", "start"]
+# Start backend server using compiled JavaScript
+CMD ["npm", "run", "start:prod"]
