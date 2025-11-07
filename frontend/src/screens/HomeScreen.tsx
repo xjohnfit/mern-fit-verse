@@ -19,11 +19,11 @@ const HomeScreen = () => {
     return (
         <>
             {alertVisible && <AlertModal setAlertVisible={setAlertVisible} />}
-            <WavyBackground>
-                <p className='text-2xl md:text-4xl lg:text-7xl text-white font-bold inter-var text-center'>
+            <WavyBackground containerClassName="relative">
+                <p className='text-2xl md:text-4xl lg:text-7xl text-white font-bold inter-var text-center max-w-4xl mx-auto'>
                     Welcome to FitVerse
                 </p>
-                <p className='text-base md:text-lg mt-4 text-white font-normal inter-var text-center'>
+                <p className='text-base md:text-lg mt-4 text-white font-normal inter-var text-center max-w-2xl mx-auto'>
                     Your ultimate fitness companion for tracking workouts, monitoring progress, and achieving your health goals.
                 </p>
             </WavyBackground>

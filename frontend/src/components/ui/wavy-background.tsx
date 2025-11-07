@@ -48,16 +48,47 @@ export const WavyBackground = ({
 
   const init = () => {
     canvas = canvasRef.current;
+    if (!canvas) return;
+
     ctx = canvas.getContext("2d");
-    w = ctx.canvas.width = window.innerWidth;
-    h = ctx.canvas.height = window.innerHeight;
+    const container = canvas.parentElement;
+    if (!container) return;
+
+    // Use container dimensions instead of window dimensions for better mobile support
+    const rect = container.getBoundingClientRect();
+    w = ctx.canvas.width = rect.width;
+    h = ctx.canvas.height = rect.height;
     ctx.filter = `blur(${blur}px)`;
     nt = 0;
-    window.onresize = function () {
-      w = ctx.canvas.width = window.innerWidth;
-      h = ctx.canvas.height = window.innerHeight;
-      ctx.filter = `blur(${blur}px)`;
+
+    let resizeTimeout: number;
+    const handleResize = () => {
+      // Debounce resize events for better mobile performance
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (!canvas || !container) return;
+        const rect = container.getBoundingClientRect();
+        w = ctx.canvas.width = rect.width;
+        h = ctx.canvas.height = rect.height;
+        ctx.filter = `blur(${blur}px)`;
+      }, 100);
     };
+
+    const handleOrientationChange = () => {
+      // Handle orientation change with a longer delay for mobile
+      setTimeout(handleResize, 300);
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleOrientationChange);
+
+    // Set cleanup function for event listeners
+    cleanupResize = () => {
+      clearTimeout(resizeTimeout);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleOrientationChange);
+    };
+
     render();
   };
 
@@ -84,6 +115,8 @@ export const WavyBackground = ({
   };
 
   let animationId: number;
+  let cleanupResize: (() => void) | null = null;
+
   const render = () => {
     ctx.fillStyle = backgroundFill || "black";
     ctx.globalAlpha = waveOpacity || 0.5;
@@ -96,6 +129,10 @@ export const WavyBackground = ({
     init();
     return () => {
       cancelAnimationFrame(animationId);
+      // Cleanup resize listeners
+      if (cleanupResize) {
+        cleanupResize();
+      }
     };
   }, []);
 
@@ -104,27 +141,33 @@ export const WavyBackground = ({
     // I'm sorry but i have got to support it on safari.
     setIsSafari(
       typeof window !== "undefined" &&
-        navigator.userAgent.includes("Safari") &&
-        !navigator.userAgent.includes("Chrome")
+      navigator.userAgent.includes("Safari") &&
+      !navigator.userAgent.includes("Chrome")
     );
   }, []);
 
   return (
     <div
       className={cn(
-        "h-screen relative flex flex-col items-center justify-center",
+        "relative flex flex-col items-center justify-center overflow-hidden",
         containerClassName
       )}
+      style={{
+        minHeight: '100vh',
+        WebkitOverflowScrolling: 'touch' // Smooth scrolling on iOS
+      }}
     >
       <canvas
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 w-full h-full"
         ref={canvasRef}
         id="canvas"
         style={{
           ...(isSafari ? { filter: `blur(${blur}px)` } : {}),
+          touchAction: 'none', // Prevent default touch behaviors that can interfere
+          pointerEvents: 'none', // Prevent canvas from intercepting touch events
         }}
       ></canvas>
-      <div className={cn("relative z-10", className)} {...props}>
+      <div className={cn("relative z-10 px-4 py-16", className)} {...props}>
         {children}
       </div>
     </div>
