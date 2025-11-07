@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mern-fit-verse
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mern-fit-verse
+  template:
+    metadata:
+      labels:
+        app: mern-fit-verse
+    spec:
+      containers:
+        - name: mern-fit-verse
+          image: xjohnfit/mern-fit-verse:1.0.0-4
+          resources:
+            limits:
+              cpu: "1"
+            requests:
+              cpu: "200m"
+          ports:
+            - containerPort: 5003
+          envFrom:
+            - secretRef:
+                name: mern-fit-verse-env
+      imagePullSecrets:
+        - name: regcred
