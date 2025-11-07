@@ -15,7 +15,6 @@
         "rootDir": "./",
         "types": ["node"],
         "allowJs": true,
-        "allowImportingTsExtensions": true,
         "sourceMap": true,
         "removeComments": true,
         "noImplicitAny": true,
