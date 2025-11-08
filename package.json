@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "frontend": "npm run dev --prefix frontend",
+        "frontend": "npm run dev:host --prefix frontend",
         "backend": "nodemon --exec ts-node ./backend/index.ts",
         "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
         "start": "ts-node ./backend/index.ts",

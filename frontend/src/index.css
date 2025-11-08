@@ -154,3 +154,75 @@
         }
     }
 }
+
+/* Custom Spotlight Animations */
+@layer utilities {
+    .spotlight-glow {
+        animation: spotlight-float 6s ease-in-out infinite;
+    }
+
+    .spotlight-secondary {
+        animation: spotlight-rotate 8s ease-in-out infinite;
+    }
+
+    .spotlight-tertiary {
+        animation: spotlight-pulse 10s ease-in-out infinite;
+    }
+}
+
+@keyframes spotlight-float {
+    0%,
+    100% {
+        transform: translateX(-50%) translateY(0px) scale(1);
+        opacity: 0.3;
+    }
+    50% {
+        transform: translateX(-50%) translateY(-20px) scale(1.05);
+        opacity: 0.4;
+    }
+}
+
+@keyframes spotlight-rotate {
+    0%,
+    100% {
+        transform: rotate(0deg) scale(1);
+        opacity: 0.2;
+    }
+    33% {
+        transform: rotate(5deg) scale(1.1);
+        opacity: 0.25;
+    }
+    66% {
+        transform: rotate(-3deg) scale(0.95);
+        opacity: 0.15;
+    }
+}
+
+@keyframes spotlight-pulse {
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.15;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.2;
+    }
+}
+
+/* Enhanced glass morphism effect */
+.glass-card {
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card:hover {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}

@@ -101,11 +101,11 @@ const RegisterScreen = () => {
     };
 
     return (
-        <div className='min-h-screen bg-gray-900 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12'>
-            <div className='max-w-4xl w-full space-y-8'>
+        <div className='min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12'>
+            <div className='max-w-4xl w-full space-y-6'>
                 {/* Header */}
                 <div className='text-center'>
-                    <h1 className='text-4xl font-bold bg-linear-to-r from-[#38bdf8] via-[#818cf8] to-[#c084fc] bg-clip-text text-transparent mb-2'>
+                    <h1 className='text-4xl font-bold bg-gradient-to-r from-[#38bdf8] via-[#818cf8] to-[#c084fc] bg-clip-text text-transparent mb-2'>
                         Join FitVerse
                     </h1>
                     <p className='text-gray-400 text-lg'>
@@ -114,17 +114,17 @@ const RegisterScreen = () => {
                 </div>
 
                 {/* Registration Form */}
-                <div className='bg-gray-800 rounded-xl p-8 border-[#38bdf8] shadow-[0_0_20px_rgba(56,189,248,0.3),0_0_40px_rgba(129,140,248,0.2),0_0_60px_rgba(192,132,252,0.1)] hover:shadow-[0_0_30px_rgba(56,189,248,0.4),0_0_60px_rgba(129,140,248,0.3),0_0_90px_rgba(192,132,252,0.2)] transition-all duration-300'>
+                <div className='bg-gray-800/90 backdrop-blur-sm rounded-xl p-8 border border-gray-700 shadow-2xl hover:shadow-[0_0_30px_rgba(56,189,248,0.2)] transition-all duration-300'>
                     <form
                         onSubmit={handleSubmit}
                         className='space-y-5'>
                         {/* Name & Username Row */}
                         <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                             {/* Name Field */}
-                            <div>
+                            <div className='space-y-2'>
                                 <label
                                     htmlFor='name'
-                                    className='block text-sm font-medium text-[#38bdf8] mb-2'>
+                                    className='block text-sm font-medium text-blue-400 mb-1'>
                                     Full Name
                                 </label>
                                 <div className='relative'>
@@ -135,13 +135,13 @@ const RegisterScreen = () => {
                                         required
                                         value={formData.name}
                                         onChange={handleInputChange}
-                                        className={`w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 ${errors.name
-                                            ? 'border-red-500 focus:border-red-500'
-                                            : 'border-gray-600 focus:border-[#38bdf8] focus:shadow-[0_0_15px_rgba(56,189,248,0.5)]'
+                                        className={`w-full px-4 py-3 pl-10 bg-gray-700/50 border rounded-lg text-white placeholder-gray-400 focus:ring-1 focus:outline-none transition-all duration-200 ${errors.name
+                                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                                            : 'border-gray-600 focus:border-blue-400 focus:ring-blue-400'
                                             }`}
                                         placeholder='Enter your full name'
                                     />
-                                    <div className='absolute inset-y-0 right-0 pr-3 flex items-center'>
+                                    <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
                                         <svg
                                             className='h-5 w-5 text-gray-400'
                                             fill='none'
@@ -164,10 +164,10 @@ const RegisterScreen = () => {
                             </div>
 
                             {/* Username Field */}
-                            <div>
+                            <div className='space-y-2'>
                                 <label
                                     htmlFor='username'
-                                    className='block text-sm font-medium text-[#818cf8] mb-2'>
+                                    className='block text-sm font-medium text-purple-400 mb-1'>
                                     Username
                                 </label>
                                 <div className='relative'>
@@ -178,13 +178,13 @@ const RegisterScreen = () => {
                                         required
                                         value={formData.username}
                                         onChange={handleInputChange}
-                                        className={`w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 ${errors.username
-                                            ? 'border-red-500 focus:border-red-500'
-                                            : 'border-gray-600 focus:border-[#818cf8] focus:shadow-[0_0_15px_rgba(129,140,248,0.5)]'
+                                        className={`w-full px-4 py-3 pl-10 bg-gray-700/50 border rounded-lg text-white placeholder-gray-400 focus:ring-1 focus:outline-none transition-all duration-200 ${errors.username
+                                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                                            : 'border-gray-600 focus:border-purple-400 focus:ring-purple-400'
                                             }`}
                                         placeholder='Choose a username'
                                     />
-                                    <div className='absolute inset-y-0 right-0 pr-3 flex items-center'>
+                                    <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
                                         <svg
                                             className='h-5 w-5 text-gray-400'
                                             fill='none'
@@ -194,13 +194,7 @@ const RegisterScreen = () => {
                                                 strokeLinecap='round'
                                                 strokeLinejoin='round'
                                                 strokeWidth={2}
-                                                d='M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z'
-                                            />
-                                            <path
-                                                strokeLinecap='round'
-                                                strokeLinejoin='round'
-                                                strokeWidth={2}
-                                                d='m7 7 5-3 5 3'
+                                                d='M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207'
                                             />
                                         </svg>
                                     </div>
@@ -216,10 +210,10 @@ const RegisterScreen = () => {
                         {/* Email & Gender Row */}
                         <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                             {/* Email Field */}
-                            <div>
+                            <div className='space-y-2'>
                                 <label
                                     htmlFor='email'
-                                    className='block text-sm font-medium text-[#c084fc] mb-2'>
+                                    className='block text-sm font-medium text-pink-400 mb-1'>
                                     Email Address
                                 </label>
                                 <div className='relative'>
@@ -230,13 +224,13 @@ const RegisterScreen = () => {
                                         required
                                         value={formData.email}
                                         onChange={handleInputChange}
-                                        className={`w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 ${errors.email
-                                            ? 'border-red-500 focus:border-red-500'
-                                            : 'border-gray-600 focus:border-[#c084fc] focus:shadow-[0_0_15px_rgba(192,132,252,0.5)]'
+                                        className={`w-full px-4 py-3 pl-10 bg-gray-700/50 border rounded-lg text-white placeholder-gray-400 focus:ring-1 focus:outline-none transition-all duration-200 ${errors.email
+                                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                                            : 'border-gray-600 focus:border-pink-400 focus:ring-pink-400'
                                             }`}
                                         placeholder='Enter your email'
                                     />
-                                    <div className='absolute inset-y-0 right-0 pr-3 flex items-center'>
+                                    <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
                                         <svg
                                             className='h-5 w-5 text-gray-400'
                                             fill='none'
@@ -259,10 +253,10 @@ const RegisterScreen = () => {
                             </div>
 
                             {/* Gender Field */}
-                            <div>
+                            <div className='space-y-2'>
                                 <label
                                     htmlFor='gender'
-                                    className='block text-sm font-medium text-[#e879f9] mb-2'>
+                                    className='block text-sm font-medium text-indigo-400 mb-1'>
                                     Gender
                                 </label>
                                 <select
@@ -271,9 +265,9 @@ const RegisterScreen = () => {
                                     required
                                     value={formData.gender}
                                     onChange={handleInputChange}
-                                    className={`w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white focus:ring-0 focus:outline-none transition-all duration-300 ${errors.gender
-                                        ? 'border-red-500 focus:border-red-500'
-                                        : 'border-gray-600 focus:border-[#e879f9] focus:shadow-[0_0_15px_rgba(232,121,249,0.5)]'
+                                    className={`w-full px-4 py-3 bg-gray-700/50 border rounded-lg text-white focus:ring-1 focus:outline-none transition-all duration-200 ${errors.gender
+                                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                                        : 'border-gray-600 focus:border-indigo-400 focus:ring-indigo-400'
                                         }`}>
                                     <option value=''>Select Gender</option>
                                     <option value='male'>Male</option>
@@ -294,10 +288,10 @@ const RegisterScreen = () => {
                         {/* Password & Confirm Password Row */}
                         <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                             {/* Password Field */}
-                            <div>
+                            <div className='space-y-2'>
                                 <label
                                     htmlFor='password'
-                                    className='block text-sm font-medium text-[#22d3ee] mb-2'>
+                                    className='block text-sm font-medium text-cyan-400 mb-1'>
                                     Password
                                 </label>
                                 <div className='relative'>
@@ -310,18 +304,32 @@ const RegisterScreen = () => {
                                         required
                                         value={formData.password}
                                         onChange={handleInputChange}
-                                        className={`w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 ${errors.password
-                                            ? 'border-red-500 focus:border-red-500'
-                                            : 'border-gray-600 focus:border-[#22d3ee] focus:shadow-[0_0_15px_rgba(34,211,238,0.5)]'
+                                        className={`w-full px-4 py-3 pl-10 bg-gray-700/50 border rounded-lg text-white placeholder-gray-400 focus:ring-1 focus:outline-none transition-all duration-200 ${errors.password
+                                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                                            : 'border-gray-600 focus:border-cyan-400 focus:ring-cyan-400'
                                             }`}
                                         placeholder='Create a password'
                                     />
+                                    <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+                                        <svg
+                                            className='h-5 w-5 text-gray-400'
+                                            fill='none'
+                                            stroke='currentColor'
+                                            viewBox='0 0 24 24'>
+                                            <path
+                                                strokeLinecap='round'
+                                                strokeLinejoin='round'
+                                                strokeWidth={2}
+                                                d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'
+                                            />
+                                        </svg>
+                                    </div>
                                     <button
                                         type='button'
                                         onClick={() =>
                                             setShowPassword(!showPassword)
                                         }
-                                        className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-[#22d3ee] transition-colors duration-300'>
+                                        className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-cyan-400 transition-colors duration-200'>
                                         {showPassword ? (
                                             <svg
                                                 className='h-5 w-5'
@@ -365,10 +373,10 @@ const RegisterScreen = () => {
                             </div>
 
                             {/* Confirm Password Field */}
-                            <div>
+                            <div className='space-y-2'>
                                 <label
                                     htmlFor='confirmPassword'
-                                    className='block text-sm font-medium text-[#38bdf8] mb-2'>
+                                    className='block text-sm font-medium text-teal-400 mb-1'>
                                     Confirm Password
                                 </label>
                                 <div className='relative'>
@@ -383,12 +391,26 @@ const RegisterScreen = () => {
                                         required
                                         value={formData.confirmPassword}
                                         onChange={handleInputChange}
-                                        className={`w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white placeholder-gray-400 focus:ring-0 focus:outline-none transition-all duration-300 ${errors.confirmPassword
-                                            ? 'border-red-500 focus:border-red-500'
-                                            : 'border-gray-600 focus:border-[#38bdf8] focus:shadow-[0_0_15px_rgba(56,189,248,0.5)]'
+                                        className={`w-full px-4 py-3 pl-10 bg-gray-700/50 border rounded-lg text-white placeholder-gray-400 focus:ring-1 focus:outline-none transition-all duration-200 ${errors.confirmPassword
+                                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                                            : 'border-gray-600 focus:border-teal-400 focus:ring-teal-400'
                                             }`}
                                         placeholder='Confirm your password'
                                     />
+                                    <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+                                        <svg
+                                            className='h-5 w-5 text-gray-400'
+                                            fill='none'
+                                            stroke='currentColor'
+                                            viewBox='0 0 24 24'>
+                                            <path
+                                                strokeLinecap='round'
+                                                strokeLinejoin='round'
+                                                strokeWidth={2}
+                                                d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+                                            />
+                                        </svg>
+                                    </div>
                                     <button
                                         type='button'
                                         onClick={() =>
@@ -396,7 +418,7 @@ const RegisterScreen = () => {
                                                 !showConfirmPassword
                                             )
                                         }
-                                        className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-[#38bdf8] transition-colors duration-300'>
+                                        className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-teal-400 transition-colors duration-200'>
                                         {showConfirmPassword ? (
                                             <svg
                                                 className='h-5 w-5'
@@ -441,10 +463,10 @@ const RegisterScreen = () => {
                         </div>
 
                         {/* Date of Birth Field */}
-                        <div>
+                        <div className='space-y-2'>
                             <label
                                 htmlFor='dob'
-                                className='block text-sm font-medium text-[#818cf8] mb-2'>
+                                className='block text-sm font-medium text-violet-400 mb-1'>
                                 Date of Birth
                             </label>
                             <input
@@ -454,9 +476,9 @@ const RegisterScreen = () => {
                                 required
                                 value={formData.dob}
                                 onChange={handleInputChange}
-                                className={`w-full px-4 py-3 bg-gray-700 border-2 rounded-lg text-white focus:ring-0 focus:outline-none transition-all duration-300 ${errors.dob
-                                    ? 'border-red-500 focus:border-red-500'
-                                    : 'border-gray-600 focus:border-[#818cf8] focus:shadow-[0_0_15px_rgba(129,140,248,0.5)]'
+                                className={`w-full px-4 py-3 bg-gray-700/50 border rounded-lg text-white focus:ring-1 focus:outline-none transition-all duration-200 ${errors.dob
+                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                                    : 'border-gray-600 focus:border-violet-400 focus:ring-violet-400'
                                     }`}
                             />
                             {errors.dob && (
@@ -467,27 +489,27 @@ const RegisterScreen = () => {
                         </div>
 
                         {/* Terms and Conditions */}
-                        <div className='flex items-center'>
+                        <div className='flex items-start pt-2'>
                             <input
                                 id='terms'
                                 name='terms'
                                 type='checkbox'
                                 required
-                                className='h-4 w-4 text-[#38bdf8] bg-gray-700 border-gray-600 rounded focus:ring-[#38bdf8] focus:ring-2'
+                                className='h-4 w-4 mt-0.5 text-blue-500 bg-gray-700 border-gray-500 rounded focus:ring-blue-500 focus:ring-1'
                             />
                             <label
                                 htmlFor='terms'
-                                className='ml-2 block text-sm text-gray-300'>
+                                className='ml-2 block text-sm text-gray-300 select-none cursor-pointer'>
                                 I agree to the{' '}
                                 <a
                                     href='#'
-                                    className='text-[#38bdf8] hover:text-[#818cf8] transition-colors duration-300'>
+                                    className='text-blue-400 hover:text-blue-300 transition-colors duration-200 hover:underline'>
                                     Terms of Service
                                 </a>{' '}
                                 and{' '}
                                 <a
                                     href='#'
-                                    className='text-[#c084fc] hover:text-[#e879f9] transition-colors duration-300'>
+                                    className='text-purple-400 hover:text-purple-300 transition-colors duration-200 hover:underline'>
                                     Privacy Policy
                                 </a>
                             </label>
@@ -496,21 +518,23 @@ const RegisterScreen = () => {
                         <button
                             disabled={isLoading}
                             type='submit'
-                            className='w-full bg-linear-to-r from-[#38bdf8] via-[#818cf8] to-[#c084fc] text-white py-3 px-4 rounded-lg font-medium hover:from-[#818cf8] hover:via-[#c084fc] hover:to-[#e879f9] focus:outline-none focus:ring-2 focus:ring-[#38bdf8] focus:ring-offset-2 focus:ring-offset-gray-800 transform hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(56,189,248,0.4)] hover:shadow-[0_0_30px_rgba(129,140,248,0.6)]'>
+                            className='w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white 
+                            py-3 px-4 rounded-lg font-semibold text-sm
+                            hover:from-blue-400 hover:via-purple-400 hover:to-pink-400
+                            focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 
+                            focus:ring-offset-gray-800 transform hover:scale-[1.02] active:scale-[0.98]
+                            transition-all duration-200 
+                            shadow-lg hover:shadow-xl
+                            disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none'>
                             {isLoading ? (
-
                                 <div className='flex items-center justify-center space-x-2'>
-                                    <svg aria-hidden="true" className="w- h-6 text-gray-200 animate-spin dark:text-gray-600 fill-black/50" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
-                                        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
-                                    </svg>
-                                    <span className="">Loading...</span>
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    <span className="text-sm">Creating account...</span>
                                 </div>
-
                             ) : (
                                 <div className='flex items-center justify-center space-x-2'>
                                     <span>Sign Up</span>
-                                    <ArrowRight className='inline-block h-6 w-6' />
+                                    <ArrowRight className='h-4 w-4' />
                                 </div>
                             )}
                         </button>
@@ -532,9 +556,9 @@ const RegisterScreen = () => {
 
                     {/* Social Registration */}
                     <div className='mt-6 grid grid-cols-2 gap-3'>
-                        <button className='w-full inline-flex justify-center py-2 px-4 border-2 border-gray-600 rounded-lg bg-gray-700 text-sm font-medium text-gray-300 hover:bg-gray-600 hover:border-[#38bdf8] hover:text-white transition-all duration-300'>
+                        <button className='w-full inline-flex justify-center items-center py-3 px-4 border border-gray-600 rounded-lg bg-gray-700/50 text-sm font-medium text-gray-300 hover:bg-gray-600/50 hover:border-blue-500 hover:text-white transition-all duration-200'>
                             <svg
-                                className='w-5 h-5'
+                                className='w-4 h-4'
                                 fill='currentColor'
                                 viewBox='0 0 24 24'>
                                 <path
@@ -556,9 +580,9 @@ const RegisterScreen = () => {
                             </svg>
                             <span className='ml-2'>Google</span>
                         </button>
-                        <button className='w-full inline-flex justify-center py-2 px-4 border-2 border-gray-600 rounded-lg bg-gray-700 text-sm font-medium text-gray-300 hover:bg-gray-600 hover:border-[#818cf8] hover:text-white transition-all duration-300'>
+                        <button className='w-full inline-flex justify-center items-center py-3 px-4 border border-gray-600 rounded-lg bg-gray-700/50 text-sm font-medium text-gray-300 hover:bg-gray-600/50 hover:border-blue-500 hover:text-white transition-all duration-200'>
                             <svg
-                                className='w-5 h-5'
+                                className='w-4 h-4'
                                 fill='#1877F2'
                                 viewBox='0 0 24 24'>
                                 <path d='M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z' />
@@ -574,7 +598,7 @@ const RegisterScreen = () => {
                         Already have an account?{' '}
                         <a
                             href='/login'
-                            className='text-[#38bdf8] hover:text-[#818cf8] font-medium transition-colors duration-300'>
+                            className='text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200 hover:underline'>
                             Sign in here
                         </a>
                     </p>
