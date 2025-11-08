@@ -50,11 +50,11 @@ const LoginScreen = () => {
     };
 
     return (
-        <div className='min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4 sm:px-6 lg:px-8'>
+        <div className='min-h-screen bg-linear-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4 sm:px-6 lg:px-8'>
             <div className='max-w-md w-full space-y-6'>
                 {/* Header */}
                 <div className='text-center'>
-                    <h1 className='text-4xl font-bold bg-gradient-to-r from-[#38bdf8] via-[#818cf8] to-[#c084fc] bg-clip-text text-transparent mb-2'>
+                    <h1 className='text-4xl font-bold bg-linear-to-r from-[#38bdf8] via-[#818cf8] to-[#c084fc] bg-clip-text text-transparent mb-2'>
                         Welcome Back
                     </h1>
                     <p className='text-gray-400 text-lg'>
@@ -205,7 +205,7 @@ const LoginScreen = () => {
                         <button
                             type='submit'
                             disabled={isLoading}
-                            className='w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white 
+                            className='w-full bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 text-white 
                             py-3 px-4 rounded-lg font-semibold text-sm
                             hover:from-blue-400 hover:via-purple-400 hover:to-pink-400
                             focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 

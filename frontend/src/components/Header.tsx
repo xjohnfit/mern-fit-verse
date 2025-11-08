@@ -72,11 +72,18 @@ function Header() {
 
     return (
         <>
-            <header className='w-screen bg-gray-800 text-white p-4 z-20 relative border-[#38bdf8] shadow-[0_0_10px_#38bdf8,0_0_20px_#818cf8,0_0_30px_#c084fc,0_0_40px_#e879f9,0_0_50px_#22d3ee] hover:shadow-[0_0_15px_#38bdf8,0_0_30px_#818cf8,0_0_45px_#c084fc,0_0_60px_#e879f9,0_0_75px_#22d3ee] transition-all duration-300'>
+            <header className='w-screen bg-gray-800 text-white p-2 z-20 relative border-[#38bdf8] shadow-[0_0_10px_#38bdf8,0_0_20px_#818cf8,0_0_30px_#c084fc,0_0_40px_#e879f9,0_0_50px_#22d3ee] hover:shadow-[0_0_15px_#38bdf8,0_0_30px_#818cf8,0_0_45px_#c084fc,0_0_60px_#e879f9,0_0_75px_#22d3ee] transition-all duration-300'>
                 <div className='container mx-auto flex justify-between items-center'>
-                    <Link to='/' className='flex flex-col'>
-                        <h1 className='text-2xl font-bold'>FitVerse</h1>
-                        <p className='text-sm text-gray-300 font-light mt-1'>Your all-in-one fitness app</p>
+                    <Link to='/' className='flex items-center gap-3'>
+                        <img
+                            src='/fit-verse-logo-no-bg.png'
+                            alt='FitVerse Logo'
+                            className='w-20 h-20 object-contain'
+                        />
+                        <div className='flex flex-col'>
+                            <h1 className='text-2xl font-bold'>FitVerse</h1>
+                            <p className='text-sm text-gray-300 font-light mt-1'>Your all-in-one fitness app</p>
+                        </div>
                     </Link>
 
                     {/* Desktop Navigation */}
