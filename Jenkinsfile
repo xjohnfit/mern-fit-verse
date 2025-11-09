@@ -457,8 +457,10 @@ pipeline {
                                     if docker ps | grep -q test-container-${BUILD_NUMBER}; then
                                         echo "✅ Container started successfully"
 
-                        # Test health endpoint (add this to your backend)
-                        # curl -f http://localhost:5003/api/health || echo "Health check endpoint not available"                                        # Check container logs for any immediate errors
+                                        # Test health endpoint (add this to your backend)
+                                        # curl -f http://localhost:5003/health || echo "Health check endpoint not available"
+
+                                        # Check container logs for any immediate errors
                                         docker logs test-container-${BUILD_NUMBER}
                                     else
                                         echo "❌ Container failed to start"
