@@ -20,6 +20,9 @@ COPY package.json package-lock.json ./
 COPY tsconfig.json ./
 COPY scripts/ ./scripts/
 
+# Ensure files have correct permissions
+RUN chmod 644 tsconfig.json package.json package-lock.json
+
 # Install dependencies
 RUN npm ci
 
@@ -27,15 +30,31 @@ RUN npm ci
 COPY backend/ ./backend/
 
 # Debug: List files to ensure everything is in place
-RUN echo "=== Checking files ===" && \
+RUN echo "=== Current working directory ===" && \
+    pwd && \
+    echo "=== Checking files ===" && \
     ls -la && \
+    echo "=== TypeScript config exists? ===" && \
+    if [ -f tsconfig.json ]; then \
+    echo "✓ tsconfig.json found" && \
+    echo "=== TypeScript config content ===" && \
+    cat tsconfig.json && \
+    echo "=== Validating TypeScript config ===" && \
+    npx tsc --showConfig --project ./tsconfig.json; \
+    else \
+    echo "✗ tsconfig.json missing - creating minimal config" && \
+    echo '{"compilerOptions":{"target":"ES2020","module":"CommonJS","outDir":"./dist","rootDir":"./"},"include":["backend/**/*.ts"]}' > tsconfig.json; \
+    fi && \
     echo "=== Backend files ===" && \
-    ls -la backend/ && \
-    echo "=== TypeScript config ===" && \
-    cat tsconfig.json
+    ls -la backend/
 
-# Build TypeScript to JavaScript
-RUN npm run build
+# Build TypeScript to JavaScript with multiple fallback options
+RUN echo "=== Starting TypeScript build ===" && \
+    (npm run build || \
+    echo "npm run build failed, trying direct tsc..." && npx tsc || \
+    echo "tsc failed, trying with explicit config..." && npx tsc -p ./tsconfig.json || \
+    echo "All methods failed, using manual compilation..." && npx tsc --outDir ./dist --rootDir ./ backend/**/*.ts) && \
+    echo "=== Build completed ==="
 
 # Verify build output and ensure main files exist
 RUN echo "=== Build output ===" && \
