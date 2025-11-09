@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![MERN FitVerse Logo](https://via.placeholder.com/200x100/1a1a1a/ffffff?text=FitVerse)
+![MERN FitVerse Logo](https://raw.githubusercontent.com/xjohnfit/mern-fit-verse/main/frontend/public/fit-verse-logo-no-bg.png)
 
 **A Modern Full-Stack Fitness Application**
 
@@ -250,7 +250,7 @@ npm run frontend   # Frontend only (http://localhost:5173)
 ### 5️⃣ Access Application
 - **Frontend**: http://localhost:5173
 - **Backend API**: http://localhost:5003
-- **Health Check**: http://localhost:5003/health
+- **Health Check**: http://localhost:5003/api/health
 
 ---
 
@@ -569,7 +569,7 @@ Content-Type: application/json
 
 ### Health Check
 ```http
-GET /health
+GET /api/health
 
 Response:
 {

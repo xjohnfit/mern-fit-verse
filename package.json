@@ -18,7 +18,7 @@
         "lint:fix": "echo 'No backend lint fix configured yet' && exit 0",
         "clean": "rimraf dist coverage",
         "prestart:prod": "npm run build",
-        "health-check": "curl -f http://localhost:5003/health || exit 1"
+        "health-check": "curl -f http://localhost:5003/api/health || exit 1"
     },
     "author": "",
     "license": "ISC",
