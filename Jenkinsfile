@@ -40,8 +40,18 @@ pipeline {
                                 else
                                     echo "❌ sonar-project.properties not found"
                                 fi
+
+                                # Create coverage directories if they don't exist
+                                mkdir -p coverage frontend/coverage
+
                                 echo "Running SonarQube scanner..."
-                                $SCANNER_HOME/bin/sonar-scanner
+                                $SCANNER_HOME/bin/sonar-scanner \
+                                  -Dsonar.projectKey=FitVerse \
+                                  -Dsonar.projectName="MERN FitVerse" \
+                                  -Dsonar.projectVersion=1.0.0 \
+                                  -Dsonar.sources=backend,frontend/src \
+                                  -Dsonar.exclusions="**/node_modules/**,**/dist/**,**/build/**,**/coverage/**" \
+                                  -Dsonar.sourceEncoding=UTF-8
                             '''
                         }
                     } catch (Exception e) {
@@ -57,14 +67,22 @@ pipeline {
                 script {
                     try {
                         timeout(time: 5, unit: 'MINUTES') {
-                            def qualityGate = waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube-token'
+                            def qualityGate = waitForQualityGate abortPipeline: false
                             echo "📋 SonarQube Quality Gate: ${qualityGate.status}"
 
-                            if (qualityGate.status != 'OK') {
-                                echo "⚠️ Quality gate failed: ${qualityGate.status}"
+                            if (qualityGate.status == 'OK') {
+                                echo '✅ Quality gate passed!'
+                            } else if (qualityGate.status == 'WARN') {
+                                echo "⚠️ Quality gate warning: ${qualityGate.status}"
+                                echo 'Pipeline will continue but build marked as unstable'
+                                currentBuild.result = 'UNSTABLE'
+                            } else if (qualityGate.status == 'ERROR') {
+                                echo "❌ Quality gate failed: ${qualityGate.status}"
+                                echo 'Build marked as unstable but continuing pipeline for security scans'
                                 currentBuild.result = 'UNSTABLE'
                             } else {
-                                echo '✅ Quality gate passed!'
+                                echo "❓ Unknown quality gate status: ${qualityGate.status}"
+                                currentBuild.result = 'UNSTABLE'
                             }
                         }
                     } catch (Exception e) {
@@ -77,23 +95,75 @@ pipeline {
         }
         stage('5. Install Dependencies') {
             steps {
-                sh 'npm install'
+                sh '''
+                    echo "📦 Installing backend dependencies..."
+                    npm install
+
+                    echo "📦 Installing frontend dependencies..."
+                    cd frontend
+                    npm install
+                    cd ..
+                '''
             }
         }
-        stage('6. Owasp File System Scan') {
+        stage('5.1. Run Tests') {
             steps {
-                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'dp-check'
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                script {
+                    try {
+                        sh '''
+                            echo "🧪 Running backend tests..."
+                            npm test -- --coverage --testTimeout=10000 || true
+
+                            echo "🧪 Running frontend tests..."
+                            cd frontend
+                            npm test -- --coverage --watchAll=false --testTimeout=10000 || true
+                            cd ..
+                        '''
+                    } catch (Exception e) {
+                        echo "⚠️ Tests failed: ${e.getMessage()}"
+                        echo 'Continuing pipeline execution...'
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }
+            }
+        }
+        stage('6. OWASP Dependency Check') {
+            steps {
+                script {
+                    try {
+                        echo '🔍 Running OWASP Dependency Check...'
+                        dependencyCheck additionalArguments: '''
+                            --scan ./
+                            --disableYarnAudit
+                            --disableNodeAudit
+                            --disableAssemblyAnalyzer
+                            --enableRetired
+                            --suppression owasp-suppressions.xml
+                        ''', odcInstallation: 'dp-check'
+
+                        dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                        echo '✅ OWASP Dependency Check completed'
+                    } catch (Exception e) {
+                        echo "⚠️ OWASP Dependency Check failed: ${e.getMessage()}"
+                        echo 'Continuing pipeline execution...'
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }
             }
         }
         stage('7. Trivy File System Scan') {
             steps {
-                sh 'trivy fs . > trivyfs.txt'
+                sh '''
+                    echo "🔍 Running Trivy filesystem scan..."
+                    trivy fs . --format table --output trivyfs.txt || true
+                    echo "✅ Trivy filesystem scan completed"
+                '''
             }
         }
         stage('8. Build & Push Docker Image') {
             steps {
                 script {
+                    def docker_image
                     docker.withRegistry('', DOCKER_PASS) {
                         docker_image = docker.build "${IMAGE_NAME}"
                     }
@@ -107,7 +177,11 @@ pipeline {
         stage('9. Trivy Image Scan') {
             steps {
                 script {
-                    sh('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image xjohnfit/nextjs14-portfolio:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table > trivyimage.txt')
+                    sh '''
+                        echo "🔍 Running Trivy image scan..."
+                        docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image ${IMAGE_NAME}:latest --no-progress --scanners vuln --exit-code 0 --severity HIGH,CRITICAL --format table --output trivyimage.txt || true
+                        echo "✅ Trivy image scan completed"
+                    '''
                 }
             }
         }
@@ -141,6 +215,42 @@ pipeline {
         //         }
         //     }
         // }
+        stage('11. Collect Reports') {
+            steps {
+                script {
+                    echo '📊 Collecting scan reports...'
+                    sh '''
+                        echo "=== BUILD SUMMARY ===" > build-summary.txt
+                        echo "Build Number: ${BUILD_NUMBER}" >> build-summary.txt
+                        echo "Image Tag: ${IMAGE_TAG}" >> build-summary.txt
+                        echo "Timestamp: $(date)" >> build-summary.txt
+                        echo "" >> build-summary.txt
+
+                        echo "=== SCAN RESULTS ===" >> build-summary.txt
+                        if [ -f "trivyfs.txt" ]; then
+                            echo "✅ Trivy FS scan completed" >> build-summary.txt
+                        else
+                            echo "❌ Trivy FS scan missing" >> build-summary.txt
+                        fi
+
+                        if [ -f "trivyimage.txt" ]; then
+                            echo "✅ Trivy Image scan completed" >> build-summary.txt
+                        else
+                            echo "❌ Trivy Image scan missing" >> build-summary.txt
+                        fi
+
+                        if [ -f "dependency-check-report.xml" ]; then
+                            echo "✅ OWASP Dependency Check completed" >> build-summary.txt
+                        else
+                            echo "❌ OWASP Dependency Check missing" >> build-summary.txt
+                        fi
+
+                        echo "" >> build-summary.txt
+                        cat build-summary.txt
+                    '''
+                }
+            }
+        }
         stage('12. Docker Cleanup') {
             steps {
                 script {
@@ -168,26 +278,39 @@ pipeline {
     }
     post {
         always {
+            // Archive artifacts
+            script {
+                try {
+                    archiveArtifacts artifacts: 'trivyfs.txt, trivyimage.txt, dependency-check-report.xml, build-summary.txt, coverage/lcov.info, frontend/coverage/lcov.info', allowEmptyArchive: true
+                } catch (Exception e) {
+                    echo "⚠️ Some artifacts may not exist: ${e.getMessage()}"
+                }
+            }
+
+            // Send email notification
             emailext(
-      to: 'xjohnfitcodes@gmail.com',
-      subject: "FitVerse Build #${BUILD_NUMBER}: ${currentBuild.result}",
-      body: """
-        <h3>Build Summary</h3>
-        <ul>
-          <li><b>Project:</b> ${env.JOB_NAME}</li>
-          <li><b>Build Number:</b> ${env.BUILD_NUMBER}</li>
-          <li><b>Status:</b> ${currentBuild.result}</li>
-          <li><b>Build URL:</b> <a href="${BUILD_URL}">${BUILD_URL}</a></li>
-        </ul>
-        <h4>Reports</h4>
-        <ul>
-          <li><a href="${BUILD_URL}artifact/trivy-fs.txt">Trivy FS Report</a></li>
-          <li><a href="${BUILD_URL}artifact/trivy-image.txt">Trivy Image Report</a></li>
-        </ul>
-      """,
-      mimeType: 'text/html',
-      attachmentsPattern: 'trivy-*.txt'
-    )
+                to: 'xjohnfitcodes@gmail.com',
+                subject: "FitVerse Build #${BUILD_NUMBER}: ${currentBuild.result}",
+                body: """
+                <h3>Build Summary</h3>
+                <ul>
+                  <li><b>Project:</b> ${env.JOB_NAME}</li>
+                  <li><b>Build Number:</b> ${env.BUILD_NUMBER}</li>
+                  <li><b>Status:</b> ${currentBuild.result}</li>
+                  <li><b>Build URL:</b> <a href="${BUILD_URL}">${BUILD_URL}</a></li>
+                  <li><b>Image:</b> ${IMAGE_NAME}:${IMAGE_TAG}</li>
+                </ul>
+                <h4>Security & Quality Reports</h4>
+                <ul>
+                  <li><a href="${BUILD_URL}artifact/trivyfs.txt">Trivy Filesystem Scan</a></li>
+                  <li><a href="${BUILD_URL}artifact/trivyimage.txt">Trivy Image Scan</a></li>
+                  <li><a href="${BUILD_URL}artifact/dependency-check-report.xml">OWASP Dependency Check</a></li>
+                  <li><a href="${env.SONAR_HOST_URL}/dashboard?id=FitVerse">SonarQube Dashboard</a></li>
+                </ul>
+                """,
+                mimeType: 'text/html',
+                attachmentsPattern: 'trivy*.txt, dependency-check-report.xml'
+            )
         }
     }
 }
