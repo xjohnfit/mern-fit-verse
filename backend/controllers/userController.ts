@@ -46,26 +46,56 @@ export const registerUser = asyncHandler(
         res: Response
     ): Promise<void> => {
         const { name, username, email, dob, password, gender } = req.body;
-        const userExists = await User.findOne({ email });
-        if (userExists) {
-            res.status(400);
-            throw new Error('User already exists');
-        }
-        const user = await User.create({
-            name,
-            username,
-            email,
-            dob,
-            password,
-            gender,
-        });
-        if (user) {
-            generateToken(res, user._id.toString());
-            const newUser = await User.findById(user._id).select('-password');
-            res.status(201).json(newUser);
-        } else {
-            res.status(400);
-            throw new Error('Invalid user data');
+
+        try {
+            // Check if email is valid
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                res.status(400);
+                throw new Error('Invalid email format');
+            }
+
+            // Check if password length is at least 8 characters
+            if (password.length < 8) {
+                res.status(400);
+                throw new Error('Password must be at least 8 characters long');
+            }
+
+            const userExists = await User.findOne({ email });
+
+            // Check if user with the same email already exists
+            if (userExists) {
+                res.status(400);
+                throw new Error('User already exists');
+            }
+
+            // Check if username is already taken
+            const usernameExists = await User.findOne({ username });
+            if (usernameExists) {
+                res.status(400);
+                throw new Error('Username already in use');
+            }
+
+            const user = await User.create({
+                name,
+                username,
+                email,
+                dob,
+                password,
+                gender,
+            });
+
+            if (user) {
+                generateToken(res, user._id.toString());
+                const newUser = await User.findById(user._id).select('-password');
+                res.status(201).json(newUser);
+            } else {
+                res.status(400);
+                throw new Error('Invalid user data');
+            }
+        } catch (err: string | any) {
+            res.status(500);
+            throw new Error(err.message);
         }
     }
 );
@@ -122,9 +152,18 @@ export const updateUserProfile = asyncHandler(
             throw new Error('User not found');
         }
 
+        // Check if email is valid
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(req.user!.email)) {
+            res.status(400);
+            throw new Error('Invalid email format');
+        }
+
         // Check if username or email is being updated to an existing one
         if (req.body.username && req.body.username !== user.username) {
-            const usernameExists = await User.findOne({ username: req.body.username });
+            const usernameExists = await User.findOne({
+                username: req.body.username,
+            });
             if (usernameExists) {
                 res.status(400);
                 throw new Error('Username already in use');
@@ -146,7 +185,9 @@ export const updateUserProfile = asyncHandler(
         }
 
         const updateUser = await user.save();
-        const updatedUser = await User.findById(updateUser._id).select('-password');
+        const updatedUser = await User.findById(updateUser._id).select(
+            '-password'
+        );
         res.status(200).json(updatedUser);
     }
 );

@@ -50,7 +50,7 @@ export const healthCheck = async (req: Request, res: Response) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>MERN Fit-Verse - Health Check</title>
+        <title>Fit-Verse - Health Check</title>
         <style>
             * {
                 margin: 0;

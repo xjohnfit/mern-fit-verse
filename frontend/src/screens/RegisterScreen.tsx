@@ -16,11 +16,33 @@ const RegisterScreen = () => {
         confirmPassword: '',
         dob: '',
         gender: '',
+        terms: false,
     });
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [errors, setErrors] = useState<{ [key: string]: string; }>({});
+
+    const getPasswordStrength = (password: string) => {
+        let strength = 0;
+        const checks = {
+            length: password.length >= 8,
+            lowercase: /[a-z]/.test(password),
+            uppercase: /[A-Z]/.test(password),
+            numbers: /\d/.test(password),
+            special: /[@$!%*?&]/.test(password),
+        };
+
+        strength = Object.values(checks).filter(Boolean).length;
+
+        if (strength === 0) return { score: 0, text: '', color: '' };
+        if (strength <= 2) return { score: 1, text: 'Weak', color: 'bg-red-500' };
+        if (strength <= 3) return { score: 2, text: 'Fair', color: 'bg-yellow-500' };
+        if (strength <= 4) return { score: 3, text: 'Good', color: 'bg-blue-500' };
+        return { score: 4, text: 'Strong', color: 'bg-green-500' };
+    };
+
+    const passwordStrength = getPasswordStrength(formData.password);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -38,41 +60,154 @@ const RegisterScreen = () => {
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
-        const { name, value } = e.target;
+        const { name, value, type } = e.target;
+        const checked = (e.target as HTMLInputElement).checked;
+
+        const fieldValue = type === 'checkbox' ? checked : value;
+
         setFormData((prev) => ({
             ...prev,
-            [name]: value,
+            [name]: fieldValue,
         }));
 
-        // Clear error when user starts typing
-        if (errors[name]) {
+        // Real-time validation for better UX
+        if ((type !== 'checkbox' && value.trim() !== '') || type === 'checkbox' || errors[name]) {
+            const error = validateField(name, fieldValue);
             setErrors((prev) => ({
                 ...prev,
-                [name]: '',
+                [name]: error,
             }));
         }
     };
 
+    const validateField = (name: string, value: any) => {
+        let error = '';
+
+        switch (name) {
+            case 'name':
+                const nameValue = value as string;
+                if (!nameValue.trim()) {
+                    error = 'Name is required';
+                } else if (nameValue.trim().length < 2) {
+                    error = 'Name must be at least 2 characters';
+                } else if (nameValue.trim().length > 50) {
+                    error = 'Name must be less than 50 characters';
+                } else if (!/^[a-zA-Z\s]+$/.test(nameValue.trim())) {
+                    error = 'Name can only contain letters and spaces';
+                }
+                break;
+
+            case 'username':
+                const usernameValue = value as string;
+                if (!usernameValue.trim()) {
+                    error = 'Username is required';
+                } else if (usernameValue.length < 3) {
+                    error = 'Username must be at least 3 characters';
+                } else if (usernameValue.length > 20) {
+                    error = 'Username must be less than 20 characters';
+                } else if (!/^[a-zA-Z0-9_]+$/.test(usernameValue)) {
+                    error = 'Username can only contain letters, numbers, and underscores';
+                } else if (/^\d+$/.test(usernameValue)) {
+                    error = 'Username cannot be only numbers';
+                }
+                break;
+
+            case 'email':
+                const emailValue = value as string;
+                if (!emailValue.trim()) {
+                    error = 'Email is required';
+                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+                    error = 'Please enter a valid email address';
+                } else if (emailValue.length > 254) {
+                    error = 'Email address is too long';
+                }
+                break;
+
+            case 'password':
+                const passwordValue = value as string;
+                if (!passwordValue) {
+                    error = 'Password is required';
+                } else if (passwordValue.length < 8) {
+                    error = 'Password must be at least 8 characters';
+                } else if (passwordValue.length > 128) {
+                    error = 'Password must be less than 128 characters';
+                } else if (!/(?=.*[a-z])/.test(passwordValue)) {
+                    error = 'Password must contain at least one lowercase letter';
+                } else if (!/(?=.*[A-Z])/.test(passwordValue)) {
+                    error = 'Password must contain at least one uppercase letter';
+                } else if (!/(?=.*\d)/.test(passwordValue)) {
+                    error = 'Password must contain at least one number';
+                } else if (!/(?=.*[@$!%*?&])/.test(passwordValue)) {
+                    error = 'Password must contain at least one special character (@$!%*?&)';
+                } else if (/\s/.test(passwordValue)) {
+                    error = 'Password cannot contain spaces';
+                }
+                break;
+
+            case 'confirmPassword':
+                const confirmPasswordValue = value as string;
+                if (!confirmPasswordValue) {
+                    error = 'Please confirm your password';
+                } else if (confirmPasswordValue !== formData.password) {
+                    error = 'Passwords do not match';
+                }
+                break;
+
+            case 'dob':
+                const dobValue = value as string;
+                if (!dobValue) {
+                    error = 'Date of birth is required';
+                } else {
+                    const today = new Date();
+                    const birthDate = new Date(dobValue);
+                    let age = today.getFullYear() - birthDate.getFullYear();
+                    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                        age--;
+                    }
+
+                    if (birthDate >= today) {
+                        error = 'Date of birth cannot be in the future';
+                    } else if (age < 13) {
+                        error = 'You must be at least 13 years old';
+                    } else if (age > 120) {
+                        error = 'Please enter a valid date of birth';
+                    }
+                }
+                break;
+
+            case 'gender':
+                const genderValue = value as string;
+                if (!genderValue) {
+                    error = 'Please select your gender';
+                }
+                break;
+
+            case 'terms':
+                const termsValue = value as boolean;
+                if (!termsValue) {
+                    error = 'You must agree to the Terms of Service and Privacy Policy';
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        return error;
+    };
+
     const validateForm = () => {
         const newErrors: { [key: string]: string; } = {};
+        const fields = ['name', 'username', 'email', 'password', 'confirmPassword', 'dob', 'gender', 'terms'];
 
-        if (!formData.name.trim()) newErrors.name = 'Name is required';
-        if (!formData.username.trim())
-            newErrors.username = 'Username is required';
-        if (!formData.email.trim()) newErrors.email = 'Email is required';
-        if (!formData.password) newErrors.password = 'Password is required';
-        if (!formData.confirmPassword)
-            newErrors.confirmPassword = 'Please confirm your password';
-        if (!formData.dob) newErrors.dob = 'Date of birth is required';
-        if (!formData.gender) newErrors.gender = 'Please select your gender';
-
-        if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = 'Passwords do not match';
-        }
-
-        if (formData.password && formData.password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
-        }
+        fields.forEach(field => {
+            const error = validateField(field, formData[field as keyof typeof formData]);
+            if (error) {
+                newErrors[field] = error;
+            }
+        });
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -132,7 +267,6 @@ const RegisterScreen = () => {
                                         id='name'
                                         name='name'
                                         type='text'
-                                        required
                                         value={formData.name}
                                         onChange={handleInputChange}
                                         className={`w-full px-4 py-3 pl-10 bg-gray-700/50 border rounded-lg text-white placeholder-gray-400 focus:ring-1 focus:outline-none transition-all duration-200 ${errors.name
@@ -199,9 +333,19 @@ const RegisterScreen = () => {
                                         </svg>
                                     </div>
                                 </div>
+                                {!errors.username && formData.username && (
+                                    <p className='mt-1 text-xs text-green-400'>
+                                        ✓ Username looks good!
+                                    </p>
+                                )}
                                 {errors.username && (
                                     <p className='mt-1 text-sm text-red-400'>
                                         {errors.username}
+                                    </p>
+                                )}
+                                {!formData.username && (
+                                    <p className='mt-1 text-xs text-gray-500'>
+                                        3-20 characters, letters, numbers, and underscores only
                                     </p>
                                 )}
                             </div>
@@ -245,6 +389,11 @@ const RegisterScreen = () => {
                                         </svg>
                                     </div>
                                 </div>
+                                {!errors.email && formData.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) && (
+                                    <p className='mt-1 text-xs text-green-400'>
+                                        ✓ Valid email address
+                                    </p>
+                                )}
                                 {errors.email && (
                                     <p className='mt-1 text-sm text-red-400'>
                                         {errors.email}
@@ -302,6 +451,7 @@ const RegisterScreen = () => {
                                             showPassword ? 'text' : 'password'
                                         }
                                         required
+                                        min={6}
                                         value={formData.password}
                                         onChange={handleInputChange}
                                         className={`w-full px-4 py-3 pl-10 bg-gray-700/50 border rounded-lg text-white placeholder-gray-400 focus:ring-1 focus:outline-none transition-all duration-200 ${errors.password
@@ -365,6 +515,27 @@ const RegisterScreen = () => {
                                         )}
                                     </button>
                                 </div>
+                                {/* Password Strength Indicator */}
+                                {formData.password && (
+                                    <div className="mt-2">
+                                        <div className="flex justify-between items-center mb-1">
+                                            <span className="text-xs text-gray-400">Password Strength</span>
+                                            <span className={`text-xs font-medium ${passwordStrength.score === 1 ? 'text-red-400' :
+                                                    passwordStrength.score === 2 ? 'text-yellow-400' :
+                                                        passwordStrength.score === 3 ? 'text-blue-400' :
+                                                            passwordStrength.score === 4 ? 'text-green-400' : 'text-gray-400'
+                                                }`}>
+                                                {passwordStrength.text}
+                                            </span>
+                                        </div>
+                                        <div className="w-full bg-gray-600 rounded-full h-1.5">
+                                            <div
+                                                className={`h-1.5 rounded-full transition-all duration-300 ${passwordStrength.color}`}
+                                                style={{ width: `${(passwordStrength.score / 4) * 100}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                )}
                                 {errors.password && (
                                     <p className='mt-1 text-sm text-red-400'>
                                         {errors.password}
@@ -454,6 +625,11 @@ const RegisterScreen = () => {
                                         )}
                                     </button>
                                 </div>
+                                {!errors.confirmPassword && formData.confirmPassword && formData.password === formData.confirmPassword && (
+                                    <p className='mt-1 text-xs text-green-400'>
+                                        ✓ Passwords match
+                                    </p>
+                                )}
                                 {errors.confirmPassword && (
                                     <p className='mt-1 text-sm text-red-400'>
                                         {errors.confirmPassword}
@@ -489,30 +665,41 @@ const RegisterScreen = () => {
                         </div>
 
                         {/* Terms and Conditions */}
-                        <div className='flex items-start pt-2'>
-                            <input
-                                id='terms'
-                                name='terms'
-                                type='checkbox'
-                                required
-                                className='h-4 w-4 mt-0.5 text-blue-500 bg-gray-700 border-gray-500 rounded focus:ring-blue-500 focus:ring-1'
-                            />
-                            <label
-                                htmlFor='terms'
-                                className='ml-2 block text-sm text-gray-300 select-none cursor-pointer'>
-                                I agree to the{' '}
-                                <a
-                                    href='#'
-                                    className='text-blue-400 hover:text-blue-300 transition-colors duration-200 hover:underline'>
-                                    Terms of Service
-                                </a>{' '}
-                                and{' '}
-                                <a
-                                    href='#'
-                                    className='text-purple-400 hover:text-purple-300 transition-colors duration-200 hover:underline'>
-                                    Privacy Policy
-                                </a>
-                            </label>
+                        <div className='space-y-2 pt-2'>
+                            <div className='flex items-start'>
+                                <input
+                                    id='terms'
+                                    name='terms'
+                                    type='checkbox'
+                                    checked={formData.terms}
+                                    onChange={handleInputChange}
+                                    className={`h-4 w-4 mt-0.5 text-blue-500 bg-gray-700 border rounded focus:ring-1 ${errors.terms
+                                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                                            : 'border-gray-500 focus:ring-blue-500'
+                                        }`}
+                                />
+                                <label
+                                    htmlFor='terms'
+                                    className='ml-2 block text-sm text-gray-300 select-none cursor-pointer'>
+                                    I agree to the{' '}
+                                    <a
+                                        href='#'
+                                        className='text-blue-400 hover:text-blue-300 transition-colors duration-200 hover:underline'>
+                                        Terms of Service
+                                    </a>{' '}
+                                    and{' '}
+                                    <a
+                                        href='#'
+                                        className='text-purple-400 hover:text-purple-300 transition-colors duration-200 hover:underline'>
+                                        Privacy Policy
+                                    </a>
+                                </label>
+                            </div>
+                            {errors.terms && (
+                                <p className='text-sm text-red-400 ml-6'>
+                                    {errors.terms}
+                                </p>
+                            )}
                         </div>
                         {/* Submit Button */}
                         <button

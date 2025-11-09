@@ -9,10 +9,16 @@ export interface IUser {
     dob: Date;
     password: string;
     gender: string;
+    followers: string[];
+    following: string[];
+
+    // Optional fields
     height?: number;
     weight?: number;
     goal?: string;
     photo?: string;
+
+    // timestamps
     createdAt: Date;
     updatedAt: Date;
 
@@ -25,10 +31,14 @@ const userSchema = new Schema<IUser>(
         name: { type: String, required: true },
         username: { type: String, required: true, unique: true },
         email: { type: String, required: true, unique: true },
-        dob: { type: Date, required: true },
         password: { type: String, required: true },
+        dob: { type: Date, required: true },
         gender: { type: String, required: true },
-        goal: { type: String, required: false, default: '' },
+        followers: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
+        following: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
+
+        // Optional fields
+        goal: { type: String, default: '' },
         photo: { type: String, default: '' },
         height: { type: Number, default: null },
         weight: { type: Number, default: null },
@@ -36,6 +46,8 @@ const userSchema = new Schema<IUser>(
     { timestamps: true }
 );
 
+
+// Pre-save hook to hash password before saving
 userSchema.pre<IUser>('save', async function (next) {
     if (!this.isModified('password')) {
         return next();
@@ -47,6 +59,8 @@ userSchema.pre<IUser>('save', async function (next) {
     next();
 });
 
+
+// Method to compare entered password with hashed password
 userSchema.methods.matchPassword = async function (enteredPassword: string): Promise<boolean> {
     return await bcrypt.compare(enteredPassword, this.password);
 };
