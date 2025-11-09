@@ -149,6 +149,7 @@ const ProfileScreen = () => {
                                     <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
                                         <Target className='h-5 w-5 text-gray-400' />
                                     </div>
+                                    <p className='text-xs pl-2 text-gray-500 opacity-75 italic'>AI will use your goal to personalize your fitness plan and suggest exercises.</p>
                                 </div>
                             </div>
                         </div>
