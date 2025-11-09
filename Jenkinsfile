@@ -31,7 +31,6 @@ pipeline {
 
     options {
         timestamps()
-        ansiColor('xterm')
         buildDiscarder(logRotator(
             numToKeepStr: '10',
             daysToKeepStr: '30',
@@ -239,7 +238,9 @@ pipeline {
 
         stage('6. SonarQube Analysis') {
             when {
-                not { params.SKIP_SECURITY_SCANS }
+                not { 
+                    equals expected: true, actual: params.SKIP_SECURITY_SCANS
+                }
             }
             steps {
                 script {
@@ -269,7 +270,9 @@ pipeline {
 
         stage('7. Quality Gate') {
             when {
-                not { params.SKIP_SECURITY_SCANS }
+                not { 
+                    equals expected: true, actual: params.SKIP_SECURITY_SCANS
+                }
             }
             steps {
                 script {
@@ -297,7 +300,9 @@ pipeline {
 
         stage('8. Security Scans') {
             when {
-                not { params.SKIP_SECURITY_SCANS }
+                not { 
+                    equals expected: true, actual: params.SKIP_SECURITY_SCANS
+                }
             }
             parallel {
                 stage('OWASP Dependency Check') {
@@ -403,7 +408,9 @@ pipeline {
             parallel {
                 stage('Trivy Image Scan') {
                     when {
-                        not { params.SKIP_SECURITY_SCANS }
+                        not { 
+                            equals expected: true, actual: params.SKIP_SECURITY_SCANS
+                        }
                     }
                     steps {
                         script {
