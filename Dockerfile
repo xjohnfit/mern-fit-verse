@@ -19,8 +19,9 @@ COPY package.json package-lock.json ./
 COPY tsconfig.json ./
 RUN npm ci
 COPY backend/ ./backend/
-# Build TypeScript to JavaScript
+WORKDIR /app/backend
 RUN npm run build
+WORKDIR /app
 
 # Copy frontend build to backend
 COPY --from=frontend-build /app/frontend/dist ./frontend/dist
