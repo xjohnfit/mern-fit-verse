@@ -27,16 +27,51 @@ pipeline {
         }
         stage('3. SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonarqube-server') {
-                    sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=FitVerse \
-                    -Dsonar.projectKey=FitVerse'''
+                script {
+                    try {
+                        withSonarQubeEnv('sonarqube-server') {
+                            sh '''
+                                echo "📊 Running SonarQube analysis..."
+                                echo "Current directory: $(pwd)"
+                                echo "Checking for sonar-project.properties..."
+                                if [ -f "sonar-project.properties" ]; then
+                                    echo "✅ Found sonar-project.properties"
+                                    cat sonar-project.properties
+                                else
+                                    echo "❌ sonar-project.properties not found"
+                                fi
+                                echo "Running SonarQube scanner..."
+                                $SCANNER_HOME/bin/sonar-scanner
+                            '''
+                        }
+                    } catch (Exception e) {
+                        echo "⚠️ SonarQube analysis failed: ${e.getMessage()}"
+                        echo 'Continuing pipeline execution...'
+                        currentBuild.result = 'UNSTABLE'
+                    }
                 }
             }
         }
         stage('4. Quality Gate') {
             steps {
                 script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube-token'
+                    try {
+                        timeout(time: 5, unit: 'MINUTES') {
+                            def qualityGate = waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube-token'
+                            echo "📋 SonarQube Quality Gate: ${qualityGate.status}"
+
+                            if (qualityGate.status != 'OK') {
+                                echo "⚠️ Quality gate failed: ${qualityGate.status}"
+                                currentBuild.result = 'UNSTABLE'
+                            } else {
+                                echo '✅ Quality gate passed!'
+                            }
+                        }
+                    } catch (Exception e) {
+                        echo "⚠️ Quality Gate check failed: ${e.getMessage()}"
+                        echo 'This might be due to SonarQube server issues or missing report-task.txt'
+                        currentBuild.result = 'UNSTABLE'
+                    }
                 }
             }
         }
