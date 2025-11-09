@@ -17,7 +17,7 @@
         "lint": "echo 'No backend linting configured yet' && exit 0",
         "lint:fix": "echo 'No backend lint fix configured yet' && exit 0",
         "clean": "rimraf dist coverage",
-        "prestart:prod": "npm run build",
+        "prestart:prod": "echo 'Using pre-built files from Docker build stage'",
         "health-check": "curl -f http://localhost:5003/api/health || exit 1"
     },
     "author": "",

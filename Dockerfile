@@ -53,5 +53,5 @@ EXPOSE 5003
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:5003/api/health || exit 1
 
-# Start the application
-CMD ["npm", "run", "start:prod"]
+# Start the application (directly run the compiled JavaScript)
+CMD ["node", "dist/backend/index.js"]
