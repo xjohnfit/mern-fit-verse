@@ -1,4 +1,3 @@
-# Comprehensive Dockerfile for MERN Spotify App
 # --- Frontend Build Stage ---
 FROM node:20-alpine AS frontend-build
 WORKDIR /app/frontend

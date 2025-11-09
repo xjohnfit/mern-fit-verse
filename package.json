@@ -8,7 +8,17 @@
         "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
         "start": "ts-node ./backend/index.ts",
         "start:prod": "node dist/backend/index.js",
-        "build": "tsc"
+        "build": "tsc",
+        "build:frontend": "cd frontend && npm run build",
+        "build:full": "npm run build && npm run build:frontend",
+        "test": "echo 'No tests specified yet' && exit 0",
+        "test:backend": "echo 'No backend tests specified yet' && exit 0",
+        "test:watch": "echo 'No test watch mode specified yet' && exit 0",
+        "lint": "echo 'No backend linting configured yet' && exit 0",
+        "lint:fix": "echo 'No backend lint fix configured yet' && exit 0",
+        "clean": "rimraf dist coverage",
+        "prestart:prod": "npm run build",
+        "health-check": "curl -f http://localhost:5003/health || exit 1"
     },
     "author": "",
     "license": "ISC",
