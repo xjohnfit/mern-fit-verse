@@ -127,30 +127,30 @@ ESLint               | Code linting and formatting
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    MERN FitVerse Architecture                │
+│                    MERN FitVerse Architecture               │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐     │
-│  │   Client    │    │   Server    │    │  Database   │     │
-│  │             │    │             │    │             │     │
-│  │ React 19    │◄──►│ Express.js  │◄──►│  MongoDB    │     │
-│  │ TypeScript  │    │ TypeScript  │    │  Mongoose   │     │
-│  │ Redux       │    │ JWT Auth    │    │  Atlas      │     │
-│  │ Tailwind    │    │ Middleware  │    │             │     │
-│  │ Vite        │    │ CORS        │    │             │     │
-│  └─────────────┘    └─────────────┘    └─────────────┘     │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐      │
+│  │   Client    │    │   Server    │    │  Database   │      │
+│  │             │    │             │    │             │      │
+│  │ React 19    │◄──►│ Express.js  │◄──►│  MongoDB    │      │
+│  │ TypeScript  │    │ TypeScript  │    │  Mongoose   │      │
+│  │ Redux       │    │ JWT Auth    │    │  Atlas      │      │
+│  │ Tailwind    │    │ Middleware  │    │             │      │
+│  │ Vite        │    │ CORS        │    │             │      │
+│  └─────────────┘    └─────────────┘    └─────────────┘      │
 │                                                             │
 ├─────────────────────────────────────────────────────────────┤
 │                     Infrastructure                          │
 │                                                             │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐     │
-│  │   Docker    │    │ Kubernetes  │    │  Jenkins    │     │
-│  │             │    │             │    │             │     │
-│  │ Multi-stage │    │ Deployment  │    │  CI/CD      │     │
-│  │ Builds      │    │ Services    │    │  Pipeline   │     │
-│  │ Production  │    │ ConfigMaps  │    │  Security   │     │
-│  │ Optimized   │    │ Secrets     │    │  Scanning   │     │
-│  └─────────────┘    └─────────────┘    └─────────────┘     │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐      │
+│  │   Docker    │    │ Kubernetes  │    │  Jenkins    │      │
+│  │             │    │             │    │             │      │
+│  │ Multi-stage │    │ Deployment  │    │  CI/CD      │      │
+│  │ Builds      │    │ Services    │    │  Pipeline   │      │
+│  │ Production  │    │ ConfigMaps  │    │  Security   │      │
+│  │ Optimized   │    │ Secrets     │    │  Scanning   │      │
+│  └─────────────┘    └─────────────┘    └─────────────┘      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -158,28 +158,28 @@ ESLint               | Code linting and formatting
 ```
 mern-fit-verse/
 ├── 📂 backend/                 # Express.js TypeScript backend
-│   ├── 📂 config/             # Database and app configuration
-│   ├── 📂 controllers/        # Route handlers and business logic
-│   ├── 📂 middlewares/        # Authentication and error handling
-│   ├── 📂 models/             # MongoDB schemas and models
-│   ├── 📂 routes/             # API route definitions
-│   ├── 📂 utils/              # Helper functions and utilities
-│   └── 📄 index.ts           # Main server entry point
-├── 📂 frontend/               # React TypeScript frontend
-│   ├── 📂 public/            # Static assets and favicon
-│   ├── 📂 src/               # Source code
-│   │   ├── 📂 components/    # Reusable UI components
-│   │   ├── 📂 screens/       # Page components and routes
-│   │   ├── 📂 slices/        # Redux state management
-│   │   ├── 📂 lib/           # Utility functions
-│   │   └── 📂 assets/        # Images, fonts, icons
-│   └── 📄 package.json      # Frontend dependencies
-├── 📂 kubernetes/            # K8s deployment manifests
-├── 📂 docs/                  # Documentation files
-├── 📄 Dockerfile            # Multi-stage container build
-├── 📄 Jenkinsfile           # CI/CD pipeline configuration
-├── 📄 docker-compose.yml    # Local development setup
-└── 📄 package.json          # Backend dependencies and scripts
+│   ├── 📂 config/              # Database and app configuration
+│   ├── 📂 controllers/         # Route handlers and business logic
+│   ├── 📂 middlewares/         # Authentication and error handling
+│   ├── 📂 models/              # MongoDB schemas and models
+│   ├── 📂 routes/              # API route definitions
+│   ├── 📂 utils/               # Helper functions and utilities
+│   └── 📄 index.ts             # Main server entry point
+├── 📂 frontend/                # React TypeScript frontend
+│   ├── 📂 public/              # Static assets and favicon
+│   ├── 📂 src/                 # Source code
+│   │   ├── 📂 components/      # Reusable UI components
+│   │   ├── 📂 screens/         # Page components and routes
+│   │   ├── 📂 slices/          # Redux state management
+│   │   ├── 📂 lib/             # Utility functions
+│   │   └── 📂 assets/          # Images, fonts, icons
+│   └── 📄 package.json         # Frontend dependencies
+├── 📂 kubernetes/              # K8s deployment manifests
+├── 📂 docs/                    # Documentation files
+├── 📄 Dockerfile               # Multi-stage container build
+├── 📄 Jenkinsfile              # CI/CD pipeline configuration
+├── 📄 docker-compose.yml       # Local development setup
+└── 📄 package.json             # Backend dependencies and scripts
 ```
 
 ---
@@ -215,7 +215,6 @@ MONGODB_URI=mongodb://localhost:27017/fitverse
 
 # Authentication
 JWT_SECRET=your-super-secret-jwt-key-here
-JWT_EXPIRES_IN=7d
 
 # Application
 NODE_ENV=development
@@ -353,23 +352,23 @@ kubectl get service mern-fit-verse-service
 ```bash
 # Backend Development
 npm run backend        # Start backend with nodemon
-npm run start         # Start backend (production mode)
-npm run build         # Compile TypeScript to JavaScript
-npm run clean         # Remove build artifacts
+npm run start          # Start backend (production mode)
+npm run build          # Compile TypeScript to JavaScript
+npm run clean          # Remove build artifacts
 
 # Frontend Development  
-npm run frontend      # Start frontend dev server
+npm run frontend       # Start frontend dev server
 npm run build:frontend # Build frontend for production
-npm run dev           # Start both frontend and backend
+npm run dev            # Start both frontend and backend
 
 # Full Application
-npm run build:full    # Build both frontend and backend
-npm run start:prod    # Start production build
+npm run build:full     # Build both frontend and backend
+npm run start:prod     # Start production build
 
 # Utilities
-npm run health-check  # Test application health endpoint
-npm run lint          # Run code linting
-npm run test          # Run test suites
+npm run health-check   # Test application health endpoint
+npm run lint           # Run code linting
+npm run test           # Run test suites
 ```
 
 ### Code Style & Standards
@@ -400,12 +399,12 @@ tests/
 ├── 📂 backend/
 │   ├── 📂 unit/          # Unit tests for controllers, models
 │   ├── 📂 integration/   # API integration tests
-│   └── 📂 e2e/          # End-to-end API tests
+│   └── 📂 e2e/           # End-to-end API tests
 ├── 📂 frontend/
 │   ├── 📂 components/    # Component unit tests
 │   ├── 📂 integration/   # Feature integration tests
-│   └── 📂 e2e/          # End-to-end UI tests
-└── 📄 jest.config.js    # Test configuration
+│   └── 📂 e2e/           # End-to-end UI tests
+└── 📄 jest.config.js     # Test configuration
 ```
 
 ### Running Tests
@@ -570,19 +569,50 @@ Content-Type: application/json
 ### Health Check
 ```http
 GET /api/health
-
-Response:
-{
-  "status": "OK",
-  "timestamp": "2025-11-09T10:30:00.000Z",
-  "uptime": 3600,
-  "environment": "development",
-  "filesystem": {
-    "staticPathExists": true,
-    "indexPathExists": true
-  }
-}
 ```
+
+**Description:** Returns a comprehensive health check dashboard with system status, uptime, and file system verification.
+
+**Response:** HTML Dashboard Page
+- **Content-Type:** `text/html`
+- **Status Codes:** 
+  - `200 OK` - Always returns 200, check status in response content
+
+**Features:**
+- 🎯 **System Status**: Overall health status (OK/WARNING/ERROR)
+- ⏱️ **Uptime**: Server uptime in human-readable format
+- 🔧 **Environment**: Current Node.js environment
+- 📁 **File System**: Validates frontend build files existence
+  - Static path verification (`frontend/dist/`)
+  - Index file verification (`frontend/dist/index.html`)
+  - Asset counting and listing
+- 📊 **Real-time Data**: Auto-refresh capability with current timestamp
+- 🎨 **Visual Dashboard**: Modern UI with status indicators and metrics
+
+**Status Levels:**
+- **OK** (Green): All systems operational, frontend files found
+- **WARNING** (Amber): System running but missing frontend build files
+- **ERROR** (Red): System errors or critical issues detected
+
+**Usage Examples:**
+```bash
+# Browser access - Visual dashboard
+curl http://localhost:5003/api/health
+
+# Command line testing
+npm run health-check
+
+# Docker health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:5003/api/health || exit 1
+```
+
+**Sample Information Displayed:**
+- Server uptime and performance metrics
+- Frontend build status and file counts
+- Current working directory and paths
+- Node.js version and environment variables
+- Last check timestamp with refresh functionality
 
 ---
 
@@ -622,8 +652,6 @@ screens/
   auth: {
     isAuthenticated: boolean,
     userInfo: User | null,
-    loading: boolean,
-    error: string | null
   },
   // Future state slices
   workouts: { /* workout data */ },
