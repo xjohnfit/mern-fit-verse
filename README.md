@@ -43,9 +43,11 @@
 **MERN FitVerse** is a comprehensive, full-stack fitness application built with modern web technologies. It provides users with an intuitive platform to manage their fitness journey, track workouts, monitor progress, and achieve their health goals.
 
 ### 🎯 Mission
+
 To democratize fitness tracking by providing a user-friendly, feature-rich platform that helps individuals achieve their health and wellness goals through data-driven insights and personalized experiences.
 
 ### 🌟 Key Highlights
+
 - **Full-Stack TypeScript**: End-to-end type safety and developer experience
 - **Modern UI/UX**: Built with React 19, Tailwind CSS, and Radix UI components
 - **Secure Authentication**: JWT-based auth with bcrypt password hashing
@@ -58,24 +60,28 @@ To democratize fitness tracking by providing a user-friendly, feature-rich platf
 ## ✨ Features
 
 ### 👤 User Management
+
 - **User Registration & Authentication**: Secure signup/login with JWT tokens
 - **Profile Management**: Comprehensive user profiles with personal metrics
 - **Privacy Controls**: Secure password hashing and data protection
 - **Session Management**: Persistent login state with token refresh
 
 ### 🏋️‍♀️ Fitness Tracking (In Development)
+
 - **Workout Planning**: Create and schedule personalized workout routines
 - **Exercise Library**: Comprehensive database of exercises with instructions
 - **Progress Tracking**: Monitor fitness metrics and achievements over time
 - **Goal Setting**: Set and track fitness goals with visual progress indicators
 
 ### 📊 Analytics & Insights (Planned)
+
 - **Performance Analytics**: Detailed workout analysis and progress reports
 - **Nutrition Tracking**: Food diary and calorie monitoring
 - **Health Metrics**: Weight, body measurements, and fitness assessments
 - **Data Visualization**: Charts and graphs for progress visualization
 
 ### 🎨 User Experience
+
 - **Modern Design**: Clean, intuitive interface with smooth animations
 - **Responsive Layout**: Optimized for desktop, tablet, and mobile devices
 - **Dark/Light Theme**: Customizable theme with system preference detection
@@ -86,6 +92,7 @@ To democratize fitness tracking by providing a user-friendly, feature-rich platf
 ## 🛠 Tech Stack
 
 ### Frontend
+
 ```
 React 19.1.1          | Modern React with concurrent features
 TypeScript 5.9.3      | Static type checking and enhanced DX
@@ -100,6 +107,7 @@ Zustand 5.0.8         | Lightweight state management
 ```
 
 ### Backend
+
 ```
 Node.js 20+           | JavaScript runtime environment
 Express.js 5.1.0      | Fast, unopinionated web framework
@@ -111,14 +119,15 @@ CORS                  | Cross-Origin Resource Sharing
 ```
 
 ### DevOps & Tools
+
 ```
 Docker                | Containerization and deployment
 Kubernetes            | Container orchestration
 Jenkins               | CI/CD pipeline automation
-SonarQube            | Code quality and security analysis
-OWASP Dependency     | Security vulnerability scanning
-Trivy                | Container image security scanning
-ESLint               | Code linting and formatting
+SonarQube             | Code quality and security analysis
+OWASP Dependency      | Security vulnerability scanning
+Trivy                 | Container image security scanning
+ESLint                | Code linting and formatting
 ```
 
 ---
@@ -155,6 +164,7 @@ ESLint               | Code linting and formatting
 ```
 
 ### 📁 Project Structure
+
 ```
 mern-fit-verse/
 ├── 📂 backend/                 # Express.js TypeScript backend
@@ -187,18 +197,21 @@ mern-fit-verse/
 ## ⚡ Quick Start
 
 ### Prerequisites
+
 - **Node.js** 20.x or higher
 - **npm** or **yarn** package manager
 - **MongoDB** database (local or cloud)
 - **Git** for version control
 
 ### 1️⃣ Clone Repository
+
 ```bash
 git clone https://github.com/xjohnfit/mern-fit-verse.git
 cd mern-fit-verse
 ```
 
 ### 2️⃣ Environment Setup
+
 ```bash
 # Copy environment template
 cp .env.example .env
@@ -208,6 +221,7 @@ nano .env
 ```
 
 **Required Environment Variables:**
+
 ```env
 # Database
 MONGODB_URI=mongodb://localhost:27017/fitverse
@@ -220,13 +234,10 @@ JWT_SECRET=your-super-secret-jwt-key-here
 NODE_ENV=development
 PORT=5003
 FRONTEND_URL=http://localhost:5173
-
-# Optional: Email service (for notifications)
-EMAIL_USER=your-email@example.com
-EMAIL_PASS=your-email-password
 ```
 
 ### 3️⃣ Install Dependencies
+
 ```bash
 # Install backend dependencies
 npm install
@@ -237,6 +248,7 @@ cd ..
 ```
 
 ### 4️⃣ Start Development Server
+
 ```bash
 # Start both frontend and backend concurrently
 npm run dev
@@ -247,15 +259,17 @@ npm run frontend   # Frontend only (http://localhost:5173)
 ```
 
 ### 5️⃣ Access Application
-- **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:5003
-- **Health Check**: http://localhost:5003/api/health
+
+- **Frontend**: <http://localhost:5173>
+- **Backend API**: <http://localhost:5003>
+- **Health Check**: <http://localhost:5003/api/health>
 
 ---
 
 ## 🐳 Docker Deployment
 
 ### Using Docker Compose (Recommended for Development)
+
 ```bash
 # Build and start all services
 docker-compose up -d
@@ -268,6 +282,7 @@ docker-compose down
 ```
 
 ### Manual Docker Build
+
 ```bash
 # Build the image
 docker build -t mern-fit-verse:latest .
@@ -282,6 +297,7 @@ docker run -d \
 ```
 
 ### Production Docker Setup
+
 ```bash
 # Build production image
 docker build --target production -t mern-fit-verse:prod .
@@ -302,11 +318,13 @@ docker run -d \
 ## ☸️ Kubernetes Deployment
 
 ### Prerequisites
+
 - Kubernetes cluster (local or cloud)
 - `kubectl` configured
 - Docker registry access
 
 ### 1️⃣ Create Secrets
+
 ```bash
 # Create MongoDB connection secret
 kubectl create secret generic mern-fit-verse-env \
@@ -323,6 +341,7 @@ kubectl create secret docker-registry regcred \
 ```
 
 ### 2️⃣ Deploy Application
+
 ```bash
 # Apply Kubernetes manifests
 kubectl apply -f kubernetes/
@@ -336,6 +355,7 @@ kubectl logs -l app=mern-fit-verse -f
 ```
 
 ### 3️⃣ Access Application
+
 ```bash
 # Port forward for local testing
 kubectl port-forward service/mern-fit-verse-service 8080:80
@@ -349,6 +369,7 @@ kubectl get service mern-fit-verse-service
 ## 🔧 Development
 
 ### Available Scripts
+
 ```bash
 # Backend Development
 npm run backend        # Start backend with nodemon
@@ -372,6 +393,7 @@ npm run test           # Run test suites
 ```
 
 ### Code Style & Standards
+
 ```bash
 # Frontend linting
 cd frontend && npm run lint
@@ -384,7 +406,9 @@ npm run build
 ```
 
 ### Hot Reload Development
+
 The development setup includes hot reload for both frontend and backend:
+
 - **Frontend**: Vite HMR for instant UI updates
 - **Backend**: Nodemon for automatic server restarts
 - **Database**: MongoDB change streams (when implemented)
@@ -394,6 +418,7 @@ The development setup includes hot reload for both frontend and backend:
 ## 🧪 Testing
 
 ### Test Structure (Planned)
+
 ```
 tests/
 ├── 📂 backend/
@@ -408,6 +433,7 @@ tests/
 ```
 
 ### Running Tests
+
 ```bash
 # Run all tests
 npm run test
@@ -426,6 +452,7 @@ npm run test:coverage
 ```
 
 ### Test Setup (Future Implementation)
+
 ```bash
 # Install testing dependencies
 npm install --save-dev jest supertest @testing-library/react @testing-library/jest-dom
@@ -438,6 +465,7 @@ npm install --save-dev jest supertest @testing-library/react @testing-library/je
 The project includes a comprehensive Jenkins pipeline with the following stages:
 
 ### Pipeline Stages
+
 1. **🧹 Setup & Cleanup**: Workspace preparation and environment info
 2. **📥 Code Checkout**: Git clone with shallow fetch optimization
 3. **📦 Dependencies**: Parallel installation for frontend and backend
@@ -451,12 +479,14 @@ The project includes a comprehensive Jenkins pipeline with the following stages:
 11. **🧽 Cleanup**: Resource management and optimization
 
 ### Pipeline Parameters
+
 - **BUILD_TYPE**: `development` | `staging` | `production`
 - **SKIP_TESTS**: Boolean flag for faster iteration
 - **SKIP_SECURITY_SCANS**: Boolean flag for rapid prototyping
 - **CUSTOM_TAG**: Override default image tagging
 
 ### Running Pipeline
+
 ```bash
 # Trigger different build types
 curl -X POST "jenkins-url/job/mern-fit-verse/buildWithParameters?BUILD_TYPE=development"
@@ -471,24 +501,28 @@ curl -X POST "jenkins-url/job/mern-fit-verse/buildWithParameters?BUILD_TYPE=deve
 ## 🔒 Security
 
 ### Authentication & Authorization
+
 - **JWT Tokens**: Secure user authentication with configurable expiration
 - **bcrypt Hashing**: Password security with salt rounds
 - **HTTP-Only Cookies**: Secure token storage and CSRF protection
 - **Role-Based Access**: Middleware for protected routes
 
 ### Security Measures
+
 - **CORS Configuration**: Controlled cross-origin resource sharing
 - **Input Validation**: Request sanitization and validation
 - **Rate Limiting**: Protection against brute force attacks (planned)
 - **Helmet.js**: Security headers and vulnerability protection (planned)
 
 ### Vulnerability Scanning
+
 - **OWASP Dependency Check**: Automated vulnerability scanning
 - **Trivy Security Scans**: Container and filesystem security analysis
 - **SonarQube Integration**: Code security and quality analysis
 - **Dependency Auditing**: NPM audit for known vulnerabilities
 
 ### Best Practices
+
 - Environment variables for sensitive data
 - Secrets management in Kubernetes
 - Container security with non-root users
@@ -499,12 +533,14 @@ curl -X POST "jenkins-url/job/mern-fit-verse/buildWithParameters?BUILD_TYPE=deve
 ## 📡 API Documentation
 
 ### Base URL
+
 ```
 Development: http://localhost:5003/api
 Production: https://your-domain.com/api
 ```
 
 ### Authentication Endpoints
+
 ```http
 POST /api/users/register    # User registration
 POST /api/users/auth        # User login
@@ -514,6 +550,7 @@ PUT  /api/users/profile     # Update user profile (protected)
 ```
 
 ### User Registration
+
 ```http
 POST /api/users/register
 Content-Type: application/json
@@ -529,6 +566,7 @@ Content-Type: application/json
 ```
 
 ### User Login
+
 ```http
 POST /api/users/auth
 Content-Type: application/json
@@ -540,6 +578,7 @@ Content-Type: application/json
 ```
 
 ### Response Format
+
 ```json
 {
   "success": true,
@@ -557,6 +596,7 @@ Content-Type: application/json
 ```
 
 ### Error Handling
+
 ```json
 {
   "success": false,
@@ -567,6 +607,7 @@ Content-Type: application/json
 ```
 
 ### Health Check
+
 ```http
 GET /api/health
 ```
@@ -574,11 +615,13 @@ GET /api/health
 **Description:** Returns a comprehensive health check dashboard with system status, uptime, and file system verification.
 
 **Response:** HTML Dashboard Page
+
 - **Content-Type:** `text/html`
-- **Status Codes:** 
+- **Status Codes:**
   - `200 OK` - Always returns 200, check status in response content
 
 **Features:**
+
 - 🎯 **System Status**: Overall health status (OK/WARNING/ERROR)
 - ⏱️ **Uptime**: Server uptime in human-readable format
 - 🔧 **Environment**: Current Node.js environment
@@ -590,11 +633,13 @@ GET /api/health
 - 🎨 **Visual Dashboard**: Modern UI with status indicators and metrics
 
 **Status Levels:**
+
 - **OK** (Green): All systems operational, frontend files found
 - **WARNING** (Amber): System running but missing frontend build files
 - **ERROR** (Red): System errors or critical issues detected
 
 **Usage Examples:**
+
 ```bash
 # Browser access - Visual dashboard
 curl http://localhost:5003/api/health
@@ -608,6 +653,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 ```
 
 **Sample Information Displayed:**
+
 - Server uptime and performance metrics
 - Frontend build status and file counts
 - Current working directory and paths
@@ -619,6 +665,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 ## 🎨 Frontend Components
 
 ### Component Architecture
+
 ```
 components/
 ├── 🎯 UI Components (Radix UI based)
@@ -635,6 +682,7 @@ components/
 ```
 
 ### Screen Components
+
 ```
 screens/
 ├── HomeScreen          # Landing page with features
@@ -646,6 +694,7 @@ screens/
 ```
 
 ### State Management
+
 ```typescript
 // Redux Store Structure
 {
@@ -661,6 +710,7 @@ screens/
 ```
 
 ### Styling System
+
 - **Tailwind CSS**: Utility-first CSS framework
 - **CSS Variables**: Theme customization and dark mode
 - **Component Variants**: Consistent design system with CVA
@@ -673,18 +723,21 @@ screens/
 We welcome contributions from the community! Here's how you can help make MERN FitVerse better:
 
 ### 🐛 Reporting Bugs
+
 1. Check existing issues to avoid duplicates
 2. Use the bug report template
 3. Include steps to reproduce, expected behavior, and screenshots
 4. Specify your environment (OS, Node version, browser)
 
 ### 💡 Suggesting Features
+
 1. Check the roadmap and existing feature requests
 2. Open an issue with the feature request template
 3. Describe the problem and proposed solution
 4. Include mockups or examples if applicable
 
 ### 🔧 Development Workflow
+
 1. **Fork** the repository
 2. **Clone** your fork locally
 3. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
@@ -694,6 +747,7 @@ We welcome contributions from the community! Here's how you can help make MERN F
 7. **Create** a Pull Request
 
 ### 📝 Commit Convention
+
 ```
 feat: add new workout tracking feature
 fix: resolve authentication token expiration
@@ -705,6 +759,7 @@ chore: update dependencies
 ```
 
 ### 🧪 Pull Request Guidelines
+
 - Ensure all tests pass
 - Include relevant tests for new features
 - Update documentation if needed
@@ -712,6 +767,7 @@ chore: update dependencies
 - Keep PRs focused and atomic
 
 ### 🏗 Development Setup for Contributors
+
 ```bash
 # 1. Fork and clone the repository
 git clone https://github.com/YOUR_USERNAME/mern-fit-verse.git
@@ -745,6 +801,7 @@ git push origin feature/your-feature-name
 ```
 
 ### 🎯 Areas for Contribution
+
 - **Frontend Features**: Workout tracking, nutrition logging, progress charts
 - **Backend APIs**: Exercise database, workout plans, analytics
 - **Testing**: Unit tests, integration tests, E2E tests
@@ -757,6 +814,7 @@ git push origin feature/your-feature-name
 ## 🚀 Roadmap
 
 ### Phase 1: Foundation (Current)
+
 - [x] User authentication and authorization
 - [x] Basic user profile management
 - [x] Responsive UI with modern design
@@ -765,6 +823,7 @@ git push origin feature/your-feature-name
 - [x] Production deployment setup
 
 ### Phase 2: Core Features (Next)
+
 - [ ] Exercise database and library
 - [ ] Workout planning and scheduling
 - [ ] Progress tracking and metrics
@@ -772,6 +831,7 @@ git push origin feature/your-feature-name
 - [ ] Data visualization and charts
 
 ### Phase 3: Advanced Features
+
 - [ ] Social features and community
 - [ ] AI-powered workout recommendations
 - [ ] Nutrition analysis and suggestions
@@ -779,6 +839,7 @@ git push origin feature/your-feature-name
 - [ ] Mobile app development
 
 ### Phase 4: Scale & Optimize
+
 - [ ] Performance optimization
 - [ ] Advanced analytics
 - [ ] Multi-language support
@@ -790,11 +851,13 @@ git push origin feature/your-feature-name
 ## 📞 Support & Community
 
 ### 🆘 Getting Help
+
 - **GitHub Issues**: [Report bugs and request features](https://github.com/xjohnfit/mern-fit-verse/issues)
 - **Discussions**: [Community discussions and Q&A](https://github.com/xjohnfit/mern-fit-verse/discussions)
 - **Email**: [xjohnfitcodes@gmail.com](mailto:xjohnfitcodes@gmail.com)
 
 ### 🔗 Links
+
 - **Live Demo**: [https://fitverse-demo.com](https://fitverse-demo.com)
 - **Docker Hub**: [xjohnfit/mern-fit-verse](https://hub.docker.com/r/xjohnfit/mern-fit-verse)
 - **Documentation**: [Project Wiki](https://github.com/xjohnfit/mern-fit-verse/wiki)
@@ -837,13 +900,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ---
 
-<div align="center">
-
 **Built with ❤️ by [John Winchester](https://github.com/xjohnfit)**
 
 **⭐ Star this repository if you found it helpful!**
 
 [![GitHub stars](https://img.shields.io/github/stars/xjohnfit/mern-fit-verse?style=social)](https://github.com/xjohnfit/mern-fit-verse/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/xjohnfit/mern-fit-verse?style=social)](https://github.com/xjohnfit/mern-fit-verse/network/members)
-
-</div>
