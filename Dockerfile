@@ -2,50 +2,36 @@
 FROM node:20-alpine AS frontend-build
 WORKDIR /app/frontend
 COPY frontend/package.json frontend/package-lock.json ./
-# Install patch-package globally to handle postinstall scripts
 RUN npm install -g patch-package
 RUN npm ci
 COPY frontend/ ./
-# Set environment variables for Vite build
 ENV NODE_ENV=production
-# Run build with debug output
 RUN npm run build --verbose
 
 # --- Backend Build Stage ---
 FROM node:20-alpine AS backend-build
-WORKDIR /app
-# Copy root package.json since backend doesn't have its own
-COPY package.json package-lock.json ./
+WORKDIR /app/backend
+COPY package.json package-lock.json ../
+COPY backend/package.json backend/package-lock.json ./
+COPY backend/ ./
 COPY tsconfig.json ./
 RUN npm ci
-COPY backend/ ./backend/
-WORKDIR /app/backend
 RUN npm run build
-WORKDIR /app
-
-# Copy frontend build to backend
-COPY --from=frontend-build /app/frontend/dist ./frontend/dist
 
 # --- Production Stage ---
 FROM node:20-alpine AS production
 WORKDIR /app
-
-# Install production dependencies
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
-# Copy compiled JavaScript files from build stage
-COPY --from=backend-build /app/dist ./dist
+# Copy backend dist
+COPY --from=backend-build /app/backend/dist ./dist
 
 # Copy frontend build
 COPY --from=frontend-build /app/frontend/dist ./frontend/dist
 
-# Set environment variables (override in Kubernetes as needed)
 ENV NODE_ENV=production
 ENV PORT=5003
 
-# Expose backend port
 EXPOSE 5003
-
-# Start backend server using compiled JavaScript
 CMD ["npm", "run", "start:prod"]
