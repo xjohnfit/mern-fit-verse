@@ -10,7 +10,7 @@ pipeline {
         RELEASE = '1.0.0'
         DOCKER_USER = 'xjohnfit'
         DOCKER_PASS = 'dockerhub'
-        IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
+        IMAGE_NAME = "${DOCKER_USER}" + '/' + "${APP_NAME}"
         IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
     }
     stages {
@@ -25,7 +25,7 @@ pipeline {
                 credentialsId: 'github'
             }
         }
-        stage("3. SonarQube Analysis") {
+        stage('3. SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonarqube-server') {
                     sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=FitVerse \
@@ -33,30 +33,30 @@ pipeline {
                 }
             }
         }
-        stage("4. Quality Gate") {
+        stage('4. Quality Gate') {
             steps {
                 script {
                     waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube-token'
                 }
             }
         }
-        stage("5. Install Dependencies") {
+        stage('5. Install Dependencies') {
             steps {
-                sh "npm install"
+                sh 'npm install'
             }
         }
-	    stage('6. Owasp File System Scan') {
-	        steps {
+        stage('6. Owasp File System Scan') {
+            steps {
                 dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'dp-check'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
-        stage("7. Trivy File System Scan") {
+        stage('7. Trivy File System Scan') {
             steps {
-                sh "trivy fs . > trivyfs.txt"
+                sh 'trivy fs . > trivyfs.txt'
             }
         }
-        stage("8. Build & Push Docker Image") {
+        stage('8. Build & Push Docker Image') {
             steps {
                 script {
                     docker.withRegistry('', DOCKER_PASS) {
@@ -68,16 +68,16 @@ pipeline {
                     }
                 }
             }
-        }     
-        stage("9. Trivy Image Scan") {
-	        steps {
+        }
+        stage('9. Trivy Image Scan') {
+            steps {
                 script {
-	                sh ('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image xjohnfit/nextjs14-portfolio:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table > trivyimage.txt')
+                    sh('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image xjohnfit/nextjs14-portfolio:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table > trivyimage.txt')
                 }
             }
         }
-	    stage("10. Cleanup Artifacts") {
-	        steps {
+        stage('10. Cleanup Artifacts') {
+            steps {
                 script {
                     sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
                     sh "docker rmi ${IMAGE_NAME}:latest"
@@ -106,7 +106,7 @@ pipeline {
         //         }
         //     }
         // }
-        stage("12. Docker Cleanup") {
+        stage('12. Docker Cleanup') {
             steps {
                 script {
                     sh '''
@@ -129,17 +129,30 @@ pipeline {
                     '''
                 }
             }
-        }   
+        }
     }
     post {
-      always {
-        emailext attachLog: true,
-          subject: "'${currentBuild.result}'",
-          body: "Project: ${env.JOB_NAME}<br/>" +
-          "Build Number: ${env.BUILD_NUMBER}<br/>" +
-          "URL: ${env.BUILD_URL}<br/>",
-          to: 'xjohnfitcodes@gmail.com',                              
-          attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
-      }
+        always {
+            emailext(
+      to: 'xjohnfitcodes@gmail.com',
+      subject: "FitVerse Build #${BUILD_NUMBER}: ${currentBuild.result}",
+      body: """
+        <h3>Build Summary</h3>
+        <ul>
+          <li><b>Project:</b> ${env.JOB_NAME}</li>
+          <li><b>Build Number:</b> ${env.BUILD_NUMBER}</li>
+          <li><b>Status:</b> ${currentBuild.result}</li>
+          <li><b>Build URL:</b> <a href="${BUILD_URL}">${BUILD_URL}</a></li>
+        </ul>
+        <h4>Reports</h4>
+        <ul>
+          <li><a href="${BUILD_URL}artifact/trivy-fs.txt">Trivy FS Report</a></li>
+          <li><a href="${BUILD_URL}artifact/trivy-image.txt">Trivy Image Report</a></li>
+        </ul>
+      """,
+      mimeType: 'text/html',
+      attachmentsPattern: 'trivy-*.txt'
+    )
+        }
     }
 }
