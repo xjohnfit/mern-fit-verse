@@ -13,7 +13,7 @@ import healthRoutes from './routes/healthRoutes';
 
 // Configurations
 dotenv.config({
-    path: process.env.NODE_ENV === 'production' ? '.env' : '.env.example',
+    path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development',
 });
 
 const app: Application = express();
@@ -22,7 +22,7 @@ const PORT: number = parseInt(process.env.PORT || '5003', 10);
 // Middlewares
 app.use(
     cors({
-        origin: ['http://localhost:5173'],
+        origin: [process.env.FRONTEND_URL as string],
         credentials: true,
     })
 );
