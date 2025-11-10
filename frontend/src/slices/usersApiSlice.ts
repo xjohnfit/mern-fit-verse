@@ -14,7 +14,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     }),
     register: builder.mutation({
       query: (data) => ({
-        url: `${BASE_URL}/users/register`,
+        url: `${BASE_URL}/auth/register`,
         method: 'POST',
         credentials: 'include', // Include cookies in the request
         body: data,

@@ -74,10 +74,10 @@ const ViewUserProfile = () => {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
                 <div className="text-center">
                     <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading profile...</p>
+                    <p className="text-gray-600 dark:text-gray-400">Loading profile...</p>
                 </div>
             </div>
         );
@@ -85,11 +85,11 @@ const ViewUserProfile = () => {
 
     if (error || !userProfile) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
                 <div className="text-center">
-                    <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">User Not Found</h2>
-                    <p className="text-gray-600">The user you're looking for doesn't exist.</p>
+                    <User className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">User Not Found</h2>
+                    <p className="text-gray-600 dark:text-gray-400">The user you're looking for doesn't exist.</p>
                 </div>
             </div>
         );
@@ -126,22 +126,24 @@ const ViewUserProfile = () => {
 
     const handleUserClick = (clickedUsername: string) => {
         navigate(`/profile/view/${clickedUsername}`);
+        //Scroll to top after navigation
+        window.scrollTo(0, 0);
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
             {/* Cover Photo Section */}
             <div className="relative">
-                <div className="h-48 sm:h-64 md:h-80 bg-linear-to-r from-blue-600 to-purple-600"></div>
+                <div className="h-48 sm:h-64 md:h-80 bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700"></div>
 
                 {/* Profile Info Overlay */}
                 <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/50 to-transparent">
                     <div className="max-w-6xl mx-auto px-4 py-6">
                         {/* Mobile Instagram-style Layout */}
-                        <div className="block sm:hidden">
-                            <div className="flex items-start space-x-4 mt-6 mb-4">
+                        <div className="block sm:hidden mt-6 mb-4">
+                            <div className="flex items-center space-x-4">
                                 {/* Profile Picture - Left */}
-                                <Avatar className="w-20 h-20 border-3 border-white shadow-lg shrink-0">
+                                <Avatar className="w-28 h-28 border-3 border-white shadow-lg shrink-0">
                                     <AvatarImage src={user.photo} alt={user.name} />
                                     <AvatarFallback className="text-lg font-bold bg-blue-600 text-white">
                                         {getInitials(user.name)}
@@ -151,16 +153,16 @@ const ViewUserProfile = () => {
                                 {/* Stats and Info - Right */}
                                 <div className="flex-1 text-white">
                                     <h1 className="text-xl font-bold mb-1">{user.name}</h1>
-                                    <p className="text-sm text-gray-200 mb-3">@{user.username}</p>
+                                    <p className="text-xs text-gray-200 mb-1 leading">@{user.username}</p>
 
                                     {/* Stats Row */}
-                                    <div className="flex space-x-6 mb-3">
-                                        <div className="text-center">
-                                            <div className="text-lg font-bold">{user.followers.length}</div>
-                                            <div className="text-xs text-gray-200">followers</div>
+                                    <div className="flex space-x-6 mb-1">
+                                        <div className="flex items-center justify-center gap-2">
+                                            <div className="text-md font-bold">{user.followers.length}</div>
+                                            <div className="text-xs text-gray-200">{user.followers.length === 1 ? "follower" : "followers"}</div>
                                         </div>
-                                        <div className="text-center">
-                                            <div className="text-lg font-bold">{user.following.length}</div>
+                                        <div className="flex items-center justify-center gap-2">
+                                            <div className="text-md font-bold">{user.following.length}</div>
                                             <div className="text-xs text-gray-200">following</div>
                                         </div>
                                     </div>
@@ -263,69 +265,69 @@ const ViewUserProfile = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                     {/* Left Sidebar - About */}
                     <div className="lg:col-span-1 order-2 md:order-1">
-                        <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
-                            <h2 className="text-lg sm:text-xl font-bold mb-4">About</h2>
+                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
+                            <h2 className="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">About</h2>
                             <div className="space-y-3 sm:space-y-4">
                                 <div className="flex items-center space-x-3">
-                                    <Cake className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 shrink-0" />
+                                    <Cake className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 shrink-0" />
                                     <div className="min-w-0 flex-1">
-                                        <p className="font-medium text-sm sm:text-base">Age</p>
-                                        <p className="text-gray-600 text-sm sm:text-base">{calculateAge(user.dob)} years old</p>
+                                        <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-gray-100">Age</p>
+                                        <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">{calculateAge(user.dob)} years old</p>
                                     </div>
                                 </div>
 
                                 <div className="flex items-center space-x-3">
-                                    <User className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 shrink-0" />
+                                    <User className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 shrink-0" />
                                     <div className="min-w-0 flex-1">
-                                        <p className="font-medium text-sm sm:text-base">Gender</p>
-                                        <p className="text-gray-600 text-sm sm:text-base capitalize">{user.gender}</p>
+                                        <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-gray-100">Gender</p>
+                                        <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base capitalize">{user.gender}</p>
                                     </div>
                                 </div>
 
                                 {user.height && (
                                     <div className="flex items-center space-x-3">
-                                        <Ruler className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 shrink-0" />
+                                        <Ruler className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 shrink-0" />
                                         <div className="min-w-0 flex-1">
-                                            <p className="font-medium text-sm sm:text-base">Height</p>
-                                            <p className="text-gray-600 text-sm sm:text-base">{user.height} cm</p>
+                                            <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-gray-100">Height</p>
+                                            <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">{user.height} cm</p>
                                         </div>
                                     </div>
                                 )}
 
                                 {user.weight && (
                                     <div className="flex items-center space-x-3">
-                                        <Weight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 shrink-0" />
+                                        <Weight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 shrink-0" />
                                         <div className="min-w-0 flex-1">
-                                            <p className="font-medium text-sm sm:text-base">Weight</p>
-                                            <p className="text-gray-600 text-sm sm:text-base">{user.weight} kg</p>
+                                            <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-gray-100">Weight</p>
+                                            <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">{user.weight} kg</p>
                                         </div>
                                     </div>
                                 )}
 
                                 {user.goal && (
                                     <div className="flex items-center space-x-3">
-                                        <Target className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 shrink-0" />
+                                        <Target className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 shrink-0" />
                                         <div className="min-w-0 flex-1">
-                                            <p className="font-medium text-sm sm:text-base">Fitness Goal</p>
-                                            <p className="text-gray-600 text-sm sm:text-base wrap-break-word">{user.goal}</p>
+                                            <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-gray-100">Fitness Goal</p>
+                                            <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base wrap-break-word">{user.goal}</p>
                                         </div>
                                     </div>
                                 )}
 
                                 <div className="flex items-center space-x-3">
-                                    <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 shrink-0" />
+                                    <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 shrink-0" />
                                     <div className="min-w-0 flex-1">
-                                        <p className="font-medium text-sm sm:text-base">Joined</p>
-                                        <p className="text-gray-600 text-sm sm:text-base">{formatDateToMMDDYYYY(user.createdAt)}</p>
+                                        <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-gray-100">Joined</p>
+                                        <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">{formatDateToMMDDYYYY(user.createdAt)}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Followers Section */}
-                        <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
                             <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-lg sm:text-xl font-bold">Followers ({user.followers.length})</h2>
+                                <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100">Followers ({user.followers.length})</h2>
                                 {user.followers.length > 0 && (
                                     <Button
                                         variant="ghost"
@@ -339,29 +341,29 @@ const ViewUserProfile = () => {
                             </div>
 
                             {user.followers.length === 0 ? (
-                                <p className="text-gray-500 text-center py-4 text-sm sm:text-base">No followers yet</p>
+                                <p className="text-gray-500 dark:text-gray-400 text-center py-4 text-sm sm:text-base">No followers yet</p>
                             ) : (
                                 <div className={`space-y-2 sm:space-y-3 ${showFollowers ? '' : 'max-h-32 sm:max-h-40 overflow-hidden'}`}>
                                     {user.followers.slice(0, showFollowers ? undefined : 3).map((follower) => (
                                         <div
                                             key={follower._id}
-                                            className="flex items-center space-x-2 sm:space-x-3 hover:bg-gray-50 p-1.5 sm:p-2 rounded-lg cursor-pointer transition-colors"
+                                            className="flex items-center space-x-2 sm:space-x-3 hover:bg-gray-50 dark:hover:bg-gray-700 p-1.5 sm:p-2 rounded-lg cursor-pointer transition-colors"
                                             onClick={() => handleUserClick(follower.username)}
                                         >
                                             <Avatar className="w-8 h-8 sm:w-10 sm:h-10 shrink-0">
                                                 <AvatarImage src={follower.photo} alt={follower.name} />
-                                                <AvatarFallback className="bg-blue-100 text-blue-600 text-xs sm:text-sm">
+                                                <AvatarFallback className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-xs sm:text-sm">
                                                     {getInitials(follower.name)}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <div className="flex-1 min-w-0">
-                                                <p className="font-medium text-sm sm:text-base truncate">{follower.name}</p>
-                                                <p className="text-xs sm:text-sm text-gray-500 truncate">@{follower.username}</p>
+                                                <p className="font-medium text-sm sm:text-base truncate text-gray-900 dark:text-gray-100">{follower.name}</p>
+                                                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">@{follower.username}</p>
                                             </div>
                                         </div>
                                     ))}
                                     {!showFollowers && user.followers.length > 3 && (
-                                        <p className="text-xs sm:text-sm text-gray-500 text-center">
+                                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center">
                                             +{user.followers.length - 3} more followers
                                         </p>
                                     )}
@@ -370,9 +372,9 @@ const ViewUserProfile = () => {
                         </div>
 
                         {/* Following Section */}
-                        <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
                             <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-lg sm:text-xl font-bold">Following ({user.following.length})</h2>
+                                <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100">Following ({user.following.length})</h2>
                                 {user.following.length > 0 && (
                                     <Button
                                         variant="ghost"
@@ -386,29 +388,29 @@ const ViewUserProfile = () => {
                             </div>
 
                             {user.following.length === 0 ? (
-                                <p className="text-gray-500 text-center py-4 text-sm sm:text-base">Not following anyone yet</p>
+                                <p className="text-gray-500 dark:text-gray-400 text-center py-4 text-sm sm:text-base">Not following anyone yet</p>
                             ) : (
                                 <div className={`space-y-2 sm:space-y-3 ${showFollowing ? '' : 'max-h-32 sm:max-h-40 overflow-hidden'}`}>
                                     {user.following.slice(0, showFollowing ? undefined : 3).map((followingUser) => (
                                         <div
                                             key={followingUser._id}
-                                            className="flex items-center space-x-2 sm:space-x-3 hover:bg-gray-50 p-1.5 sm:p-2 rounded-lg cursor-pointer transition-colors"
+                                            className="flex items-center space-x-2 sm:space-x-3 hover:bg-gray-50 dark:hover:bg-gray-700 p-1.5 sm:p-2 rounded-lg cursor-pointer transition-colors"
                                             onClick={() => handleUserClick(followingUser.username)}
                                         >
                                             <Avatar className="w-8 h-8 sm:w-10 sm:h-10 shrink-0">
                                                 <AvatarImage src={followingUser.photo} alt={followingUser.name} />
-                                                <AvatarFallback className="bg-green-100 text-green-600 text-xs sm:text-sm">
+                                                <AvatarFallback className="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 text-xs sm:text-sm">
                                                     {getInitials(followingUser.name)}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <div className="flex-1 min-w-0">
-                                                <p className="font-medium text-sm sm:text-base truncate">{followingUser.name}</p>
-                                                <p className="text-xs sm:text-sm text-gray-500 truncate">@{followingUser.username}</p>
+                                                <p className="font-medium text-sm sm:text-base truncate text-gray-900 dark:text-gray-100">{followingUser.name}</p>
+                                                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">@{followingUser.username}</p>
                                             </div>
                                         </div>
                                     ))}
                                     {!showFollowing && user.following.length > 3 && (
-                                        <p className="text-xs sm:text-sm text-gray-500 text-center">
+                                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center">
                                             +{user.following.length - 3} more following
                                         </p>
                                     )}
@@ -419,14 +421,14 @@ const ViewUserProfile = () => {
 
                     {/* Right Content - Activity Feed */}
                     <div className="md:col-span-1 lg:col-span-2 order-1 md:order-2">
-                        <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
-                            <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Activity Feed</h2>
+                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
+                            <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-gray-900 dark:text-gray-100">Activity Feed</h2>
 
                             {/* Placeholder for future activity feed */}
                             <div className="text-center py-8 sm:py-12">
-                                <Activity className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-3 sm:mb-4" />
-                                <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">No Activity Yet</h3>
-                                <p className="text-gray-600 text-sm sm:text-base px-4">
+                                <Activity className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 dark:text-gray-500 mx-auto mb-3 sm:mb-4" />
+                                <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No Activity Yet</h3>
+                                <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base px-4">
                                     {isOwnProfile
                                         ? "Start your fitness journey to see your activity here!"
                                         : `${user.name} hasn't shared any activity yet.`

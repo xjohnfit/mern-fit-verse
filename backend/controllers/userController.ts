@@ -1,6 +1,9 @@
 import type { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
+
+//Models import
 import User from '../models/userModel';
+import Notification from '../models/notificationModel';
 
 // Types import
 import { IUser } from '../models/userModel';
@@ -142,9 +145,20 @@ export const followUnfollowUser = asyncHandler(
                 await User.findByIdAndUpdate(targetUser._id, {
                     $push: { followers: currentUser._id },
                 });
-                res.status(200).json({ message: `Followed ${targetUsername}` });
-
+                
                 //send notification to the user
+                const notification = new Notification({
+                    type: 'follow',
+                    from: currentUser._id,
+                    to: targetUser._id,
+                    message: `${currentUser.username} started following you.`,
+                });
+                await notification.save({ validateBeforeSave: false });
+
+                // TODO: Integrate real-time notification via WebSocket
+                // TODO: Integrate email notification if needed
+                // TODO: Return the id/username of the user being followed/unfollowed
+                res.status(200).json({ message: `Followed ${targetUsername}` });
             }
         } catch (error) {
             res.status(500);

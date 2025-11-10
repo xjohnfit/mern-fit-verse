@@ -5,6 +5,7 @@ import App from './App.tsx';
 
 import store from './store';
 import { Provider } from 'react-redux';
+import { ThemeProvider } from 'next-themes';
 
 import { createBrowserRouter } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
@@ -42,7 +43,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')!).render(
     <Provider store={store}>
         <StrictMode>
-            <RouterProvider router={router} />
+            <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+                <RouterProvider router={router} />
+            </ThemeProvider>
         </StrictMode>
     </Provider>
 );

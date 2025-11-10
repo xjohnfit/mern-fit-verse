@@ -16,6 +16,7 @@ import {
     navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { toast } from 'sonner';
+import { ThemeToggle } from './ThemeToggle';
 
 function Header() {
     const { isAuthenticated, userInfo } = useSelector(
@@ -72,7 +73,7 @@ function Header() {
 
     return (
         <>
-            <header className='w-screen bg-gray-800 text-white p-2 z-20 relative border-[#38bdf8] shadow-[0_0_10px_#38bdf8,0_0_20px_#818cf8,0_0_30px_#c084fc,0_0_40px_#e879f9,0_0_50px_#22d3ee] hover:shadow-[0_0_15px_#38bdf8,0_0_30px_#818cf8,0_0_45px_#c084fc,0_0_60px_#e879f9,0_0_75px_#22d3ee] transition-all duration-300'>
+            <header className='w-screen bg-gray-800 dark:bg-gray-900 text-white p-2 z-20 relative border-[#38bdf8] shadow-[0_0_10px_#38bdf8,0_0_20px_#818cf8,0_0_30px_#c084fc,0_0_40px_#e879f9,0_0_50px_#22d3ee] hover:shadow-[0_0_15px_#38bdf8,0_0_30px_#818cf8,0_0_45px_#c084fc,0_0_60px_#e879f9,0_0_75px_#22d3ee] transition-all duration-300'>
                 <div className='container mx-auto flex justify-between items-center'>
                     <Link to='/' className='flex items-center gap-3'>
                         <img
@@ -127,7 +128,7 @@ function Header() {
                                 <NavigationMenu className='dark' viewport={false}>
                                     <NavigationMenuList>
                                         <NavigationMenuItem className='relative'>
-                                            <NavigationMenuTrigger className='cursor-pointer bg-transparent p-0 h-auto'>
+                                            <NavigationMenuTrigger className='cursor-pointer bg-transparent p-1 h-auto'>
                                                 {avatar}
                                             </NavigationMenuTrigger>
                                             <NavigationMenuContent className='bg-gray-800 border-gray-700 absolute right-0 top-full mt-2 z-50 rounded-lg shadow-lg border' style={{ width: '208px' }}>
@@ -136,7 +137,7 @@ function Header() {
                                                         <NavigationMenuLink asChild>
                                                             <Link
                                                                 to='/profile'
-                                                                className='flex flex-row items-center gap-3 rounded-md text-white hover:bg-linear-to-r hover:from-gray-700 hover:to-gray-600 hover:shadow-lg hover:scale-105 active:bg-gray-900 active:scale-95 transition-all duration-200 ease-in-out p-3 whitespace-nowrap group'>
+                                                                className='flex flex-row items-center gap-3 rounded-md text-white hover:bg-gray-700 dark:hover:bg-transparent hover:shadow-lg hover:scale-105 active:bg-gray-900 active:scale-95 transition-all duration-200 ease-in-out p-3 whitespace-nowrap group'>
                                                                 <User className='w-4 h-4 group-hover:text-blue-400 transition-colors duration-200' />
                                                                 Edit Profile
                                                             </Link>
@@ -146,7 +147,7 @@ function Header() {
                                                         <NavigationMenuLink asChild>
                                                             <button
                                                                 onClick={logoutHandler}
-                                                                className='cursor-pointer flex flex-row items-center gap-3 rounded-md text-white hover:bg-gray-700/80 hover:shadow-lg hover:scale-105 active:bg-gray-900 active:scale-95 transition-all duration-200 ease-in-out w-full p-3 text-left whitespace-nowrap group'>
+                                                                className='cursor-pointer flex flex-row items-center gap-3 rounded-md text-white hover:bg-gray-700/80 dark:hover:bg-transparent hover:shadow-lg hover:scale-105 active:bg-gray-900 active:scale-95 transition-all duration-200 ease-in-out w-full p-3 text-left whitespace-nowrap group'>
                                                                 <LogOut className='w-4 h-4 group-hover:text-red-400 transition-colors duration-200' />
                                                                 Logout
                                                             </button>
@@ -157,9 +158,11 @@ function Header() {
                                         </NavigationMenuItem>
                                     </NavigationMenuList>
                                 </NavigationMenu>
+                                <ThemeToggle />
                             </div>
                         ) : (
-                            <>
+                            <div className='flex items-center gap-5'>
+                                <ThemeToggle />
                                 <Link
                                     to='/login'
                                     className='bg-linear-to-r from-[#38bdf8] to-[#818cf8] text-white px-4 py-2 rounded-lg hover:from-[#818cf8] hover:to-[#c084fc] transition-all duration-300 font-medium'>
@@ -170,12 +173,13 @@ function Header() {
                                     className='bg-linear-to-r from-[#38bdf8] to-[#818cf8] text-white px-4 py-2 rounded-lg hover:from-[#818cf8] hover:to-[#c084fc] transition-all duration-300 font-medium'>
                                     Register
                                 </Link>
-                            </>
+                            </div>
                         )}
                     </nav>
 
                     {/* Mobile Navigation Toggle */}
                     <div className='lg:hidden flex items-center space-x-4'>
+                        <ThemeToggle />
                         <button
                             onClick={toggleMobileMenu}
                             className='p-2 rounded-md hover:bg-gray-700 transition-all duration-300'>
