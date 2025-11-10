@@ -221,6 +221,13 @@ function Header() {
                                             <span>Dashboard</span>
                                         </Link>
                                         <Link
+                                            to={`/profile/view/${userInfo?.username}`}
+                                            onClick={closeMobileMenu}
+                                            className='flex items-center space-x-2 w-full text-left p-3 text-white hover:bg-gray-700 rounded-lg transition-all duration-300'>
+                                            <LayoutDashboard className='w-4 h-4' />
+                                            <span>My Profile</span>
+                                        </Link>
+                                        <Link
                                             to='/food'
                                             onClick={closeMobileMenu}
                                             className='flex items-center space-x-2 w-full text-left p-3 text-white hover:bg-gray-700 rounded-lg transition-all duration-300'>
@@ -239,7 +246,7 @@ function Header() {
                                             onClick={closeMobileMenu}
                                             className='flex items-center space-x-2 w-full text-left p-3 text-white hover:bg-gray-700 rounded-lg transition-all duration-300'>
                                             <User className='w-4 h-4' />
-                                            <span>Profile</span>
+                                            <span>Edit Profile</span>
                                         </Link>
                                     </nav>
 
