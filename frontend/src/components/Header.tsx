@@ -162,7 +162,6 @@ function Header() {
                             </div>
                         ) : (
                             <div className='flex items-center gap-5'>
-                                <ThemeToggle />
                                 <Link
                                     to='/login'
                                     className='bg-linear-to-r from-[#38bdf8] to-[#818cf8] text-white px-4 py-2 rounded-lg hover:from-[#818cf8] hover:to-[#c084fc] transition-all duration-300 font-medium'>
@@ -173,6 +172,7 @@ function Header() {
                                     className='bg-linear-to-r from-[#38bdf8] to-[#818cf8] text-white px-4 py-2 rounded-lg hover:from-[#818cf8] hover:to-[#c084fc] transition-all duration-300 font-medium'>
                                     Register
                                 </Link>
+                                <ThemeToggle />
                             </div>
                         )}
                     </nav>

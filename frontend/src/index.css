@@ -210,19 +210,316 @@
     }
 }
 
-/* Enhanced glass morphism effect */
+/* Enhanced glass morphism effect - Dark Mode */
 .glass-card {
-    background: rgba(0, 0, 0, 0.25);
+    background: linear-gradient(
+        135deg,
+        rgba(30, 41, 59, 0.4) 0%,
+        rgba(15, 23, 42, 0.6) 100%
+    );
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .glass-card:hover {
-    background: rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(
+        135deg,
+        rgba(30, 41, 59, 0.6) 0%,
+        rgba(15, 23, 42, 0.8) 100%
+    );
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
     transform: translateY(-2px);
     transition: all 0.3s ease;
+}
+
+/* Light mode glass morphism effect */
+.glass-card-light {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.7) 0%,
+        rgba(248, 250, 252, 0.8) 100%
+    );
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.glass-card-light:hover {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.8) 0%,
+        rgba(248, 250, 252, 0.9) 100%
+    );
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+/* Enhanced dark mode card styling with better visual depth */
+.dark .glass-card {
+    position: relative;
+}
+
+.dark .glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.05) 0%,
+        rgba(129, 140, 248, 0.02) 100%
+    );
+    z-index: -1;
+}
+
+/* Light mode subtle enhancement */
+.glass-card-light {
+    position: relative;
+}
+
+.glass-card-light::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.02) 0%,
+        rgba(129, 140, 248, 0.01) 100%
+    );
+    z-index: -1;
+}
+
+/* Feature cards - optimized for both themes */
+.feature-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.03) 0%,
+        rgba(129, 140, 248, 0.01) 100%
+    );
+    border-radius: inherit;
+    z-index: -1;
+}
+
+.feature-card:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.1);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover::before {
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.05) 0%,
+        rgba(129, 140, 248, 0.02) 100%
+    );
+}
+
+/* Dark mode feature cards */
+.dark .feature-card {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
+}
+
+.dark .feature-card::before {
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.08) 0%,
+        rgba(129, 140, 248, 0.03) 100%
+    );
+}
+
+.dark .feature-card:hover {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
+}
+
+.dark .feature-card:hover::before {
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.12) 0%,
+        rgba(129, 140, 248, 0.05) 100%
+    );
+}
+
+/* Section cards - for testimonials, quick start guide, etc. */
+.section-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.section-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.03) 0%,
+        rgba(129, 140, 248, 0.01) 100%
+    );
+    border-radius: inherit;
+    z-index: -1;
+}
+
+.section-card:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.1);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+.section-card:hover::before {
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.05) 0%,
+        rgba(129, 140, 248, 0.02) 100%
+    );
+}
+
+/* Dark mode section cards */
+.dark .section-card {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
+}
+
+.dark .section-card::before {
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.08) 0%,
+        rgba(129, 140, 248, 0.03) 100%
+    );
+}
+
+.dark .section-card:hover {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
+}
+
+.dark .section-card:hover::before {
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.12) 0%,
+        rgba(129, 140, 248, 0.05) 100%
+    );
+}
+
+/* Stats cards - individual stat items */
+.stat-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+    border-radius: 1rem;
+    padding: 2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.02) 0%,
+        rgba(129, 140, 248, 0.01) 100%
+    );
+    border-radius: inherit;
+    z-index: -1;
+}
+
+.stat-card:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
+    transform: translateY(-4px);
+}
+
+.stat-card:hover::before {
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.04) 0%,
+        rgba(129, 140, 248, 0.02) 100%
+    );
+}
+
+/* Dark mode stats cards */
+.dark .stat-card {
+    background: rgba(15, 23, 42, 0.3);
+    border: 1px solid rgba(59, 130, 246, 0.15);
+    box-shadow: 0 6px 24px rgba(59, 130, 246, 0.06);
+}
+
+.dark .stat-card::before {
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.06) 0%,
+        rgba(129, 140, 248, 0.02) 100%
+    );
+}
+
+.dark .stat-card:hover {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.12);
+}
+
+.dark .stat-card:hover::before {
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.1) 0%,
+        rgba(129, 140, 248, 0.04) 100%
+    );
 }
