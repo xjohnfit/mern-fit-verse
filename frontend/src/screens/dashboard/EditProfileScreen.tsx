@@ -8,7 +8,7 @@ import { ArrowRight, User, Target } from 'lucide-react';
 //Utils functions imports
 import { formatDateToInputValue } from '@/lib/formatDate';
 
-const ProfileScreen = () => {
+const EditProfileScreen = () => {
     const [profileData, setProfileData] = useState({
         name: '',
         username: '',
@@ -567,4 +567,4 @@ const ProfileScreen = () => {
     );
 };
 
-export default ProfileScreen;
+export default EditProfileScreen;

@@ -35,7 +35,28 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    viewUserProfile: builder.query({
+      query: (username) => ({
+        url: `${BASE_URL}/users/profile/view/${username}`,
+        method: 'GET',
+        credentials: 'include', // Include cookies in the request
+      }),
+    }),
+    followUnfollowUser: builder.mutation({
+      query: (username) => ({
+        url: `${BASE_URL}/users/profile/follow/${username}`,
+        method: 'POST',
+        credentials: 'include', // Include cookies in the request
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useLogoutMutation, useUpdateUserProfileMutation } = usersApiSlice;
+export const { 
+  useLoginMutation, 
+  useRegisterMutation, 
+  useLogoutMutation, 
+  useUpdateUserProfileMutation,
+  useViewUserProfileQuery,
+  useFollowUnfollowUserMutation 
+} = usersApiSlice;

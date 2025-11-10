@@ -9,11 +9,12 @@ import { Provider } from 'react-redux';
 import { createBrowserRouter } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
 import HomeScreen from './screens/HomeScreen';
-import LoginScreen from './screens/LoginScreen.tsx';
-import RegisterScreen from './screens/RegisterScreen.tsx';
-import DashboardScreen from './screens/dashboard/DashboardScreen.tsx';
-import ProfileScreen from './screens/dashboard/ProfileScreen.tsx';
-import PrivateRoute from './components/PrivateRoute.tsx';
+import LoginScreen from './screens/LoginScreen';
+import RegisterScreen from './screens/RegisterScreen';
+import DashboardScreen from './screens/dashboard/DashboardScreen';
+import EditProfileScreen from './screens/dashboard/EditProfileScreen';
+import ViewProfileScreen from './screens/dashboard/ViewUserProfile';
+import PrivateRoute from './components/PrivateRoute';
 
 const router = createBrowserRouter([
     {
@@ -29,7 +30,8 @@ const router = createBrowserRouter([
                 element: <PrivateRoute />,
                 children: [
                     { path: '/dashboard', Component: DashboardScreen },
-                    { path: "/profile", Component: ProfileScreen },
+                    { path: "/profile", Component: EditProfileScreen },
+                    { path: "/profile/view/:username", Component: ViewProfileScreen },
                 ],
             },
             // End Protected Routes

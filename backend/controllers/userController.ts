@@ -87,7 +87,10 @@ export const updateUserProfile = asyncHandler(
 export const viewUserProfile = asyncHandler(
     async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         const username = req.params.username;
-        const user = await User.findOne({ username }).select('-password');
+        const user = await User.findOne({ username })
+            .select('-password')
+            .populate('followers', 'name username photo')
+            .populate('following', 'name username photo');
 
         if (!user) {
             res.status(404);

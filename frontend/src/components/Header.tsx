@@ -103,6 +103,13 @@ function Header() {
                                             <NavigationMenuLink
                                                 asChild
                                                 className={`${navigationMenuTriggerStyle()} bg-gray-700 text-white hover:bg-gray-700/80 hover:shadow-md hover:text-white focus:bg-gray-600 focus:text-white data-active:bg-gray-700 data-[state=open]:bg-gray-700 transition-all duration-300 ease-in-out`}>
+                                                <Link to={`/profile/view/${userInfo?.username}`}>My Profile</Link>
+                                            </NavigationMenuLink>
+                                        </NavigationMenuItem>
+                                        <NavigationMenuItem>
+                                            <NavigationMenuLink
+                                                asChild
+                                                className={`${navigationMenuTriggerStyle()} bg-gray-700 text-white hover:bg-gray-700/80 hover:shadow-md hover:text-white focus:bg-gray-600 focus:text-white data-active:bg-gray-700 data-[state=open]:bg-gray-700 transition-all duration-300 ease-in-out`}>
                                                 <Link to='/food'>Food</Link>
                                             </NavigationMenuLink>
                                         </NavigationMenuItem>
@@ -131,7 +138,7 @@ function Header() {
                                                                 to='/profile'
                                                                 className='flex flex-row items-center gap-3 rounded-md text-white hover:bg-linear-to-r hover:from-gray-700 hover:to-gray-600 hover:shadow-lg hover:scale-105 active:bg-gray-900 active:scale-95 transition-all duration-200 ease-in-out p-3 whitespace-nowrap group'>
                                                                 <User className='w-4 h-4 group-hover:text-blue-400 transition-colors duration-200' />
-                                                                Profile
+                                                                Edit Profile
                                                             </Link>
                                                         </NavigationMenuLink>
                                                     </li>
