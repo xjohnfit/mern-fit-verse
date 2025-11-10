@@ -1,19 +1,19 @@
 import express from 'express';
-import {
-    authUser,
-    getUserProfile,
-    logoutUser,
-    registerUser,
-    updateUserProfile,
-} from '../controllers/userController';
 import { protect } from '../middlewares/authMiddleware';
+
+import {
+    followUnfollowUser,
+    getUserProfile,
+    updateUserProfile,
+    viewUserProfile,
+} from '../controllers/userController';
 
 const router = express.Router();
 
-router.post('/register', registerUser);
-router.post('/auth', authUser);
-router.post('/logout', logoutUser);
-router.get('/profile', protect, getUserProfile);
-router.put('/profile', protect, updateUserProfile);
+router.get('/profile', protect, getUserProfile); // Get logged-in user's profile
+router.put('/profile', protect, updateUserProfile); // Update logged-in user's profile
+router.get('/profile/view/:username', protect, viewUserProfile); // View another user's profile
+router.post('/profile/follow/:username', protect, followUnfollowUser); // Follow/Unfollow a user
+// router.get('/suggested', protect, getSuggestedUsers);
 
 export default router;

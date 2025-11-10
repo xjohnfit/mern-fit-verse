@@ -10,6 +10,7 @@ import { notFound, errorHandler } from './middlewares/errorMiddleware';
 // Routes imports
 import userRoutes from './routes/userRoutes';
 import healthRoutes from './routes/healthRoutes';
+import authRoutes from './routes/authRoutes';
 
 // Configurations
 dotenv.config({
@@ -31,15 +32,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/health', healthRoutes);
 // app.use('/api/exercises', exerciseRoutes);
 // app.use('/api/food', foodRoutes);
 
+// Serve static files from the React app in production
 if (process.env.NODE_ENV === 'production') {
-    // Serve static files from the React app
-    // In container, frontend files are at /app/frontend/dist
-    // Backend compiled files are at /app/dist/backend/
     const staticPath = path.join(__dirname, '../../frontend/dist');
     const indexPath = path.resolve(
         __dirname,

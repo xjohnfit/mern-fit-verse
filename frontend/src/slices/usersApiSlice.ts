@@ -6,7 +6,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (data) => ({
-        url: `${BASE_URL}/users/auth`,
+        url: `${BASE_URL}/auth/login`,
         method: 'POST',
         credentials: 'include', // Include cookies in the request
         body: data,
@@ -22,7 +22,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     }),
     logout: builder.mutation<void, void>({
       query: () => ({
-        url: `${BASE_URL}/users/logout`,
+        url: `${BASE_URL}/auth/logout`,
         method: 'POST',
         credentials: 'include', // Include cookies in the request
       }),
