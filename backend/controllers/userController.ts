@@ -104,6 +104,26 @@ export const viewUserProfile = asyncHandler(
     }
 );
 
+// Get suggested users to follow
+export const getSuggestedUsers = asyncHandler(
+    async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        const currentUserId = req.user!._id;
+        const currentUser = await User.findById(currentUserId);
+
+        if(!currentUser) {
+            res.status(404);
+            throw new Error('User not found');
+        }
+        const following = currentUser.following;
+        const suggestedUsers = await User.aggregate([
+            { $match: { _id: { $ne: currentUserId, $nin: following } } },
+            { $sample: { size: 10 } }, // Get 10 random users
+            { $project: { password: 0, email: 0 } }, // Exclude sensitive fields
+        ]);
+        res.status(200).json(suggestedUsers);
+    }
+);
+
 // Follow/Unfollow User
 export const followUnfollowUser = asyncHandler(
     async (req: AuthenticatedRequest, res: Response): Promise<void> => {
