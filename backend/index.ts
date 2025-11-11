@@ -2,6 +2,7 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import path from 'path';
+import { v2 as cloudinary } from 'cloudinary';
 import connectDB from './config/dbConnection';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
@@ -15,6 +16,14 @@ import authRoutes from './routes/authRoutes';
 // Configurations
 dotenv.config({
     path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development',
+});
+
+// Cloudinary configuration
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true,
 });
 
 const app: Application = express();

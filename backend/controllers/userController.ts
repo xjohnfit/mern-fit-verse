@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import { v2 as cloudinary } from 'cloudinary';
 import asyncHandler from 'express-async-handler';
 
 //Models import
@@ -11,6 +12,7 @@ import { IUser } from '../models/userModel';
 // Custom request interface with user property
 interface AuthenticatedRequest extends Request {
     user?: IUser;
+    file?: Express.Multer.File;
 }
 interface UpdateUserBody {
     name: string;
@@ -70,9 +72,34 @@ export const updateUserProfile = asyncHandler(
         user.dob = req.body.dob || user.dob;
         user.gender = req.body.gender || user.gender;
         user.goal = req.body.goal || user.goal;
-        user.photo = req.body.photo || user.photo;
         user.height = req.body.height || user.height;
         user.weight = req.body.weight || user.weight;
+
+        // Handle file upload if present
+        if (req.file) {
+            if (user.photo) {
+                // Delete the previous photo from Cloudinary
+                const publicId = user.photo.split('/').pop()?.split('.')[0];
+                if (publicId) {
+                    await cloudinary.uploader.destroy(publicId);
+                }
+            }
+
+            // Upload the new photo to Cloudinary
+            const result = await cloudinary.uploader.upload_stream(
+                { resource_type: 'image' },
+                (error, result) => {
+                    if (error) throw error;
+                    return result;
+                }
+            );
+
+            // Convert buffer to base64 and upload
+            const b64 = Buffer.from(req.file.buffer).toString('base64');
+            const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+            const cloudinaryResult = await cloudinary.uploader.upload(dataURI);
+            user.photo = cloudinaryResult.secure_url;
+        }
 
         if (req.body.password) {
             user.password = req.body.password;
@@ -110,7 +137,7 @@ export const getSuggestedUsers = asyncHandler(
         const currentUserId = req.user!._id;
         const currentUser = await User.findById(currentUserId);
 
-        if(!currentUser) {
+        if (!currentUser) {
             res.status(404);
             throw new Error('User not found');
         }
@@ -165,7 +192,7 @@ export const followUnfollowUser = asyncHandler(
                 await User.findByIdAndUpdate(targetUser._id, {
                     $push: { followers: currentUser._id },
                 });
-                
+
                 //send notification to the user
                 const notification = new Notification({
                     type: 'follow',

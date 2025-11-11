@@ -71,17 +71,9 @@ const EditProfileScreen = () => {
 
         setPhotoFile(file);
 
-        // Create preview URL
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const result = e.target?.result as string;
-            setPhotoPreview(result);
-            setProfileData(prev => ({
-                ...prev,
-                photo: result
-            }));
-        };
-        reader.readAsDataURL(file);
+        // Create preview URL (for display only)
+        const previewUrl = URL.createObjectURL(file);
+        setPhotoPreview(previewUrl);
 
         toast.success('Photo selected successfully!');
     };
@@ -92,6 +84,11 @@ const EditProfileScreen = () => {
     };
 
     const handleRemovePhoto = () => {
+        // Clean up object URL to prevent memory leaks
+        if (photoPreview && photoPreview.startsWith('blob:')) {
+            URL.revokeObjectURL(photoPreview);
+        }
+
         setPhotoFile(null);
         setPhotoPreview('');
         setProfileData(prev => ({
@@ -112,6 +109,15 @@ const EditProfileScreen = () => {
     const { userInfo } = useSelector((state: any) => state.auth);
 
     const [updateUserProfile, { isLoading }] = useUpdateUserProfileMutation();
+
+    // Cleanup object URLs on unmount
+    useEffect(() => {
+        return () => {
+            if (photoPreview && photoPreview.startsWith('blob:')) {
+                URL.revokeObjectURL(photoPreview);
+            }
+        };
+    }, [photoPreview]);
 
     useEffect(() => {
         if (userInfo) {
@@ -328,35 +334,35 @@ const EditProfileScreen = () => {
         }
 
         try {
-            const updateData: any = {
-                _id: userInfo._id,
-                name: profileData.name,
-                username: profileData.username,
-                email: profileData.email,
-                dob: profileData.dob,
-                gender: profileData.gender,
-                goal: profileData.goal,
-            };
+            // Use FormData for file upload
+            const formData = new FormData();
+            formData.append('_id', userInfo._id);
+            formData.append('name', profileData.name);
+            formData.append('username', profileData.username);
+            formData.append('email', profileData.email);
+            formData.append('dob', profileData.dob);
+            formData.append('gender', profileData.gender);
+            formData.append('goal', profileData.goal);
 
-            // Include photo if changed or set
-            if (photoPreview || profileData.photo) {
-                updateData.photo = photoPreview || profileData.photo;
+            // Include photo file if selected
+            if (photoFile) {
+                formData.append('photo', photoFile);
             }
 
             // Only include password if it's provided
             if (profileData.password) {
-                updateData.password = profileData.password;
+                formData.append('password', profileData.password);
             }
 
             // Only include height and weight if they have valid values
             if (profileData.height) {
-                updateData.height = Number(profileData.height);
+                formData.append('height', profileData.height);
             }
             if (profileData.weight) {
-                updateData.weight = Number(profileData.weight);
+                formData.append('weight', profileData.weight);
             }
 
-            const res = await updateUserProfile(updateData).unwrap();
+            const res = await updateUserProfile(formData).unwrap();
             dispatch(setCredentials({ ...res }));
             toast.success('Profile updated successfully');
 
