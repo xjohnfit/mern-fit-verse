@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: mern-fit-verse
-          image: xjohnfit/mern-fit-verse:1.0.0-44
+          image: xjohnfit/mern-fit-verse:1.0.0-45
           resources:
             limits:
               cpu: "1"
