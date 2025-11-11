@@ -56,9 +56,9 @@ const EditProfileScreen = () => {
         if (!file) return;
 
         // Validate file type
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic'];
         if (!validTypes.includes(file.type)) {
-            toast.error('Please select a valid image file (JPG, PNG, or WebP)');
+            toast.error('Please select a valid image file (JPG, PNG, WebP or HEIC)');
             return;
         }
 
