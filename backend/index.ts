@@ -9,10 +9,11 @@ import dotenv from 'dotenv';
 import { notFound, errorHandler } from './middlewares/errorMiddleware';
 
 // Routes imports
-import userRoutes from './routes/userRoutes';
-import healthRoutes from './routes/healthRoutes';
 import authRoutes from './routes/authRoutes';
+import userRoutes from './routes/userRoutes';
 import postsRoutes from './routes/postRoutes';
+import notificationRoutes from './routes/notificationRoutes';
+import healthRoutes from './routes/healthRoutes';
 // import exerciseRoutes from './routes/exerciseRoutes';
 // import foodRoutes from './routes/foodRoutes';
 
@@ -47,9 +48,10 @@ app.use(cookieParser());
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postsRoutes);
+app.use('/api/notifications', notificationRoutes);
 app.use('/api/health', healthRoutes);
-// app.use('/api/exercises', exerciseRoutes);
-// app.use('/api/food', foodRoutes);
+// app.use('/api/workout', exerciseRoutes);
+// app.use('/api/nutrition', foodRoutes);
 
 // Serve static files from the React app in production
 if (process.env.NODE_ENV === 'production') {
