@@ -217,14 +217,14 @@ pipeline {
                         sh """
                             git config --global user.name "John Rocha"
                             git config --global user.email "xjohnfitcodes@gmail.com"
-                            sed -i 's|image: .*/xjohnfit/nextjs14-portfolio:.*|image: xjohnfit/nextjs14-portfolio:${IMAGE_TAG}|g' kubernetes/deployment.yml
+                            sed -i 's|image: .*/xjohnfit/mern-fit-verse:.*|image: xjohnfit/mern-fit-verse:${IMAGE_TAG}|g' kubernetes/deployment.yml
 
                             if git diff --quiet kubernetes/deployment.yml; then
                                 echo "No changes to commit."
                             else
                                 git add kubernetes/deployment.yml
                                 git commit -m "Update deployment image to ${IMAGE_TAG} via Jenkins"
-                                GIT_PUSH_URL="https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/xjohnfit/nextjs14-portfolio.git"
+                                GIT_PUSH_URL="https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/xjohnfit/mern-fit-verse.git"
                                 git push "\$GIT_PUSH_URL" main
                             fi
                         """

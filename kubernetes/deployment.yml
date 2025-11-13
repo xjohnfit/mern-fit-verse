@@ -1,47 +1,47 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mern-fit-verse
+    name: mern-fit-verse
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: mern-fit-verse
-  template:
-    metadata:
-      labels:
-        app: mern-fit-verse
-    spec:
-      containers:
-        - name: mern-fit-verse
-          image: xjohnfit/mern-fit-verse:1.0.0-45
-          resources:
-            limits:
-              cpu: "1"
-              memory: "512Mi"
-            requests:
-              cpu: "200m"
-              memory: "256Mi"
-          ports:
-            - containerPort: 5003
-          envFrom:
-            - secretRef:
-                name: mern-fit-verse-env
-          livenessProbe:
-            httpGet:
-              path: /api/health
-              port: 5003
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            timeoutSeconds: 10
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /api/health
-              port: 5003
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
-      imagePullSecrets:
-        - name: regcred
+    replicas: 1
+    selector:
+        matchLabels:
+            app: mern-fit-verse
+    template:
+        metadata:
+            labels:
+                app: mern-fit-verse
+        spec:
+            containers:
+                - name: mern-fit-verse
+                  image: xjohnfit/mern-fit-verse:1.0.0-46
+                  resources:
+                      limits:
+                          cpu: '1'
+                          memory: '512Mi'
+                      requests:
+                          cpu: '200m'
+                          memory: '256Mi'
+                  ports:
+                      - containerPort: 5003
+                  envFrom:
+                      - secretRef:
+                            name: mern-fit-verse-env
+                  livenessProbe:
+                      httpGet:
+                          path: /api/health
+                          port: 5003
+                      initialDelaySeconds: 30
+                      periodSeconds: 30
+                      timeoutSeconds: 10
+                      failureThreshold: 3
+                  readinessProbe:
+                      httpGet:
+                          path: /api/health
+                          port: 5003
+                      initialDelaySeconds: 5
+                      periodSeconds: 10
+                      timeoutSeconds: 5
+                      failureThreshold: 3
+            imagePullSecrets:
+                - name: regcred
