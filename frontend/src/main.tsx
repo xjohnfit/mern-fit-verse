@@ -13,7 +13,7 @@ import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import DashboardScreen from './screens/dashboard/DashboardScreen';
-import EditProfileScreen from './screens/dashboard/EditProfileScreen';
+import EditProfileScreen from './screens/dashboard/SettingsScreen.tsx';
 import ViewProfileScreen from './screens/dashboard/ViewUserProfile';
 import PrivateRoute from './components/PrivateRoute';
 
@@ -43,7 +43,7 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')!).render(
     <Provider store={store}>
         <StrictMode>
-            <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
                 <RouterProvider router={router} />
             </ThemeProvider>
         </StrictMode>

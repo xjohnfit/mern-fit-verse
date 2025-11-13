@@ -309,7 +309,6 @@ const RegisterScreen = () => {
                                             id='username'
                                             name='username'
                                             type='text'
-                                            required
                                             value={formData.username}
                                             onChange={handleInputChange}
                                             className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.username
@@ -343,7 +342,6 @@ const RegisterScreen = () => {
                                         id='email'
                                         name='email'
                                         type='email'
-                                        required
                                         value={formData.email}
                                         onChange={handleInputChange}
                                         className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.email
@@ -378,7 +376,6 @@ const RegisterScreen = () => {
                                             id='password'
                                             name='password'
                                             type={showPassword ? 'text' : 'password'}
-                                            required
                                             value={formData.password}
                                             onChange={handleInputChange}
                                             className={`w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.password
@@ -437,7 +434,7 @@ const RegisterScreen = () => {
                                             id='confirmPassword'
                                             name='confirmPassword'
                                             type={showConfirmPassword ? 'text' : 'password'}
-                                            required
+                                            
                                             value={formData.confirmPassword}
                                             onChange={handleInputChange}
                                             className={`w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.confirmPassword
@@ -480,7 +477,7 @@ const RegisterScreen = () => {
                                             id='dob'
                                             name='dob'
                                             type='date'
-                                            required
+                                            
                                             value={formData.dob}
                                             onChange={handleInputChange}
                                             className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.dob
@@ -511,7 +508,7 @@ const RegisterScreen = () => {
                                         <select
                                             id='gender'
                                             name='gender'
-                                            required
+                                            
                                             value={formData.gender}
                                             onChange={handleInputChange}
                                             className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.gender
