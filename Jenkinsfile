@@ -217,18 +217,18 @@ pipeline {
                         // Create a secure script file to avoid Groovy string interpolation security warnings
                         def gitScript = '''#!/bin/bash
                             set -e
-                            
+
                             git config --global user.name "John Rocha"
                             git config --global user.email "xjohnfitcodes@gmail.com"
-                            
+
                             echo "Current image line before update:"
                             grep "image:" kubernetes/deployment.yml
-                            
+
                             sed -i "s|image: xjohnfit/mern-fit-verse:.*|image: xjohnfit/mern-fit-verse:''' + env.IMAGE_TAG + '''|g" kubernetes/deployment.yml
-                            
+
                             echo "Current image line after update:"
                             grep "image:" kubernetes/deployment.yml
-                            
+
                             if git diff --quiet kubernetes/deployment.yml; then
                                 echo "No changes to commit."
                             else
@@ -236,16 +236,16 @@ pipeline {
                                 git diff kubernetes/deployment.yml
                                 git add kubernetes/deployment.yml
                                 git commit -m "Update deployment image to ''' + env.IMAGE_TAG + ''' via Jenkins"
-                                
+
                                 # Configure git to use token authentication
                                 git remote remove origin || true
                                 git remote add origin https://$GIT_USERNAME:$GIT_TOKEN@github.com/xjohnfit/mern-fit-verse.git
                                 git push origin main
                             fi
                         '''
-                        
+
                         writeFile file: 'update-deployment.sh', text: gitScript
-                        
+
                         sh '''
                             chmod +x update-deployment.sh
                             ./update-deployment.sh
