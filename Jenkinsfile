@@ -214,34 +214,48 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
                     script {
-                        sh """
+                        // Create a secure script file to avoid Groovy string interpolation security warnings
+                        def gitScript = '''#!/bin/bash
+                            set -e
+                            
                             git config --global user.name "John Rocha"
                             git config --global user.email "xjohnfitcodes@gmail.com"
-
+                            
                             echo "Current image line before update:"
                             grep "image:" kubernetes/deployment.yml
-
-                            sed -i 's|image: xjohnfit/mern-fit-verse:.*|image: xjohnfit/mern-fit-verse:${IMAGE_TAG}|g' kubernetes/deployment.yml
-
+                            
+                            sed -i "s|image: xjohnfit/mern-fit-verse:.*|image: xjohnfit/mern-fit-verse:''' + env.IMAGE_TAG + '''|g" kubernetes/deployment.yml
+                            
                             echo "Current image line after update:"
                             grep "image:" kubernetes/deployment.yml
-
+                            
                             if git diff --quiet kubernetes/deployment.yml; then
                                 echo "No changes to commit."
                             else
                                 echo "Changes detected in kubernetes/deployment.yml:"
                                 git diff kubernetes/deployment.yml
                                 git add kubernetes/deployment.yml
-                                git commit -m "Update deployment image to ${IMAGE_TAG} via Jenkins"
-                                GIT_PUSH_URL="https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/xjohnfit/mern-fit-verse.git"
-                                git push "\$GIT_PUSH_URL" main
+                                git commit -m "Update deployment image to ''' + env.IMAGE_TAG + ''' via Jenkins"
+                                
+                                # Configure git to use token authentication
+                                git remote remove origin || true
+                                git remote add origin https://$GIT_USERNAME:$GIT_TOKEN@github.com/xjohnfit/mern-fit-verse.git
+                                git push origin main
                             fi
-                        """
+                        '''
+                        
+                        writeFile file: 'update-deployment.sh', text: gitScript
+                        
+                        sh '''
+                            chmod +x update-deployment.sh
+                            ./update-deployment.sh
+                            rm -f update-deployment.sh
+                        '''
                     }
                 }
             }
         }
-        stage('11. Collect Reports') {
+        stage('12. Collect Reports') {
             steps {
                 script {
                     echo '📊 Collecting scan reports...'
@@ -277,7 +291,7 @@ pipeline {
                 }
             }
         }
-        stage('12. Docker Cleanup') {
+        stage('13. Docker Cleanup') {
             steps {
                 script {
                     sh '''

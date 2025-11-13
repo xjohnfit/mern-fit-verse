@@ -173,7 +173,7 @@ function Header() {
                                     <NavigationMenu>
                                         <NavigationMenuList>
                                             <NavigationMenuItem>
-                                                <NavigationMenuTrigger className='h-auto p-1 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl border-0'>
+                                                <NavigationMenuTrigger className='h-auto p-2 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-lg hover:scale-105 rounded-xl border-0 transition-all duration-300 ease-in-out'>
                                                     {avatar}
                                                 </NavigationMenuTrigger>
                                                 <NavigationMenuContent className='min-w-60 p-2'>
@@ -190,7 +190,7 @@ function Header() {
                                                         <NavigationMenuLink asChild>
                                                             <Link
                                                                 to='/profile'
-                                                                className='flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 group'
+                                                                className='flex items-center space-x-3 w-full px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 group'
                                                             >
                                                                 <Settings className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
                                                                 <span className='font-medium'>Settings</span>
