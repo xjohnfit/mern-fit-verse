@@ -2,7 +2,7 @@ import mongoose, { Schema, model, type Model } from 'mongoose';
 
 export interface IComment {
     user: mongoose.Types.ObjectId;
-    text: string;
+    comment: string;
     createdAt: Date;
 }
 
@@ -26,7 +26,7 @@ const postSchema = new Schema<IPost>({
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     comments: [{
         user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-        text: { type: String, required: true },
+        comment: { type: String, required: true },
         createdAt: { type: Date, default: Date.now }
     }],
 }, { timestamps: true });

@@ -17,6 +17,7 @@ export interface IUser {
     weight?: number;
     goal?: string;
     photo?: string;
+    likedPosts?: string[];
 
     // timestamps
     createdAt: Date;
@@ -42,6 +43,7 @@ const userSchema = new Schema<IUser>(
         photo: { type: String, default: '' },
         height: { type: Number, default: null },
         weight: { type: Number, default: null },
+        likedPosts: [{ type: Schema.Types.ObjectId, ref: 'Post', default: [] }],
     },
     { timestamps: true }
 );
