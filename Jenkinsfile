@@ -210,28 +210,28 @@ pipeline {
                 }
             }
         }
-        // stage("11. Update Kubernetes Deployment for ArgoCD") {
-        //     steps {
-        //         withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
-        //             script {
-        //                 sh """
-        //                     git config --global user.name "John Rocha"
-        //                     git config --global user.email "xjohnfitcodes@gmail.com"
-        //                     sed -i 's|image: .*/xjohnfit/nextjs14-portfolio:.*|image: xjohnfit/nextjs14-portfolio:${IMAGE_TAG}|g' kubernetes/deployment.yml
+        stage("11. Update Kubernetes Deployment for ArgoCD") {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
+                    script {
+                        sh """
+                            git config --global user.name "John Rocha"
+                            git config --global user.email "xjohnfitcodes@gmail.com"
+                            sed -i 's|image: .*/xjohnfit/nextjs14-portfolio:.*|image: xjohnfit/nextjs14-portfolio:${IMAGE_TAG}|g' kubernetes/deployment.yml
 
-        //                     if git diff --quiet kubernetes/deployment.yml; then
-        //                         echo "No changes to commit."
-        //                     else
-        //                         git add kubernetes/deployment.yml
-        //                         git commit -m "Update deployment image to ${IMAGE_TAG} via Jenkins"
-        //                         GIT_PUSH_URL="https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/xjohnfit/nextjs14-portfolio.git"
-        //                         git push "\$GIT_PUSH_URL" main
-        //                     fi
-        //                 """
-        //             }
-        //         }
-        //     }
-        // }
+                            if git diff --quiet kubernetes/deployment.yml; then
+                                echo "No changes to commit."
+                            else
+                                git add kubernetes/deployment.yml
+                                git commit -m "Update deployment image to ${IMAGE_TAG} via Jenkins"
+                                GIT_PUSH_URL="https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/xjohnfit/nextjs14-portfolio.git"
+                                git push "\$GIT_PUSH_URL" main
+                            fi
+                        """
+                    }
+                }
+            }
+        }
         stage('11. Collect Reports') {
             steps {
                 script {

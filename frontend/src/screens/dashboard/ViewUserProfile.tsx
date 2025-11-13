@@ -19,7 +19,9 @@ import {
     Ruler,
     Weight
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+import { calculateAge } from '@/lib/calculateAge';
 
 interface UserProfile {
     _id: string;
@@ -61,6 +63,7 @@ const ViewUserProfile = () => {
     const [showFollowers, setShowFollowers] = useState(false);
     const [showFollowing, setShowFollowing] = useState(false);
 
+
     const {
         data: userProfile,
         isLoading,
@@ -71,6 +74,15 @@ const ViewUserProfile = () => {
     });
 
     const [followUnfollowUser, { isLoading: isFollowLoading }] = useFollowUnfollowUserMutation();
+
+    // Scroll to top whenever the username parameter changes
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
+        });
+    }, [username]);
 
     if (isLoading) {
         return (
@@ -113,21 +125,11 @@ const ViewUserProfile = () => {
         return name.split(' ').map(n => n[0]).join('').toUpperCase();
     };
 
-    const calculateAge = (dob: string) => {
-        const birthDate = new Date(dob);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-        return age;
-    };
+
 
     const handleUserClick = (clickedUsername: string) => {
+        console.log('Navigating to user:', clickedUsername);
         navigate(`/profile/view/${clickedUsername}`);
-        //Scroll to top after navigation
-        window.scrollTo(0, 0);
     };
 
     return (
@@ -347,8 +349,8 @@ const ViewUserProfile = () => {
                                     {user.followers.slice(0, showFollowers ? undefined : 3).map((follower) => (
                                         <div
                                             key={follower._id}
-                                            className="flex items-center space-x-2 sm:space-x-3 hover:bg-gray-50 dark:hover:bg-gray-700 p-1.5 sm:p-2 rounded-lg cursor-pointer transition-colors"
                                             onClick={() => handleUserClick(follower.username)}
+                                            className="flex items-center space-x-2 sm:space-x-3 hover:bg-gray-50 dark:hover:bg-gray-700 p-1.5 sm:p-2 rounded-lg cursor-pointer transition-colors"
                                         >
                                             <Avatar className="w-8 h-8 sm:w-10 sm:h-10 shrink-0">
                                                 <AvatarImage src={follower.photo} alt={follower.name} />
@@ -394,8 +396,8 @@ const ViewUserProfile = () => {
                                     {user.following.slice(0, showFollowing ? undefined : 3).map((followingUser) => (
                                         <div
                                             key={followingUser._id}
-                                            className="flex items-center space-x-2 sm:space-x-3 hover:bg-gray-50 dark:hover:bg-gray-700 p-1.5 sm:p-2 rounded-lg cursor-pointer transition-colors"
                                             onClick={() => handleUserClick(followingUser.username)}
+                                            className="flex items-center space-x-2 sm:space-x-3 hover:bg-gray-50 dark:hover:bg-gray-700 p-1.5 sm:p-2 rounded-lg cursor-pointer transition-colors"
                                         >
                                             <Avatar className="w-8 h-8 sm:w-10 sm:h-10 shrink-0">
                                                 <AvatarImage src={followingUser.photo} alt={followingUser.name} />

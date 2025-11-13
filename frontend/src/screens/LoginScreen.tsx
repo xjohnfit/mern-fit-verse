@@ -4,12 +4,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLoginMutation } from '@/slices/usersApiSlice';
 import { setCredentials } from '@/slices/authSlice';
 import { toast } from 'sonner';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Mail, Lock, LogIn, Chrome, Facebook } from 'lucide-react';
 
 const LoginScreen = () => {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
+        rememberMe: false,
     });
 
     const [showPassword, setShowPassword] = useState(false);
@@ -29,10 +30,11 @@ const LoginScreen = () => {
     }, [isAuthenticated, navigate]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
+        
         setFormData((prev) => ({
             ...prev,
-            [name]: value,
+            [name]: type === 'checkbox' ? checked : value,
         }));
     };
 
@@ -40,255 +42,184 @@ const LoginScreen = () => {
         e.preventDefault();
 
         try {
-            const res = await login(formData).unwrap();
+            const { rememberMe, ...loginData } = formData;
+            const res = await login(loginData).unwrap();
             dispatch(setCredentials({ ...res }));
-            toast.success('Login Successful.');
+            toast.success('Welcome back! Login successful.');
             navigate('/dashboard');
         } catch (err: string | any) {
-            toast.error(err?.data.message);
+            toast.error(err?.data?.message || 'Login failed. Please try again.');
         }
     };
 
     return (
-        <div className='min-h-screen bg-linear-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4 sm:px-6 lg:px-8'>
-            <div className='max-w-md w-full space-y-6'>
-                {/* Header */}
-                <div className='text-center'>
-                    <h1 className='text-4xl font-bold bg-linear-to-r from-[#38bdf8] via-[#818cf8] to-[#c084fc] bg-clip-text text-transparent mb-2'>
-                        Welcome Back
-                    </h1>
-                    <p className='text-gray-400 text-lg'>
-                        Sign in to your FitVerse account
-                    </p>
+        <div className='min-h-screen relative overflow-hidden'>
+            {/* Animated Background */}
+            <div className='absolute inset-0 bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/20'>
+                {/* Animated background elements */}
+                <div className='absolute top-0 left-0 w-full h-full'>
+                    <div className='absolute top-1/4 left-1/4 w-72 h-72 bg-blue-400/10 dark:bg-blue-600/20 rounded-full blur-3xl animate-pulse'></div>
+                    <div className='absolute top-3/4 right-1/4 w-96 h-96 bg-purple-400/10 dark:bg-purple-600/20 rounded-full blur-3xl animate-pulse delay-1000'></div>
+                    <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-400/10 dark:bg-indigo-600/20 rounded-full blur-3xl animate-pulse delay-500'></div>
                 </div>
+            </div>
 
-                {/* Login Form */}
-                <div className='bg-gray-800/90 backdrop-blur-sm rounded-xl p-8 border border-gray-700 shadow-2xl hover:shadow-[0_0_30px_rgba(56,189,248,0.2)] transition-all duration-300'>
-                    <form
-                        onSubmit={handleSubmit}
-                        className='space-y-6'>
-                        {/* Email Field */}
-                        <div className='space-y-2'>
-                            <label
-                                htmlFor='email'
-                                className='block text-sm font-medium text-blue-400 mb-1'>
-                                Email Address
-                            </label>
-                            <div className='relative'>
-                                <input
-                                    id='email'
-                                    name='email'
-                                    type='email'
-                                    required
-                                    autoComplete='email'
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                    className='w-full px-4 py-3 pl-10 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none transition-all duration-200'
-                                    placeholder='Enter your email'
-                                />
-                                <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                                    <svg
-                                        className='h-5 w-5 text-gray-400'
-                                        fill='none'
-                                        stroke='currentColor'
-                                        viewBox='0 0 24 24'>
-                                        <path
-                                            strokeLinecap='round'
-                                            strokeLinejoin='round'
-                                            strokeWidth={2}
-                                            d='M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207'
-                                        />
-                                    </svg>
+            {/* Main Content */}
+            <div className='relative z-10 min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12'>
+                <div className='max-w-md w-full space-y-8'>
+                    {/* Header */}
+                    <div className='text-center'>
+                        <div className='inline-flex items-center justify-center w-16 h-16 bg-linear-to-r from-blue-500 to-purple-600 rounded-full mb-6 shadow-lg'>
+                            <LogIn className='w-8 h-8 text-white' />
+                        </div>
+                        <h1 className='text-4xl sm:text-5xl font-bold bg-linear-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-400 dark:via-purple-400 dark:to-indigo-400 bg-clip-text text-transparent mb-3'>
+                            Welcome Back
+                        </h1>
+                        <p className='text-gray-600 dark:text-gray-300 text-lg'>
+                            Sign in to continue your fitness journey
+                        </p>
+                    </div>
+
+                    {/* Login Form */}
+                    <div className='bg-white/80 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl dark:hover:shadow-blue-500/10 transition-all duration-500'>
+                        <form onSubmit={handleSubmit} className='space-y-6'>
+                            {/* Email Field */}
+                            <div className='space-y-2'>
+                                <label htmlFor='email' className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                                    Email Address
+                                </label>
+                                <div className='relative group'>
+                                    <input
+                                        id='email'
+                                        name='email'
+                                        type='email'
+                                        required
+                                        autoComplete='email'
+                                        value={formData.email}
+                                        onChange={handleInputChange}
+                                        className='w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
+                                        placeholder='Enter your email address'
+                                    />
+                                    <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+                                        <Mail className='h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-200' />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Password Field */}
-                        <div className='space-y-2'>
-                            <label
-                                htmlFor='password'
-                                className='block text-sm font-medium text-purple-400 mb-1'>
-                                Password
-                            </label>
-                            <div className='relative'>
-                                <input
-                                    id='password'
-                                    name='password'
-                                    type={showPassword ? 'text' : 'password'}
-                                    required
-                                    autoComplete='current-password'
-                                    value={formData.password}
-                                    onChange={handleInputChange}
-                                    className='w-full px-4 py-3 pl-10 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-purple-400 focus:ring-1 focus:ring-purple-400 focus:outline-none transition-all duration-200'
-                                    placeholder='Enter your password'
-                                />
-                                <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                                    <svg
-                                        className='h-5 w-5 text-gray-400'
-                                        fill='none'
-                                        stroke='currentColor'
-                                        viewBox='0 0 24 24'>
-                                        <path
-                                            strokeLinecap='round'
-                                            strokeLinejoin='round'
-                                            strokeWidth={2}
-                                            d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'
-                                        />
-                                    </svg>
+                            {/* Password Field */}
+                            <div className='space-y-2'>
+                                <label htmlFor='password' className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                                    Password
+                                </label>
+                                <div className='relative group'>
+                                    <input
+                                        id='password'
+                                        name='password'
+                                        type={showPassword ? 'text' : 'password'}
+                                        required
+                                        autoComplete='current-password'
+                                        value={formData.password}
+                                        onChange={handleInputChange}
+                                        className='w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md border-gray-200 dark:border-gray-600 focus:border-purple-500 focus:ring-purple-500/20'
+                                        placeholder='Enter your password'
+                                    />
+                                    <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+                                        <Lock className='h-5 w-5 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-200' />
+                                    </div>
+                                    <button
+                                        type='button'
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200'
+                                    >
+                                        {showPassword ? <EyeOff className='h-5 w-5' /> : <Eye className='h-5 w-5' />}
+                                    </button>
                                 </div>
+                            </div>
+
+                            {/* Remember Me & Forgot Password */}
+                            <div className='flex items-center justify-between pt-2'>
+                                <div className='flex items-center'>
+                                    <input
+                                        id='rememberMe'
+                                        name='rememberMe'
+                                        type='checkbox'
+                                        checked={formData.rememberMe}
+                                        onChange={handleInputChange}
+                                        className='w-4 h-4 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2 transition-colors duration-200'
+                                    />
+                                    <label
+                                        htmlFor='rememberMe'
+                                        className='ml-2 block text-sm text-gray-700 dark:text-gray-300 select-none cursor-pointer'>
+                                        Remember me
+                                    </label>
+                                </div>
+                                <a
+                                    href='#'
+                                    className='text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200 hover:underline font-medium'>
+                                    Forgot password?
+                                </a>
+                            </div>
+
+                            {/* Submit Button */}
+                            <div className='pt-4'>
                                 <button
-                                    type='button'
-                                    onClick={() =>
-                                        setShowPassword(!showPassword)
-                                    }
-                                    className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-purple-400 transition-colors duration-200'>
-                                    {showPassword ? (
-                                        <svg
-                                            className='h-5 w-5'
-                                            fill='none'
-                                            stroke='currentColor'
-                                            viewBox='0 0 24 24'>
-                                            <path
-                                                strokeLinecap='round'
-                                                strokeLinejoin='round'
-                                                strokeWidth={2}
-                                                d='M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21'
-                                            />
-                                        </svg>
+                                    type='submit'
+                                    disabled={isLoading}
+                                    className='w-full bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2'
+                                >
+                                    {isLoading ? (
+                                        <>
+                                            <div className='w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin'></div>
+                                            <span>Signing in...</span>
+                                        </>
                                     ) : (
-                                        <svg
-                                            className='h-5 w-5'
-                                            fill='none'
-                                            stroke='currentColor'
-                                            viewBox='0 0 24 24'>
-                                            <path
-                                                strokeLinecap='round'
-                                                strokeLinejoin='round'
-                                                strokeWidth={2}
-                                                d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
-                                            />
-                                            <path
-                                                strokeLinecap='round'
-                                                strokeLinejoin='round'
-                                                strokeWidth={2}
-                                                d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z'
-                                            />
-                                        </svg>
+                                        <>
+                                            <span>Sign In</span>
+                                            <ArrowRight className='w-5 h-5' />
+                                        </>
                                     )}
                                 </button>
                             </div>
+                        </form>
+
+                        {/* Divider */}
+                        <div className='mt-8'>
+                            <div className='relative'>
+                                <div className='absolute inset-0 flex items-center'>
+                                    <div className='w-full border-t border-gray-200 dark:border-gray-600'></div>
+                                </div>
+                                <div className='relative flex justify-center text-sm'>
+                                    <span className='px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-medium'>
+                                        Or continue with
+                                    </span>
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Remember Me & Forgot Password */}
-                        <div className='flex items-center justify-between pt-2'>
-                            <div className='flex items-center'>
-                                <input
-                                    id='remember-me'
-                                    name='remember-me'
-                                    type='checkbox'
-                                    className='h-4 w-4 text-blue-500 bg-gray-700 border-gray-500 rounded focus:ring-blue-500 focus:ring-1'
-                                />
-                                <label
-                                    htmlFor='remember-me'
-                                    className='ml-2 block text-sm text-gray-300 select-none cursor-pointer'>
-                                    Remember me
-                                </label>
-                            </div>
+                        {/* Social Login */}
+                        <div className='mt-6 grid grid-cols-2 gap-4'>
+                            <button className='w-full inline-flex justify-center items-center py-3 px-4 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700/50 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600/50 hover:border-red-300 dark:hover:border-red-500 hover:text-red-600 dark:hover:text-red-400 transition-all duration-200 group'>
+                                <Chrome className='w-5 h-5 text-gray-400 group-hover:text-red-500 transition-colors duration-200' />
+                                <span className='ml-2'>Google</span>
+                            </button>
+                            <button className='w-full inline-flex justify-center items-center py-3 px-4 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700/50 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600/50 hover:border-blue-300 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 group'>
+                                <Facebook className='w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors duration-200' />
+                                <span className='ml-2'>Facebook</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Sign Up Link */}
+                    <div className='text-center'>
+                        <p className='text-gray-600 dark:text-gray-400'>
+                            Don't have an account?{' '}
                             <a
-                                href='#'
-                                className='text-sm text-blue-400 hover:text-blue-300 transition-colors duration-200 hover:underline'>
-                                Forgot password?
+                                href='/register'
+                                className='text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-semibold hover:underline transition-colors duration-200'>
+                                Sign up now
                             </a>
-                        </div>
-
-                        {/* Submit Button */}
-                        <button
-                            type='submit'
-                            disabled={isLoading}
-                            className='w-full bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 text-white 
-                            py-3 px-4 rounded-lg font-semibold text-sm
-                            hover:from-blue-400 hover:via-purple-400 hover:to-pink-400
-                            focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 
-                            focus:ring-offset-gray-800 transform hover:scale-[1.02] active:scale-[0.98]
-                            transition-all duration-200 
-                            shadow-lg hover:shadow-xl
-                            disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none'>
-                            {isLoading ? (
-                                <div className='flex items-center justify-center space-x-2'>
-                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                    <span className="text-sm">Signing in...</span>
-                                </div>
-                            ) : (
-                                <div className='flex items-center justify-center space-x-2'>
-                                    <span>Sign In</span>
-                                    <ArrowRight className='h-4 w-4' />
-                                </div>
-                            )}
-                        </button>
-                    </form>
-
-                    {/* Divider */}
-                    <div className='mt-6'>
-                        <div className='relative'>
-                            <div className='absolute inset-0 flex items-center'>
-                                <div className='w-full border-t border-gray-600'></div>
-                            </div>
-                            <div className='relative flex justify-center text-sm'>
-                                <span className='px-2 bg-gray-800 text-gray-400'>
-                                    Or continue with
-                                </span>
-                            </div>
-                        </div>
+                        </p>
                     </div>
-
-                    {/* Social Login */}
-                    <div className='mt-6 grid grid-cols-2 gap-3'>
-                        <button className='w-full inline-flex justify-center items-center py-3 px-4 border border-gray-600 rounded-lg bg-gray-700/50 text-sm font-medium text-gray-300 hover:bg-gray-600/50 hover:border-blue-500 hover:text-white transition-all duration-200'>
-                            <svg
-                                className='w-4 h-4'
-                                fill='currentColor'
-                                viewBox='0 0 24 24'>
-                                <path
-                                    d='M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z'
-                                    fill='#4285F4'
-                                />
-                                <path
-                                    d='M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z'
-                                    fill='#34A853'
-                                />
-                                <path
-                                    d='M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z'
-                                    fill='#FBBC05'
-                                />
-                                <path
-                                    d='M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z'
-                                    fill='#EA4335'
-                                />
-                            </svg>
-                            <span className='ml-2'>Google</span>
-                        </button>
-                        <button className='w-full inline-flex justify-center items-center py-3 px-4 border border-gray-600 rounded-lg bg-gray-700/50 text-sm font-medium text-gray-300 hover:bg-gray-600/50 hover:border-blue-500 hover:text-white transition-all duration-200'>
-                            <svg
-                                className='w-4 h-4'
-                                fill='#1877F2'
-                                viewBox='0 0 24 24'>
-                                <path d='M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z' />
-                            </svg>
-                            <span className='ml-2'>Facebook</span>
-                        </button>
-                    </div>
-                </div>
-
-                {/* Sign Up Link */}
-                <div className='text-center'>
-                    <p className='text-gray-400'>
-                        Don't have an account?{' '}
-                        <a
-                            href='/register'
-                            className='text-[#38bdf8] hover:text-[#818cf8] font-medium transition-colors duration-300'>
-                            Sign up now
-                        </a>
-                    </p>
                 </div>
             </div>
         </div>

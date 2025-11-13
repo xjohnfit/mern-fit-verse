@@ -52,31 +52,44 @@ const EditProfileScreen = () => {
 
     // Photo handling functions
     const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-        // Validate file type
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic'];
-        if (!validTypes.includes(file.type)) {
-            toast.error('Please select a valid image file (JPG, PNG, WebP or HEIC)');
-            return;
-        }
+    // Get file extension as fallback for HEIC detection
+    const fileExtension = file.name.toLowerCase().split('.').pop() || '';
+    
+    // Validate file type - include both MIME type and extension check
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    const validExtensions = ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'];
+    
+    const isValidMimeType = validTypes.includes(file.type);
+    const isValidExtension = validExtensions.includes(fileExtension);
+    
+    if (!isValidMimeType && !isValidExtension) {
+        toast.error('Please select a valid image file (JPG, PNG, WebP or HEIC)');
+        return;
+    }
 
-        // Validate file size (max 5MB)
-        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
-        if (file.size > maxSize) {
-            toast.error('Image size must be less than 5MB');
-            return;
-        }
+    // Special handling for HEIC files (they often have empty or incorrect MIME type)
+    if (!isValidMimeType && (fileExtension === 'heic' || fileExtension === 'heif')) {
+        console.log('HEIC file detected via extension');
+    }
 
-        setPhotoFile(file);
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+        toast.error('Image size must be less than 5MB');
+        return;
+    }
 
-        // Create preview URL (for display only)
-        const previewUrl = URL.createObjectURL(file);
-        setPhotoPreview(previewUrl);
+    setPhotoFile(file);
 
-        toast.success('Photo selected successfully!');
-    };
+    // Create preview URL (for display only)
+    const previewUrl = URL.createObjectURL(file);
+    setPhotoPreview(previewUrl);
+
+    toast.success('Photo selected successfully!');
+};
 
     const handlePhotoClick = () => {
         const fileInput = document.getElementById('photo-input') as HTMLInputElement;
@@ -457,7 +470,7 @@ const EditProfileScreen = () => {
                                     <input
                                         id='photo-input'
                                         type='file'
-                                        accept='image/*'
+                                        accept='image/*,.heic,.heif'
                                         onChange={handlePhotoSelect}
                                         className='hidden'
                                     />

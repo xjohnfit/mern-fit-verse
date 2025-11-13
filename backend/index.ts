@@ -12,6 +12,9 @@ import { notFound, errorHandler } from './middlewares/errorMiddleware';
 import userRoutes from './routes/userRoutes';
 import healthRoutes from './routes/healthRoutes';
 import authRoutes from './routes/authRoutes';
+import postsRoutes from './routes/postRoutes';
+// import exerciseRoutes from './routes/exerciseRoutes';
+// import foodRoutes from './routes/foodRoutes';
 
 // Configurations
 dotenv.config({
@@ -43,6 +46,7 @@ app.use(cookieParser());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/posts', postsRoutes);
 app.use('/api/health', healthRoutes);
 // app.use('/api/exercises', exerciseRoutes);
 // app.use('/api/food', foodRoutes);
