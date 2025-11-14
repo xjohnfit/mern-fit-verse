@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router';
+import { useParams } from 'react-router';
 import {
     useViewUserProfileQuery,
     useFollowUnfollowUserMutation,
@@ -41,6 +41,7 @@ import { useEffect, useState } from 'react';
 
 import { calculateAge } from '@/lib/calculateAge';
 import { getInitials } from '@/lib/getInitials';
+import FollowersFollowingModal from './FollowersFollowingModal';
 
 interface Post {
     _id: string;
@@ -103,10 +104,7 @@ interface RootState {
 
 const ViewUserProfile = () => {
     const { username } = useParams<{ username: string; }>();
-    const navigate = useNavigate();
     const currentUser = useSelector((state: RootState) => state.auth.userInfo);
-    const [showFollowers, setShowFollowers] = useState(false);
-    const [showFollowing, setShowFollowing] = useState(false);
     const [commentTexts, setCommentTexts] = useState<{ [key: string]: string; }>(
         {}
     );
@@ -116,6 +114,8 @@ const ViewUserProfile = () => {
     const [showCreatePost, setShowCreatePost] = useState(false);
     const [postContent, setPostContent] = useState('');
     const [postImage, setPostImage] = useState<string | null>(null);
+    const [showFollowersModal, setShowFollowersModal] = useState(false);
+    const [showFollowingModal, setShowFollowingModal] = useState(false);
 
     const {
         data: userProfile,
@@ -197,11 +197,6 @@ const ViewUserProfile = () => {
                 error?.data?.message || 'Failed to update follow status'
             );
         }
-    };
-
-    const handleUserClick = (clickedUsername: string) => {
-        console.log('Navigating to user:', clickedUsername);
-        navigate(`/profile/view/${clickedUsername}`);
     };
 
     const handleLikePost = async (postId: string) => {
@@ -320,13 +315,13 @@ const ViewUserProfile = () => {
         <div className='min-h-screen bg-gray-50 dark:bg-gray-900'>
             {/* Cover Photo Section */}
             <div className='relative'>
-                <div className='h-48 sm:h-64 md:h-80 bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700'></div>
+                <div className='h-64 sm:h-64 md:h-80 bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700'></div>
 
                 {/* Profile Info Overlay */}
                 <div className='absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/50 to-transparent'>
-                    <div className='max-w-6xl mx-auto px-4 py-6'>
+                    <div className='max-w-6xl mx-auto px-4 py-8'>
                         {/* Mobile Instagram-style Layout */}
-                        <div className='block sm:hidden mt-6 mb-4'>
+                        <div className='block sm:hidden'>
                             <div className='flex items-center space-x-4'>
                                 {/* Profile Picture - Left */}
                                 <div className='w-32 h-32 lg:w-36 lg:h-36 rounded-full bg-gray-200 dark:bg-gray-700 border-4 border-blue-500 dark:border-blue-400 overflow-hidden shadow-lg hover:shadow-xl cursor-pointer transition-all duration-200'>
@@ -353,8 +348,10 @@ const ViewUserProfile = () => {
                                     </p>
 
                                     {/* Stats Row */}
-                                    <div className='flex space-x-6 mb-1'>
-                                        <div className='flex items-center justify-center gap-2'>
+                                    <div className='flex space-x-6 mb-3'>
+                                        <button
+                                            onClick={() => setShowFollowersModal(true)}
+                                            className='flex items-center justify-center gap-2 hover:opacity-80 transition-opacity'>
                                             <div className='text-md font-bold'>
                                                 {user.followers.length}
                                             </div>
@@ -363,15 +360,17 @@ const ViewUserProfile = () => {
                                                     ? 'follower'
                                                     : 'followers'}
                                             </div>
-                                        </div>
-                                        <div className='flex items-center justify-center gap-2'>
+                                        </button>
+                                        <button
+                                            onClick={() => setShowFollowingModal(true)}
+                                            className='flex items-center justify-center gap-2 hover:opacity-80 transition-opacity'>
                                             <div className='text-md font-bold'>
                                                 {user.following.length}
                                             </div>
                                             <div className='text-xs text-gray-200'>
                                                 following
                                             </div>
-                                        </div>
+                                        </button>
                                     </div>
 
                                     {/* Action Buttons */}
@@ -386,8 +385,8 @@ const ViewUserProfile = () => {
                                                         : 'default'
                                                 }
                                                 className={`${isFollowing
-                                                        ? 'text-white border-white bg-transparent hover:bg-white/10'
-                                                        : ''
+                                                    ? 'text-white border-white bg-transparent hover:bg-white/10'
+                                                    : ''
                                                     } text-xs flex-1`}
                                                 size='sm'>
                                                 {isFollowLoading ? (
@@ -417,40 +416,46 @@ const ViewUserProfile = () => {
                         </div>
 
                         {/* Desktop Layout */}
-                        <div className='hidden sm:flex sm:items-end sm:space-x-6'>
-                            {/* Profile Picture */}
-                            <Avatar className='w-28 h-28 md:w-32 md:h-32 border-4 border-white shadow-lg'>
-                                <AvatarImage
-                                    src={user.photo}
-                                    alt={user.name}
-                                />
-                                <AvatarFallback className='text-2xl font-bold bg-blue-600 text-white'>
-                                    {getInitials(user.name)}
-                                </AvatarFallback>
-                            </Avatar>
+                        <div className='hidden sm:flex sm:items-end sm:justify-between sm:space-x-8 sm:pt-8 md:pt-10'>
+                            {/* Left Section: Profile Picture + Name */}
+                            <div className='flex items-end space-x-4'>
+                                <Avatar className='w-28 h-28 md:w-32 md:h-32 border-4 border-white shadow-lg'>
+                                    <AvatarImage
+                                        src={user.photo}
+                                        alt={user.name}
+                                    />
+                                    <AvatarFallback className='text-2xl font-bold bg-blue-600 text-white'>
+                                        {getInitials(user.name)}
+                                    </AvatarFallback>
+                                </Avatar>
 
-                            {/* Basic Info */}
-                            <div className='flex-1 text-white pb-4'>
-                                <h1 className='text-3xl md:text-4xl font-bold'>
-                                    {user.name}
-                                </h1>
-                                <p className='text-xl text-gray-200'>
-                                    @{user.username}
-                                </p>
-                                <div className='flex items-center space-x-6 mt-2 flex-wrap'>
-                                    <span className='flex items-center space-x-2'>
-                                        <Users className='w-5 h-5' />
-                                        <span>
-                                            {user.followers.length} followers
-                                        </span>
-                                    </span>
-                                    <span className='flex items-center space-x-2'>
-                                        <UserCheck className='w-5 h-5' />
-                                        <span>
-                                            {user.following.length} following
-                                        </span>
-                                    </span>
+                                {/* Name & Username */}
+                                <div className='text-white pb-4'>
+                                    <h1 className='text-2xl md:text-3xl font-bold mb-1'>
+                                        {user.name}
+                                    </h1>
+                                    <p className='text-lg text-gray-200'>
+                                        @{user.username}
+                                    </p>
                                 </div>
+                            </div>
+
+                            {/* Right Section: Social Stats Only */}
+                            <div className='flex items-center space-x-8 self-end pb-4'>
+                                <button
+                                    onClick={() => setShowFollowersModal(true)}
+                                    className='text-white text-center hover:opacity-80 transition-opacity'>
+                                    <div className='text-xl font-bold'>{user.followers.length}</div>
+                                    <div className='text-sm text-gray-300'>
+                                        {user.followers.length === 1 ? 'follower' : 'followers'}
+                                    </div>
+                                </button>
+                                <button
+                                    onClick={() => setShowFollowingModal(true)}
+                                    className='text-white text-center hover:opacity-80 transition-opacity'>
+                                    <div className='text-xl font-bold'>{user.following.length}</div>
+                                    <div className='text-sm text-gray-300'>following</div>
+                                </button>
                             </div>
 
                             {/* Action Buttons */}
@@ -503,240 +508,132 @@ const ViewUserProfile = () => {
             {/* Main Content */}
             <div className='max-w-6xl mx-auto px-4 py-4 sm:py-6 md:py-8'>
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8'>
-                    {/* Left Sidebar - About */}
+                    {/* Left Sidebar - About Cards */}
                     <div className='lg:col-span-1 order-2 md:order-1'>
+                        {/* Personal Info Card */}
                         <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6'>
-                            <h2 className='text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-gray-100'>
-                                About
+                            <h2 className='text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-4'>
+                                Personal Info
                             </h2>
-                            <div className='space-y-3 sm:space-y-4'>
+                            <div className='space-y-3'>
                                 <div className='flex items-center space-x-3'>
-                                    <Cake className='w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 shrink-0' />
-                                    <div className='min-w-0 flex-1'>
-                                        <p className='font-medium text-sm sm:text-base text-gray-900 dark:text-gray-100'>
-                                            Age
-                                        </p>
-                                        <p className='text-gray-600 dark:text-gray-400 text-sm sm:text-base'>
-                                            {calculateAge(user.dob)} years old
+                                    <Cake className='w-5 h-5 text-gray-400 dark:text-gray-500' />
+                                    <div>
+                                        <p className='text-sm text-gray-500 dark:text-gray-400'>Age</p>
+                                        <p className='font-medium text-gray-900 dark:text-gray-100'>
+                                            {calculateAge(user.dob)} years
                                         </p>
                                     </div>
                                 </div>
-
                                 <div className='flex items-center space-x-3'>
-                                    <User className='w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 shrink-0' />
-                                    <div className='min-w-0 flex-1'>
-                                        <p className='font-medium text-sm sm:text-base text-gray-900 dark:text-gray-100'>
-                                            Gender
-                                        </p>
-                                        <p className='text-gray-600 dark:text-gray-400 text-sm sm:text-base capitalize'>
+                                    <User className='w-5 h-5 text-gray-400 dark:text-gray-500' />
+                                    <div>
+                                        <p className='text-sm text-gray-500 dark:text-gray-400'>Gender</p>
+                                        <p className='font-medium text-gray-900 dark:text-gray-100 capitalize'>
                                             {user.gender}
                                         </p>
                                     </div>
                                 </div>
+                                <div className='flex items-center space-x-3'>
+                                    <Calendar className='w-5 h-5 text-gray-400 dark:text-gray-500' />
+                                    <div>
+                                        <p className='text-sm text-gray-500 dark:text-gray-400'>Joined</p>
+                                        <p className='font-medium text-gray-900 dark:text-gray-100'>
+                                            {formatDateToMMDDYYYY(user.createdAt)}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                                {user.height && (
+                        {/* Fitness Info Card */}
+                        <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6'>
+                            <h2 className='text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-4'>
+                                Fitness Info
+                            </h2>
+                            <div className='space-y-3'>
+                                {user.height ? (
                                     <div className='flex items-center space-x-3'>
-                                        <Ruler className='w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 shrink-0' />
-                                        <div className='min-w-0 flex-1'>
-                                            <p className='font-medium text-sm sm:text-base text-gray-900 dark:text-gray-100'>
-                                                Height
-                                            </p>
-                                            <p className='text-gray-600 dark:text-gray-400 text-sm sm:text-base'>
+                                        <Ruler className='w-5 h-5 text-gray-400 dark:text-gray-500' />
+                                        <div>
+                                            <p className='text-sm text-gray-500 dark:text-gray-400'>Height</p>
+                                            <p className='font-medium text-gray-900 dark:text-gray-100'>
                                                 {user.height} cm
                                             </p>
                                         </div>
                                     </div>
+                                ) : (
+                                    <div className='flex items-center space-x-3'>
+                                        <Ruler className='w-5 h-5 text-gray-400 dark:text-gray-500' />
+                                        <div>
+                                            <p className='text-sm text-gray-500 dark:text-gray-400'>Height</p>
+                                            <p className='text-sm text-gray-400 dark:text-gray-500'>Not provided</p>
+                                        </div>
+                                    </div>
                                 )}
 
-                                {user.weight && (
+                                {user.weight ? (
                                     <div className='flex items-center space-x-3'>
-                                        <Weight className='w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 shrink-0' />
-                                        <div className='min-w-0 flex-1'>
-                                            <p className='font-medium text-sm sm:text-base text-gray-900 dark:text-gray-100'>
-                                                Weight
-                                            </p>
-                                            <p className='text-gray-600 dark:text-gray-400 text-sm sm:text-base'>
+                                        <Weight className='w-5 h-5 text-gray-400 dark:text-gray-500' />
+                                        <div>
+                                            <p className='text-sm text-gray-500 dark:text-gray-400'>Weight</p>
+                                            <p className='font-medium text-gray-900 dark:text-gray-100'>
                                                 {user.weight} kg
                                             </p>
                                         </div>
                                     </div>
-                                )}
-
-                                {user.goal && (
+                                ) : (
                                     <div className='flex items-center space-x-3'>
-                                        <Target className='w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 shrink-0' />
-                                        <div className='min-w-0 flex-1'>
-                                            <p className='font-medium text-sm sm:text-base text-gray-900 dark:text-gray-100'>
-                                                Fitness Goal
-                                            </p>
-                                            <p className='text-gray-600 dark:text-gray-400 text-sm sm:text-base wrap-break-word'>
-                                                {user.goal}
-                                            </p>
+                                        <Weight className='w-5 h-5 text-gray-400 dark:text-gray-500' />
+                                        <div>
+                                            <p className='text-sm text-gray-500 dark:text-gray-400'>Weight</p>
+                                            <p className='text-sm text-gray-400 dark:text-gray-500'>Not provided</p>
                                         </div>
                                     </div>
                                 )}
+                            </div>
+                        </div>
 
+                        {/* Fitness Goal Card */}
+                        {user.goal && (
+                            <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6'>
+                                <h2 className='text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-4'>
+                                    Fitness Goal
+                                </h2>
+                                <div className='flex items-start space-x-3'>
+                                    <Target className='w-5 h-5 text-gray-400 dark:text-gray-500 mt-0.5 shrink-0' />
+                                    <p className='text-gray-900 dark:text-gray-100 leading-relaxed'>
+                                        {user.goal}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Social Stats Card */}
+                        <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6'>
+                            <h2 className='text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-4'>
+                                Social
+                            </h2>
+                            <div className='space-y-3'>
                                 <div className='flex items-center space-x-3'>
-                                    <Calendar className='w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 shrink-0' />
-                                    <div className='min-w-0 flex-1'>
-                                        <p className='font-medium text-sm sm:text-base text-gray-900 dark:text-gray-100'>
-                                            Joined
+                                    <Users className='w-5 h-5 text-gray-400 dark:text-gray-500' />
+                                    <div>
+                                        <p className='text-sm text-gray-500 dark:text-gray-400'>Followers</p>
+                                        <p className='font-medium text-gray-900 dark:text-gray-100'>
+                                            {user.followers.length}
                                         </p>
-                                        <p className='text-gray-600 dark:text-gray-400 text-sm sm:text-base'>
-                                            {formatDateToMMDDYYYY(
-                                                user.createdAt
-                                            )}
+                                    </div>
+                                </div>
+                                <div className='flex items-center space-x-3'>
+                                    <UserCheck className='w-5 h-5 text-gray-400 dark:text-gray-500' />
+                                    <div>
+                                        <p className='text-sm text-gray-500 dark:text-gray-400'>Following</p>
+                                        <p className='font-medium text-gray-900 dark:text-gray-100'>
+                                            {user.following.length}
                                         </p>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* Followers Section */}
-                        <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6'>
-                            <div className='flex items-center justify-between mb-4'>
-                                <h2 className='text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100'>
-                                    Followers ({user.followers.length})
-                                </h2>
-                                {user.followers.length > 0 && (
-                                    <Button
-                                        variant='ghost'
-                                        size='sm'
-                                        onClick={() =>
-                                            setShowFollowers(!showFollowers)
-                                        }
-                                        className='text-xs sm:text-sm'>
-                                        {showFollowers ? 'Hide' : 'Show All'}
-                                    </Button>
-                                )}
-                            </div>
-
-                            {user.followers.length === 0 ? (
-                                <p className='text-gray-500 dark:text-gray-400 text-center py-4 text-sm sm:text-base'>
-                                    No followers yet
-                                </p>
-                            ) : (
-                                <div
-                                    className={`space-y-2 sm:space-y-3 ${showFollowers
-                                            ? ''
-                                            : 'max-h-32 sm:max-h-40 overflow-hidden'
-                                        }`}>
-                                    {user.followers
-                                        .slice(0, showFollowers ? undefined : 3)
-                                        .map((follower) => (
-                                            <div
-                                                key={follower._id}
-                                                onClick={() =>
-                                                    handleUserClick(
-                                                        follower.username
-                                                    )
-                                                }
-                                                className='flex items-center space-x-2 sm:space-x-3 hover:bg-gray-50 dark:hover:bg-gray-700 p-1.5 sm:p-2 rounded-lg cursor-pointer transition-colors'>
-                                                <Avatar className='w-8 h-8 sm:w-10 sm:h-10 shrink-0'>
-                                                    <AvatarImage
-                                                        src={follower.photo}
-                                                        alt={follower.name}
-                                                    />
-                                                    <AvatarFallback className='bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-xs sm:text-sm'>
-                                                        {getInitials(
-                                                            follower.name
-                                                        )}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <div className='flex-1 min-w-0'>
-                                                    <p className='font-medium text-sm sm:text-base truncate text-gray-900 dark:text-gray-100'>
-                                                        {follower.name}
-                                                    </p>
-                                                    <p className='text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate'>
-                                                        @{follower.username}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    {!showFollowers &&
-                                        user.followers.length > 3 && (
-                                            <p className='text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center'>
-                                                +{user.followers.length - 3}{' '}
-                                                more followers
-                                            </p>
-                                        )}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Following Section */}
-                        <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6'>
-                            <div className='flex items-center justify-between mb-4'>
-                                <h2 className='text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100'>
-                                    Following ({user.following.length})
-                                </h2>
-                                {user.following.length > 0 && (
-                                    <Button
-                                        variant='ghost'
-                                        size='sm'
-                                        onClick={() =>
-                                            setShowFollowing(!showFollowing)
-                                        }
-                                        className='text-xs sm:text-sm'>
-                                        {showFollowing ? 'Hide' : 'Show All'}
-                                    </Button>
-                                )}
-                            </div>
-
-                            {user.following.length === 0 ? (
-                                <p className='text-gray-500 dark:text-gray-400 text-center py-4 text-sm sm:text-base'>
-                                    Not following anyone yet
-                                </p>
-                            ) : (
-                                <div
-                                    className={`space-y-2 sm:space-y-3 ${showFollowing
-                                            ? ''
-                                            : 'max-h-32 sm:max-h-40 overflow-hidden'
-                                        }`}>
-                                    {user.following
-                                        .slice(0, showFollowing ? undefined : 3)
-                                        .map((followingUser) => (
-                                            <div
-                                                key={followingUser._id}
-                                                onClick={() =>
-                                                    handleUserClick(
-                                                        followingUser.username
-                                                    )
-                                                }
-                                                className='flex items-center space-x-2 sm:space-x-3 hover:bg-gray-50 dark:hover:bg-gray-700 p-1.5 sm:p-2 rounded-lg cursor-pointer transition-colors'>
-                                                <Avatar className='w-8 h-8 sm:w-10 sm:h-10 shrink-0'>
-                                                    <AvatarImage
-                                                        src={
-                                                            followingUser.photo
-                                                        }
-                                                        alt={followingUser.name}
-                                                    />
-                                                    <AvatarFallback className='bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 text-xs sm:text-sm'>
-                                                        {getInitials(
-                                                            followingUser.name
-                                                        )}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <div className='flex-1 min-w-0'>
-                                                    <p className='font-medium text-sm sm:text-base truncate text-gray-900 dark:text-gray-100'>
-                                                        {followingUser.name}
-                                                    </p>
-                                                    <p className='text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate'>
-                                                        @
-                                                        {followingUser.username}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    {!showFollowing &&
-                                        user.following.length > 3 && (
-                                            <p className='text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center'>
-                                                +{user.following.length - 3}{' '}
-                                                more following
-                                            </p>
-                                        )}
-                                </div>
-                            )}
                         </div>
                     </div>
 
@@ -961,7 +858,7 @@ const ViewUserProfile = () => {
                                                             <img
                                                                 src={post.image}
                                                                 alt='Post image'
-                                                                className='w-full max-h-96 object-cover rounded-lg border border-gray-200 dark:border-gray-700'
+                                                                className='w-full max-h-96 object-contain rounded-lg border border-gray-200 dark:border-gray-700'
                                                             />
                                                         </div>
                                                     )}
@@ -981,16 +878,16 @@ const ViewUserProfile = () => {
                                                             currentUser?._id ||
                                                             ''
                                                         ) || false
-                                                                ? 'text-red-500 hover:text-red-600'
-                                                                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                                                            ? 'text-red-500 hover:text-red-600'
+                                                            : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                                                             }`}>
                                                         <Heart
                                                             className={`w-4 h-4 ${post.likes?.includes(
                                                                 currentUser?._id ||
                                                                 ''
                                                             )
-                                                                    ? 'fill-current'
-                                                                    : ''
+                                                                ? 'fill-current'
+                                                                : ''
                                                                 }`}
                                                         />
                                                         <span>
@@ -1189,6 +1086,24 @@ const ViewUserProfile = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Followers Modal */}
+            <FollowersFollowingModal
+                isOpen={showFollowersModal}
+                onClose={() => setShowFollowersModal(false)}
+                type="followers"
+                users={user.followers}
+                title="Followers"
+            />
+
+            {/* Following Modal */}
+            <FollowersFollowingModal
+                isOpen={showFollowingModal}
+                onClose={() => setShowFollowingModal(false)}
+                type="following"
+                users={user.following}
+                title="Following"
+            />
         </div>
     );
 };

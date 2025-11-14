@@ -30,7 +30,16 @@ interface UpdateUserBody {
 // Get logged-in user profile
 export const getUserProfile = asyncHandler(
     async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-        const user = req.user!;
+        const user = await User.findById(req.user!._id)
+            .select('-password')
+            .populate('followers', 'name username photo')
+            .populate('following', 'name username photo');
+
+        if (!user) {
+            res.status(404);
+            throw new Error('User not found');
+        }
+
         res.status(200).json(user);
     }
 );
@@ -78,7 +87,6 @@ export const updateUserProfile = asyncHandler(
         // Handle file upload if present
         if (req.file) {
             try {
-
                 if (user.photo) {
                     // Delete the previous photo from Cloudinary
                     const publicId = user.photo.split('/').pop()?.split('.')[0];

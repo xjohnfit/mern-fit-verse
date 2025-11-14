@@ -1,11 +1,12 @@
 import { Link, useNavigate } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
-import { useLogoutMutation } from '@/slices/usersApiSlice';
+import { useLogoutMutation, useGetUserProfileQuery } from '@/slices/usersApiSlice';
 import { clearCredentials } from '@/slices/authSlice';
 import { useState, useEffect } from 'react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, LogOut, Menu, X, LayoutDashboard, UtensilsCrossed, Dumbbell, Settings, Home, Search } from 'lucide-react';
+import { User, LogOut, Menu, X, LayoutDashboard, UtensilsCrossed, Dumbbell, Settings, Home, Search, Users, UserCheck } from 'lucide-react';
+import FollowersFollowingModal from '@/screens/protected/FollowersFollowingModal';
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -22,9 +23,12 @@ function Header() {
         (state: any) => state.auth
     );
     const [logoutApiCall] = useLogoutMutation();
+    const { data: currentUserProfile } = useGetUserProfileQuery({}, { skip: !isAuthenticated });
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [showFollowersModal, setShowFollowersModal] = useState(false);
+    const [showFollowingModal, setShowFollowingModal] = useState(false);
 
     // Close mobile menu on window resize
     useEffect(() => {
@@ -154,7 +158,7 @@ function Header() {
                                     </Link>
 
                                     <Link
-                                        to='/food'
+                                        to='/nutrition'
                                         className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200 font-medium group'
                                     >
                                         <UtensilsCrossed className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
@@ -185,11 +189,27 @@ function Header() {
                                                             <p className='text-sm text-gray-600 dark:text-gray-400'>
                                                                 {userInfo?.email}
                                                             </p>
-                                                        </div>
-
-                                                        <NavigationMenuLink asChild>
+                                                            {currentUserProfile && (
+                                                                <div className='flex items-center space-x-4 mt-2'>
+                                                                    <button
+                                                                        onClick={() => setShowFollowersModal(true)}
+                                                                        className='flex items-center space-x-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'
+                                                                    >
+                                                                        <Users className='w-3 h-3' />
+                                                                        <span>{currentUserProfile.followers?.length || 0} followers</span>
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => setShowFollowingModal(true)}
+                                                                        className='flex items-center space-x-1 text-xs text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300'
+                                                                    >
+                                                                        <UserCheck className='w-3 h-3' />
+                                                                        <span>{currentUserProfile.following?.length || 0} following</span>
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                        </div>                                                        <NavigationMenuLink asChild>
                                                             <Link
-                                                                to='/profile'
+                                                                to='/settings'
                                                                 className='flex flex-row items-center space-x-3 w-full px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 group'
                                                             >
                                                                 <Settings className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
@@ -278,16 +298,42 @@ function Header() {
                             {isAuthenticated ? (
                                 <div className='space-y-6'>
                                     {/* User Info Card */}
-                                    <div className='flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl'>
-                                        {avatar}
-                                        <div className='flex-1 min-w-0'>
-                                            <p className='font-semibold text-gray-900 dark:text-gray-100 truncate'>
-                                                {userInfo?.name}
-                                            </p>
-                                            <p className='text-sm text-gray-600 dark:text-gray-400 truncate'>
-                                                {userInfo?.email}
-                                            </p>
+                                    <div className='p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl'>
+                                        <div className='flex items-center space-x-4 mb-3'>
+                                            {avatar}
+                                            <div className='flex-1 min-w-0'>
+                                                <p className='font-semibold text-gray-900 dark:text-gray-100 truncate'>
+                                                    {userInfo?.name}
+                                                </p>
+                                                <p className='text-sm text-gray-600 dark:text-gray-400 truncate'>
+                                                    {userInfo?.email}
+                                                </p>
+                                            </div>
                                         </div>
+                                        {currentUserProfile && (
+                                            <div className='flex items-center space-x-4'>
+                                                <button
+                                                    onClick={() => {
+                                                        setShowFollowersModal(true);
+                                                        closeMobileMenu();
+                                                    }}
+                                                    className='flex items-center space-x-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'
+                                                >
+                                                    <Users className='w-4 h-4' />
+                                                    <span>{currentUserProfile.followers?.length || 0} followers</span>
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setShowFollowingModal(true);
+                                                        closeMobileMenu();
+                                                    }}
+                                                    className='flex items-center space-x-2 text-sm text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300'
+                                                >
+                                                    <UserCheck className='w-4 h-4' />
+                                                    <span>{currentUserProfile.following?.length || 0} following</span>
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Navigation Links */}
@@ -311,7 +357,7 @@ function Header() {
                                         </Link>
 
                                         <Link
-                                            to='/food'
+                                            to='/nutrition'
                                             onClick={closeMobileMenu}
                                             className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-xl transition-all duration-200 group'
                                         >
@@ -329,7 +375,7 @@ function Header() {
                                         </Link>
 
                                         <Link
-                                            to='/profile'
+                                            to='/settings'
                                             onClick={closeMobileMenu}
                                             className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200 group'
                                         >
@@ -379,6 +425,24 @@ function Header() {
                     </div>
                 </>
             )}
+
+            {/* Followers Modal */}
+            <FollowersFollowingModal
+                isOpen={showFollowersModal}
+                onClose={() => setShowFollowersModal(false)}
+                type="followers"
+                users={currentUserProfile?.followers || []}
+                title={`${currentUserProfile?.followers?.length || 0} Followers`}
+            />
+
+            {/* Following Modal */}
+            <FollowersFollowingModal
+                isOpen={showFollowingModal}
+                onClose={() => setShowFollowingModal(false)}
+                type="following"
+                users={currentUserProfile?.following || []}
+                title={`${currentUserProfile?.following?.length || 0} Following`}
+            />
         </>
     );
 }
