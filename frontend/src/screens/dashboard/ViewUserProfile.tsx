@@ -594,7 +594,7 @@ const ViewUserProfile = () => {
                                         size="sm"
                                     >
                                         <Plus className="w-4 h-4" />
-                                        <span className="hidden sm:inline">Create Post</span>
+                                        <span className="sm:inline">Create Post</span>
                                     </Button>
                                 )}
                             </div>

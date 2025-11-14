@@ -298,6 +298,7 @@ const SettingsScreen = () => {
         // Special handling for HEIC files (they often have empty or incorrect MIME type)
         if (!isValidMimeType && (fileExtension === 'heic' || fileExtension === 'heif')) {
             console.log('HEIC file detected via extension');
+            toast.info('HEIC file detected. It will be converted to JPG format for better compatibility.');
         }
 
         // Validate file size (max 5MB)
@@ -389,17 +390,59 @@ const SettingsScreen = () => {
             [name]: value,
         }));
 
-        // Real-time validation for better UX (only validate if field has value or already has error)
-        if (value.trim() !== '' || errors[name]) {
+        // Real-time validation - always validate when there's an error or when field has value
+        // This ensures errors are cleared when user types valid input
+        if (errors[name] || value.trim() !== '') {
             const error = validateField(name, value);
-            setErrors((prev) => ({
-                ...prev,
-                [name]: error,
-            }));
+            if (error) {
+                setErrors((prev) => ({
+                    ...prev,
+                    [name]: error,
+                }));
+            } else {
+                // Clear error if validation passes
+                setErrors((prev) => {
+                    const newErrors = { ...prev };
+                    delete newErrors[name];
+                    return newErrors;
+                });
+            }
+        } else if (errors[name] && value.trim() === '') {
+            // Clear error when field is empty (for optional fields)
+            const requiredFields = ['name', 'username', 'email'];
+            if (!requiredFields.includes(name)) {
+                setErrors((prev) => {
+                    const newErrors = { ...prev };
+                    delete newErrors[name];
+                    return newErrors;
+                });
+            }
+        }
+
+
+
+        // Special handling for password changes - also validate confirm password
+        if (name === 'password') {
+            // Re-validate confirm password if it has a value or error
+            if (errors.confirmPassword || profileData.confirmPassword) {
+                const confirmError = validateField('confirmPassword', profileData.confirmPassword, value);
+                if (confirmError) {
+                    setErrors((prev) => ({
+                        ...prev,
+                        confirmPassword: confirmError,
+                    }));
+                } else {
+                    setErrors((prev) => {
+                        const newErrors = { ...prev };
+                        delete newErrors.confirmPassword;
+                        return newErrors;
+                    });
+                }
+            }
         }
     };
 
-    const validateField = (name: string, value: any) => {
+    const validateField = (name: string, value: any, currentPasswordValue?: string) => {
         let error = '';
 
         switch (name) {
@@ -465,9 +508,10 @@ const SettingsScreen = () => {
 
             case 'confirmPassword':
                 const confirmPasswordValue = value as string;
-                if (profileData.password && !confirmPasswordValue) {
+                const currentPassword = currentPasswordValue || profileData.password;
+                if (currentPassword && !confirmPasswordValue) {
                     error = 'Please confirm your password';
-                } else if (confirmPasswordValue && confirmPasswordValue !== profileData.password) {
+                } else if (confirmPasswordValue && confirmPasswordValue !== currentPassword) {
                     error = 'Passwords do not match';
                 }
                 break;
@@ -620,7 +664,16 @@ const SettingsScreen = () => {
                 fileInput.value = '';
             }
         } catch (err: string | any) {
-            toast.error(err?.data?.message || err.message);
+            console.error('Profile update error:', err);
+
+            // Handle photo upload specific errors
+            const errorMessage = err?.data?.message || err.message || 'An error occurred';
+
+            if (errorMessage.toLowerCase().includes('photo') || errorMessage.toLowerCase().includes('upload')) {
+                toast.error(`Photo upload failed: ${errorMessage}. Try converting HEIC to JPG or use a different image format.`);
+            } else {
+                toast.error(errorMessage);
+            }
         }
     };
 
@@ -1216,7 +1269,7 @@ const SettingsScreen = () => {
                             <ThemeSettingsSection />
 
                             {/* Validation Summary */}
-                            {Object.keys(errors).length > 0 && (
+                            {Object.values(errors).some(error => error && error.trim() !== '') && (
                                 <div className='bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 rounded-xl p-4'>
                                     <h4 className='text-red-700 dark:text-red-400 font-medium mb-3 flex items-center'>
                                         <svg className='w-5 h-5 mr-2 shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -1225,15 +1278,17 @@ const SettingsScreen = () => {
                                         Please fix the following errors:
                                     </h4>
                                     <ul className='text-sm text-red-600 dark:text-red-300 space-y-2'>
-                                        {Object.entries(errors).map(([field, error]) => (
-                                            <li key={field} className='flex items-start'>
-                                                <span className='w-2 h-2 bg-red-500 dark:bg-red-400 rounded-full mr-3 mt-2 shrink-0'></span>
-                                                <div className='min-w-0 flex-1'>
-                                                    <span className='capitalize font-medium'>{field.replace(/([A-Z])/g, ' $1')}:</span>
-                                                    <span className='ml-1'>{error}</span>
-                                                </div>
-                                            </li>
-                                        ))}
+                                        {Object.entries(errors)
+                                            .filter(([_, error]) => error && error.trim() !== '')
+                                            .map(([field, error]) => (
+                                                <li key={field} className='flex items-start'>
+                                                    <span className='w-2 h-2 bg-red-500 dark:bg-red-400 rounded-full mr-3 mt-2 shrink-0'></span>
+                                                    <div className='min-w-0 flex-1'>
+                                                        <span className='capitalize font-medium'>{field.replace(/([A-Z])/g, ' $1')}:</span>
+                                                        <span className='ml-1'>{error}</span>
+                                                    </div>
+                                                </li>
+                                            ))}
                                     </ul>
                                 </div>
                             )}
@@ -1241,7 +1296,13 @@ const SettingsScreen = () => {
                             {/* Submit Button */}
                             <div className='pt-6'>
                                 <button
-                                    disabled={isLoading || Object.keys(errors).length > 0}
+                                    disabled={
+                                        isLoading ||
+                                        Object.values(errors).some(error => error && error.trim() !== '') ||
+                                        !profileData.name.trim() ||
+                                        !profileData.username.trim() ||
+                                        !profileData.email.trim()
+                                    }
                                     type='submit'
                                     className='w-full group relative overflow-hidden bg-linear-to-r from-blue-500 via-purple-500 to-indigo-500 text-white py-4 px-6 rounded-xl font-semibold text-base hover:from-blue-600 hover:via-purple-600 hover:to-indigo-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:from-gray-400 disabled:via-gray-400 disabled:to-gray-400 min-h-14'
                                 >

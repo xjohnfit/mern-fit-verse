@@ -10,7 +10,28 @@ const fileFilter = (
     file: Express.Multer.File,
     cb: multer.FileFilterCallback
 ) => {
-    if (file.mimetype.startsWith('image/')) {
+    // Get file extension
+    const fileExtension =
+        file.originalname.toLowerCase().split('.').pop() || '';
+
+    // Check MIME type and file extension for better HEIC/HEIF support
+    const validMimeTypes = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+        'image/heic',
+        'image/heif',
+    ];
+    const validExtensions = ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'];
+
+    const isValidMimeType =
+        file.mimetype.startsWith('image/') ||
+        validMimeTypes.includes(file.mimetype);
+    const isValidExtension = validExtensions.includes(fileExtension);
+
+    // Accept if either MIME type is valid OR extension is valid (for HEIC files with incorrect MIME types)
+    if (isValidMimeType || isValidExtension) {
         cb(null, true);
     } else {
         cb(null, false);

@@ -77,28 +77,54 @@ export const updateUserProfile = asyncHandler(
 
         // Handle file upload if present
         if (req.file) {
-            if (user.photo) {
-                // Delete the previous photo from Cloudinary
-                const publicId = user.photo.split('/').pop()?.split('.')[0];
-                if (publicId) {
-                    await cloudinary.uploader.destroy(publicId);
+            try {
+
+                if (user.photo) {
+                    // Delete the previous photo from Cloudinary
+                    const publicId = user.photo.split('/').pop()?.split('.')[0];
+                    if (publicId) {
+                        await cloudinary.uploader.destroy(publicId);
+                    }
                 }
+
+                // Convert buffer to base64 and upload
+                const b64 = Buffer.from(req.file.buffer).toString('base64');
+
+                // Handle HEIC files - use a generic image mime type if HEIC/HEIF
+                let mimeType = req.file.mimetype;
+                const fileExtension =
+                    req.file.originalname.toLowerCase().split('.').pop() || '';
+
+                // For HEIC/HEIF files with incorrect mime types, use image/jpeg as fallback
+                if (
+                    (fileExtension === 'heic' || fileExtension === 'heif') &&
+                    !mimeType.startsWith('image/')
+                ) {
+                    mimeType = 'image/jpeg';
+                    console.log('HEIC file detected, using fallback mime type');
+                }
+
+                const dataURI = `data:${mimeType};base64,${b64}`;
+                const cloudinaryResult = await cloudinary.uploader.upload(
+                    dataURI,
+                    {
+                        resource_type: 'auto', // Let Cloudinary auto-detect the format
+                        format: 'jpg', // Convert HEIC to JPG for better browser compatibility
+                    }
+                );
+
+                console.log(
+                    'Photo upload successful:',
+                    cloudinaryResult.secure_url
+                );
+                user.photo = cloudinaryResult.secure_url;
+            } catch (uploadError) {
+                console.error('Photo upload failed:', uploadError);
+                res.status(400);
+                throw new Error(
+                    'Failed to upload photo. Please try with a different image format.'
+                );
             }
-
-            // Upload the new photo to Cloudinary
-            const result = await cloudinary.uploader.upload_stream(
-                { resource_type: 'image' },
-                (error, result) => {
-                    if (error) throw error;
-                    return result;
-                }
-            );
-
-            // Convert buffer to base64 and upload
-            const b64 = Buffer.from(req.file.buffer).toString('base64');
-            const dataURI = `data:${req.file.mimetype};base64,${b64}`;
-            const cloudinaryResult = await cloudinary.uploader.upload(dataURI);
-            user.photo = cloudinaryResult.secure_url;
         }
 
         if (req.body.password) {
