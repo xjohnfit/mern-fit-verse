@@ -161,26 +161,27 @@ export const likeUnlikePost = asyncHandler(
             user.likedPosts = user.likedPosts?.filter(
                 (id: string) => id.toString() !== postId.toString()
             );
-            await post.save();
-            await user.save();
-            res.json({ message: 'Post unliked' });
         } else {
             post.likes.push(userId!);
             user.likedPosts?.push(postId);
-            await post.save();
-            await user.save();
-            res.json({ message: 'Post liked' });
         }
 
-        const notification = new Notification({
-            from: post.author,
-            to: userId,
-            type: alreadyLiked ? 'unlike' : 'like',
-        });
-        await notification.save();
+        await post.save();
+        await user.save();
+
+        // Only create notification if it's a like (not unlike) and not liking own post
+        if (!alreadyLiked && post.author.toString() !== userId!.toString()) {
+            const notification = new Notification({
+                from: userId,
+                to: post.author,
+                type: 'like',
+            });
+            await notification.save();
+        }
 
         res.status(200).json({
             message: alreadyLiked ? 'Post unliked' : 'Post liked',
+            post: post,
         });
     }
 );
