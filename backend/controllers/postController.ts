@@ -11,36 +11,35 @@ import { v2 as cloudinary } from 'cloudinary';
 
 // Create a new post
 export const createPost = asyncHandler(async (req: Request, res: Response) => {
-        const { title, content } = req.body;
-        let { image } = req.body;
-        const userId = req.user?._id;
+    const { title, content } = req.body;
+    let { image } = req.body;
+    const userId = req.user?._id;
 
-        if(!userId) {
-            res.status(401);
-            throw new Error('User not authenticated');
-        }
+    if (!userId) {
+        res.status(401);
+        throw new Error('User not authenticated');
+    }
 
-        if(!content && !image) {
-            res.status(400);
-            throw new Error('Post content or image is required');
-        }
+    if (!content && !image) {
+        res.status(400);
+        throw new Error('Post content or image is required');
+    }
 
-        if(image) {
-            const uploadedImage = await cloudinary.uploader.upload(image);
-            image = uploadedImage.secure_url;
-        }
+    if (image) {
+        const uploadedImage = await cloudinary.uploader.upload(image);
+        image = uploadedImage.secure_url;
+    }
 
-        const newPost = new PostModel({
-            author: userId,
-            title,
-            content,
-            image,
-        });
+    const newPost = new PostModel({
+        author: userId,
+        title,
+        content,
+        image,
+    });
 
-        await newPost.save();
-        res.status(201).json(newPost);
+    await newPost.save();
+    res.status(201).json(newPost);
 });
-
 
 // Delete a post
 export const deletePost = asyncHandler(async (req: Request, res: Response) => {
@@ -64,7 +63,6 @@ export const deletePost = asyncHandler(async (req: Request, res: Response) => {
         }
     }
 
-
     await PostModel.findByIdAndDelete(req.params.postId);
     res.json({ message: 'Post deleted successfully' });
 });
@@ -79,24 +77,37 @@ export const getUserPosts = asyncHandler(
             throw new Error('User not found');
         }
         const posts = await PostModel.find({ author: user._id })
-            .populate('author', 'username photo')
-            .populate('comments.user', 'username photo')
+            .populate('author', 'name username photo')
+            .populate('comments.user', 'name username photo')
             .sort({ createdAt: -1 });
-        res.json(posts);
+
+        // Transform the data to match frontend expectations
+        const transformedPosts = posts.map((post) => ({
+            ...post.toObject(),
+            user: post.author, // Map author to user for frontend compatibility
+        }));
+
+        res.json(transformedPosts);
     }
 );
 
-// Get feed posts
+// Get feed posts - returns all posts in the collection
 export const getFeedPosts = asyncHandler(
     async (req: Request, res: Response) => {
         const posts = await PostModel.find()
-            .populate('author', 'username photo')
-            .populate('comments.user', 'username photo')
+            .populate('author', 'name username photo')
+            .populate('comments.user', 'name username photo')
             .sort({ createdAt: -1 });
-        res.json(posts);
+
+        // Transform the data to match frontend expectations
+        const transformedPosts = posts.map((post) => ({
+            ...post.toObject(),
+            user: post.author, // Map author to user for frontend compatibility
+        }));
+
+        res.json(transformedPosts);
     }
 );
-
 
 // Get posts from followed users
 export const getFollowedUsersPosts = asyncHandler(
@@ -110,13 +121,19 @@ export const getFollowedUsersPosts = asyncHandler(
 
         const followedUsers = user.following;
         const posts = await PostModel.find({ author: { $in: followedUsers } })
-            .populate('author', 'username photo')
-            .populate('comments.user', 'username photo')
+            .populate('author', 'name username photo')
+            .populate('comments.user', 'name username photo')
             .sort({ createdAt: -1 });
-        res.json(posts);
+
+        // Transform the data to match frontend expectations
+        const transformedPosts = posts.map((post) => ({
+            ...post.toObject(),
+            user: post.author, // Map author to user for frontend compatibility
+        }));
+
+        res.json(transformedPosts);
     }
 );
-
 
 // Like or Unlike a post
 export const likeUnlikePost = asyncHandler(
@@ -138,8 +155,12 @@ export const likeUnlikePost = asyncHandler(
 
         const alreadyLiked = post.likes.includes(userId!);
         if (alreadyLiked) {
-            post.likes = post.likes.filter((id) => id.toString() !== userId!.toString());
-            user.likedPosts = user.likedPosts?.filter((id: string) => id.toString() !== postId.toString());
+            post.likes = post.likes.filter(
+                (id) => id.toString() !== userId!.toString()
+            );
+            user.likedPosts = user.likedPosts?.filter(
+                (id: string) => id.toString() !== postId.toString()
+            );
             await post.save();
             await user.save();
             res.json({ message: 'Post unliked' });
@@ -158,10 +179,11 @@ export const likeUnlikePost = asyncHandler(
         });
         await notification.save();
 
-        res.status(200).json({ message: alreadyLiked ? 'Post unliked' : 'Post liked' });
+        res.status(200).json({
+            message: alreadyLiked ? 'Post unliked' : 'Post liked',
+        });
     }
 );
-
 
 // Add a comment to a post
 export const addComment = asyncHandler(async (req: Request, res: Response) => {
@@ -189,7 +211,10 @@ export const addComment = asyncHandler(async (req: Request, res: Response) => {
     post.comments.push(newComment);
     await post.save();
 
-    res.status(201).json({ message: 'Comment added successfully', comment: newComment });
+    res.status(201).json({
+        message: 'Comment added successfully',
+        comment: newComment,
+    });
 });
 
 export const deleteComment = asyncHandler(
