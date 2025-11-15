@@ -4,13 +4,14 @@
 
 ![MERN FitVerse Logo](https://raw.githubusercontent.com/xjohnfit/mern-fit-verse/main/frontend/public/fit-verse-logo-no-bg.png)
 
-**A Modern Full-Stack Fitness Application**
+**A Modern Full-Stack Social Fitness Platform**
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/xjohnfit/mern-fit-verse)
 [![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/xjohnfit/mern-fit-verse)
 [![License](https://img.shields.io/badge/license-ISC-orange)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-enabled-blue)](https://hub.docker.com/r/xjohnfit/mern-fit-verse)
 [![Kubernetes](https://img.shields.io/badge/kubernetes-ready-green)](kubernetes/)
+[![CI/CD](https://img.shields.io/badge/Jenkins-automated-orange)](Jenkinsfile)
 
 **[Live Demo](https://fitverse-demo.com) • [Documentation](docs/) • [API Docs](docs/api.md) • [Report Bug](https://github.com/xjohnfit/mern-fit-verse/issues)**
 
@@ -32,7 +33,7 @@
 - [📊 CI/CD Pipeline](#-cicd-pipeline)
 - [🔒 Security](#-security)
 - [📡 API Documentation](#-api-documentation)
-- [🎨 Frontend Components](#-frontend-components)
+- [🎨 Frontend Architecture](#-frontend-architecture--components)
 - [🤝 Contributing](#-contributing)
 - [📄 License](#-license)
 
@@ -40,94 +41,192 @@
 
 ## 🚀 Overview
 
-**MERN FitVerse** is a comprehensive, full-stack fitness application built with modern web technologies. It provides users with an intuitive platform to manage their fitness journey, track workouts, monitor progress, and achieve their health goals.
+**MERN FitVerse** is a modern, full-stack social fitness platform that combines fitness tracking with social networking features. Built with cutting-edge web technologies, it provides users with a comprehensive platform to share their fitness journey, connect with like-minded individuals, and achieve their health goals through community support and data-driven insights.
 
 ### 🎯 Mission
 
-To democratize fitness tracking by providing a user-friendly, feature-rich platform that helps individuals achieve their health and wellness goals through data-driven insights and personalized experiences.
+To create a vibrant fitness community where users can share their journey, motivate each other, and achieve their health and wellness goals through social interaction, data tracking, and personalized experiences. We believe fitness is more enjoyable and sustainable when shared with others.
 
-### 🌟 Key Highlights
+### 🌟 Current Capabilities
 
-- **Full-Stack TypeScript**: End-to-end type safety and developer experience
-- **Modern UI/UX**: Built with React 19, Tailwind CSS, and Radix UI components
-- **Secure Authentication**: JWT-based auth with bcrypt password hashing
-- **Production Ready**: Docker containerization and Kubernetes deployment
-- **CI/CD Optimized**: Comprehensive Jenkins pipeline with security scanning
-- **Responsive Design**: Mobile-first approach with dark/light theme support
+- **🔐 Secure Authentication**: JWT-based authentication with comprehensive user validation
+- **👥 Social Networking**: Follow/unfollow users, build your fitness community
+- **📱 Social Feed**: Share posts, images, and fitness updates with your network
+- **💬 Interactive Features**: Like, comment, and engage with community posts
+- **🔔 Real-time Notifications**: Stay updated with likes, follows, and comments
+- **📊 Profile Management**: Comprehensive user profiles with fitness metrics
+- **🎨 Modern UI/UX**: React 19 with Tailwind CSS and Radix UI components
+- **🌓 Theme Support**: Dark/light mode with system preference detection
+- **📱 Responsive Design**: Optimized for all devices with mobile-first approach
+- **🐳 Production Ready**: Docker containerization and Kubernetes deployment
+- **⚙️ CI/CD Pipeline**: Automated Jenkins pipeline with security scanning
+- **☁️ Cloud Integration**: Cloudinary for image management and optimization
 
 ---
 
 ## ✨ Features
 
-### 👤 User Management
+### � Authentication & Security
 
-- **User Registration & Authentication**: Secure signup/login with JWT tokens
-- **Profile Management**: Comprehensive user profiles with personal metrics
-- **Privacy Controls**: Secure password hashing and data protection
-- **Session Management**: Persistent login state with token refresh
+- **Secure Registration/Login**: JWT-based authentication with bcrypt password hashing
+- **User Validation**: Email format validation, username uniqueness, password strength requirements
+- **Session Management**: HTTP-only cookies for secure token storage
+- **Profile Privacy**: Secure user data protection and validation
 
-### 🏋️‍♀️ Fitness Tracking (In Development)
+### 👥 Social Features
 
-- **Workout Planning**: Create and schedule personalized workout routines
-- **Exercise Library**: Comprehensive database of exercises with instructions
-- **Progress Tracking**: Monitor fitness metrics and achievements over time
-- **Goal Setting**: Set and track fitness goals with visual progress indicators
+- **User Profiles**: Complete profile system with photos, personal info, and fitness goals
+- **Follow System**: Follow/unfollow other users to build a fitness community
+- **Suggested Users**: Algorithm-based user suggestions for expanding your network
+- **Profile Views**: View other users' profiles and their fitness journey
 
-### 📊 Analytics & Insights (Planned)
+### 📱 Social Feed & Posts
 
-- **Performance Analytics**: Detailed workout analysis and progress reports
-- **Nutrition Tracking**: Food diary and calorie monitoring
-- **Health Metrics**: Weight, body measurements, and fitness assessments
-- **Data Visualization**: Charts and graphs for progress visualization
+- **Create Posts**: Share fitness updates, progress photos, and motivational content
+- **Image Upload**: Cloudinary integration for secure image storage and optimization
+- **Feed System**: Personalized feed showing posts from followed users
+- **Post Interactions**: Like/unlike posts to engage with the community
+- **Comments System**: Comment on posts to encourage and interact with others
+- **Content Management**: Delete your own posts and comments
 
-### 🎨 User Experience
+### 📊 User Analytics & Profiles
 
-- **Modern Design**: Clean, intuitive interface with smooth animations
-- **Responsive Layout**: Optimized for desktop, tablet, and mobile devices
-- **Dark/Light Theme**: Customizable theme with system preference detection
-- **Accessibility**: WCAG compliant with keyboard navigation support
+- **Profile Metrics**: Track height, weight, fitness goals, and personal information
+- **Profile Photos**: Upload and manage profile pictures with Cloudinary
+- **User Statistics**: View followers, following counts, and post engagement
+- **Profile Updates**: Comprehensive profile editing with real-time validation
+
+### 🔔 Notification System
+
+- **Real-time Notifications**: Get notified for likes, follows, comments, and interactions
+- **Notification Management**: Mark notifications as read and delete old notifications
+- **Activity Tracking**: Track all social interactions and engagement
+
+### 🏋️‍♀️ Fitness Hub (Coming Soon)
+
+- **Workout Planning**: Personalized workout routines and exercise tracking
+- **Exercise Library**: Comprehensive database with instructional content
+- **Progress Analytics**: Detailed workout performance metrics and insights
+- **Smart Goals**: AI-powered goal setting and achievement tracking
+
+### 🥗 Nutrition Hub (Coming Soon)
+
+- **Meal Planning**: Personalized nutrition plans based on fitness goals
+- **Macro Tracking**: Track proteins, carbs, fats with detailed analytics
+- **Food Scanner**: Barcode scanning for quick meal logging
+- **Recipe Sharing**: Share healthy recipes and meal prep ideas
+
+### 🎨 Modern User Experience
+
+- **Responsive Design**: Mobile-first approach optimized for all devices
+- **Dark/Light Themes**: System preference detection with manual toggle
+- **Modern UI Components**: Built with Radix UI primitives and Tailwind CSS
+- **Smooth Animations**: Enhanced UX with CSS animations and transitions
+- **Toast Notifications**: Real-time feedback with Sonner toast system
+- **Loading States**: Skeleton loading and proper loading indicators
 
 ---
 
 ## 🛠 Tech Stack
 
-### Frontend
+### Frontend Technologies
 
-```
-React 19.1.1          | Modern React with concurrent features
-TypeScript 5.9.3      | Static type checking and enhanced DX
-Vite 7.1.7            | Fast build tool and dev server
-Tailwind CSS 4.1.16   | Utility-first CSS framework
-Radix UI              | Accessible, unstyled UI primitives
-Redux Toolkit 2.10.1  | State management with RTK Query
-React Router 7.9.5    | Client-side routing and navigation
-Lucide React          | Beautiful, customizable icons
-Sonner                | Toast notifications
-Zustand 5.0.8         | Lightweight state management
+```typescript
+React 19.1.1          | Modern React with concurrent features and hooks
+TypeScript 5.9.3      | Static type checking and enhanced developer experience
+Vite 7.1.7            | Lightning-fast build tool and dev server
+Tailwind CSS 4.1.16   | Utility-first CSS framework with custom config
 ```
 
-### Backend
+### UI/UX Libraries
 
+```typescript
+Radix UI              | Accessible, unstyled UI component primitives
+@radix-ui/react-avatar     | Avatar component with fallback support
+@radix-ui/react-navigation-menu | Accessible navigation menus
+@radix-ui/react-slot       | Composition utilities for flexible APIs
+class-variance-authority   | CVA for component variant management
 ```
-Node.js 20+           | JavaScript runtime environment
+
+### State Management & Routing
+
+```typescript
+Redux Toolkit 2.10.1  | Predictable state management with RTK Query
+React Router 7.9.5    | Declarative client-side routing
+React Redux 9.2.0     | Official React bindings for Redux
+Zustand 5.0.8         | Lightweight state management solution
+```
+
+### Styling & Icons
+
+```typescript
+Lucide React 0.552.0  | Beautiful, customizable SVG icons
+Sonner 2.0.7          | Toast notification system
+Next Themes 0.4.6     | Perfect dark mode support with SSR
+Tailwind Merge 3.3.1  | Utility function to merge Tailwind classes
+clsx 2.1.1            | Utility for constructing className strings
+```
+
+### Backend Technologies
+
+```typescript
+Node.js 20+           | JavaScript runtime with latest features
 Express.js 5.1.0      | Fast, unopinionated web framework
 TypeScript 5.9.3      | Type-safe backend development
-MongoDB 8.19.2        | NoSQL database with Mongoose ODM
-JWT                   | JSON Web Token authentication
-bcrypt                | Password hashing and security
-CORS                  | Cross-Origin Resource Sharing
+Mongoose 8.19.2       | Elegant MongoDB object modeling
 ```
 
-### DevOps & Tools
+### Authentication & Security
 
+```typescript
+JSON Web Tokens 9.0.2 | Secure user authentication
+bcryptjs 3.0.3        | Password hashing with salt rounds
+Cookie Parser 1.4.7   | Parse HTTP request cookies
+CORS 2.8.5            | Cross-Origin Resource Sharing middleware
 ```
-Docker                | Containerization and deployment
-Kubernetes            | Container orchestration
-Jenkins               | CI/CD pipeline automation
+
+### File Upload & Storage
+
+```typescript
+Cloudinary 2.8.0      | Cloud-based image and video management
+Multer 2.0.2          | Middleware for handling multipart/form-data
+```
+
+### Development Tools
+
+```typescript
+Nodemon 3.1.10        | Auto-restart development server
+ts-node 10.9.2        | TypeScript execution environment
+Concurrently 9.2.1    | Run multiple commands concurrently
+ESLint 9.36.0         | JavaScript/TypeScript linting
+```
+
+### Testing & Quality
+
+```typescript
+Jest 30.2.0           | JavaScript testing framework
+ts-jest 29.1.0        | TypeScript preprocessor for Jest
+@types/* packages     | TypeScript type definitions
+```
+
+### DevOps & Infrastructure
+
+```yaml
+Docker                | Multi-stage containerization for production
+Kubernetes            | Container orchestration with health checks
+Jenkins               | Comprehensive CI/CD pipeline automation
 SonarQube             | Code quality and security analysis
-OWASP Dependency      | Security vulnerability scanning
-Trivy                 | Container image security scanning
-ESLint                | Code linting and formatting
+OWASP Dependency      | Automated vulnerability scanning
+Trivy Security        | Container image security scanning
+```
+
+### Deployment & Monitoring
+
+```yaml
+Health Checks         | Comprehensive application health monitoring
+Resource Management   | CPU and memory limits with proper scaling
+Environment Config    | Secure environment variable management
+SSL/TLS Support       | Production-ready security configurations
 ```
 
 ---
@@ -168,27 +267,85 @@ ESLint                | Code linting and formatting
 ```
 mern-fit-verse/
 ├── 📂 backend/                 # Express.js TypeScript backend
-│   ├── 📂 config/              # Database and app configuration
-│   ├── 📂 controllers/         # Route handlers and business logic
-│   ├── 📂 middlewares/         # Authentication and error handling
-│   ├── 📂 models/              # MongoDB schemas and models
-│   ├── 📂 routes/              # API route definitions
+│   ├── 📂 config/              # Database connection configuration
+│   ├── 📂 controllers/         # API route handlers and business logic
+│   │   ├── authController.ts   # User authentication (login/register)
+│   │   ├── userController.ts   # User profile and social features
+│   │   ├── postController.ts   # Post creation, feed, likes, comments
+│   │   ├── notificationController.ts # Notification management
+│   │   └── healthController.ts # System health monitoring
+│   ├── 📂 middlewares/         # Express middleware functions
+│   │   ├── authMiddleware.ts   # JWT authentication middleware
+│   │   ├── errorMiddleware.ts  # Global error handling
+│   │   └── uploadMiddleware.ts # Multer file upload configuration
+│   ├── 📂 models/              # MongoDB schemas with Mongoose
+│   │   ├── userModel.ts        # User schema with auth methods
+│   │   ├── postModel.ts        # Post schema with comments
+│   │   └── notificationModel.ts # Notification system schema
+│   ├── 📂 routes/              # API endpoint definitions
+│   │   ├── authRoutes.ts       # Authentication routes
+│   │   ├── userRoutes.ts       # User management routes
+│   │   ├── postRoutes.ts       # Post and social features routes
+│   │   ├── notificationRoutes.ts # Notification routes
+│   │   └── healthRoutes.ts     # Health check routes
 │   ├── 📂 utils/               # Helper functions and utilities
-│   └── 📄 index.ts             # Main server entry point
-├── 📂 frontend/                # React TypeScript frontend
+│   │   └── generateToken.ts    # JWT token generation utility
+│   ├── 📂 __tests__/           # Backend test files
+│   │   └── health.test.ts      # Health endpoint tests
+│   └── 📄 index.ts             # Express server entry point
+├── 📂 frontend/                # React TypeScript SPA
 │   ├── 📂 public/              # Static assets and favicon
-│   ├── 📂 src/                 # Source code
+│   ├── 📂 src/                 # Frontend source code
 │   │   ├── 📂 components/      # Reusable UI components
-│   │   ├── 📂 screens/         # Page components and routes
-│   │   ├── 📂 slices/          # Redux state management
+│   │   │   ├── 📂 ui/          # Radix UI component implementations
+│   │   │   ├── Header.tsx      # Navigation with user menu
+│   │   │   ├── Footer.tsx      # Site footer
+│   │   │   ├── AlertModal.tsx  # Alert and confirmation modals
+│   │   │   ├── PrivateRoute.tsx # Route authentication guard
+│   │   │   ├── ScrollToTop.tsx # Auto-scroll utility
+│   │   │   └── ThemeToggle.tsx # Dark/light mode toggle
+│   │   ├── 📂 screens/         # Page components
+│   │   │   ├── HomeScreen.tsx  # Landing page
+│   │   │   ├── LoginScreen.tsx # Authentication form
+│   │   │   ├── RegisterScreen.tsx # User registration
+│   │   │   └── 📂 protected/   # Authenticated user screens
+│   │   │       ├── DashboardScreen.tsx # Main social feed
+│   │   │       ├── SettingsScreen.tsx # User settings
+│   │   │       ├── NutritionScreen.tsx # Coming soon preview
+│   │   │       ├── WorkoutScreen.tsx # Coming soon preview
+│   │   │       ├── ViewUserProfile.tsx # Profile viewing
+│   │   │       ├── FollowersFollowingModal.tsx # Social lists
+│   │   │       └── ThemeSettingsSection.tsx # Theme config
+│   │   ├── 📂 slices/          # Redux Toolkit state management
+│   │   │   ├── apiSlice.ts     # RTK Query base configuration
+│   │   │   ├── authSlice.ts    # Authentication state
+│   │   │   ├── usersApiSlice.ts # User API calls
+│   │   │   └── postsApiSlice.ts # Posts and social API calls
 │   │   ├── 📂 lib/             # Utility functions
-│   │   └── 📂 assets/          # Images, fonts, icons
-│   └── 📄 package.json         # Frontend dependencies
-├── 📂 kubernetes/              # K8s deployment manifests
-├── 📂 docs/                    # Documentation files
-├── 📄 Dockerfile               # Multi-stage container build
-├── 📄 Jenkinsfile              # CI/CD pipeline configuration
-├── 📄 docker-compose.yml       # Local development setup
+│   │   │   ├── calculateAge.ts # Age calculation utility
+│   │   │   ├── formatDate.ts   # Date formatting helpers
+│   │   │   ├── getInitials.ts  # Avatar initials generator
+│   │   │   ├── getPasswordStrength.ts # Password validation
+│   │   │   └── utils.ts        # General utilities (cn, clsx)
+│   │   ├── 📂 assets/          # Static assets (images, fonts)
+│   │   ├── 📄 App.tsx          # Main application component
+│   │   ├── 📄 main.tsx         # React app entry point
+│   │   ├── 📄 store.ts         # Redux store configuration
+│   │   └── 📄 index.css        # Global styles and Tailwind imports
+│   ├── 📄 components.json      # Radix UI component configuration
+│   ├── 📄 package.json         # Frontend dependencies
+│   ├── 📄 vite.config.ts       # Vite build configuration
+│   └── � tailwind.config.js   # Tailwind CSS configuration
+├── �📂 kubernetes/              # Kubernetes deployment manifests
+│   ├── � deployment.yml       # Application deployment config
+│   └── 📄 service.yml          # Service and networking config
+├── 📄 Dockerfile               # Multi-stage production container
+├── 📄 Jenkinsfile              # Complete CI/CD pipeline
+├── 📄 docker-compose.yml       # Local development environment
+├── 📄 jest.config.js           # Jest testing configuration
+├── 📄 tsconfig.json            # TypeScript compiler configuration
+├── 📄 sonar-project.properties # SonarQube analysis configuration
+├── 📄 owasp-suppressions.xml   # OWASP security scan suppressions
 └── 📄 package.json             # Backend dependencies and scripts
 ```
 
@@ -539,14 +696,48 @@ Development: http://localhost:5003/api
 Production: https://your-domain.com/api
 ```
 
-### Authentication Endpoints
+### 🔐 Authentication Endpoints
 
 ```http
-POST /api/users/register    # User registration
-POST /api/users/auth        # User login
-POST /api/users/logout      # User logout
-GET  /api/users/profile     # Get user profile (protected)
-PUT  /api/users/profile     # Update user profile (protected)
+POST /api/auth/register     # User registration with validation
+POST /api/auth/login        # User authentication
+POST /api/auth/logout       # User logout with cookie clearing
+```
+
+### 👤 User Management Endpoints
+
+```http
+GET  /api/users/profile                     # Get logged-in user profile (protected)
+PUT  /api/users/profile                     # Update user profile with photo upload (protected)
+GET  /api/users/profile/view/suggested      # Get suggested users to follow (protected)
+GET  /api/users/profile/view/:username      # View specific user's profile (protected)
+POST /api/users/profile/follow/:username    # Follow/unfollow a user (protected)
+```
+
+### 📱 Posts & Social Features
+
+```http
+POST   /api/posts/create                    # Create new post with image upload (protected)
+DELETE /api/posts/delete/:postId            # Delete user's own post (protected)
+GET    /api/posts/feed                      # Get all feed posts (protected)
+GET    /api/posts/feed/followed             # Get posts from followed users only (protected)
+GET    /api/posts/user/:username            # Get posts from specific user (protected)
+POST   /api/posts/like/:postId              # Like/unlike a post (protected)
+POST   /api/posts/comment/:postId           # Add comment to post (protected)
+DELETE /api/posts/comment/:postId/:commentId # Delete comment from post (protected)
+```
+
+### 🔔 Notification System
+
+```http
+GET    /api/notifications                   # Get user notifications (protected)
+DELETE /api/notifications                   # Delete all user notifications (protected)
+```
+
+### 🏥 System Health
+
+```http
+GET /api/health                             # Comprehensive health check dashboard
 ```
 
 ### User Registration
@@ -662,59 +853,102 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 
 ---
 
-## 🎨 Frontend Components
+## 🎨 Frontend Architecture & Components
 
-### Component Architecture
+### 📁 Component Structure
 
 ```
-components/
-├── 🎯 UI Components (Radix UI based)
-│   ├── Button          # Customizable button variants
-│   ├── Avatar          # User profile pictures
-│   ├── NavigationMenu  # Header navigation
-│   └── Sonner          # Toast notifications
-├── 📄 Layout Components
-│   ├── Header          # Navigation and user menu
-│   ├── Footer          # Site footer with links
-│   └── AlertModal      # System notifications
-└── 🔒 Utility Components
-    └── PrivateRoute    # Protected route wrapper
+src/
+├── 🎯 UI Components (Radix UI Primitives)
+│   ├── ui/
+│   │   ├── avatar.tsx          # Profile picture component with fallbacks
+│   │   ├── button.tsx          # Customizable button with variants (CVA)
+│   │   ├── navigation-menu.tsx # Accessible navigation component
+│   │   └── sonner.tsx          # Toast notification system
+├── 🏗 Layout Components
+│   ├── Header.tsx              # Navigation bar with user menu and theme toggle
+│   ├── Footer.tsx              # Site footer with links and branding
+│   ├── AlertModal.tsx          # System alert and notification modals
+│   ├── PrivateRoute.tsx        # Authentication guard for protected routes
+│   ├── ScrollToTop.tsx         # Auto-scroll to top on route changes
+│   └── ThemeToggle.tsx         # Dark/light mode toggle component
 ```
 
-### Screen Components
+### 📱 Screen Components
 
 ```
 screens/
-├── HomeScreen          # Landing page with features
-├── LoginScreen         # User authentication
-├── RegisterScreen      # User registration
-└── dashboard/
-    ├── DashboardScreen # Main user dashboard
-    └── ProfileScreen   # User profile management
+├── HomeScreen.tsx              # Landing page with hero section and features
+├── LoginScreen.tsx             # User authentication with form validation
+├── RegisterScreen.tsx          # User registration with comprehensive validation
+└── protected/                  # Protected screens requiring authentication
+    ├── DashboardScreen.tsx     # Social feed, suggested users, post interactions
+    ├── SettingsScreen.tsx      # Comprehensive user settings and profile management
+    ├── NutritionScreen.tsx     # Nutrition hub coming soon preview
+    ├── WorkoutScreen.tsx       # Workout hub coming soon preview
+    ├── ViewUserProfile.tsx     # View other users' profiles and posts
+    ├── FollowersFollowingModal.tsx # Modal for followers/following lists
+    └── ThemeSettingsSection.tsx   # Theme customization settings
 ```
 
-### State Management
+### 🔄 State Management (Redux Toolkit + RTK Query)
 
 ```typescript
-// Redux Store Structure
+// Store Structure
 {
   auth: {
     isAuthenticated: boolean,
-    userInfo: User | null,
-  },
-  // Future state slices
-  workouts: { /* workout data */ },
-  nutrition: { /* nutrition tracking */ },
-  progress: { /* fitness progress */ }
+    userInfo: {
+      _id: string,
+      name: string,
+      username: string,
+      email: string,
+      photo?: string,
+      followers: string[],
+      following: string[],
+      // ... other user fields
+    } | null,
+    token: string | null
+  }
 }
+
+// API Slices
+├── apiSlice.ts           # Base RTK Query configuration
+├── authSlice.ts          # Authentication state management
+├── usersApiSlice.ts      # User-related API calls
+└── postsApiSlice.ts      # Posts and social features API calls
 ```
 
-### Styling System
+### 🎨 Styling & Design System
 
-- **Tailwind CSS**: Utility-first CSS framework
-- **CSS Variables**: Theme customization and dark mode
-- **Component Variants**: Consistent design system with CVA
-- **Responsive Design**: Mobile-first responsive breakpoints
+```typescript
+// Tailwind Configuration
+├── Utility-First CSS     # Comprehensive utility classes
+├── Custom CSS Variables # Theme-aware color system
+├── Component Variants   # CVA-based component styling
+├── Responsive Design    # Mobile-first breakpoints
+├── Dark/Light Themes    # System preference + manual toggle
+└── Animation System     # Smooth transitions and micro-interactions
+```
+
+### 📚 Utility Libraries
+
+```typescript
+lib/
+├── calculateAge.ts       # Age calculation from date of birth
+├── formatDate.ts         # Date formatting utilities
+├── getInitials.ts        # Generate user initials for avatars
+├── getPasswordStrength.ts # Password strength validation
+└── utils.ts              # General utility functions (cn, clsx)
+```
+
+### 🔌 Key Integrations
+
+- **Cloudinary**: Image upload and optimization for profile pictures and posts
+- **React Router**: Client-side routing with protected routes
+- **Sonner**: Toast notifications for user feedback
+- **Lucide React**: Consistent icon system throughout the app
+- **Next Themes**: Seamless dark/light mode switching
 
 ---
 
@@ -813,38 +1047,54 @@ git push origin feature/your-feature-name
 
 ## 🚀 Roadmap
 
-### Phase 1: Foundation (Current)
+### Phase 1: Social Foundation ✅ (Completed)
 
-- [x] User authentication and authorization
-- [x] Basic user profile management
-- [x] Responsive UI with modern design
-- [x] Docker containerization
-- [x] CI/CD pipeline with Jenkins
-- [x] Production deployment setup
+- [x] **Authentication System**: Secure JWT-based auth with comprehensive validation
+- [x] **User Profiles**: Complete profile management with photos and fitness metrics
+- [x] **Social Networking**: Follow/unfollow system with user discovery
+- [x] **Social Feed**: Post creation, image upload, likes, and comments system
+- [x] **Notification System**: Real-time notifications for social interactions
+- [x] **Modern UI/UX**: Responsive design with dark/light theme support
+- [x] **Cloud Integration**: Cloudinary for image management and optimization
+- [x] **Production Ready**: Docker containerization and Kubernetes deployment
+- [x] **CI/CD Pipeline**: Comprehensive Jenkins pipeline with security scanning
+- [x] **Health Monitoring**: Advanced system health checks and monitoring
 
-### Phase 2: Core Features (Next)
+### Phase 2: Fitness Tracking 🚧 (In Development)
 
-- [ ] Exercise database and library
-- [ ] Workout planning and scheduling
-- [ ] Progress tracking and metrics
-- [ ] Basic nutrition logging
-- [ ] Data visualization and charts
+- [ ] **Exercise Database**: Comprehensive exercise library with instructions and videos
+- [ ] **Workout Planning**: Create and schedule personalized workout routines
+- [ ] **Progress Tracking**: Monitor fitness metrics, sets, reps, and personal records
+- [ ] **Workout Analytics**: Performance insights and progress visualization
+- [ ] **Goal Setting**: Set and track fitness goals with achievement milestones
+- [ ] **Workout Sharing**: Share workout routines with the community
 
-### Phase 3: Advanced Features
+### Phase 3: Nutrition & Wellness 📋 (Planned)
 
-- [ ] Social features and community
-- [ ] AI-powered workout recommendations
-- [ ] Nutrition analysis and suggestions
-- [ ] Integration with fitness devices
-- [ ] Mobile app development
+- [ ] **Nutrition Database**: Comprehensive food database with macro/micronutrients
+- [ ] **Meal Planning**: Personalized meal plans based on fitness goals
+- [ ] **Calorie Tracking**: Food logging with barcode scanning capability
+- [ ] **Nutrition Analytics**: Detailed nutrition insights and recommendations
+- [ ] **Recipe Sharing**: Community recipe sharing and meal prep guides
+- [ ] **Water & Sleep Tracking**: Wellness metrics beyond nutrition
 
-### Phase 4: Scale & Optimize
+### Phase 4: Advanced Features 🎯 (Future)
 
-- [ ] Performance optimization
-- [ ] Advanced analytics
-- [ ] Multi-language support
-- [ ] Premium features
-- [ ] Enterprise features
+- [ ] **AI-Powered Recommendations**: Personalized workout and nutrition suggestions
+- [ ] **Fitness Device Integration**: Connect with popular fitness trackers and apps
+- [ ] **Video Workouts**: Guided workout videos and form correction
+- [ ] **Virtual Training**: Live and recorded training sessions
+- [ ] **Challenges & Competitions**: Community fitness challenges and leaderboards
+- [ ] **Mobile Application**: Native iOS and Android apps
+
+### Phase 5: Scale & Enterprise 🏢 (Long-term)
+
+- [ ] **Performance Optimization**: Advanced caching, CDN, and database optimization
+- [ ] **Multi-language Support**: Internationalization for global reach
+- [ ] **Premium Features**: Advanced analytics, personal trainers, custom plans
+- [ ] **Enterprise Features**: Corporate wellness programs and team challenges
+- [ ] **API Ecosystem**: Public APIs for third-party integrations
+- [ ] **Advanced Security**: SOC2 compliance and enterprise-grade security
 
 ---
 
