@@ -91,10 +91,28 @@ export const getUserPosts = asyncHandler(
     }
 );
 
-// Get feed posts - returns all posts in the collection
+// Get feed posts - returns all users posts and followed users posts
 export const getFeedPosts = asyncHandler(
     async (req: Request, res: Response) => {
-        const posts = await PostModel.find()
+        const userId = req.user?._id;
+
+        if (!userId) {
+            res.status(401);
+            throw new Error('User not authenticated');
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            res.status(404);
+            throw new Error('User not found');
+        }
+
+        // Get followed users IDs and include the current user's ID
+        const followedUsers = user.following || [];
+        const feedUserIds = [userId, ...followedUsers];
+
+        // Get posts from current user and followed users
+        const posts = await PostModel.find({ author: { $in: feedUserIds } })
             .populate('author', 'name username photo')
             .populate('comments.user', 'name username photo')
             .sort({ createdAt: -1 });

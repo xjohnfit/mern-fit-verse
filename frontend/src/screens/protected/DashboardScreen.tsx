@@ -1,15 +1,22 @@
 import { useSelector } from "react-redux";
-import { useGetSuggestedUsersQuery, useFollowUnfollowUserMutation } from "@/slices/usersApiSlice";
-import { useGetFollowedUsersPostsQuery, useLikeUnlikePostMutation, useAddCommentMutation } from "@/slices/postsApiSlice";
+import { useGetSuggestedUsersQuery, useFollowUnfollowUserMutation, useGetUserProfileQuery } from "@/slices/usersApiSlice";
+import { useGetPostsQuery, useLikeUnlikePostMutation, useAddCommentMutation } from "@/slices/postsApiSlice";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Users, UserPlus, Heart, MessageCircle, Clock, Send } from "lucide-react";
+import { Users, UserPlus, Heart, MessageCircle, Clock, Send, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { getInitials } from "@/lib/getInitials";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 
 interface SuggestedUser {
+  _id: string;
+  name: string;
+  username: string;
+  photo?: string;
+}
+
+interface FollowedUser {
   _id: string;
   name: string;
   username: string;
@@ -46,7 +53,8 @@ const DashboardScreen = () => {
   const { userInfo } = useSelector((state: any) => state.auth);
   const navigate = useNavigate();
   const { data: suggestedUsers, isLoading: isLoadingSuggested, refetch } = useGetSuggestedUsersQuery({});
-  const { data: followedPosts, isLoading: isLoadingPosts, refetch: refetchPosts } = useGetFollowedUsersPostsQuery({});
+  const { data: feedPosts, isLoading: isLoadingPosts, refetch: refetchPosts } = useGetPostsQuery({});
+  const { data: currentUserProfile, isLoading: isLoadingProfile } = useGetUserProfileQuery({});
   const [followUnfollowUser] = useFollowUnfollowUserMutation();
   const [likeUnlikePost] = useLikeUnlikePostMutation();
   const [addComment] = useAddCommentMutation();
@@ -111,10 +119,10 @@ const DashboardScreen = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
           {/* Left Sidebar - Suggested Users */}
-          <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 sticky top-6">
+          <div className="xl:col-span-3">
+            <div className="hidden xl:block bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 sticky top-18">
               <div className="flex items-center space-x-2 mb-4">
                 <Users className="w-5 h-5 text-blue-600" />
                 <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
@@ -193,7 +201,7 @@ const DashboardScreen = () => {
           </div>
 
           {/* Main Content - Posts Feed */}
-          <div className="lg:col-span-3">
+          <div className="xl:col-span-6">
             <div className="space-y-6">
               {/* Welcome Header */}
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
@@ -209,7 +217,7 @@ const DashboardScreen = () => {
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                   <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    Posts from People You Follow
+                    Your Feed
                   </h2>
                 </div>
 
@@ -219,21 +227,21 @@ const DashboardScreen = () => {
                       <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                       <p className="text-gray-600 dark:text-gray-400">Loading posts...</p>
                     </div>
-                  ) : !followedPosts || followedPosts.length === 0 ? (
+                  ) : !feedPosts || feedPosts.length === 0 ? (
                     <div className="p-8 text-center">
                       <Users className="w-12 h-12 mx-auto mb-4 text-gray-400" />
                       <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                         No posts yet
                       </h3>
                       <p className="text-gray-600 dark:text-gray-400 mb-4">
-                        Follow some users to see their posts in your feed
+                        Create your first post or follow some users to see posts in your feed
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-500">
                         Check out the suggested users on the left to get started!
                       </p>
                     </div>
                   ) : (
-                    followedPosts.map((post: Post) => (
+                    feedPosts.map((post: Post) => (
                       <div key={post._id} className="p-6">
                         {/* Post Header */}
                         <div className="flex items-center space-x-3 mb-4">
@@ -287,8 +295,8 @@ const DashboardScreen = () => {
                             size="sm"
                             onClick={() => handleLikePost(post._id)}
                             className={`flex items-center space-x-2 ${post.likes?.includes(userInfo?._id || '')
-                                ? 'text-red-500 hover:text-red-600'
-                                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                              ? 'text-red-500 hover:text-red-600'
+                              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                               }`}
                           >
                             <Heart
@@ -412,6 +420,98 @@ const DashboardScreen = () => {
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Right Sidebar - Messaging */}
+          <div className="xl:col-span-3">
+            <div className="hidden xl:block bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 sticky top-18">
+              <div className="flex items-center space-x-2 mb-4">
+                <MessageSquare className="w-5 h-5 text-green-600" />
+                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                  Messages
+                </h2>
+              </div>
+
+              {isLoadingProfile ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="animate-pulse flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+                      <div className="flex-1">
+                        <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4 mb-1"></div>
+                        <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : currentUserProfile?.following && currentUserProfile.following.length > 0 ? (
+                <div className="space-y-3">
+                  {currentUserProfile.following.slice(0, 8).map((user: FollowedUser) => (
+                    <div key={user._id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
+                      <div className="relative">
+                        <Avatar
+                          className="w-10 h-10"
+                          onClick={() => handleUserClick(user.username)}
+                        >
+                          <AvatarImage src={user.photo} alt={user.name} />
+                          <AvatarFallback className="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300">
+                            {getInitials(user.name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        {/* Online status indicator - placeholder for future implementation */}
+                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
+                      </div>
+                      <div
+                        className="flex-1 min-w-0 cursor-pointer"
+                        onClick={() => handleUserClick(user.username)}
+                      >
+                        <p className="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">
+                          {user.name}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                          @{user.username}
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="px-2 py-1 text-xs text-green-600 hover:text-green-700 hover:bg-green-50 dark:text-green-400 dark:hover:text-green-300 dark:hover:bg-green-900/20"
+                        onClick={() => {
+                          // TODO: Implement messaging functionality
+                          toast.success('Messaging feature coming soon!');
+                        }}
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+
+                  {currentUserProfile.following.length > 8 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full text-xs text-green-600 dark:text-green-400"
+                      onClick={() => {
+                        // TODO: Navigate to full messages page or expand list
+                        toast.info('Full messaging interface coming soon!');
+                      }}
+                    >
+                      See all conversations
+                    </Button>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <MessageSquare className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                  <p className="text-gray-500 dark:text-gray-400 text-sm mb-2">
+                    No conversations yet
+                  </p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    Follow some users to start messaging
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

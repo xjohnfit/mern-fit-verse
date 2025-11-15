@@ -1,6 +1,6 @@
 const Footer = () => {
     return (
-        <footer className='w-screen bg-gray-800 text-white min-h-[40vh] sm:min-h-[35vh] lg:h-[40vh] z-20'>
+        <footer className='w-screen bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white min-h-[40vh] sm:min-h-[35vh] lg:h-[40vh] z-20 border-t border-gray-200 dark:border-gray-700'>
             <div className='container mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-between py-6 sm:py-8'>
                 {/* Top Section */}
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8'>
@@ -9,7 +9,7 @@ const Footer = () => {
                         <h2 className='text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 bg-linear-to-r from-[#38bdf8] to-[#818cf8] bg-clip-text text-transparent'>
                             FitVerse
                         </h2>
-                        <p className='text-gray-300 text-sm sm:text-base mb-4 max-w-md mx-auto sm:mx-0'>
+                        <p className='text-gray-600 dark:text-gray-300 text-sm sm:text-base mb-4 max-w-md mx-auto sm:mx-0'>
                             Transform your fitness journey with our
                             comprehensive platform. Track workouts, monitor
                             progress, and achieve your goals.
@@ -17,7 +17,7 @@ const Footer = () => {
                         <div className='flex justify-center sm:justify-start space-x-4'>
                             <a
                                 href='#'
-                                className='text-[#38bdf8] hover:text-[#818cf8] transition-colors duration-300'>
+                                className='text-blue-500 hover:text-blue-600 dark:text-[#38bdf8] dark:hover:text-[#818cf8] transition-colors duration-300'>
                                 <svg
                                     className='w-6 h-6'
                                     fill='currentColor'
@@ -27,7 +27,7 @@ const Footer = () => {
                             </a>
                             <a
                                 href='#'
-                                className='text-[#818cf8] hover:text-[#c084fc] transition-colors duration-300'>
+                                className='text-indigo-500 hover:text-indigo-600 dark:text-[#818cf8] dark:hover:text-[#c084fc] transition-colors duration-300'>
                                 <svg
                                     className='w-6 h-6'
                                     fill='currentColor'
@@ -37,12 +37,12 @@ const Footer = () => {
                             </a>
                             <a
                                 href='#'
-                                className='text-[#c084fc] hover:text-[#e879f9] transition-colors duration-300'>
+                                className='text-purple-500 hover:text-purple-600 dark:text-[#c084fc] dark:hover:text-[#e879f9] transition-colors duration-300'>
                                 <svg
                                     className='w-6 h-6'
                                     fill='currentColor'
                                     viewBox='0 0 24 24'>
-                                    <path d='M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.719-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.721.097.118.112.221.085.341-.09.381-.295 1.199-.334 1.363-.051.225-.165.271-.381.165-1.521-.708-2.498-2.942-2.498-4.732 0-3.855 2.8-7.391 8.081-7.391 4.249 0 7.552 3.018 7.552 7.054 0 4.204-2.668 7.623-6.349 7.623-1.244 0-2.415-.646-2.813-1.424l-.766 2.92c-.278 1.075-1.03 2.423-1.532 3.247C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001.012.001z' />
+                                    <path d='M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.719-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.721.097.118.112.221.085.341-.09.381-.295 1.199-.334 1.363-.051.225-.165.271-.381.165-1.521-.708-2.498-2.942-2.498-4.732 0-3.855 2.8-7.391 8.081-7.391 4.249 0 7.552 3.018 7.552 7.054 0 4.204-2.668 7.623-6.349 7.623-1.244 0-2.415-.646-2.813-1.424l-.766 2.92c-.278 1.075-1.03 2.423-1.532 3.247C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.90-11.988C24.007 5.367 18.641.001.012.001z' />
                                 </svg>
                             </a>
                         </div>
@@ -50,35 +50,35 @@ const Footer = () => {
 
                     {/* Quick Links */}
                     <div className='text-center sm:text-left mt-6 sm:mt-0'>
-                        <h3 className='text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-[#38bdf8]'>
+                        <h3 className='text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-blue-600 dark:text-[#38bdf8]'>
                             Quick Links
                         </h3>
                         <ul className='space-y-1 sm:space-y-2'>
                             <li>
                                 <a
                                     href='#'
-                                    className='text-gray-300 hover:text-[#38bdf8] transition-colors duration-300 text-sm sm:text-base'>
+                                    className='text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-[#38bdf8] transition-colors duration-300 text-sm sm:text-base'>
                                     Home
                                 </a>
                             </li>
                             <li>
                                 <a
                                     href='#'
-                                    className='text-gray-300 hover:text-[#38bdf8] transition-colors duration-300 text-sm sm:text-base'>
+                                    className='text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-[#38bdf8] transition-colors duration-300 text-sm sm:text-base'>
                                     Workouts
                                 </a>
                             </li>
                             <li>
                                 <a
                                     href='#'
-                                    className='text-gray-300 hover:text-[#38bdf8] transition-colors duration-300 text-sm sm:text-base'>
+                                    className='text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-[#38bdf8] transition-colors duration-300 text-sm sm:text-base'>
                                     Progress
                                 </a>
                             </li>
                             <li>
                                 <a
                                     href='#'
-                                    className='text-gray-300 hover:text-[#38bdf8] transition-colors duration-300 text-sm sm:text-base'>
+                                    className='text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-[#38bdf8] transition-colors duration-300 text-sm sm:text-base'>
                                     Community
                                 </a>
                             </li>
@@ -87,35 +87,35 @@ const Footer = () => {
 
                     {/* Support */}
                     <div className='text-center sm:text-left mt-6 sm:mt-0'>
-                        <h3 className='text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-[#818cf8]'>
+                        <h3 className='text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-indigo-600 dark:text-[#818cf8]'>
                             Support
                         </h3>
                         <ul className='space-y-1 sm:space-y-2'>
                             <li>
                                 <a
                                     href='#'
-                                    className='text-gray-300 hover:text-[#818cf8] transition-colors duration-300 text-sm sm:text-base'>
+                                    className='text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-[#818cf8] transition-colors duration-300 text-sm sm:text-base'>
                                     Help Center
                                 </a>
                             </li>
                             <li>
                                 <a
                                     href='#'
-                                    className='text-gray-300 hover:text-[#818cf8] transition-colors duration-300 text-sm sm:text-base'>
+                                    className='text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-[#818cf8] transition-colors duration-300 text-sm sm:text-base'>
                                     Contact Us
                                 </a>
                             </li>
                             <li>
                                 <a
                                     href='#'
-                                    className='text-gray-300 hover:text-[#818cf8] transition-colors duration-300 text-sm sm:text-base'>
+                                    className='text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-[#818cf8] transition-colors duration-300 text-sm sm:text-base'>
                                     Privacy Policy
                                 </a>
                             </li>
                             <li>
                                 <a
                                     href='#'
-                                    className='text-gray-300 hover:text-[#818cf8] transition-colors duration-300 text-sm sm:text-base'>
+                                    className='text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-[#818cf8] transition-colors duration-300 text-sm sm:text-base'>
                                     Terms of Service
                                 </a>
                             </li>
@@ -124,9 +124,9 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Section */}
-                <div className='border-t border-gray-700 pt-4 sm:pt-6 mt-6 sm:mt-8'>
+                <div className='border-t border-gray-300 dark:border-gray-700 pt-4 sm:pt-6 mt-6 sm:mt-8'>
                     <div className='flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0'>
-                        <p className='text-gray-400 text-xs sm:text-sm text-center sm:text-left'>
+                        <p className='text-gray-500 dark:text-gray-400 text-xs sm:text-sm text-center sm:text-left'>
                             © {new Date().getFullYear()} FitVerse. All rights
                             reserved.
                         </p>
