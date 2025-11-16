@@ -154,7 +154,6 @@ class-variance-authority   | CVA for component variant management
 Redux Toolkit 2.10.1  | Predictable state management with RTK Query
 React Router 7.9.5    | Declarative client-side routing
 React Redux 9.2.0     | Official React bindings for Redux
-Zustand 5.0.8         | Lightweight state management solution
 ```
 
 ### Styling & Icons

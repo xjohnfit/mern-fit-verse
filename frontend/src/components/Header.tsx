@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User, LogOut, Menu, X, LayoutDashboard, UtensilsCrossed, Dumbbell, Settings, Home, Search, Users, UserCheck, MessageCircle } from 'lucide-react';
-import FollowersFollowingModal from '@/screens/protected/FollowersFollowingModal';
+import FollowersFollowingModal from '@/screens/protected/profile/FollowersFollowingModal';
 import {
     NavigationMenu,
     NavigationMenuContent,

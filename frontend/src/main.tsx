@@ -17,11 +17,11 @@ import RegisterScreen from './screens/RegisterScreen';
 
 // Private routes imports
 import PrivateRoute from './components/PrivateRoute';
-import DashboardScreen from './screens/protected/DashboardScreen.tsx';
-import SettingsScreen from './screens/protected/SettingsScreen.tsx';
-import ViewProfileScreen from './screens/protected/ViewUserProfile.tsx';
-import NutritionScreen from './screens/protected/NutritionScreen.tsx';
-import WorkoutScreen from './screens/protected/WorkoutScreen.tsx';
+import DashboardScreen from './screens/protected/dashboard/DashboardScreen.tsx';
+import SettingsScreen from './screens/protected/dashboard/SettingsScreen.tsx';
+import ViewProfileScreen from './screens/protected/profile/ViewUserProfile.tsx';
+import NutritionScreen from './screens/protected/nutrition/NutritionScreen.tsx';
+import WorkoutScreen from './screens/protected/workout/WorkoutScreen.tsx';
 
 const router = createBrowserRouter([
     {
