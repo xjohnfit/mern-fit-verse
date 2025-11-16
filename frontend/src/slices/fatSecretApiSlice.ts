@@ -97,7 +97,7 @@ export const fatSecretApiSlice = createApi({
                 url: `/food/${foodId}`,
                 method: 'GET',
             }),
-            providesTags: (result, error, foodId) => [
+            providesTags: (_result, _error, foodId) => [
                 { type: 'Food', id: foodId },
             ],
         }),

@@ -135,8 +135,7 @@ const ViewUserProfile = () => {
         skip: !username,
     });
 
-    const [followUnfollowUser, { isLoading: isFollowLoading }] =
-        useFollowUnfollowUserMutation();
+    const [followUnfollowUser, { isLoading: isFollowLoading }] = useFollowUnfollowUserMutation();
     const [likeUnlikePost] = useLikeUnlikePostMutation();
     const [deletePost] = useDeletePostMutation();
     const [addComment] = useAddCommentMutation();
