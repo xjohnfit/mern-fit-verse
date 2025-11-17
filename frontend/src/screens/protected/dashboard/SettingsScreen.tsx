@@ -628,7 +628,6 @@ const SettingsScreen = () => {
                                             accept='image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,image/*'
                                             onChange={handlePhotoSelect}
                                             className='hidden'
-                                            capture='environment'
                                         />
                                     </div>
                                 </div>
@@ -940,7 +939,7 @@ const SettingsScreen = () => {
                                             type='date'
                                             value={profileData.dob}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md text-sm sm:text-base ${errors.dob
+                                            className={`w-full px-3 sm:px-4 py-3 pl-10 sm:pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md text-sm ${errors.dob
                                                 ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
                                                 : 'border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500/20'
                                                 }`}
