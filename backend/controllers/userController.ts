@@ -87,6 +87,19 @@ export const updateUserProfile = asyncHandler(
         // Handle file upload if present
         if (req.file) {
             try {
+                // Log upload details for debugging
+                console.log('Processing file upload:', {
+                    filename: req.file.originalname,
+                    mimetype: req.file.mimetype,
+                    size: req.file.size,
+                    bufferLength: req.file.buffer.length,
+                });
+
+                // Validate buffer exists
+                if (!req.file.buffer || req.file.buffer.length === 0) {
+                    throw new Error('File buffer is empty or invalid');
+                }
+
                 // Delete the previous photo from Cloudinary if it exists
                 if (user.photo) {
                     const publicId = user.photo.split('/').pop()?.split('.')[0];
@@ -95,6 +108,7 @@ export const updateUserProfile = asyncHandler(
                             await cloudinary.uploader.destroy(
                                 `fit-verse/users/${publicId}`
                             );
+                            console.log('Previous photo deleted successfully');
                         } catch (deleteError) {
                             console.warn(
                                 'Failed to delete old photo, continuing with upload:',
@@ -106,7 +120,33 @@ export const updateUserProfile = asyncHandler(
 
                 // Convert buffer to base64
                 const b64 = Buffer.from(req.file.buffer).toString('base64');
-                const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+                console.log('Buffer converted to base64, length:', b64.length);
+
+                // Handle MIME type for iOS uploads (can be empty or 'application/octet-stream')
+                let mimeType = req.file.mimetype;
+                const fileExtension =
+                    req.file.originalname.toLowerCase().split('.').pop() || '';
+
+                // If MIME type is missing or generic, infer from extension
+                if (!mimeType || mimeType === 'application/octet-stream') {
+                    const mimeMap: { [key: string]: string } = {
+                        jpg: 'image/jpeg',
+                        jpeg: 'image/jpeg',
+                        png: 'image/png',
+                        gif: 'image/gif',
+                        webp: 'image/webp',
+                        heic: 'image/heic',
+                        heif: 'image/heif',
+                        bmp: 'image/bmp',
+                    };
+                    mimeType = mimeMap[fileExtension] || 'image/jpeg';
+                    console.log(
+                        `Inferred MIME type from extension: ${mimeType}`
+                    );
+                }
+
+                const dataURI = `data:${mimeType};base64,${b64}`;
+                console.log('Starting Cloudinary upload...');
 
                 // Upload to Cloudinary with automatic format optimization
                 // Cloudinary natively supports HEIC and will automatically convert to browser-compatible formats
@@ -134,6 +174,11 @@ export const updateUserProfile = asyncHandler(
                 user.photo = cloudinaryResult.secure_url;
             } catch (uploadError: any) {
                 console.error('Photo upload failed:', uploadError);
+                console.error('Upload error details:', {
+                    message: uploadError.message,
+                    stack: uploadError.stack,
+                    name: uploadError.name,
+                });
                 res.status(400);
                 const errorMessage =
                     uploadError.message ||

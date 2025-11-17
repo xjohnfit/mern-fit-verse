@@ -50,19 +50,29 @@ const SettingsScreen = () => {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        // Log file details for debugging iPhone issues
+        console.log('Selected file:', {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            lastModified: file.lastModified
+        });
+
         // Get file extension as fallback for HEIC detection
         const fileExtension = file.name.toLowerCase().split('.').pop() || '';
 
-        // Validate file type - include both MIME type and extension check
+        // Validate file type - iOS can send empty MIME types or "application/octet-stream"
         const validTypes = [
             'image/jpeg',
             'image/jpg',
             'image/png',
+            'image/gif',
             'image/webp',
             'image/heic',
             'image/heif',
+            'image/bmp',
         ];
-        const validExtensions = ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'];
+        const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif', 'bmp'];
 
         const isValidMimeType = file.type && validTypes.includes(file.type);
         const isValidExtension = validExtensions.includes(fileExtension);
@@ -70,42 +80,48 @@ const SettingsScreen = () => {
         // Accept if type starts with 'image/' (catch-all for camera uploads)
         const isImageType = file.type && file.type.startsWith('image/');
 
-        if (!isValidMimeType && !isValidExtension && !isImageType) {
+        // iPhone/iOS may send empty MIME type - rely on extension
+        const hasEmptyMimeType = !file.type || file.type === '' || file.type === 'application/octet-stream';
+        const likelyIosImage = hasEmptyMimeType && isValidExtension;
+
+        if (!isValidMimeType && !isValidExtension && !isImageType && !likelyIosImage) {
+            console.error('Invalid file type detected:', file.type, fileExtension);
             toast.error(
                 'Please select a valid image file (JPG, PNG, WebP or HEIC)'
             );
             return;
         }
 
-        // Special handling for HEIC files (they often have empty or incorrect MIME type)
+        // Special handling for HEIC files (they often have empty or incorrect MIME type on iOS)
         if (
             (fileExtension === 'heic' || fileExtension === 'heif') ||
             (file.type && (file.type.includes('heic') || file.type.includes('heif')))
         ) {
-            console.log('HEIC file detected');
+            console.log('HEIC file detected - Cloudinary will handle conversion');
             toast.info(
-                'HEIC file detected. It will be converted to JPG format for better compatibility.'
+                'HEIC format detected. Cloudinary will optimize it automatically.'
             );
         }
 
-        // Validate file size (max 5MB)
-        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        // Validate file size (max 10MB for iPhone photos which can be large)
+        const maxSize = 10 * 1024 * 1024; // 10MB in bytes
         if (file.size > maxSize) {
-            toast.error('Image size must be less than 5MB');
+            toast.error('Image size must be less than 10MB');
             return;
         }
 
         setPhotoFile(file);
 
         // Create preview URL (for display only)
+        // Note: iOS may not display HEIC in preview, but upload will still work
         try {
             const previewUrl = URL.createObjectURL(file);
             setPhotoPreview(previewUrl);
             toast.success('Photo selected successfully!');
         } catch (error) {
             console.error('Error creating preview:', error);
-            toast.error('Could not preview image, but it will be uploaded');
-            // Still set the file even if preview fails
+            toast.warning('Preview not available, but photo will be uploaded');
+            // Still set the file even if preview fails (common with HEIC on some browsers)
         }
     };
 
@@ -455,7 +471,12 @@ const SettingsScreen = () => {
 
             // Include photo file if selected
             if (photoFile) {
-                formData.append('photo', photoFile);
+                console.log('Appending photo file to FormData:', {
+                    name: photoFile.name,
+                    type: photoFile.type,
+                    size: photoFile.size
+                });
+                formData.append('photo', photoFile, photoFile.name);
             }
 
             // Only include password if it's provided
@@ -471,7 +492,9 @@ const SettingsScreen = () => {
                 formData.append('weight', profileData.weight);
             }
 
+            console.log('Submitting profile update...');
             const res = await updateUserProfile(formData).unwrap();
+            console.log('Profile update successful:', res);
             dispatch(setCredentials({ ...res }));
             toast.success('Profile updated successfully');
 
@@ -494,6 +517,12 @@ const SettingsScreen = () => {
             }
         } catch (err: string | any) {
             console.error('Profile update error:', err);
+            console.error('Error details:', {
+                status: err?.status,
+                data: err?.data,
+                message: err?.message,
+                originalStatus: err?.originalStatus
+            });
 
             // Handle different types of errors
             let errorMessage = 'An error occurred';
@@ -501,6 +530,10 @@ const SettingsScreen = () => {
             if (err?.status === 'FETCH_ERROR') {
                 errorMessage =
                     'Unable to connect to the server. Please check your connection and ensure the backend is running.';
+            } else if (err?.status === 413) {
+                errorMessage = 'File size too large. Please choose a smaller image (max 10MB).';
+            } else if (err?.status === 400 && err?.data?.message) {
+                errorMessage = err.data.message;
             } else if (err?.data?.message) {
                 errorMessage = err.data.message;
             } else if (err?.message) {
@@ -513,7 +546,8 @@ const SettingsScreen = () => {
             if (
                 errorMessage.toLowerCase().includes('photo') ||
                 errorMessage.toLowerCase().includes('upload') ||
-                errorMessage.toLowerCase().includes('image')
+                errorMessage.toLowerCase().includes('image') ||
+                errorMessage.toLowerCase().includes('file')
             ) {
                 toast.error(`Photo upload failed: ${errorMessage}`);
             } else {
@@ -635,7 +669,7 @@ const SettingsScreen = () => {
                                         <input
                                             id='photo-input'
                                             type='file'
-                                            accept='image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,image/*'
+                                            accept='image/*'
                                             onChange={handlePhotoSelect}
                                             className='hidden'
                                         />
