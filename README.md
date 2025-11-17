@@ -55,6 +55,12 @@ To create a vibrant fitness community where users can share their journey, motiv
 - **💬 Interactive Features**: Like, comment, and engage with community posts
 - **🔔 Real-time Notifications**: Stay updated with likes, follows, and comments
 - **📊 Profile Management**: Comprehensive user profiles with fitness metrics
+- **🥗 Nutrition Tracking**: Complete meal logging with FatSecret API integration (500K+ foods)
+- **📈 Macro Tracking**: Track calories, protein, carbs, and fats with visual progress
+- **🎯 Nutrition Goals**: Set and monitor personalized daily nutrition targets
+- **📊 Visual Analytics**: Interactive pie charts and progress bars for macro distribution
+- **📅 Historical Data**: Navigate dates to view and manage past nutrition logs
+- **🍽️ Custom Meal Categories**: Create personalized meal categories beyond standard meals
 - **🎨 Modern UI/UX**: React 19 with Tailwind CSS and Radix UI components
 - **🌓 Theme Support**: Dark/light mode with system preference detection
 - **📱 Responsive Design**: Optimized for all devices with mobile-first approach
@@ -102,6 +108,20 @@ To create a vibrant fitness community where users can share their journey, motiv
 - **Notification Management**: Mark notifications as read and delete old notifications
 - **Activity Tracking**: Track all social interactions and engagement
 
+### 🥗 Nutrition Tracking Features
+
+- **FatSecret API Integration**: Access to 500,000+ food items from a comprehensive database
+- **Smart Food Autocomplete**: Real-time food suggestions with intelligent debounced search
+- **Detailed Food Information**: View complete nutritional breakdown with serving size adjustments
+- **Daily Meal Logging**: Track meals across standard categories (Breakfast, Lunch, Dinner, Snacks)
+- **Custom Meal Categories**: Create up to 3 personalized meal categories with custom names and colors
+- **Comprehensive Macro Tracking**: Monitor calories, protein, carbohydrates, and fats
+- **Nutrition Goals Management**: Set and track personalized daily calorie and macronutrient targets
+- **Visual Progress Tracking**: Color-coded progress bars and interactive pie charts for macro distribution
+- **Historical Data**: Navigate through dates to view past nutrition logs and track progress over time
+- **Flexible Entry Management**: Adjust serving sizes, delete entries, and reorganize meal categories
+- **Real-time Calculations**: Automatic calculation of nutrition totals and goal progress
+
 ### 🏋️‍♀️ Fitness Hub (Coming Soon)
 
 - **Workout Planning**: Personalized workout routines and exercise tracking
@@ -109,12 +129,20 @@ To create a vibrant fitness community where users can share their journey, motiv
 - **Progress Analytics**: Detailed workout performance metrics and insights
 - **Smart Goals**: AI-powered goal setting and achievement tracking
 
-### 🥗 Nutrition Hub (Coming Soon)
+### 🥗 Nutrition Hub ✅ (Now Available!)
 
-- **Meal Planning**: Personalized nutrition plans based on fitness goals
-- **Macro Tracking**: Track proteins, carbs, fats with detailed analytics
-- **Food Scanner**: Barcode scanning for quick meal logging
-- **Recipe Sharing**: Share healthy recipes and meal prep ideas
+- **Food Database Integration**: FatSecret API integration with 500,000+ foods
+- **Smart Food Search**: Real-time autocomplete with debounced search (2+ characters)
+- **Food Details Modal**: Detailed nutrition information with serving size adjustment
+- **Daily Meal Tracking**: Track meals across Breakfast, Lunch, Dinner, and Snacks
+- **Custom Meal Categories**: Create up to 3 personalized meal categories with custom colors
+- **Macro Tracking**: Track calories, protein, carbs, and fats with visual progress bars
+- **Nutrition Goals**: Set and monitor daily calorie and macronutrient targets
+- **Macro Distribution**: Interactive pie chart showing protein/carbs/fats breakdown
+- **Date Navigation**: View and track nutrition for any date with calendar navigation
+- **Entry Management**: Edit serving sizes, delete entries, and manage meal categories
+- **Visual Progress**: Color-coded progress indicators for goals (green/yellow/red)
+- **Category Management**: Add, reorder, and delete custom meal categories
 
 ### 🎨 Modern User Experience
 
@@ -141,11 +169,11 @@ Tailwind CSS 4.1.16   | Utility-first CSS framework with custom config
 ### UI/UX Libraries
 
 ```typescript
-Radix UI              | Accessible, unstyled UI component primitives
-@radix-ui/react-avatar     | Avatar component with fallback support
+Radix UI                    | Accessible, unstyled UI component primitives
+@radix-ui/react-avatar      | Avatar component with fallback support
 @radix-ui/react-navigation-menu | Accessible navigation menus
-@radix-ui/react-slot       | Composition utilities for flexible APIs
-class-variance-authority   | CVA for component variant management
+@radix-ui/react-slot        | Composition utilities for flexible APIs
+class-variance-authority    | CVA for component variant management
 ```
 
 ### State Management & Routing
@@ -164,6 +192,7 @@ Sonner 2.0.7          | Toast notification system
 Next Themes 0.4.6     | Perfect dark mode support with SSR
 Tailwind Merge 3.3.1  | Utility function to merge Tailwind classes
 clsx 2.1.1            | Utility for constructing className strings
+Recharts 2.15.4       | Composable charting library for data visualization
 ```
 
 ### Backend Technologies
@@ -173,6 +202,14 @@ Node.js 20+           | JavaScript runtime with latest features
 Express.js 5.1.0      | Fast, unopinionated web framework
 TypeScript 5.9.3      | Type-safe backend development
 Mongoose 8.19.2       | Elegant MongoDB object modeling
+```
+
+### External APIs & Services
+
+```typescript
+FatSecret Platform API  | Comprehensive food and nutrition database
+Cloudinary 2.8.0        | Cloud-based image and video management
+OAuth 1.0               | Secure API authentication for FatSecret
 ```
 
 ### Authentication & Security
@@ -265,87 +302,101 @@ SSL/TLS Support       | Production-ready security configurations
 
 ```
 mern-fit-verse/
-├── 📂 backend/                 # Express.js TypeScript backend
-│   ├── 📂 config/              # Database connection configuration
-│   ├── 📂 controllers/         # API route handlers and business logic
-│   │   ├── authController.ts   # User authentication (login/register)
-│   │   ├── userController.ts   # User profile and social features
-│   │   ├── postController.ts   # Post creation, feed, likes, comments
-│   │   ├── notificationController.ts # Notification management
-│   │   └── healthController.ts # System health monitoring
-│   ├── 📂 middlewares/         # Express middleware functions
-│   │   ├── authMiddleware.ts   # JWT authentication middleware
-│   │   ├── errorMiddleware.ts  # Global error handling
-│   │   └── uploadMiddleware.ts # Multer file upload configuration
-│   ├── 📂 models/              # MongoDB schemas with Mongoose
-│   │   ├── userModel.ts        # User schema with auth methods
-│   │   ├── postModel.ts        # Post schema with comments
-│   │   └── notificationModel.ts # Notification system schema
-│   ├── 📂 routes/              # API endpoint definitions
-│   │   ├── authRoutes.ts       # Authentication routes
-│   │   ├── userRoutes.ts       # User management routes
-│   │   ├── postRoutes.ts       # Post and social features routes
-│   │   ├── notificationRoutes.ts # Notification routes
-│   │   └── healthRoutes.ts     # Health check routes
-│   ├── 📂 utils/               # Helper functions and utilities
-│   │   └── generateToken.ts    # JWT token generation utility
-│   ├── 📂 __tests__/           # Backend test files
-│   │   └── health.test.ts      # Health endpoint tests
-│   └── 📄 index.ts             # Express server entry point
-├── 📂 frontend/                # React TypeScript SPA
-│   ├── 📂 public/              # Static assets and favicon
-│   ├── 📂 src/                 # Frontend source code
-│   │   ├── 📂 components/      # Reusable UI components
-│   │   │   ├── 📂 ui/          # Radix UI component implementations
-│   │   │   ├── Header.tsx      # Navigation with user menu
-│   │   │   ├── Footer.tsx      # Site footer
-│   │   │   ├── AlertModal.tsx  # Alert and confirmation modals
-│   │   │   ├── PrivateRoute.tsx # Route authentication guard
-│   │   │   ├── ScrollToTop.tsx # Auto-scroll utility
-│   │   │   └── ThemeToggle.tsx # Dark/light mode toggle
-│   │   ├── 📂 screens/         # Page components
-│   │   │   ├── HomeScreen.tsx  # Landing page
-│   │   │   ├── LoginScreen.tsx # Authentication form
-│   │   │   ├── RegisterScreen.tsx # User registration
-│   │   │   └── 📂 protected/   # Authenticated user screens
-│   │   │       ├── DashboardScreen.tsx # Main social feed
-│   │   │       ├── SettingsScreen.tsx # User settings
-│   │   │       ├── NutritionScreen.tsx # Coming soon preview
-│   │   │       ├── WorkoutScreen.tsx # Coming soon preview
-│   │   │       ├── ViewUserProfile.tsx # Profile viewing
+├── 📂 backend/                           # Express.js TypeScript backend
+│   ├── 📂 config/                        # Database connection configuration
+│   ├── 📂 controllers/                   # API route handlers and business logic
+│   │   ├── authController.ts             # User authentication (login/register)
+│   │   ├── userController.ts             # User profile and social features
+│   │   ├── postController.ts             # Post creation, feed, likes, comments
+│   │   ├── notificationController.ts     # Notification management
+│   │   ├── nutritionController.ts        # Nutrition entry management
+│   │   ├── fatSecretController.ts        # FatSecret API integration
+│   │   ├── customCategoryController.ts   # Custom meal categories
+│   │   └── healthController.ts           # System health monitoring
+│   ├── 📂 middlewares/                  # Express middleware functions
+│   │   ├── authMiddleware.ts             # JWT authentication middleware
+│   │   ├── errorMiddleware.ts            # Global error handling
+│   │   └── uploadMiddleware.ts           # Multer file upload configuration
+│   ├── 📂 models/                       # MongoDB schemas with Mongoose
+│   │   ├── userModel.ts                  # User schema with auth methods
+│   │   ├── postModel.ts                  # Post schema with comments
+│   │   ├── notificationModel.ts          # Notification system schema
+│   │   ├── nutritionModel.ts             # Nutrition entry schema
+│   │   └── customCategoryModel.ts        # Custom meal category schema
+│   ├── 📂 routes/                        # API endpoint definitions
+│   │   ├── authRoutes.ts                 # Authentication routes
+│   │   ├── userRoutes.ts                 # User management routes
+│   │   ├── postRoutes.ts                 # Post and social features routes
+│   │   ├── notificationRoutes.ts         # Notification routes
+│   │   ├── nutritionRoutes.ts            # Nutrition tracking routes
+│   │   ├── fatSecretRoutes.ts            # FatSecret API proxy routes
+│   │   ├── customCategoryRoutes.ts       # Custom category routes
+│   │   └── healthRoutes.ts               # Health check routes
+│   ├── 📂 utils/                         # Helper functions and utilities
+│   │   └── generateToken.ts              # JWT token generation utility
+│   ├── 📂 __tests__/                     # Backend test files
+│   │   └── health.test.ts                # Health endpoint tests
+│   └── 📄 index.ts                       # Express server entry point
+├── 📂 frontend/                          # React TypeScript SPA
+│   ├── 📂 public/                        # Static assets and favicon
+│   ├── 📂 src/                           # Frontend source code
+│   │   ├── 📂 components/                # Reusable UI components
+│   │   │   ├── 📂 ui/                    # Radix UI component implementations
+│   │   │   ├── Header.tsx                # Navigation with user menu
+│   │   │   ├── Footer.tsx                # Site footer
+│   │   │   ├── AlertModal.tsx            # Alert and confirmation modals
+│   │   │   ├── FoodAutoComplete.tsx      # Food search with autocomplete
+│   │   │   ├── ShowFoodItemModal.tsx     # Food details and add modal
+│   │   │   ├── MacroDistributionChart.tsx # Macro nutrition pie chart
+│   │   │   ├── PrivateRoute.tsx          # Route authentication guard
+│   │   │   ├── ScrollToTop.tsx           # Auto-scroll utility
+│   │   │   └── ThemeToggle.tsx           # Dark/light mode toggle
+│   │   ├── 📂 screens/                   # Page components
+│   │   │   ├── HomeScreen.tsx            # Landing page
+│   │   │   ├── LoginScreen.tsx           # Authentication form
+│   │   │   ├── RegisterScreen.tsx        # User registration
+│   │   │   └── 📂 protected/             # Authenticated user screens
+│   │   │       ├── DashboardScreen.tsx   # Main social feed
+│   │   │       ├── SettingsScreen.tsx    # User settings 
+│   │   │       ├── NutritionScreen.tsx   # Nutrition tracking hub
+│   │   │       ├── WorkoutScreen.tsx     # Coming soon preview
+│   │   │       ├── ViewUserProfile.tsx   # Profile viewing
 │   │   │       ├── FollowersFollowingModal.tsx # Social lists
 │   │   │       └── ThemeSettingsSection.tsx # Theme config
-│   │   ├── 📂 slices/          # Redux Toolkit state management
-│   │   │   ├── apiSlice.ts     # RTK Query base configuration
-│   │   │   ├── authSlice.ts    # Authentication state
-│   │   │   ├── usersApiSlice.ts # User API calls
-│   │   │   └── postsApiSlice.ts # Posts and social API calls
-│   │   ├── 📂 lib/             # Utility functions
-│   │   │   ├── calculateAge.ts # Age calculation utility
-│   │   │   ├── formatDate.ts   # Date formatting helpers
-│   │   │   ├── getInitials.ts  # Avatar initials generator
-│   │   │   ├── getPasswordStrength.ts # Password validation
-│   │   │   └── utils.ts        # General utilities (cn, clsx)
-│   │   ├── 📂 assets/          # Static assets (images, fonts)
-│   │   ├── 📄 App.tsx          # Main application component
-│   │   ├── 📄 main.tsx         # React app entry point
-│   │   ├── 📄 store.ts         # Redux store configuration
-│   │   └── 📄 index.css        # Global styles and Tailwind imports
-│   ├── 📄 components.json      # Radix UI component configuration
-│   ├── 📄 package.json         # Frontend dependencies
-│   ├── 📄 vite.config.ts       # Vite build configuration
-│   └── � tailwind.config.js   # Tailwind CSS configuration
-├── �📂 kubernetes/              # Kubernetes deployment manifests
-│   ├── � deployment.yml       # Application deployment config
-│   └── 📄 service.yml          # Service and networking config
-├── 📄 Dockerfile               # Multi-stage production container
-├── 📄 Jenkinsfile              # Complete CI/CD pipeline
-├── 📄 docker-compose.yml       # Local development environment
-├── 📄 jest.config.js           # Jest testing configuration
-├── 📄 tsconfig.json            # TypeScript compiler configuration
-├── 📄 sonar-project.properties # SonarQube analysis configuration
-├── 📄 owasp-suppressions.xml   # OWASP security scan suppressions
-└── 📄 package.json             # Backend dependencies and scripts
+│   │   ├── 📂 slices/                    # Redux Toolkit state management
+│   │   │   ├── apiSlice.ts               # RTK Query base configuration
+│   │   │   ├── authSlice.ts              # Authentication state
+│   │   │   ├── usersApiSlice.ts          # User API calls
+│   │   │   ├── postsApiSlice.ts          # Posts and social API calls
+│   │   │   ├── nutritionApiSlice.ts      # Nutrition tracking API
+│   │   │   ├── fatSecretApiSlice.ts      # FatSecret API integration
+│   │   │   └── customCategoryApiSlice.ts # Custom categories API
+│   │   ├── 📂 lib/                       # Utility functions
+│   │   │   ├── calculateAge.ts           # Age calculation utility
+│   │   │   ├── formatDate.ts             # Date formatting helpers
+│   │   │   ├── getInitials.ts            # Avatar initials generator
+│   │   │   ├── getPasswordStrength.ts    # Password validation
+│   │   │   └── utils.ts                  # General utilities (cn, clsx)
+│   │   ├── 📂 assets/                    # Static assets (images, fonts)
+│   │   ├── 📄 App.tsx                    # Main application component
+│   │   ├── 📄 main.tsx                   # React app entry point
+│   │   ├── 📄 store.ts                   # Redux store configuration
+│   │   └── 📄 index.css                  # Global styles and Tailwind imports
+│   ├── 📄 components.json                # Radix UI component configuration
+│   ├── 📄 package.json                   # Frontend dependencies
+│   ├── 📄 vite.config.ts                 # Vite build configuration
+│   └── � tailwind.config.js              # Tailwind CSS configuration
+├── �📂 kubernetes/                       # Kubernetes deployment manifests
+│   ├── � deployment.yml                  # Application deployment config
+│   └── 📄 service.yml                    # Service and networking config
+├── 📄 Dockerfile                         # Multi-stage production container
+├── 📄 Jenkinsfile                        # Complete CI/CD pipeline
+├── 📄 docker-compose.yml                 # Local development environment
+├── 📄 jest.config.js                     # Jest testing configuration
+├── 📄 tsconfig.json                      # TypeScript compiler configuration
+├── 📄 sonar-project.properties           # SonarQube analysis configuration
+├── 📄 owasp-suppressions.xml             # OWASP security scan suppressions
+└── 📄 package.json                       # Backend dependencies and scripts
 ```
 
 ---
@@ -390,6 +441,15 @@ JWT_SECRET=your-super-secret-jwt-key-here
 NODE_ENV=development
 PORT=5003
 FRONTEND_URL=http://localhost:5173
+
+# Cloudinary (for image uploads)
+CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
+CLOUDINARY_API_KEY=your-cloudinary-api-key
+CLOUDINARY_API_SECRET=your-cloudinary-api-secret
+
+# FatSecret API (for nutrition tracking)
+FATSECRET_CONSUMER_KEY=your-fatsecret-consumer-key
+FATSECRET_CONSUMER_SECRET=your-fatsecret-consumer-secret
 ```
 
 ### 3️⃣ Install Dependencies
@@ -733,11 +793,40 @@ GET    /api/notifications                   # Get user notifications (protected)
 DELETE /api/notifications                   # Delete all user notifications (protected)
 ```
 
+### 🥗 Nutrition Tracking Endpoints
+
+```http
+GET    /api/nutrition                       # Get daily nutrition entries and totals (protected)
+POST   /api/nutrition/add                   # Add nutrition entry (protected)
+DELETE /api/nutrition/delete/:entryId       # Delete nutrition entry (protected)
+```
+
+### 🍎 FatSecret Food Database
+
+```http
+GET    /api/fatsecret/health                # FatSecret API health check (public)
+GET    /api/fatsecret/autocomplete          # Food autocomplete suggestions (protected)
+GET    /api/fatsecret/search                # Search for foods (protected)
+GET    /api/fatsecret/food/:foodId          # Get detailed food information (protected)
+```
+
+### 📋 Custom Meal Categories
+
+```http
+GET    /api/custom-categories               # Get user's custom meal categories (protected)
+POST   /api/custom-categories/add           # Create custom category (max 3) (protected)
+DELETE /api/custom-categories/delete/:id    # Delete custom category (protected)
+```
+
 ### 🏥 System Health
 
 ```http
 GET /api/health                             # Comprehensive health check dashboard
 ```
+
+---
+
+## 📖 Detailed API Examples
 
 ### User Registration
 
@@ -849,6 +938,107 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 - Current working directory and paths
 - Node.js version and environment variables
 - Last check timestamp with refresh functionality
+
+### Nutrition Tracking Examples
+
+**Add Nutrition Entry:**
+
+```http
+POST /api/nutrition/add
+Content-Type: application/json
+Authorization: Bearer {token}
+
+{
+  "date": "2024-01-15T00:00:00.000Z",
+  "mealCategory": "breakfast",
+  "foodItem": "Oatmeal with Berries",
+  "calories": 350,
+  "protein": 12,
+  "carbs": 58,
+  "fats": 8
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Nutrition entry added successfully",
+  "data": {
+    "_id": "entry_id",
+    "user": "user_id",
+    "date": "2024-01-15T00:00:00.000Z",
+    "mealCategory": "breakfast",
+    "foodItem": "Oatmeal with Berries",
+    "calories": 350,
+    "protein": 12,
+    "carbs": 58,
+    "fats": 8,
+    "createdAt": "2024-01-15T08:30:00.000Z"
+  }
+}
+```
+
+**Get Daily Nutrition:**
+
+```http
+GET /api/nutrition?date=2024-01-15
+Authorization: Bearer {token}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "entries": [
+      {
+        "_id": "entry_id",
+        "mealCategory": "breakfast",
+        "foodItem": "Oatmeal with Berries",
+        "calories": 350,
+        "protein": 12,
+        "carbs": 58,
+        "fats": 8
+      }
+    ],
+    "totals": {
+      "calories": 1850,
+      "protein": 145,
+      "carbs": 210,
+      "fats": 62
+    },
+    "date": "2024-01-15T00:00:00.000Z"
+  }
+}
+```
+
+**Food Autocomplete:**
+
+```http
+GET /api/fatsecret/autocomplete?expression=chick&max_results=8
+Authorization: Bearer {token}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "suggestions": {
+      "suggestion": [
+        "Chicken Breast",
+        "Chicken Thigh",
+        "Chicken Wings",
+        "Chickpeas"
+      ]
+    }
+  }
+}
+```
 
 ---
 
@@ -1035,11 +1225,11 @@ git push origin feature/your-feature-name
 
 ### 🎯 Areas for Contribution
 
-- **Frontend Features**: Workout tracking, nutrition logging, progress charts
-- **Backend APIs**: Exercise database, workout plans, analytics
-- **Testing**: Unit tests, integration tests, E2E tests
-- **Documentation**: API docs, tutorials, deployment guides
-- **UI/UX**: Design improvements, accessibility, mobile optimization
+- **Frontend Features**: Workout tracking, nutrition enhancements (barcode scanner, meal planning), progress charts
+- **Backend APIs**: Exercise database, workout plans, advanced nutrition analytics
+- **Testing**: Unit tests, integration tests, E2E tests for nutrition and social features
+- **Documentation**: API docs, tutorials, deployment guides, nutrition tracking usage guides
+- **UI/UX**: Design improvements, accessibility, mobile optimization, nutrition UI enhancements
 - **DevOps**: CI/CD improvements, monitoring, performance optimization
 
 ---
@@ -1059,7 +1249,20 @@ git push origin feature/your-feature-name
 - [x] **CI/CD Pipeline**: Comprehensive Jenkins pipeline with security scanning
 - [x] **Health Monitoring**: Advanced system health checks and monitoring
 
-### Phase 2: Fitness Tracking 🚧 (In Development)
+### Phase 2: Nutrition Tracking ✅ (Completed)
+
+- [x] **Food Database Integration**: FatSecret API with 500,000+ food items
+- [x] **Smart Food Search**: Real-time autocomplete with debounced search
+- [x] **Food Details**: Comprehensive nutrition information with serving size adjustment
+- [x] **Daily Meal Tracking**: Track meals across multiple categories (Breakfast, Lunch, Dinner, Snacks)
+- [x] **Custom Meal Categories**: Create up to 3 personalized meal categories
+- [x] **Macro Tracking**: Track calories, protein, carbs, and fats with visual progress
+- [x] **Nutrition Goals**: Set and monitor daily calorie and macronutrient targets
+- [x] **Visual Analytics**: Interactive pie charts and progress bars for macro distribution
+- [x] **Historical Data**: Navigate through dates to view and manage past nutrition logs
+- [x] **Entry Management**: Full CRUD operations for nutrition entries and custom categories
+
+### Phase 3: Fitness Tracking 🚧 (In Development)
 
 - [ ] **Exercise Database**: Comprehensive exercise library with instructions and videos
 - [ ] **Workout Planning**: Create and schedule personalized workout routines
@@ -1068,16 +1271,17 @@ git push origin feature/your-feature-name
 - [ ] **Goal Setting**: Set and track fitness goals with achievement milestones
 - [ ] **Workout Sharing**: Share workout routines with the community
 
-### Phase 3: Nutrition & Wellness 📋 (Planned)
+### Phase 4: Advanced Nutrition & Wellness 📋 (Planned)
 
-- [ ] **Nutrition Database**: Comprehensive food database with macro/micronutrients
-- [ ] **Meal Planning**: Personalized meal plans based on fitness goals
-- [ ] **Calorie Tracking**: Food logging with barcode scanning capability
-- [ ] **Nutrition Analytics**: Detailed nutrition insights and recommendations
-- [ ] **Recipe Sharing**: Community recipe sharing and meal prep guides
-- [ ] **Water & Sleep Tracking**: Wellness metrics beyond nutrition
+- [ ] **Meal Planning**: AI-powered personalized meal plans based on fitness goals
+- [ ] **Barcode Scanner**: Quick food logging with barcode scanning capability
+- [ ] **Recipe Database**: Community recipe sharing and meal prep guides
+- [ ] **Water Tracking**: Daily hydration monitoring and reminders
+- [ ] **Sleep Tracking**: Sleep quality and duration monitoring
+- [ ] **Nutrition Analytics**: Advanced insights, trends, and recommendations
+- [ ] **Meal Photo Recognition**: AI-powered food identification from photos
 
-### Phase 4: Advanced Features 🎯 (Future)
+### Phase 5: Advanced Features 🎯 (Future)
 
 - [ ] **AI-Powered Recommendations**: Personalized workout and nutrition suggestions
 - [ ] **Fitness Device Integration**: Connect with popular fitness trackers and apps
@@ -1086,7 +1290,7 @@ git push origin feature/your-feature-name
 - [ ] **Challenges & Competitions**: Community fitness challenges and leaderboards
 - [ ] **Mobile Application**: Native iOS and Android apps
 
-### Phase 5: Scale & Enterprise 🏢 (Long-term)
+### Phase 6: Scale & Enterprise 🏢 (Long-term)
 
 - [ ] **Performance Optimization**: Advanced caching, CDN, and database optimization
 - [ ] **Multi-language Support**: Internationalization for global reach
