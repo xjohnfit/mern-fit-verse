@@ -36,7 +36,7 @@ const NutritionScreen = () => {
 
     const [selectedFood, setSelectedFood] = useState<string | null>(null);
     const [showModal, setShowModal] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState<MealCategory | string | null>(null);
+    const [_selectedCategory, setSelectedCategory] = useState<MealCategory | string | null>(null);
     const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
     const [isEditingGoals, setIsEditingGoals] = useState(false);
@@ -48,8 +48,8 @@ const NutritionScreen = () => {
     });
 
     // API hooks
-    const { data: dailyNutritionData, isLoading: isLoadingNutrition } = useGetDailyNutritionQuery();
-    const [addNutritionEntry, { isLoading: isAddingEntry }] = useAddNutritionEntryMutation();
+    const { data: dailyNutritionData, isLoading: _isLoadingNutrition } = useGetDailyNutritionQuery();
+    const [addNutritionEntry, { isLoading: _isAddingEntry }] = useAddNutritionEntryMutation();
     const { data: customCategoriesData } = useGetCustomCategoriesQuery();
     const [addCustomCategory] = useAddCustomCategoryMutation();
     const [deleteCustomCategory] = useDeleteCustomCategoryMutation();
