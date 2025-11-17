@@ -11,6 +11,12 @@ const fileFilter = (
     file: Express.Multer.File,
     cb: multer.FileFilterCallback
 ) => {
+    console.log('Multer file filter - checking file:', {
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        size: file.size,
+    });
+
     // Get file extension
     const fileExtension =
         file.originalname.toLowerCase().split('.').pop() || '';
@@ -26,6 +32,7 @@ const fileFilter = (
         'image/heif',
         'image/bmp',
         'image/tiff',
+        'application/octet-stream', // iOS sometimes sends this
     ];
 
     const validExtensions = [
@@ -48,12 +55,20 @@ const fileFilter = (
         validMimeTypes.includes(file.mimetype);
     const isValidExtension = validExtensions.includes(fileExtension);
 
-    if (isValidMimeType || isValidExtension) {
+    // Also accept files with no MIME type if they have valid extension (iOS issue)
+    const hasValidExtension = validExtensions.includes(fileExtension);
+
+    if (isValidMimeType || isValidExtension || hasValidExtension) {
+        console.log('File accepted by multer');
         cb(null, true);
     } else {
+        console.error('File rejected by multer:', {
+            mimetype: file.mimetype,
+            extension: fileExtension,
+        });
         cb(
             new Error(
-                `Invalid file type. Only image files are allowed. Received: ${file.mimetype}`
+                `Invalid file type. Only image files are allowed. Received MIME: ${file.mimetype}, Extension: ${fileExtension}`
             )
         );
     }

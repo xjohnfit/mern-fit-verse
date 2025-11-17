@@ -524,12 +524,20 @@ const SettingsScreen = () => {
                 originalStatus: err?.originalStatus
             });
 
+            // For production debugging - show error in toast
+            const errorDetails = JSON.stringify({
+                status: err?.status,
+                message: err?.message || err?.data?.message,
+                type: typeof err
+            }, null, 2);
+            console.log('ERROR DETAILS FOR DEBUGGING:', errorDetails);
+
             // Handle different types of errors
             let errorMessage = 'An error occurred';
 
             if (err?.status === 'FETCH_ERROR') {
                 errorMessage =
-                    'Unable to connect to the server. Please check your connection and ensure the backend is running.';
+                    'Unable to connect to the server. Please check your connection. (Network Error)';
             } else if (err?.status === 413) {
                 errorMessage = 'File size too large. Please choose a smaller image (max 10MB).';
             } else if (err?.status === 400 && err?.data?.message) {
@@ -542,6 +550,11 @@ const SettingsScreen = () => {
                 errorMessage = err;
             }
 
+            // Add technical details in production for debugging
+            if (import.meta.env.PROD) {
+                errorMessage += ` [Status: ${err?.status || 'unknown'}]`;
+            }
+
             // Handle photo upload specific errors
             if (
                 errorMessage.toLowerCase().includes('photo') ||
@@ -549,9 +562,13 @@ const SettingsScreen = () => {
                 errorMessage.toLowerCase().includes('image') ||
                 errorMessage.toLowerCase().includes('file')
             ) {
-                toast.error(`Photo upload failed: ${errorMessage}`);
+                toast.error(`Photo upload failed: ${errorMessage}`, {
+                    duration: 6000,
+                });
             } else {
-                toast.error(errorMessage);
+                toast.error(errorMessage, {
+                    duration: 6000,
+                });
             }
         }
     };

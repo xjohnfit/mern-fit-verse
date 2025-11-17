@@ -38,14 +38,43 @@ cloudinary.config({
 const app: Application = express();
 const PORT: number = parseInt(process.env.PORT || '5003', 10);
 
+// Configure CORS origins
+const allowedOrigins = process.env.FRONTEND_URL
+    ? process.env.FRONTEND_URL.split(',').map((url) => url.trim())
+    : ['http://localhost:5173', 'http://localhost:3000'];
+
+console.log('Allowed CORS origins:', allowedOrigins);
+
 // Middlewares
 app.use(
     cors({
-        origin: [process.env.FRONTEND_URL as string],
+        origin: (origin, callback) => {
+            // Allow requests with no origin (mobile apps, Postman, etc.)
+            if (!origin) {
+                return callback(null, true);
+            }
+
+            // Check if origin is allowed
+            if (
+                allowedOrigins.indexOf(origin) !== -1 ||
+                allowedOrigins.includes('*')
+            ) {
+                callback(null, true);
+            } else {
+                console.warn('Blocked by CORS:', origin);
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
         credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+        allowedHeaders: [
+            'Content-Type',
+            'Authorization',
+            'Cookie',
+            'X-Requested-With',
+        ],
         exposedHeaders: ['Set-Cookie'],
+        maxAge: 86400, // 24 hours
     })
 );
 app.use(express.json({ limit: '50mb' }));
