@@ -116,6 +116,7 @@ export const updateUserProfile = asyncHandler(
                 const cloudinaryResult = await cloudinary.uploader.upload(
                     dataURI,
                     {
+                        folder: 'fit-verse/users',
                         resource_type: 'auto', // Let Cloudinary auto-detect the format
                         format: 'jpg', // Convert HEIC to JPG for better browser compatibility
                     }

@@ -26,7 +26,11 @@ export const createPost = asyncHandler(async (req: Request, res: Response) => {
     }
 
     if (image) {
-        const uploadedImage = await cloudinary.uploader.upload(image);
+        const uploadedImage = await cloudinary.uploader.upload(image, {
+            folder: 'fit-verse/posts',
+            resource_type: 'auto', // Let Cloudinary auto-detect the format
+            format: 'jpg', // Convert HEIC to JPG for better browser compatibility
+        });
         image = uploadedImage.secure_url;
     }
 
