@@ -1,18 +1,14 @@
 
 import { useState, useEffect } from 'react';
-import { UtensilsCrossed, Target, BarChart3, Calendar, CheckCircle, Coffee, Sun, Cookie, Moon, Plus, X, Apple, Edit2, Save } from 'lucide-react';
+import { UtensilsCrossed, Target, CheckCircle, Coffee, Sun, Cookie, Moon, Plus, X, Apple, Edit2, Save } from 'lucide-react';
 import { FoodAutoComplete } from '@/components/FoodAutoComplete';
 import { useSearchFoodsQuery, useLazyGetFoodByIdQuery } from '@/slices/fatSecretApiSlice';
-import { useAddNutritionEntryMutation, useGetDailyNutritionQuery } from '@/slices/nutritionApiSlice';
+import { useAddNutritionEntryMutation, useGetDailyNutritionQuery, useDeleteNutritionEntryMutation } from '@/slices/nutritionApiSlice';
 import { useGetCustomCategoriesQuery, useAddCustomCategoryMutation, useDeleteCustomCategoryMutation } from '@/slices/customCategoryApiSlice';
 import { useGetUserProfileQuery, useUpdateNutritionGoalsMutation } from '@/slices/usersApiSlice';
 import ShowFoodItemModal from '../../../components/ShowFoodItemModal';
-import { Doughnut } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { MacroDistributionChart } from '@/components/MacroDistributionChart';
 import { toast } from 'sonner';
-
-// Register ChartJS components
-ChartJS.register(ArcElement, Tooltip, Legend);
 
 type MealCategory = 'breakfast' | 'lunch' | 'snack' | 'dinner';
 
@@ -50,6 +46,7 @@ const NutritionScreen = () => {
     // API hooks
     const { data: dailyNutritionData, isLoading: _isLoadingNutrition } = useGetDailyNutritionQuery();
     const [addNutritionEntry, { isLoading: _isAddingEntry }] = useAddNutritionEntryMutation();
+    const [deleteNutritionEntry] = useDeleteNutritionEntryMutation();
     const { data: customCategoriesData } = useGetCustomCategoriesQuery();
     const [addCustomCategory] = useAddCustomCategoryMutation();
     const [deleteCustomCategory] = useDeleteCustomCategoryMutation();
@@ -161,6 +158,16 @@ const NutritionScreen = () => {
         }
     };
 
+    const handleDeleteFoodEntry = async (entryId: string) => {
+        try {
+            await deleteNutritionEntry(entryId).unwrap();
+            toast.success('Food entry deleted successfully');
+        } catch (error: any) {
+            console.error('Error deleting food entry:', error);
+            toast.error(error?.data?.message || 'Failed to delete food entry');
+        }
+    };
+
     // For searching food to get ID
     const { data: searchData, isFetching: isSearching } = useSearchFoodsQuery(
         selectedFood
@@ -190,8 +197,6 @@ const NutritionScreen = () => {
         setSelectedFood(food);
         setShowModal(true);
     };
-
-
 
     const handleCancel = () => {
         setShowModal(false);
@@ -293,81 +298,119 @@ const NutritionScreen = () => {
                         </div>
                     </div>
 
-                    {/* Nutrition Goals Section */}
-                    <div className="max-w-4xl mx-auto mb-8">
-                        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-xl">
-                            <div className="flex items-center justify-between mb-3 sm:mb-4">
-                                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                                    <Target className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
-                                    <span className="hidden sm:inline">Current Goals</span>
-                                    <span className="sm:hidden">Goals</span>
-                                </h3>
-                                {!isEditingGoals ? (
-                                    <button
-                                        onClick={() => setIsEditingGoals(true)}
-                                        className="flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 rounded-lg transition-colors"
-                                    >
-                                        <Edit2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                                        <span className="hidden sm:inline">Edit Goals</span>
-                                        <span className="sm:hidden">Edit</span>
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={handleSaveGoals}
-                                        className="flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
-                                    >
-                                        <Save className="w-3 h-3 sm:w-4 sm:h-4" />
-                                        Save
-                                    </button>
-                                )}
-                            </div>
-
-                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
-                                {[
-                                    { label: 'Calories', field: 'calories', unit: 'kcal', color: 'blue' },
-                                    { label: 'Protein', field: 'protein', unit: 'g', color: 'green' },
-                                    { label: 'Carbs', field: 'carbs', unit: 'g', color: 'orange' },
-                                    { label: 'Fats', field: 'fats', unit: 'g', color: 'purple' }
-                                ].map((goal) => (
-                                    <div key={goal.field} className="bg-gray-50/50 dark:bg-gray-700/50 rounded-lg p-2.5 sm:p-4">
-                                        <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1 sm:mb-2">
-                                            {goal.label}
-                                        </label>
-                                        {isEditingGoals ? (
-                                            <div className="flex items-center gap-1 sm:gap-2">
-                                                <input
-                                                    type="text"
-                                                    value={goalValues[goal.field as keyof typeof goalValues]}
-                                                    onChange={(e) => handleGoalChange(goal.field, e.target.value)}
-                                                    placeholder={`Enter ${goal.label.toLowerCase()}`}
-                                                    disabled={goal.field === 'calories'}
-                                                    className={`flex-1 px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 ${goal.field === 'calories' ? 'opacity-60 cursor-not-allowed bg-gray-100 dark:bg-gray-700' : ''}`}
-                                                />
-                                                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 min-w-8 sm:min-w-10">{goal.unit}</span>
-                                            </div>
+                    {/* Nutrition Goals and Macro Distribution Section */}
+                    <div className="max-w-6xl mx-auto mb-8">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* Current Goals - Takes 2 columns on desktop */}
+                            <div className="lg:col-span-2">
+                                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-xl h-full">
+                                    <div className="flex items-center justify-between mb-3 sm:mb-4">
+                                        <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                                            <Target className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
+                                            <span className="hidden sm:inline">Current Goals</span>
+                                            <span className="sm:hidden">Goals</span>
+                                        </h3>
+                                        {!isEditingGoals ? (
+                                            <button
+                                                onClick={() => setIsEditingGoals(true)}
+                                                className="flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 rounded-lg transition-colors"
+                                            >
+                                                <Edit2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                                                <span className="hidden sm:inline">Edit Goals</span>
+                                                <span className="sm:hidden">Edit</span>
+                                            </button>
                                         ) : (
-                                            <div className="space-y-1">
-                                                <div className="flex items-center gap-1 sm:gap-2">
-                                                    <span className="text-base sm:text-xl font-bold text-gray-900 dark:text-white">
-                                                        {goalValues[goal.field as keyof typeof goalValues] || '—'}
-                                                    </span>
-                                                    <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{goal.unit}</span>
-                                                </div>
-                                                {goalValues[goal.field as keyof typeof goalValues] && dailyNutritionData?.data?.totals && (
-                                                    <span
-                                                        className={`inline-block text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded ${(dailyNutritionData.data.totals[goal.field as keyof typeof dailyNutritionData.data.totals] || 0) >= Number(goalValues[goal.field as keyof typeof goalValues])
-                                                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-                                                            }`}
-                                                        title="Progress toward goal"
-                                                    >
-                                                        {((dailyNutritionData.data.totals[goal.field as keyof typeof dailyNutritionData.data.totals] || 0) / Number(goalValues[goal.field as keyof typeof goalValues]) * 100).toFixed(0)}%
-                                                    </span>
-                                                )}
-                                            </div>
+                                            <button
+                                                onClick={handleSaveGoals}
+                                                className="flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+                                            >
+                                                <Save className="w-3 h-3 sm:w-4 sm:h-4" />
+                                                Save
+                                            </button>
                                         )}
                                     </div>
-                                ))}
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                        {[
+                                            { label: 'Calories', field: 'calories', unit: 'kcal', color: 'bg-blue-500' },
+                                            { label: 'Protein', field: 'protein', unit: 'g', color: 'bg-green-500' },
+                                            { label: 'Carbs', field: 'carbs', unit: 'g', color: 'bg-red-500' },
+                                            { label: 'Fats', field: 'fats', unit: 'g', color: 'bg-yellow-500' }
+                                        ].map((goal) => {
+                                            const consumed = dailyNutritionData?.data?.totals?.[goal.field as keyof typeof dailyNutritionData.data.totals] || 0;
+                                            const goalValue = Number(goalValues[goal.field as keyof typeof goalValues]) || 0;
+                                            const percentage = goalValue > 0 ? Math.min((consumed / goalValue) * 100, 100) : 0;
+
+                                            return (
+                                                <div key={goal.field} className="bg-gray-50/50 dark:bg-gray-700/50 rounded-lg p-3 sm:p-4">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                            {goal.label}
+                                                        </label>
+                                                        {!isEditingGoals && (
+                                                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                                {consumed.toFixed(goal.field === 'calories' ? 0 : 1)} / {goalValues[goal.field as keyof typeof goalValues] || '—'} {goal.unit}
+                                                            </span>
+                                                        )}
+                                                    </div>
+
+                                                    {isEditingGoals ? (
+                                                        <div className="flex items-center gap-1 sm:gap-2">
+                                                            <input
+                                                                type="text"
+                                                                value={goalValues[goal.field as keyof typeof goalValues]}
+                                                                onChange={(e) => handleGoalChange(goal.field, e.target.value)}
+                                                                placeholder={`Enter ${goal.label.toLowerCase()}`}
+                                                                disabled={goal.field === 'calories'}
+                                                                className={`flex-1 px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 ${goal.field === 'calories' ? 'opacity-60 cursor-not-allowed bg-gray-100 dark:bg-gray-700' : ''}`}
+                                                            />
+                                                            <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 min-w-8 sm:min-w-10">{goal.unit}</span>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="space-y-2">
+                                                            {/* Progress Bar */}
+                                                            <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5 sm:h-3 overflow-hidden">
+                                                                <div
+                                                                    className={`h-full ${goal.color} transition-all duration-500 ease-out rounded-full`}
+                                                                    style={{ width: `${percentage}%` }}
+                                                                ></div>
+                                                            </div>
+
+                                                            {/* Percentage indicator */}
+                                                            {goalValue > 0 && (
+                                                                <div className="flex items-center justify-between">
+                                                                    <span className={`text-[10px] sm:text-xs font-medium ${percentage >= 100
+                                                                        ? 'text-green-600 dark:text-green-400'
+                                                                        : 'text-gray-600 dark:text-gray-400'}`}
+                                                                    >
+                                                                        {percentage.toFixed(0)}% of goal
+                                                                    </span>
+                                                                    {percentage >= 100 && (
+                                                                        <span className="text-[10px] sm:text-xs text-green-600 dark:text-green-400 font-semibold">
+                                                                            Goal reached! 🎉
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Macro Distribution Chart - Takes 1 column on desktop */}
+                            <div className="lg:col-span-1">
+                                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-xl h-full flex flex-col">
+                                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">Macro Distribution</h3>
+                                    <MacroDistributionChart
+                                        protein={dailyNutritionData?.data?.totals?.protein || 0}
+                                        carbs={dailyNutritionData?.data?.totals?.carbs || 0}
+                                        fats={dailyNutritionData?.data?.totals?.fats || 0}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -388,115 +431,8 @@ const NutritionScreen = () => {
                     }
 
                     {/* Main Content Grid */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Left Column - Macro Distribution & Stats */}
-                        <div className="space-y-6">
-                            {/* Doughnut Chart */}
-                            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-lg">
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 text-center">Macro Distribution</h3>
-                                <div className="max-w-[250px] mx-auto">
-                                    <Doughnut
-                                        data={{
-                                            labels: ['Protein', 'Carbs', 'Fat'],
-                                            datasets: [
-                                                {
-                                                    data: [
-                                                        dailyNutritionData?.data?.totals?.protein || 0,
-                                                        dailyNutritionData?.data?.totals?.carbs || 0,
-                                                        dailyNutritionData?.data?.totals?.fats || 0
-                                                    ],
-                                                    backgroundColor: [
-                                                        'rgba(34, 197, 94, 0.8)',
-                                                        'rgba(251, 146, 60, 0.8)',
-                                                        'rgba(168, 85, 247, 0.8)',
-                                                    ],
-                                                    borderColor: [
-                                                        'rgba(34, 197, 94, 1)',
-                                                        'rgba(251, 146, 60, 1)',
-                                                        'rgba(168, 85, 247, 1)',
-                                                    ],
-                                                    borderWidth: 2,
-                                                },
-                                            ],
-                                        }}
-                                        options={{
-                                            responsive: true,
-                                            maintainAspectRatio: true,
-                                            plugins: {
-                                                legend: {
-                                                    position: 'bottom' as const,
-                                                    labels: {
-                                                        padding: 15,
-                                                        font: {
-                                                            size: 12,
-                                                        },
-                                                        color: '#6b7280',
-                                                    },
-                                                },
-                                                tooltip: {
-                                                    callbacks: {
-                                                        label: function (context: any) {
-                                                            const label = context.label || '';
-                                                            const value = context.parsed || 0;
-                                                            return `${label}: ${value.toFixed(1)}g`;
-                                                        }
-                                                    }
-                                                }
-                                            },
-                                        }}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Quick Stats Cards */}
-                            <div className="grid grid-cols-2 gap-4">
-                                {[
-                                    {
-                                        icon: Target,
-                                        title: "Calories",
-                                        value: dailyNutritionData?.data?.totals?.calories?.toFixed(0) || "0",
-                                        unit: "kcal",
-                                        color: "from-blue-500 to-blue-600"
-                                    },
-                                    {
-                                        icon: BarChart3,
-                                        title: "Protein",
-                                        value: dailyNutritionData?.data?.totals?.protein?.toFixed(1) || "0",
-                                        unit: "g",
-                                        color: "from-green-500 to-green-600"
-                                    },
-                                    {
-                                        icon: UtensilsCrossed,
-                                        title: "Carbs",
-                                        value: dailyNutritionData?.data?.totals?.carbs?.toFixed(1) || "0",
-                                        unit: "g",
-                                        color: "from-orange-500 to-orange-600"
-                                    },
-                                    {
-                                        icon: Calendar,
-                                        title: "Fat",
-                                        value: dailyNutritionData?.data?.totals?.fats?.toFixed(1) || "0",
-                                        unit: "g",
-                                        color: "from-purple-500 to-purple-600"
-                                    }
-                                ].map((stat, index) => (
-                                    <div
-                                        key={index}
-                                        className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-lg hover:shadow-xl transition-all duration-300"
-                                    >
-                                        <div className={`inline-flex items-center justify-center w-10 h-10 bg-linear-to-r ${stat.color} rounded-lg mb-3`}>
-                                            <stat.icon className="w-5 h-5 text-white" />
-                                        </div>
-                                        <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                                            {stat.value}<span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-1">{stat.unit}</span>
-                                        </div>
-                                        <div className="text-sm text-gray-600 dark:text-gray-400">{stat.title}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Right Column - Today's Meals */}
+                    <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+                        {/* Today's Meals */}
                         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-xl">
                             <div className="flex items-center justify-between mb-6">
                                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
@@ -585,10 +521,19 @@ const NutritionScreen = () => {
                                                 {category.foods.map((food: any, idx: number) => (
                                                     <div
                                                         key={food._id || idx}
-                                                        className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+                                                        className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg group"
                                                     >
-                                                        <span className="text-sm text-gray-700 dark:text-gray-300">{food.foodItem}</span>
-                                                        <span className="text-xs text-gray-500 dark:text-gray-400">{food.calories.toFixed(0)} cal</span>
+                                                        <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{food.foodItem}</span>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-xs text-gray-500 dark:text-gray-400">{food.calories.toFixed(0)} cal</span>
+                                                            <button
+                                                                onClick={() => handleDeleteFoodEntry(food._id)}
+                                                                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-all"
+                                                                title="Delete food entry"
+                                                            >
+                                                                <X className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -643,10 +588,19 @@ const NutritionScreen = () => {
                                                 {category.foods.map((food: any, idx: number) => (
                                                     <div
                                                         key={food._id || idx}
-                                                        className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+                                                        className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg group"
                                                     >
-                                                        <span className="text-sm text-gray-700 dark:text-gray-300">{food.foodItem}</span>
-                                                        <span className="text-xs text-gray-500 dark:text-gray-400">{food.calories.toFixed(0)} cal</span>
+                                                        <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{food.foodItem}</span>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-xs text-gray-500 dark:text-gray-400">{food.calories.toFixed(0)} cal</span>
+                                                            <button
+                                                                onClick={() => handleDeleteFoodEntry(food._id)}
+                                                                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-all"
+                                                                title="Delete food entry"
+                                                            >
+                                                                <X className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 ))}
                                             </div>
