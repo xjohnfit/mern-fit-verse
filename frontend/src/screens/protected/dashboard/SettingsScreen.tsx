@@ -499,7 +499,8 @@ const SettingsScreen = () => {
             let errorMessage = 'An error occurred';
 
             if (err?.status === 'FETCH_ERROR') {
-                errorMessage = 'Unable to connect to the server. Please check your connection and ensure the backend is running.';
+                errorMessage =
+                    'Unable to connect to the server. Please check your connection and ensure the backend is running.';
             } else if (err?.data?.message) {
                 errorMessage = err.data.message;
             } else if (err?.message) {
@@ -514,9 +515,7 @@ const SettingsScreen = () => {
                 errorMessage.toLowerCase().includes('upload') ||
                 errorMessage.toLowerCase().includes('image')
             ) {
-                toast.error(
-                    `Photo upload failed: ${errorMessage}. Try converting HEIC to JPG or use a different image format.`
-                );
+                toast.error(`Photo upload failed: ${errorMessage}`);
             } else {
                 toast.error(errorMessage);
             }

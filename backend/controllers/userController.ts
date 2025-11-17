@@ -87,38 +87,43 @@ export const updateUserProfile = asyncHandler(
         // Handle file upload if present
         if (req.file) {
             try {
+                // Delete the previous photo from Cloudinary if it exists
                 if (user.photo) {
-                    // Delete the previous photo from Cloudinary
                     const publicId = user.photo.split('/').pop()?.split('.')[0];
                     if (publicId) {
-                        await cloudinary.uploader.destroy(publicId);
+                        try {
+                            await cloudinary.uploader.destroy(
+                                `fit-verse/users/${publicId}`
+                            );
+                        } catch (deleteError) {
+                            console.warn(
+                                'Failed to delete old photo, continuing with upload:',
+                                deleteError
+                            );
+                        }
                     }
                 }
 
-                // Convert buffer to base64 and upload
+                // Convert buffer to base64
                 const b64 = Buffer.from(req.file.buffer).toString('base64');
+                const dataURI = `data:${req.file.mimetype};base64,${b64}`;
 
-                // Handle HEIC files - use a generic image mime type if HEIC/HEIF
-                let mimeType = req.file.mimetype;
-                const fileExtension =
-                    req.file.originalname.toLowerCase().split('.').pop() || '';
-
-                // For HEIC/HEIF files with incorrect mime types, use image/jpeg as fallback
-                if (
-                    (fileExtension === 'heic' || fileExtension === 'heif') &&
-                    !mimeType.startsWith('image/')
-                ) {
-                    mimeType = 'image/jpeg';
-                    console.log('HEIC file detected, using fallback mime type');
-                }
-
-                const dataURI = `data:${mimeType};base64,${b64}`;
+                // Upload to Cloudinary with automatic format optimization
+                // Cloudinary natively supports HEIC and will automatically convert to browser-compatible formats
                 const cloudinaryResult = await cloudinary.uploader.upload(
                     dataURI,
                     {
                         folder: 'fit-verse/users',
-                        resource_type: 'auto', // Let Cloudinary auto-detect the format
-                        format: 'jpg', // Convert HEIC to JPG for better browser compatibility
+                        resource_type: 'auto', // Auto-detect the resource type
+                        transformation: [
+                            {
+                                width: 800,
+                                height: 800,
+                                crop: 'limit',
+                                quality: 'auto:good',
+                                fetch_format: 'auto', // Automatically deliver the best format for the user's browser
+                            },
+                        ],
                     }
                 );
 
@@ -127,12 +132,13 @@ export const updateUserProfile = asyncHandler(
                     cloudinaryResult.secure_url
                 );
                 user.photo = cloudinaryResult.secure_url;
-            } catch (uploadError) {
+            } catch (uploadError: any) {
                 console.error('Photo upload failed:', uploadError);
                 res.status(400);
-                throw new Error(
-                    'Failed to upload photo. Please try with a different image format.'
-                );
+                const errorMessage =
+                    uploadError.message ||
+                    'Failed to upload photo. Please try again.';
+                throw new Error(errorMessage);
             }
         }
 
