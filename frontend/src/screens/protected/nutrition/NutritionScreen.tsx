@@ -337,7 +337,14 @@ const NutritionScreen = () => {
                                             { label: 'Carbs', field: 'carbs', unit: 'g', color: 'bg-red-500' },
                                             { label: 'Fats', field: 'fats', unit: 'g', color: 'bg-yellow-500' }
                                         ].map((goal) => {
-                                            const consumed = dailyNutritionData?.data?.totals?.[goal.field as keyof typeof dailyNutritionData.data.totals] || 0;
+                                            // Calculate calories from macros to match the chart
+                                            let consumed = dailyNutritionData?.data?.totals?.[goal.field as keyof typeof dailyNutritionData.data.totals] || 0;
+                                            if (goal.field === 'calories') {
+                                                const proteinTotal = dailyNutritionData?.data?.totals?.protein || 0;
+                                                const carbsTotal = dailyNutritionData?.data?.totals?.carbs || 0;
+                                                const fatsTotal = dailyNutritionData?.data?.totals?.fats || 0;
+                                                consumed = (proteinTotal * 4) + (carbsTotal * 4) + (fatsTotal * 9);
+                                            }
                                             const goalValue = Number(goalValues[goal.field as keyof typeof goalValues]) || 0;
                                             const percentage = goalValue > 0 ? Math.min((consumed / goalValue) * 100, 100) : 0;
 
@@ -497,22 +504,13 @@ const NutritionScreen = () => {
                                         className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-md transition-all duration-200"
                                     >
                                         {/* Category Header */}
-                                        <div className="flex items-center justify-between mb-3">
-                                            <div className="flex items-center gap-2">
-                                                <div className={`inline-flex items-center justify-center w-8 h-8 bg-linear-to-r ${category.color} rounded-lg`}>
-                                                    <category.icon className="w-4 h-4 text-white" />
-                                                </div>
-                                                <h3 className="font-semibold text-gray-900 dark:text-white">
-                                                    {category.name}
-                                                </h3>
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <div className={`inline-flex items-center justify-center w-8 h-8 bg-linear-to-r ${category.color} rounded-lg`}>
+                                                <category.icon className="w-4 h-4 text-white" />
                                             </div>
-                                            <button
-                                                onClick={() => setSelectedCategory(key)}
-                                                className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                                                title={`Add food to ${category.name}`}
-                                            >
-                                                <Plus className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-                                            </button>
+                                            <h3 className="font-semibold text-gray-900 dark:text-white">
+                                                {category.name}
+                                            </h3>
                                         </div>
 
                                         {/* Foods List */}
@@ -528,7 +526,7 @@ const NutritionScreen = () => {
                                                             <span className="text-xs text-gray-500 dark:text-gray-400">{food.calories.toFixed(0)} cal</span>
                                                             <button
                                                                 onClick={() => handleDeleteFoodEntry(food._id)}
-                                                                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-all"
+                                                                className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-all"
                                                                 title="Delete food entry"
                                                             >
                                                                 <X className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
@@ -564,22 +562,13 @@ const NutritionScreen = () => {
                                                     Custom
                                                 </span>
                                             </div>
-                                            <div className="flex items-center gap-1">
-                                                <button
-                                                    onClick={() => setSelectedCategory(category.id)}
-                                                    className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                                                    title={`Add food to ${category.name}`}
-                                                >
-                                                    <Plus className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleRemoveCustomCategory(category.id)}
-                                                    className="p-1.5 rounded-lg bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
-                                                    title={`Remove ${category.name}`}
-                                                >
-                                                    <X className="w-4 h-4 text-red-600 dark:text-red-400" />
-                                                </button>
-                                            </div>
+                                            <button
+                                                onClick={() => handleRemoveCustomCategory(category.id)}
+                                                className="p-1.5 rounded-lg bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                                                title={`Remove ${category.name}`}
+                                            >
+                                                <X className="w-4 h-4 text-red-600 dark:text-red-400" />
+                                            </button>
                                         </div>
 
                                         {/* Foods List */}
@@ -595,7 +584,7 @@ const NutritionScreen = () => {
                                                             <span className="text-xs text-gray-500 dark:text-gray-400">{food.calories.toFixed(0)} cal</span>
                                                             <button
                                                                 onClick={() => handleDeleteFoodEntry(food._id)}
-                                                                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-all"
+                                                                className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-all"
                                                                 title="Delete food entry"
                                                             >
                                                                 <X className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
