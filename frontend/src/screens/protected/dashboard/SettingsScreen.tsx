@@ -39,7 +39,7 @@ const SettingsScreen = () => {
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [errors, setErrors] = useState<{ [key: string]: string; }>({});
     const [photoFile, setPhotoFile] = useState<File | null>(null);
     const [photoPreview, setPhotoPreview] = useState<string>('');
 
@@ -59,13 +59,18 @@ const SettingsScreen = () => {
             'image/jpg',
             'image/png',
             'image/webp',
+            'image/heic',
+            'image/heif',
         ];
         const validExtensions = ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'];
 
-        const isValidMimeType = validTypes.includes(file.type);
+        const isValidMimeType = file.type && validTypes.includes(file.type);
         const isValidExtension = validExtensions.includes(fileExtension);
 
-        if (!isValidMimeType && !isValidExtension) {
+        // Accept if type starts with 'image/' (catch-all for camera uploads)
+        const isImageType = file.type && file.type.startsWith('image/');
+
+        if (!isValidMimeType && !isValidExtension && !isImageType) {
             toast.error(
                 'Please select a valid image file (JPG, PNG, WebP or HEIC)'
             );
@@ -74,10 +79,10 @@ const SettingsScreen = () => {
 
         // Special handling for HEIC files (they often have empty or incorrect MIME type)
         if (
-            !isValidMimeType &&
-            (fileExtension === 'heic' || fileExtension === 'heif')
+            (fileExtension === 'heic' || fileExtension === 'heif') ||
+            (file.type && (file.type.includes('heic') || file.type.includes('heif')))
         ) {
-            console.log('HEIC file detected via extension');
+            console.log('HEIC file detected');
             toast.info(
                 'HEIC file detected. It will be converted to JPG format for better compatibility.'
             );
@@ -93,10 +98,15 @@ const SettingsScreen = () => {
         setPhotoFile(file);
 
         // Create preview URL (for display only)
-        const previewUrl = URL.createObjectURL(file);
-        setPhotoPreview(previewUrl);
-
-        toast.success('Photo selected successfully!');
+        try {
+            const previewUrl = URL.createObjectURL(file);
+            setPhotoPreview(previewUrl);
+            toast.success('Photo selected successfully!');
+        } catch (error) {
+            console.error('Error creating preview:', error);
+            toast.error('Could not preview image, but it will be uploaded');
+            // Still set the file even if preview fails
+        }
     };
 
     const handlePhotoClick = () => {
@@ -365,7 +375,7 @@ const SettingsScreen = () => {
     };
 
     const validateForm = () => {
-        const newErrors: { [key: string]: string } = {};
+        const newErrors: { [key: string]: string; } = {};
         const requiredFields = ['name', 'username', 'email'];
 
         requiredFields.forEach((field) => {
@@ -546,7 +556,7 @@ const SettingsScreen = () => {
                                             className='w-32 h-32 lg:w-36 lg:h-36 rounded-full bg-gray-200 dark:bg-gray-700 border-4 border-blue-500 dark:border-blue-400 overflow-hidden shadow-lg hover:shadow-xl cursor-pointer transition-all duration-200'
                                             onClick={handlePhotoClick}>
                                             {photoPreview ||
-                                            profileData.photo ? (
+                                                profileData.photo ? (
                                                 <img
                                                     src={
                                                         photoPreview ||
@@ -591,33 +601,34 @@ const SettingsScreen = () => {
                                         {/* Remove Photo Button - Only show if there's a photo */}
                                         {(photoPreview ||
                                             profileData.photo) && (
-                                            <button
-                                                type='button'
-                                                onClick={handleRemovePhoto}
-                                                className='absolute top-0 right-0 w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center border-2 border-white dark:border-gray-800 shadow-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800'
-                                                title='Remove profile photo'>
-                                                <svg
-                                                    className='w-3 h-3 text-white'
-                                                    fill='none'
-                                                    stroke='currentColor'
-                                                    viewBox='0 0 24 24'>
-                                                    <path
-                                                        strokeLinecap='round'
-                                                        strokeLinejoin='round'
-                                                        strokeWidth={2}
-                                                        d='M6 18L18 6M6 6l12 12'
-                                                    />
-                                                </svg>
-                                            </button>
-                                        )}
+                                                <button
+                                                    type='button'
+                                                    onClick={handleRemovePhoto}
+                                                    className='absolute top-0 right-0 w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center border-2 border-white dark:border-gray-800 shadow-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800'
+                                                    title='Remove profile photo'>
+                                                    <svg
+                                                        className='w-3 h-3 text-white'
+                                                        fill='none'
+                                                        stroke='currentColor'
+                                                        viewBox='0 0 24 24'>
+                                                        <path
+                                                            strokeLinecap='round'
+                                                            strokeLinejoin='round'
+                                                            strokeWidth={2}
+                                                            d='M6 18L18 6M6 6l12 12'
+                                                        />
+                                                    </svg>
+                                                </button>
+                                            )}
 
                                         {/* Hidden File Input */}
                                         <input
                                             id='photo-input'
                                             type='file'
-                                            accept='image/*,.heic,.heif'
+                                            accept='image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,image/*'
                                             onChange={handlePhotoSelect}
                                             className='hidden'
+                                            capture='environment'
                                         />
                                     </div>
                                 </div>
@@ -735,11 +746,10 @@ const SettingsScreen = () => {
                                             required
                                             value={profileData.name}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${
-                                                errors.name
-                                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                    : 'border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
-                                            }`}
+                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.name
+                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
+                                                }`}
                                             placeholder='Enter your full name'
                                         />
                                         <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
@@ -796,11 +806,10 @@ const SettingsScreen = () => {
                                             autoComplete='username'
                                             value={profileData.username}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${
-                                                errors.username
-                                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                    : 'border-gray-200 dark:border-gray-600 focus:border-purple-500 focus:ring-purple-500/20'
-                                            }`}
+                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.username
+                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-gray-200 dark:border-gray-600 focus:border-purple-500 focus:ring-purple-500/20'
+                                                }`}
                                             placeholder='Choose a username'
                                         />
                                         <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
@@ -869,11 +878,10 @@ const SettingsScreen = () => {
                                         autoComplete='email'
                                         value={profileData.email}
                                         onChange={handleInputChange}
-                                        className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${
-                                            errors.email
-                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                : 'border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
-                                        }`}
+                                        className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.email
+                                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                            : 'border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
+                                            }`}
                                         placeholder='Enter your email address'
                                     />
                                     <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
@@ -932,11 +940,10 @@ const SettingsScreen = () => {
                                             type='date'
                                             value={profileData.dob}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${
-                                                errors.dob
-                                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                    : 'border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500/20'
-                                            }`}
+                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md text-sm sm:text-base ${errors.dob
+                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500/20'
+                                                }`}
                                         />
                                         <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
                                             <Calendar className='h-5 w-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200' />
@@ -1046,11 +1053,10 @@ const SettingsScreen = () => {
                                             }
                                             value={profileData.password}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${
-                                                errors.password
-                                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                    : 'border-gray-200 dark:border-gray-600 focus:border-green-500 focus:ring-green-500/20'
-                                            }`}
+                                            className={`w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.password
+                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-gray-200 dark:border-gray-600 focus:border-green-500 focus:ring-green-500/20'
+                                                }`}
                                             placeholder='Enter new password (optional)'
                                         />
                                         <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
@@ -1077,21 +1083,20 @@ const SettingsScreen = () => {
                                                     Password Strength
                                                 </span>
                                                 <span
-                                                    className={`text-xs font-medium ${
-                                                        passwordStrength.score ===
+                                                    className={`text-xs font-medium ${passwordStrength.score ===
                                                         1
-                                                            ? 'text-red-500 dark:text-red-400'
-                                                            : passwordStrength.score ===
-                                                              2
+                                                        ? 'text-red-500 dark:text-red-400'
+                                                        : passwordStrength.score ===
+                                                            2
                                                             ? 'text-yellow-500 dark:text-yellow-400'
                                                             : passwordStrength.score ===
-                                                              3
-                                                            ? 'text-blue-500 dark:text-blue-400'
-                                                            : passwordStrength.score ===
-                                                              4
-                                                            ? 'text-green-600 dark:text-green-400'
-                                                            : 'text-gray-500 dark:text-gray-400'
-                                                    }`}>
+                                                                3
+                                                                ? 'text-blue-500 dark:text-blue-400'
+                                                                : passwordStrength.score ===
+                                                                    4
+                                                                    ? 'text-green-600 dark:text-green-400'
+                                                                    : 'text-gray-500 dark:text-gray-400'
+                                                        }`}>
                                                     {passwordStrength.text}
                                                 </span>
                                             </div>
@@ -1099,11 +1104,10 @@ const SettingsScreen = () => {
                                                 <div
                                                     className={`h-1.5 rounded-full transition-all duration-300 ${passwordStrength.color}`}
                                                     style={{
-                                                        width: `${
-                                                            (passwordStrength.score /
-                                                                4) *
+                                                        width: `${(passwordStrength.score /
+                                                            4) *
                                                             100
-                                                        }%`,
+                                                            }%`,
                                                     }}></div>
                                             </div>
                                         </div>
@@ -1149,15 +1153,13 @@ const SettingsScreen = () => {
                                             }
                                             value={profileData.confirmPassword}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${
-                                                errors.confirmPassword
-                                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                    : 'border-gray-200 dark:border-gray-600 focus:border-teal-500 focus:ring-teal-500/20'
-                                            } ${
-                                                !profileData.password
+                                            className={`w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.confirmPassword
+                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-gray-200 dark:border-gray-600 focus:border-teal-500 focus:ring-teal-500/20'
+                                                } ${!profileData.password
                                                     ? 'opacity-50 cursor-not-allowed'
                                                     : ''
-                                            }`}
+                                                }`}
                                             placeholder='Confirm new password'
                                             disabled={!profileData.password}
                                         />
@@ -1183,7 +1185,7 @@ const SettingsScreen = () => {
                                     {!errors.confirmPassword &&
                                         profileData.confirmPassword &&
                                         profileData.password ===
-                                            profileData.confirmPassword && (
+                                        profileData.confirmPassword && (
                                             <p className='mt-2 text-sm text-green-600 dark:text-green-400 flex items-center'>
                                                 <svg
                                                     className='w-4 h-4 mr-1'
@@ -1234,11 +1236,10 @@ const SettingsScreen = () => {
                                             max='300'
                                             value={profileData.height}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${
-                                                errors.height
-                                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                    : 'border-gray-200 dark:border-gray-600 focus:border-orange-500 focus:ring-orange-500/20'
-                                            }`}
+                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.height
+                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-gray-200 dark:border-gray-600 focus:border-orange-500 focus:ring-orange-500/20'
+                                                }`}
                                             placeholder='e.g., 175'
                                         />
                                         <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
@@ -1307,11 +1308,10 @@ const SettingsScreen = () => {
                                             max='500'
                                             value={profileData.weight}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${
-                                                errors.weight
-                                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                    : 'border-gray-200 dark:border-gray-600 focus:border-yellow-500 focus:ring-yellow-500/20'
-                                            }`}
+                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.weight
+                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-gray-200 dark:border-gray-600 focus:border-yellow-500 focus:ring-yellow-500/20'
+                                                }`}
                                             placeholder='e.g., 70'
                                         />
                                         <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
@@ -1372,50 +1372,50 @@ const SettingsScreen = () => {
                             {Object.values(errors).some(
                                 (error) => error && error.trim() !== ''
                             ) && (
-                                <div className='bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 rounded-xl p-4'>
-                                    <h4 className='text-red-700 dark:text-red-400 font-medium mb-3 flex items-center'>
-                                        <svg
-                                            className='w-5 h-5 mr-2 shrink-0'
-                                            fill='none'
-                                            stroke='currentColor'
-                                            viewBox='0 0 24 24'>
-                                            <path
-                                                strokeLinecap='round'
-                                                strokeLinejoin='round'
-                                                strokeWidth={2}
-                                                d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.96-.833-2.73 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z'
-                                            />
-                                        </svg>
-                                        Please fix the following errors:
-                                    </h4>
-                                    <ul className='text-sm text-red-600 dark:text-red-300 space-y-2'>
-                                        {Object.entries(errors)
-                                            .filter(
-                                                ([_, error]) =>
-                                                    error && error.trim() !== ''
-                                            )
-                                            .map(([field, error]) => (
-                                                <li
-                                                    key={field}
-                                                    className='flex items-start'>
-                                                    <span className='w-2 h-2 bg-red-500 dark:bg-red-400 rounded-full mr-3 mt-2 shrink-0'></span>
-                                                    <div className='min-w-0 flex-1'>
-                                                        <span className='capitalize font-medium'>
-                                                            {field.replace(
-                                                                /([A-Z])/g,
-                                                                ' $1'
-                                                            )}
-                                                            :
-                                                        </span>
-                                                        <span className='ml-1'>
-                                                            {error}
-                                                        </span>
-                                                    </div>
-                                                </li>
-                                            ))}
-                                    </ul>
-                                </div>
-                            )}
+                                    <div className='bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 rounded-xl p-4'>
+                                        <h4 className='text-red-700 dark:text-red-400 font-medium mb-3 flex items-center'>
+                                            <svg
+                                                className='w-5 h-5 mr-2 shrink-0'
+                                                fill='none'
+                                                stroke='currentColor'
+                                                viewBox='0 0 24 24'>
+                                                <path
+                                                    strokeLinecap='round'
+                                                    strokeLinejoin='round'
+                                                    strokeWidth={2}
+                                                    d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.96-.833-2.73 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z'
+                                                />
+                                            </svg>
+                                            Please fix the following errors:
+                                        </h4>
+                                        <ul className='text-sm text-red-600 dark:text-red-300 space-y-2'>
+                                            {Object.entries(errors)
+                                                .filter(
+                                                    ([_, error]) =>
+                                                        error && error.trim() !== ''
+                                                )
+                                                .map(([field, error]) => (
+                                                    <li
+                                                        key={field}
+                                                        className='flex items-start'>
+                                                        <span className='w-2 h-2 bg-red-500 dark:bg-red-400 rounded-full mr-3 mt-2 shrink-0'></span>
+                                                        <div className='min-w-0 flex-1'>
+                                                            <span className='capitalize font-medium'>
+                                                                {field.replace(
+                                                                    /([A-Z])/g,
+                                                                    ' $1'
+                                                                )}
+                                                                :
+                                                            </span>
+                                                            <span className='ml-1'>
+                                                                {error}
+                                                            </span>
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                        </ul>
+                                    </div>
+                                )}
 
                             {/* Submit Button */}
                             <div className='pt-6'>
