@@ -247,3 +247,58 @@ export const followUnfollowUser = asyncHandler(
         }
     }
 );
+
+// Update nutrition goals
+export const updateNutritionGoals = asyncHandler(
+    async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        const user = await User.findById(req.user!._id);
+
+        if (!user) {
+            res.status(404);
+            throw new Error('User not found');
+        }
+
+        const { calories, protein, carbs, fats } = req.body;
+
+        // Validate that values are positive numbers if provided
+        if (calories !== undefined && calories < 0) {
+            res.status(400);
+            throw new Error('Calories must be a positive number');
+        }
+        if (protein !== undefined && protein < 0) {
+            res.status(400);
+            throw new Error('Protein must be a positive number');
+        }
+        if (carbs !== undefined && carbs < 0) {
+            res.status(400);
+            throw new Error('Carbs must be a positive number');
+        }
+        if (fats !== undefined && fats < 0) {
+            res.status(400);
+            throw new Error('Fats must be a positive number');
+        }
+
+        // Update nutrition goals
+        user.nutritionGoals = {
+            calories:
+                calories !== undefined
+                    ? calories
+                    : user.nutritionGoals?.calories,
+            protein:
+                protein !== undefined ? protein : user.nutritionGoals?.protein,
+            carbs: carbs !== undefined ? carbs : user.nutritionGoals?.carbs,
+            fats: fats !== undefined ? fats : user.nutritionGoals?.fats,
+        };
+
+        const updatedUser = await user.save();
+        const userWithoutPassword = await User.findById(updatedUser._id).select(
+            '-password'
+        );
+
+        res.status(200).json({
+            success: true,
+            message: 'Nutrition goals updated successfully',
+            data: userWithoutPassword,
+        });
+    }
+);

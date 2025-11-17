@@ -3,8 +3,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 // Backend proxy configuration
 const BASE_URL =
     import.meta.env.MODE === 'development'
-        ? 'http://localhost:5003/api/nutrition'
-        : '/api/nutrition';
+        ? 'http://localhost:5003/api/fatsecret'
+        : '/api/fatsecret';
 
 // Types for API responses
 export interface FoodSuggestion {

@@ -1,18 +1,32 @@
 import { useState } from "react";
 import { Loader2, PlusCircle, X, Scale, UtensilsCrossed } from "lucide-react";
 
+interface CustomCategory {
+    id: string;
+    name: string;
+}
+
 interface ShowFoodItemModalProps {
     selectedFood: string;
     handleCancel: () => void;
-    handleAddFood: () => void;
+    handleAddFood: (nutritionData: {
+        foodItem: string;
+        mealCategory: string;
+        customCategoryId?: string;
+        calories: number;
+        protein: number;
+        carbs: number;
+        fats: number;
+    }) => void;
     isSearching: boolean;
     isLoadingDetails: boolean;
     foodDetails: any;
+    customCategories?: CustomCategory[];
 }
 
-const ShowFoodItemModal = ({ selectedFood, handleCancel, handleAddFood, isSearching, isLoadingDetails, foodDetails }: ShowFoodItemModalProps) => {
+const ShowFoodItemModal = ({ selectedFood, handleCancel, handleAddFood, isSearching, isLoadingDetails, foodDetails, customCategories = [] }: ShowFoodItemModalProps) => {
     const [grams, setGrams] = useState<string>('100');
-    const [mealType, setMealType] = useState<string>('Breakfast');
+    const [mealType, setMealType] = useState<string>('breakfast');
 
     // Calculate adjusted nutrition values based on grams
     const calculateAdjustedValue = (baseValue: string | number, baseGrams: number) => {
@@ -27,6 +41,45 @@ const ShowFoodItemModal = ({ selectedFood, handleCancel, handleAddFood, isSearch
         if (value === '' || /^\d*\.?\d*$/.test(value)) {
             setGrams(value);
         }
+    };
+
+    const handleAddClick = () => {
+        if (!foodDetails?.success || !foodDetails.data?.food) return;
+
+        const food = foodDetails.data.food;
+        let serving = food?.servings?.serving;
+        if (Array.isArray(serving)) serving = serving[0];
+
+        if (!serving) return;
+
+        // Extract base serving size in grams
+        const metricServingUnit = serving.metric_serving_unit || '';
+        const metricServingAmount = parseFloat(serving.metric_serving_amount) || 100;
+        const isPerGram = metricServingUnit.toLowerCase() === 'g';
+        const baseGrams = isPerGram ? metricServingAmount : 100;
+
+        // Calculate adjusted nutrition values
+        const gramsNum = parseFloat(grams) || 100;
+        const adjustedCalories = parseFloat(calculateAdjustedValue(serving.calories, baseGrams));
+        const adjustedProtein = parseFloat(calculateAdjustedValue(serving.protein, baseGrams));
+        const adjustedCarbs = parseFloat(calculateAdjustedValue(serving.carbohydrate, baseGrams));
+        const adjustedFats = parseFloat(calculateAdjustedValue(serving.fat, baseGrams));
+
+        // Check if custom category is selected
+        const isCustomCategory = mealType.startsWith('custom-');
+        const customCategoryId = isCustomCategory ? mealType.replace('custom-', '') : undefined;
+        const actualMealCategory = isCustomCategory ? 'custom' : mealType.toLowerCase();
+
+        // Pass data to parent
+        handleAddFood({
+            foodItem: `${selectedFood} (${gramsNum}g)`,
+            mealCategory: actualMealCategory,
+            customCategoryId,
+            calories: adjustedCalories,
+            protein: adjustedProtein,
+            carbs: adjustedCarbs,
+            fats: adjustedFats,
+        });
     };
 
     return (
@@ -89,10 +142,19 @@ const ShowFoodItemModal = ({ selectedFood, handleCancel, handleAddFood, isSearch
                                                 onChange={(e) => setMealType(e.target.value)}
                                                 className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all cursor-pointer"
                                             >
-                                                <option value="Breakfast">Breakfast</option>
-                                                <option value="Lunch">Lunch</option>
-                                                <option value="Dinner">Dinner</option>
-                                                <option value="Snack">Snack</option>
+                                                <option value="breakfast">Breakfast</option>
+                                                <option value="lunch">Lunch</option>
+                                                <option value="dinner">Dinner</option>
+                                                <option value="snack">Snack</option>
+                                                {customCategories.length > 0 && (
+                                                    <optgroup label="Custom Categories">
+                                                        {customCategories.map((cat) => (
+                                                            <option key={cat.id} value={`custom-${cat.id}`}>
+                                                                {cat.name}
+                                                            </option>
+                                                        ))}
+                                                    </optgroup>
+                                                )}
                                             </select>
                                         </div>
 
@@ -180,7 +242,7 @@ const ShowFoodItemModal = ({ selectedFood, handleCancel, handleAddFood, isSearch
                     </button>
                     <button
                         className="flex-1 px-3 py-2 text-sm bg-linear-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-semibold shadow-lg shadow-green-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        onClick={handleAddFood}
+                        onClick={handleAddClick}
                         disabled={isSearching || isLoadingDetails || !foodDetails?.success || !grams || parseFloat(grams) <= 0}
                     >
                         Add to Tracker

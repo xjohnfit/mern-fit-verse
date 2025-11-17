@@ -1,0 +1,80 @@
+import { apiSlice } from './apiSlice';
+
+const BASE_URL =
+    import.meta.env.MODE === 'development'
+        ? 'http://localhost:5003/api'
+        : '/api';
+
+export interface CustomCategory {
+    _id: string;
+    user: string;
+    name: string;
+    color: string;
+    order: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
+interface GetCustomCategoriesResponse {
+    success: boolean;
+    data: CustomCategory[];
+}
+
+interface AddCustomCategoryRequest {
+    name: string;
+    color: string;
+}
+
+interface AddCustomCategoryResponse {
+    success: boolean;
+    message: string;
+    data: CustomCategory;
+}
+
+interface DeleteCustomCategoryResponse {
+    success: boolean;
+    message: string;
+    data: CustomCategory;
+}
+
+export const customCategoryApiSlice = apiSlice.injectEndpoints({
+    endpoints: (builder) => ({
+        getCustomCategories: builder.query<GetCustomCategoriesResponse, void>({
+            query: () => ({
+                url: `${BASE_URL}/custom-categories`,
+                method: 'GET',
+                credentials: 'include',
+            }),
+            providesTags: ['CustomCategory'],
+        }),
+        addCustomCategory: builder.mutation<
+            AddCustomCategoryResponse,
+            AddCustomCategoryRequest
+        >({
+            query: (data) => ({
+                url: `${BASE_URL}/custom-categories/add`,
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }),
+            invalidatesTags: ['CustomCategory'],
+        }),
+        deleteCustomCategory: builder.mutation<
+            DeleteCustomCategoryResponse,
+            string
+        >({
+            query: (categoryId) => ({
+                url: `${BASE_URL}/custom-categories/delete/${categoryId}`,
+                method: 'DELETE',
+                credentials: 'include',
+            }),
+            invalidatesTags: ['CustomCategory'],
+        }),
+    }),
+});
+
+export const {
+    useGetCustomCategoriesQuery,
+    useAddCustomCategoryMutation,
+    useDeleteCustomCategoryMutation,
+} = customCategoryApiSlice;

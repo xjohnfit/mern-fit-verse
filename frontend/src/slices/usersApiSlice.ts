@@ -69,6 +69,15 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             }),
             providesTags: ['User'],
         }),
+        updateNutritionGoals: builder.mutation({
+            query: (data) => ({
+                url: `${BASE_URL}/users/nutrition-goals`,
+                method: 'PUT',
+                credentials: 'include',
+                body: data,
+            }),
+            invalidatesTags: ['User'],
+        }),
     }),
 });
 
@@ -81,4 +90,5 @@ export const {
     useViewUserProfileQuery,
     useFollowUnfollowUserMutation,
     useGetSuggestedUsersQuery,
+    useUpdateNutritionGoalsMutation,
 } = usersApiSlice;

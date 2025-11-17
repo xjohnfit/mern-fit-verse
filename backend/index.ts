@@ -15,6 +15,8 @@ import postsRoutes from './routes/postRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import healthRoutes from './routes/healthRoutes';
 import fatSecretRoutes from './routes/fatSecretRoutes';
+import nutritionRoutes from './routes/NutritionRoutes';
+import customCategoryRoutes from './routes/customCategoryRoutes';
 // import exerciseRoutes from './routes/exerciseRoutes';
 
 // Configurations
@@ -53,7 +55,9 @@ app.use('/api/users', userRoutes);
 app.use('/api/posts', postsRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/health', healthRoutes);
-app.use('/api/nutrition', fatSecretRoutes);
+app.use('/api/fatsecret', fatSecretRoutes);
+app.use('/api/nutrition', nutritionRoutes);
+app.use('/api/custom-categories', customCategoryRoutes);
 
 // Serve static files from the React app in production
 if (process.env.NODE_ENV === 'production') {

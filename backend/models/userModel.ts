@@ -19,6 +19,14 @@ export interface IUser {
     photo?: string;
     likedPosts?: string[];
 
+    // Nutrition goals
+    nutritionGoals?: {
+        calories?: number;
+        protein?: number;
+        carbs?: number;
+        fats?: number;
+    };
+
     // timestamps
     createdAt: Date;
     updatedAt: Date;
@@ -44,10 +52,17 @@ const userSchema = new Schema<IUser>(
         height: { type: Number, default: null },
         weight: { type: Number, default: null },
         likedPosts: [{ type: Schema.Types.ObjectId, ref: 'Post', default: [] }],
+
+        // Nutrition goals
+        nutritionGoals: {
+            calories: { type: Number, default: null },
+            protein: { type: Number, default: null },
+            carbs: { type: Number, default: null },
+            fats: { type: Number, default: null },
+        },
     },
     { timestamps: true }
 );
-
 
 // Pre-save hook to hash password before saving
 userSchema.pre<IUser>('save', async function (next) {
@@ -61,9 +76,10 @@ userSchema.pre<IUser>('save', async function (next) {
     next();
 });
 
-
 // Method to compare entered password with hashed password
-userSchema.methods.matchPassword = async function (enteredPassword: string): Promise<boolean> {
+userSchema.methods.matchPassword = async function (
+    enteredPassword: string
+): Promise<boolean> {
     return await bcrypt.compare(enteredPassword, this.password);
 };
 

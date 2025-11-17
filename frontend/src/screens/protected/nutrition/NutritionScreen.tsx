@@ -1,11 +1,15 @@
 
 import { useState, useEffect } from 'react';
-import { UtensilsCrossed, Target, BarChart3, Calendar, CheckCircle, Coffee, Sun, Cookie, Moon, Plus, X, Apple } from 'lucide-react';
+import { UtensilsCrossed, Target, BarChart3, Calendar, CheckCircle, Coffee, Sun, Cookie, Moon, Plus, X, Apple, Edit2, Save } from 'lucide-react';
 import { FoodAutoComplete } from '@/components/FoodAutoComplete';
 import { useSearchFoodsQuery, useLazyGetFoodByIdQuery } from '@/slices/fatSecretApiSlice';
+import { useAddNutritionEntryMutation, useGetDailyNutritionQuery } from '@/slices/nutritionApiSlice';
+import { useGetCustomCategoriesQuery, useAddCustomCategoryMutation, useDeleteCustomCategoryMutation } from '@/slices/customCategoryApiSlice';
+import { useGetUserProfileQuery, useUpdateNutritionGoalsMutation } from '@/slices/usersApiSlice';
 import ShowFoodItemModal from '../../../components/ShowFoodItemModal';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { toast } from 'sonner';
 
 // Register ChartJS components
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -35,37 +39,89 @@ const NutritionScreen = () => {
     const [selectedCategory, setSelectedCategory] = useState<MealCategory | string | null>(null);
     const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
+    const [isEditingGoals, setIsEditingGoals] = useState(false);
+    const [goalValues, setGoalValues] = useState({
+        calories: '',
+        protein: '',
+        carbs: '',
+        fats: ''
+    });
 
-    // Meal categories with their associated foods
-    const [mealCategories, setMealCategories] = useState<Record<MealCategory, MealCategoryData>>({
+    // API hooks
+    const { data: dailyNutritionData, isLoading: isLoadingNutrition } = useGetDailyNutritionQuery();
+    const [addNutritionEntry, { isLoading: isAddingEntry }] = useAddNutritionEntryMutation();
+    const { data: customCategoriesData } = useGetCustomCategoriesQuery();
+    const [addCustomCategory] = useAddCustomCategoryMutation();
+    const [deleteCustomCategory] = useDeleteCustomCategoryMutation();
+    const { data: userProfile } = useGetUserProfileQuery(undefined);
+    const [updateNutritionGoals] = useUpdateNutritionGoalsMutation();
+
+    // Initialize goal values from user profile
+    useEffect(() => {
+        if (userProfile?.nutritionGoals) {
+            setGoalValues({
+                calories: userProfile.nutritionGoals.calories?.toString() || '',
+                protein: userProfile.nutritionGoals.protein?.toString() || '',
+                carbs: userProfile.nutritionGoals.carbs?.toString() || '',
+                fats: userProfile.nutritionGoals.fats?.toString() || ''
+            });
+        }
+    }, [userProfile]);
+
+    // Meal categories base configuration
+    const mealCategoriesConfig: Record<MealCategory, { name: string; icon: typeof Coffee; color: string; }> = {
         breakfast: {
             name: 'Breakfast',
             icon: Coffee,
             color: 'from-amber-500 to-orange-500',
-            foods: []
         },
         lunch: {
             name: 'Lunch',
             icon: Sun,
             color: 'from-yellow-500 to-amber-500',
-            foods: []
         },
         snack: {
             name: 'Snack',
             icon: Cookie,
             color: 'from-pink-500 to-rose-500',
-            foods: []
         },
         dinner: {
             name: 'Dinner',
             icon: Moon,
             color: 'from-indigo-500 to-purple-500',
-            foods: []
         }
-    });
+    };
 
-    // Custom meal categories (max 3)
-    const [customCategories, setCustomCategories] = useState<CustomCategory[]>([]);
+    // Build meal categories with foods from API data
+    const mealCategories: Record<MealCategory, MealCategoryData> = {
+        breakfast: {
+            ...mealCategoriesConfig.breakfast,
+            foods: dailyNutritionData?.data?.entries?.filter((entry: any) => entry.mealCategory === 'breakfast') || []
+        },
+        lunch: {
+            ...mealCategoriesConfig.lunch,
+            foods: dailyNutritionData?.data?.entries?.filter((entry: any) => entry.mealCategory === 'lunch') || []
+        },
+        snack: {
+            ...mealCategoriesConfig.snack,
+            foods: dailyNutritionData?.data?.entries?.filter((entry: any) => entry.mealCategory === 'snack') || []
+        },
+        dinner: {
+            ...mealCategoriesConfig.dinner,
+            foods: dailyNutritionData?.data?.entries?.filter((entry: any) => entry.mealCategory === 'dinner') || []
+        }
+    };
+
+    // Custom meal categories (max 3) - now from API
+    const customCategories: CustomCategory[] = (customCategoriesData?.data || []).map((cat) => ({
+        id: cat._id,
+        name: cat.name,
+        icon: Apple,
+        color: cat.color,
+        foods: dailyNutritionData?.data?.entries?.filter((entry: any) =>
+            entry.mealCategory === 'custom' && entry.customCategoryId === cat._id
+        ) || []
+    }));
 
     // Available colors for custom categories
     const availableColors = [
@@ -77,23 +133,32 @@ const NutritionScreen = () => {
         'from-emerald-500 to-teal-500'
     ];
 
-    const handleAddCustomCategory = () => {
+    const handleAddCustomCategory = async () => {
         if (newCategoryName.trim() && customCategories.length < 3) {
-            const newCategory: CustomCategory = {
-                id: `custom-${Date.now()}`,
-                name: newCategoryName.trim(),
-                icon: Apple,
-                color: availableColors[customCategories.length % availableColors.length],
-                foods: []
-            };
-            setCustomCategories([...customCategories, newCategory]);
-            setNewCategoryName('');
-            setShowAddCategoryModal(false);
+            try {
+                const color = availableColors[customCategories.length % availableColors.length];
+                await addCustomCategory({
+                    name: newCategoryName.trim(),
+                    color
+                }).unwrap();
+                toast.success('Custom category created!');
+                setNewCategoryName('');
+                setShowAddCategoryModal(false);
+            } catch (error: any) {
+                console.error('Error adding custom category:', error);
+                toast.error(error?.data?.message || 'Failed to create category');
+            }
         }
     };
 
-    const handleRemoveCustomCategory = (categoryId: string) => {
-        setCustomCategories(customCategories.filter(cat => cat.id !== categoryId));
+    const handleRemoveCustomCategory = async (categoryId: string) => {
+        try {
+            await deleteCustomCategory(categoryId).unwrap();
+            toast.success('Category deleted successfully');
+        } catch (error: any) {
+            console.error('Error deleting custom category:', error);
+            toast.error(error?.data?.message || 'Failed to delete category');
+        }
     };
 
     // For searching food to get ID
@@ -133,9 +198,64 @@ const NutritionScreen = () => {
         setSelectedFood(null);
     };
 
-    const handleAddFood = () => {
-        // TODO: Implement add to daily nutrition tracker logic
-        setShowModal(false);
+    const handleAddFood = async (nutritionData: {
+        foodItem: string;
+        mealCategory: string;
+        customCategoryId?: string;
+        calories: number;
+        protein: number;
+        carbs: number;
+        fats: number;
+    }) => {
+        try {
+            await addNutritionEntry(nutritionData).unwrap();
+            toast.success('Food added successfully!');
+            setShowModal(false);
+            setSelectedFood(null);
+        } catch (error: any) {
+            console.error('Error adding nutrition entry:', error);
+            toast.error(error?.data?.message || 'Failed to add food item');
+        }
+    };
+
+    const handleSaveGoals = async () => {
+        try {
+            const goals = {
+                calories: goalValues.calories ? Number(goalValues.calories) : undefined,
+                protein: goalValues.protein ? Number(goalValues.protein) : undefined,
+                carbs: goalValues.carbs ? Number(goalValues.carbs) : undefined,
+                fats: goalValues.fats ? Number(goalValues.fats) : undefined,
+            };
+
+            await updateNutritionGoals(goals).unwrap();
+            toast.success('Nutrition goals updated successfully!');
+            setIsEditingGoals(false);
+        } catch (error: any) {
+            console.error('Error updating nutrition goals:', error);
+            toast.error(error?.data?.message || 'Failed to update goals');
+        }
+    };
+
+    const handleGoalChange = (field: string, value: string) => {
+        // Allow only numbers and decimal point
+        if (value === '' || /^\d*\.?\d*$/.test(value)) {
+            setGoalValues(prev => {
+                const newValues = { ...prev, [field]: value };
+
+                // Auto-calculate calories when protein, carbs, or fats change
+                // 1g protein = 4 calories, 1g carb = 4 calories, 1g fat = 9 calories
+                if (field === 'protein' || field === 'carbs' || field === 'fats') {
+                    const protein = field === 'protein' ? Number(value) : Number(newValues.protein);
+                    const carbs = field === 'carbs' ? Number(value) : Number(newValues.carbs);
+                    const fats = field === 'fats' ? Number(value) : Number(newValues.fats);
+
+                    const calculatedCalories = (protein * 4) + (carbs * 4) + (fats * 9);
+                    newValues.calories = calculatedCalories > 0 ? calculatedCalories.toFixed(0) : '';
+                }
+
+                return newValues;
+            });
+        }
     };
 
     return (
@@ -173,6 +293,85 @@ const NutritionScreen = () => {
                         </div>
                     </div>
 
+                    {/* Nutrition Goals Section */}
+                    <div className="max-w-4xl mx-auto mb-8">
+                        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-xl">
+                            <div className="flex items-center justify-between mb-3 sm:mb-4">
+                                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                                    <Target className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
+                                    <span className="hidden sm:inline">Current Goals</span>
+                                    <span className="sm:hidden">Goals</span>
+                                </h3>
+                                {!isEditingGoals ? (
+                                    <button
+                                        onClick={() => setIsEditingGoals(true)}
+                                        className="flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 rounded-lg transition-colors"
+                                    >
+                                        <Edit2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                                        <span className="hidden sm:inline">Edit Goals</span>
+                                        <span className="sm:hidden">Edit</span>
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={handleSaveGoals}
+                                        className="flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+                                    >
+                                        <Save className="w-3 h-3 sm:w-4 sm:h-4" />
+                                        Save
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
+                                {[
+                                    { label: 'Calories', field: 'calories', unit: 'kcal', color: 'blue' },
+                                    { label: 'Protein', field: 'protein', unit: 'g', color: 'green' },
+                                    { label: 'Carbs', field: 'carbs', unit: 'g', color: 'orange' },
+                                    { label: 'Fats', field: 'fats', unit: 'g', color: 'purple' }
+                                ].map((goal) => (
+                                    <div key={goal.field} className="bg-gray-50/50 dark:bg-gray-700/50 rounded-lg p-2.5 sm:p-4">
+                                        <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1 sm:mb-2">
+                                            {goal.label}
+                                        </label>
+                                        {isEditingGoals ? (
+                                            <div className="flex items-center gap-1 sm:gap-2">
+                                                <input
+                                                    type="text"
+                                                    value={goalValues[goal.field as keyof typeof goalValues]}
+                                                    onChange={(e) => handleGoalChange(goal.field, e.target.value)}
+                                                    placeholder={`Enter ${goal.label.toLowerCase()}`}
+                                                    disabled={goal.field === 'calories'}
+                                                    className={`flex-1 px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 ${goal.field === 'calories' ? 'opacity-60 cursor-not-allowed bg-gray-100 dark:bg-gray-700' : ''}`}
+                                                />
+                                                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 min-w-8 sm:min-w-10">{goal.unit}</span>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-1 sm:gap-2">
+                                                    <span className="text-base sm:text-xl font-bold text-gray-900 dark:text-white">
+                                                        {goalValues[goal.field as keyof typeof goalValues] || '—'}
+                                                    </span>
+                                                    <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{goal.unit}</span>
+                                                </div>
+                                                {goalValues[goal.field as keyof typeof goalValues] && dailyNutritionData?.data?.totals && (
+                                                    <span
+                                                        className={`inline-block text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded ${(dailyNutritionData.data.totals[goal.field as keyof typeof dailyNutritionData.data.totals] || 0) >= Number(goalValues[goal.field as keyof typeof goalValues])
+                                                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                                                            }`}
+                                                        title="Progress toward goal"
+                                                    >
+                                                        {((dailyNutritionData.data.totals[goal.field as keyof typeof dailyNutritionData.data.totals] || 0) / Number(goalValues[goal.field as keyof typeof goalValues]) * 100).toFixed(0)}%
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Food Modal */}
                     {
                         showModal && selectedFood && (
@@ -183,6 +382,7 @@ const NutritionScreen = () => {
                                 isSearching={isSearching}
                                 isLoadingDetails={isLoadingDetails}
                                 foodDetails={foodDetails}
+                                customCategories={customCategories.map(cat => ({ id: cat.id, name: cat.name }))}
                             />
                         )
                     }
@@ -200,7 +400,11 @@ const NutritionScreen = () => {
                                             labels: ['Protein', 'Carbs', 'Fat'],
                                             datasets: [
                                                 {
-                                                    data: [0, 0, 0],
+                                                    data: [
+                                                        dailyNutritionData?.data?.totals?.protein || 0,
+                                                        dailyNutritionData?.data?.totals?.carbs || 0,
+                                                        dailyNutritionData?.data?.totals?.fats || 0
+                                                    ],
                                                     backgroundColor: [
                                                         'rgba(34, 197, 94, 0.8)',
                                                         'rgba(251, 146, 60, 0.8)',
@@ -250,28 +454,28 @@ const NutritionScreen = () => {
                                     {
                                         icon: Target,
                                         title: "Calories",
-                                        value: "0",
+                                        value: dailyNutritionData?.data?.totals?.calories?.toFixed(0) || "0",
                                         unit: "kcal",
                                         color: "from-blue-500 to-blue-600"
                                     },
                                     {
                                         icon: BarChart3,
                                         title: "Protein",
-                                        value: "0",
+                                        value: dailyNutritionData?.data?.totals?.protein?.toFixed(1) || "0",
                                         unit: "g",
                                         color: "from-green-500 to-green-600"
                                     },
                                     {
                                         icon: UtensilsCrossed,
                                         title: "Carbs",
-                                        value: "0",
+                                        value: dailyNutritionData?.data?.totals?.carbs?.toFixed(1) || "0",
                                         unit: "g",
                                         color: "from-orange-500 to-orange-600"
                                     },
                                     {
                                         icon: Calendar,
                                         title: "Fat",
-                                        value: "0",
+                                        value: dailyNutritionData?.data?.totals?.fats?.toFixed(1) || "0",
                                         unit: "g",
                                         color: "from-purple-500 to-purple-600"
                                     }
@@ -378,13 +582,13 @@ const NutritionScreen = () => {
                                         {/* Foods List */}
                                         {category.foods.length > 0 ? (
                                             <div className="space-y-2">
-                                                {category.foods.map((food, idx) => (
+                                                {category.foods.map((food: any, idx: number) => (
                                                     <div
-                                                        key={idx}
+                                                        key={food._id || idx}
                                                         className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
                                                     >
-                                                        <span className="text-sm text-gray-700 dark:text-gray-300">{food.name}</span>
-                                                        <span className="text-xs text-gray-500 dark:text-gray-400">{food.calories} cal</span>
+                                                        <span className="text-sm text-gray-700 dark:text-gray-300">{food.foodItem}</span>
+                                                        <span className="text-xs text-gray-500 dark:text-gray-400">{food.calories.toFixed(0)} cal</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -436,13 +640,13 @@ const NutritionScreen = () => {
                                         {/* Foods List */}
                                         {category.foods.length > 0 ? (
                                             <div className="space-y-2">
-                                                {category.foods.map((food, idx) => (
+                                                {category.foods.map((food: any, idx: number) => (
                                                     <div
-                                                        key={idx}
+                                                        key={food._id || idx}
                                                         className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
                                                     >
-                                                        <span className="text-sm text-gray-700 dark:text-gray-300">{food.name}</span>
-                                                        <span className="text-xs text-gray-500 dark:text-gray-400">{food.calories} cal</span>
+                                                        <span className="text-sm text-gray-700 dark:text-gray-300">{food.foodItem}</span>
+                                                        <span className="text-xs text-gray-500 dark:text-gray-400">{food.calories.toFixed(0)} cal</span>
                                                     </div>
                                                 ))}
                                             </div>
