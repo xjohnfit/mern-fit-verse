@@ -32,7 +32,7 @@ const NutritionScreen = () => {
 
     const [selectedFood, setSelectedFood] = useState<string | null>(null);
     const [showModal, setShowModal] = useState(false);
-    const [_selectedCategory, setSelectedCategory] = useState<MealCategory | string | null>(null);
+    const [_selectedCategory, _setSelectedCategory] = useState<MealCategory | string | null>(null);
     const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
     const [isEditingGoals, setIsEditingGoals] = useState(false);
