@@ -41,7 +41,7 @@ const PORT: number = parseInt(process.env.PORT || '5003', 10);
 // Configure CORS origins
 const allowedOrigins = process.env.FRONTEND_URL
     ? process.env.FRONTEND_URL.split(',').map((url) => url.trim())
-    : ['http://localhost:5173', 'http://localhost:3000'];
+    : ['http://localhost:5173', 'http://localhost:3000', 'https://fitverse.codewithxjohn.com'];
 
 console.log('Allowed CORS origins:', allowedOrigins);
 
