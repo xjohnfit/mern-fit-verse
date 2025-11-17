@@ -42,9 +42,10 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             query: (data) => ({
                 url: `${BASE_URL}/users/profile`,
                 method: 'PUT',
-                credentials: 'include', // Include cookies in the request
+                credentials: 'include',
                 body: data,
             }),
+            invalidatesTags: ['User'],
         }),
         viewUserProfile: builder.query({
             query: (username) => ({
