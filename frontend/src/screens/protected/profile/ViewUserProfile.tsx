@@ -1,12 +1,13 @@
 // React & Router
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router';
 import { useSelector } from 'react-redux';
 
 // API Slices
 import {
     useViewUserProfileQuery,
     useFollowUnfollowUserMutation,
+    useGetSuggestedUsersQuery,
 } from '@/slices/usersApiSlice';
 import {
     useGetUserPostsQuery,
@@ -25,6 +26,7 @@ import {
     PostsList,
     FollowersFollowingModal
 } from './components';
+import { SuggestedUsersList } from '../dashboard/components/SuggestedUsersList';
 
 // UI Components
 import { User, Plus, X, Image as ImageIcon } from 'lucide-react';
@@ -40,6 +42,7 @@ import { type RootState, type UserProfile } from './types';
 
 const ViewUserProfile = () => {
     const { username } = useParams<{ username: string; }>();
+    const navigate = useNavigate();
     const currentUser = useSelector((state: RootState) => state.auth.userInfo);
     const [commentTexts, setCommentTexts] = useState<{ [key: string]: string; }>(
         {}
@@ -79,14 +82,11 @@ const ViewUserProfile = () => {
     const [deleteComment] = useDeleteCommentMutation();
     const [createPost] = useCreatePostMutation();
 
-    // Scroll to top whenever the username parameter changes
-    useEffect(() => {
-        window.scrollTo({
-            top: 0,
-            left: 0,
-            behavior: 'smooth',
-        });
-    }, [username]);
+    // Get suggested users
+    const {
+        data: suggestedUsers,
+        isLoading: isSuggestedUsersLoading,
+    } = useGetSuggestedUsersQuery({});
 
     // Handler functions
     const handleFollowToggle = async () => {
@@ -99,6 +99,21 @@ const ViewUserProfile = () => {
                 error?.data?.message || 'Failed to update follow status'
             );
         }
+    };
+
+    const handleFollowSuggestedUser = async (suggestedUsername: string) => {
+        try {
+            const result = await followUnfollowUser(suggestedUsername).unwrap();
+            toast.success(result.message);
+        } catch (error: any) {
+            toast.error(
+                error?.data?.message || 'Failed to follow user'
+            );
+        }
+    };
+
+    const handleUserClick = (clickedUsername: string) => {
+        navigate(`/profile/view/${clickedUsername}`);
     };
 
     const handleLikePost = async (postId: string) => {
@@ -246,16 +261,16 @@ const ViewUserProfile = () => {
             />
 
             {/* Main Content */}
-            <div className='max-w-6xl mx-auto px-4 py-4 sm:py-6 md:py-8'>
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8'>
+            <div className='max-w-7xl mx-auto px-4 py-4 sm:py-6 md:py-8'>
+                <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-4 sm:gap-6 lg:gap-8'>
                     {/* Left Sidebar - About Cards */}
-                    <div className='lg:col-span-1 order-2 md:order-1'>
+                    <div className='xl:col-span-3 order-2 md:order-1'>
                         <PersonalInfoCard user={user} />
                         <FitnessInfoCard user={user} />
                     </div>
 
                     {/* Right Content - Posts */}
-                    <div className='md:col-span-1 lg:col-span-2 order-1 md:order-2'>
+                    <div className='md:col-span-1 xl:col-span-6 order-1 md:order-2'>
                         <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6'>
                             <div className='flex items-center justify-between'>
                                 <h2 className='text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100'>
@@ -368,6 +383,16 @@ const ViewUserProfile = () => {
                                 />
                             </div>
                         </div>
+                    </div>
+
+                    {/* Third Column - Suggested Users (Desktop Only) */}
+                    <div className='hidden xl:block xl:col-span-3 order-3'>
+                        <SuggestedUsersList
+                            suggestedUsers={suggestedUsers}
+                            isLoading={isSuggestedUsersLoading}
+                            onFollow={handleFollowSuggestedUser}
+                            onUserClick={handleUserClick}
+                        />
                     </div>
                 </div>
             </div>

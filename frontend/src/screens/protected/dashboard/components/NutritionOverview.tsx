@@ -120,7 +120,7 @@ export const NutritionOverview: FC<NutritionOverviewProps> = ({
                                 </span>
                             </div>
                             <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                                {nutritionData!.data.totals.calories}
+                                {Math.round(nutritionData!.data.totals.calories)}
                             </span>
                         </div>
                     </div>

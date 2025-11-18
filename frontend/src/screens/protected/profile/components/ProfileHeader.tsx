@@ -129,12 +129,24 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({
                     <div className="hidden sm:flex sm:items-end sm:justify-between sm:space-x-8 sm:pt-8 md:pt-10">
                         {/* Left Section: Profile Picture + Name */}
                         <div className="flex items-end space-x-4">
-                            <Avatar className="w-28 h-28 md:w-32 md:h-32 border-4 border-white shadow-lg">
-                                <AvatarImage src={user.photo} alt={user.name} />
-                                <AvatarFallback className="text-2xl font-bold bg-blue-600 text-white">
-                                    {getInitials(user.name)}
-                                </AvatarFallback>
-                            </Avatar>
+                            {user.photo ? (
+                                <div className="w-28 h-28 md:w-40 md:h-40 rounded-full bg-gray-200 dark:bg-gray-700 border-4 border-white shadow-lg overflow-hidden hover:shadow-xl cursor-pointer transition-all duration-200 shrink-0">
+                                    <img
+                                        src={user.photo}
+                                        alt={user.name}
+                                        className="w-full h-full object-cover"
+                                        loading="eager"
+                                    />
+                                </div>
+                            ) : (
+                                <Avatar className="w-28 h-28 md:w-40 md:h-40 border-4 border-white shadow-lg">
+                                    <AvatarFallback className="text-2xl md:text-3xl font-bold bg-blue-600 text-white">
+                                        {getInitials(user.name)}
+                                    </AvatarFallback>
+                                </Avatar>
+                            )}
+
+                            {/* Name, Username & Stats */}
 
                             {/* Name, Username & Stats */}
                             <div className="text-white pb-4">

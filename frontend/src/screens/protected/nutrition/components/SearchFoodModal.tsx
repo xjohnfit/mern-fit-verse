@@ -38,7 +38,8 @@ export const SearchFoodModal = ({
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [selectedFood, setSelectedFood] = useState<string>('');
-    const [grams, setGrams] = useState<string>('100');
+    const [amount, setAmount] = useState<string>('1');
+    const [servingUnit, setServingUnit] = useState<string>('');
     const [mealType, setMealType] = useState<string>('breakfast');
 
     // Debounce search input
@@ -75,6 +76,7 @@ export const SearchFoodModal = ({
         setSelectedFood(suggestion);
         setSearchTerm(suggestion);
         setShowSuggestions(false);
+        setAmount('1');
         onFoodSelect(suggestion);
     };
 
@@ -86,21 +88,22 @@ export const SearchFoodModal = ({
         // Reset selected food if user starts typing again
         if (selectedFood && value !== selectedFood) {
             setSelectedFood('');
+            setServingUnit('');
         }
     };
 
-    // Calculate adjusted nutrition values based on grams
-    const calculateAdjustedValue = (baseValue: string | number, baseGrams: number) => {
-        const gramsNum = parseFloat(grams) || 100;
+    // Calculate adjusted nutrition values based on amount and serving size
+    const calculateAdjustedValue = (baseValue: string | number, servingAmount: number) => {
+        const amountNum = parseFloat(amount) || 1;
         const base = parseFloat(String(baseValue)) || 0;
-        return ((base / baseGrams) * gramsNum).toFixed(1);
+        return ((base / servingAmount) * amountNum).toFixed(1);
     };
 
-    const handleGramsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         // Allow only numbers and decimal point
         if (value === '' || /^\d*\.?\d*$/.test(value)) {
-            setGrams(value);
+            setAmount(value);
         }
     };
 
@@ -113,27 +116,24 @@ export const SearchFoodModal = ({
 
         if (!serving) return;
 
-        // Extract base serving size in grams
-        const metricServingUnit = serving.metric_serving_unit || '';
-        const metricServingAmount = parseFloat(serving.metric_serving_amount) || 100;
-        const isPerGram = metricServingUnit.toLowerCase() === 'g';
-        const baseGrams = isPerGram ? metricServingAmount : 100;
+        // Get serving amount for calculations
+        const servingAmount = parseFloat(serving.number_of_units) || 1;
 
-        // Calculate adjusted nutrition values
-        const gramsNum = parseFloat(grams) || 100;
-        const adjustedCalories = parseFloat(calculateAdjustedValue(serving.calories, baseGrams));
-        const adjustedProtein = parseFloat(calculateAdjustedValue(serving.protein, baseGrams));
-        const adjustedCarbs = parseFloat(calculateAdjustedValue(serving.carbohydrate, baseGrams));
-        const adjustedFats = parseFloat(calculateAdjustedValue(serving.fat, baseGrams));
+        // Calculate adjusted nutrition values based on the amount entered
+        const amountNum = parseFloat(amount) || 1;
+        const adjustedCalories = parseFloat(calculateAdjustedValue(serving.calories, servingAmount));
+        const adjustedProtein = parseFloat(calculateAdjustedValue(serving.protein, servingAmount));
+        const adjustedCarbs = parseFloat(calculateAdjustedValue(serving.carbohydrate, servingAmount));
+        const adjustedFats = parseFloat(calculateAdjustedValue(serving.fat, servingAmount));
 
         // Check if custom category is selected
         const isCustomCategory = mealType.startsWith('custom-');
         const customCategoryId = isCustomCategory ? mealType.replace('custom-', '') : undefined;
         const actualMealCategory = isCustomCategory ? 'custom' : mealType.toLowerCase();
 
-        // Pass data to parent
+        // Pass data to parent with serving description
         handleAddFood({
-            foodItem: `${selectedFood} (${gramsNum}g)`,
+            foodItem: `${selectedFood} (${amountNum} ${servingUnit})`,
             mealCategory: actualMealCategory,
             customCategoryId,
             calories: adjustedCalories,
@@ -169,17 +169,22 @@ export const SearchFoodModal = ({
             };
         }
 
-        const metricServingUnit = serving.metric_serving_unit || '';
-        const metricServingAmount = parseFloat(serving.metric_serving_amount) || 100;
-        const isPerGram = metricServingUnit.toLowerCase() === 'g';
-        const baseGrams = isPerGram ? metricServingAmount : 100;
+        // Extract serving size information
+        const servingDesc = serving.serving_description || '';
+        const servingAmount = parseFloat(serving.number_of_units) || 1;
+        const measurementUnit = serving.measurement_description || '';
+
+        // Set the serving unit for the UI
+        if (servingUnit === '') {
+            setServingUnit(measurementUnit);
+        }
 
         return {
-            calories: calculateAdjustedValue(serving.calories, baseGrams),
-            protein: calculateAdjustedValue(serving.protein, baseGrams),
-            carbs: calculateAdjustedValue(serving.carbohydrate, baseGrams),
-            fats: calculateAdjustedValue(serving.fat, baseGrams),
-            servingDescription: serving.serving_description
+            calories: calculateAdjustedValue(serving.calories, servingAmount),
+            protein: calculateAdjustedValue(serving.protein, servingAmount),
+            carbs: calculateAdjustedValue(serving.carbohydrate, servingAmount),
+            fats: calculateAdjustedValue(serving.fat, servingAmount),
+            servingDescription: servingDesc
         };
     };
 
@@ -291,21 +296,23 @@ export const SearchFoodModal = ({
                                 </select>
                             </div>
 
-                            {/* Gram Input */}
+                            {/* Amount Input */}
                             <div className="space-y-1.5">
                                 <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300">
                                     <Scale className="w-3.5 h-3.5 text-green-500" />
-                                    Amount (grams)
+                                    Amount {servingUnit && `(${servingUnit})`}
                                 </label>
                                 <div className="relative">
                                     <input
                                         type="text"
-                                        value={grams}
-                                        onChange={handleGramsChange}
-                                        placeholder="100"
+                                        value={amount}
+                                        onChange={handleAmountChange}
+                                        placeholder="1"
                                         className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                                     />
-                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xs font-medium">g</span>
+                                    {servingUnit && (
+                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xs font-medium">{servingUnit}</span>
+                                    )}
                                 </div>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">
                                     {nutrition.servingDescription}
@@ -362,7 +369,7 @@ export const SearchFoodModal = ({
                         <button
                             className="flex-1 px-3 py-2 text-sm bg-linear-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-semibold shadow-lg shadow-green-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             onClick={handleAddClick}
-                            disabled={!selectedFood || isLoading || !foodDetails?.success || !grams || parseFloat(grams) <= 0}
+                            disabled={!selectedFood || isLoading || !foodDetails?.success || !amount || parseFloat(amount) <= 0}
                         >
                             Add to Tracker
                         </button>
