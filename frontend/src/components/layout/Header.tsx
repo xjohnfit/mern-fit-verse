@@ -1,12 +1,29 @@
 import { Link, useNavigate } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
-import { useLogoutMutation, useGetUserProfileQuery } from '@/slices/usersApiSlice';
+import {
+    useLogoutMutation,
+    useGetUserProfileQuery,
+} from '@/slices/usersApiSlice';
 import { clearCredentials } from '@/slices/authSlice';
 import { useState, useEffect } from 'react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, LogOut, Menu, X, LayoutDashboard, UtensilsCrossed, Dumbbell, Settings, Home, Search, Users, UserCheck, MessageCircle } from 'lucide-react';
-import FollowersFollowingModal from '@/screens/protected/profile/FollowersFollowingModal';
+import {
+    User,
+    LogOut,
+    Menu,
+    X,
+    LayoutDashboard,
+    UtensilsCrossed,
+    Dumbbell,
+    Settings,
+    Home,
+    Search,
+    Users,
+    UserCheck,
+    MessageCircle,
+} from 'lucide-react';
+import { FollowersFollowingModal } from '@/screens/protected/profile/components';
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -23,7 +40,10 @@ function Header() {
         (state: any) => state.auth
     );
     const [logoutApiCall] = useLogoutMutation();
-    const { data: currentUserProfile } = useGetUserProfileQuery({}, { skip: !isAuthenticated });
+    const { data: currentUserProfile } = useGetUserProfileQuery(
+        {},
+        { skip: !isAuthenticated }
+    );
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -51,7 +71,8 @@ function Header() {
             setIsMobileMenuOpen(false);
         } catch (err: string | any) {
             toast.error(
-                `Logout failed: ${err?.data?.message || err?.message || 'Unknown error'
+                `Logout failed: ${
+                    err?.data?.message || err?.message || 'Unknown error'
                 }`
             );
         }
@@ -68,7 +89,7 @@ function Header() {
     const getInitials = (name: string) => {
         return name
             .split(' ')
-            .map(n => n[0])
+            .map((n) => n[0])
             .join('')
             .toUpperCase()
             .slice(0, 2);
@@ -76,7 +97,10 @@ function Header() {
 
     const avatar = userInfo ? (
         <Avatar className='w-10 h-10 ring-2 ring-blue-500/20 dark:ring-blue-400/30 transition-all duration-300 hover:ring-blue-500/40 dark:hover:ring-blue-400/50'>
-            <AvatarImage src={userInfo.photo} alt={userInfo.name} />
+            <AvatarImage
+                src={userInfo.photo}
+                alt={userInfo.name}
+            />
             <AvatarFallback className='bg-linear-to-br from-blue-500 to-purple-600 text-white font-semibold text-sm'>
                 {getInitials(userInfo.name)}
             </AvatarFallback>
@@ -89,7 +113,9 @@ function Header() {
                 <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
                     <div className='flex items-center justify-between h-16'>
                         {/* Logo Section */}
-                        <Link to='/' className='flex items-center space-x-3 group shrink-0'>
+                        <Link
+                            to='/'
+                            className='flex items-center space-x-3 group shrink-0'>
                             <div className='relative'>
                                 <div className='w-16 h-16 flex items-center justify-center transition-all duration-300 group-hover:scale-105'>
                                     <img
@@ -143,40 +169,35 @@ function Header() {
                                 <div className='flex items-center space-x-1'>
                                     <Link
                                         to='/dashboard'
-                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 font-medium group'
-                                    >
+                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 font-medium group'>
                                         <LayoutDashboard className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
                                         <span>Dashboard</span>
                                     </Link>
 
                                     <Link
                                         to={`/profile/view/${userInfo?.username}`}
-                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200 font-medium group'
-                                    >
+                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200 font-medium group'>
                                         <User className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
                                         <span>Profile</span>
                                     </Link>
 
                                     <Link
                                         to='/nutrition'
-                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200 font-medium group'
-                                    >
+                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200 font-medium group'>
                                         <UtensilsCrossed className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
                                         <span>Nutrition</span>
                                     </Link>
 
                                     <Link
                                         to='/workout'
-                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all duration-200 font-medium group'
-                                    >
+                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all duration-200 font-medium group'>
                                         <Dumbbell className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
                                         <span>Workout</span>
                                     </Link>
 
                                     <Link
                                         to='/messages'
-                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 font-medium group'
-                                    >
+                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 font-medium group'>
                                         <MessageCircle className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
                                         <span>Messages</span>
                                     </Link>
@@ -195,43 +216,69 @@ function Header() {
                                                                 {userInfo?.name}
                                                             </p>
                                                             <p className='text-sm text-gray-600 dark:text-gray-400'>
-                                                                {userInfo?.email}
+                                                                {
+                                                                    userInfo?.email
+                                                                }
                                                             </p>
                                                             {currentUserProfile && (
                                                                 <div className='flex items-center space-x-4 mt-2'>
                                                                     <button
-                                                                        onClick={() => setShowFollowersModal(true)}
-                                                                        className='flex items-center space-x-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'
-                                                                    >
+                                                                        onClick={() =>
+                                                                            setShowFollowersModal(
+                                                                                true
+                                                                            )
+                                                                        }
+                                                                        className='flex items-center space-x-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'>
                                                                         <Users className='w-3 h-3' />
-                                                                        <span>{currentUserProfile.followers?.length || 0} followers</span>
+                                                                        <span>
+                                                                            {currentUserProfile
+                                                                                .followers
+                                                                                ?.length ||
+                                                                                0}{' '}
+                                                                            followers
+                                                                        </span>
                                                                     </button>
                                                                     <button
-                                                                        onClick={() => setShowFollowingModal(true)}
-                                                                        className='flex items-center space-x-1 text-xs text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300'
-                                                                    >
+                                                                        onClick={() =>
+                                                                            setShowFollowingModal(
+                                                                                true
+                                                                            )
+                                                                        }
+                                                                        className='flex items-center space-x-1 text-xs text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300'>
                                                                         <UserCheck className='w-3 h-3' />
-                                                                        <span>{currentUserProfile.following?.length || 0} following</span>
+                                                                        <span>
+                                                                            {currentUserProfile
+                                                                                .following
+                                                                                ?.length ||
+                                                                                0}{' '}
+                                                                            following
+                                                                        </span>
                                                                     </button>
                                                                 </div>
                                                             )}
-                                                        </div>                                                        <NavigationMenuLink asChild>
+                                                        </div>{' '}
+                                                        <NavigationMenuLink
+                                                            asChild>
                                                             <Link
                                                                 to='/settings'
-                                                                className='flex flex-row items-center space-x-3 w-full px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 group'
-                                                            >
+                                                                className='flex flex-row items-center space-x-3 w-full px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 group'>
                                                                 <Settings className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
-                                                                <span className='font-medium'>Settings</span>
+                                                                <span className='font-medium'>
+                                                                    Settings
+                                                                </span>
                                                             </Link>
                                                         </NavigationMenuLink>
-
-                                                        <NavigationMenuLink asChild>
+                                                        <NavigationMenuLink
+                                                            asChild>
                                                             <button
-                                                                onClick={logoutHandler}
-                                                                className='flex flex-row items-center space-x-3 w-full px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-all duration-200 group'
-                                                            >
+                                                                onClick={
+                                                                    logoutHandler
+                                                                }
+                                                                className='flex flex-row items-center space-x-3 w-full px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-all duration-200 group'>
                                                                 <LogOut className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
-                                                                <span className='font-medium'>Sign Out</span>
+                                                                <span className='font-medium'>
+                                                                    Sign Out
+                                                                </span>
                                                             </button>
                                                         </NavigationMenuLink>
                                                     </div>
@@ -248,23 +295,20 @@ function Header() {
                                 <div className='flex items-center space-x-3'>
                                     <Link
                                         to='/'
-                                        className='flex items-center space-x-2 px-3 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 font-medium'
-                                    >
+                                        className='flex items-center space-x-2 px-3 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 font-medium'>
                                         <Home className='w-4 h-4' />
                                         <span>Home</span>
                                     </Link>
 
                                     <Link
                                         to='/login'
-                                        className='px-4 py-2 rounded-xl text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 font-medium'
-                                    >
+                                        className='px-4 py-2 rounded-xl text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 font-medium'>
                                         Sign In
                                     </Link>
 
                                     <Link
                                         to='/register'
-                                        className='px-4 py-2 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200'
-                                    >
+                                        className='px-4 py-2 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200'>
                                         Get Started
                                     </Link>
 
@@ -280,8 +324,7 @@ function Header() {
                             <ThemeToggle />
                             <button
                                 onClick={toggleMobileMenu}
-                                className='p-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200'
-                            >
+                                className='p-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200'>
                                 {isMobileMenuOpen ? (
                                     <X className='w-6 h-6' />
                                 ) : (
@@ -322,23 +365,35 @@ function Header() {
                                             <div className='flex items-center space-x-4'>
                                                 <button
                                                     onClick={() => {
-                                                        setShowFollowersModal(true);
+                                                        setShowFollowersModal(
+                                                            true
+                                                        );
                                                         closeMobileMenu();
                                                     }}
-                                                    className='flex items-center space-x-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'
-                                                >
+                                                    className='flex items-center space-x-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'>
                                                     <Users className='w-4 h-4' />
-                                                    <span>{currentUserProfile.followers?.length || 0} followers</span>
+                                                    <span>
+                                                        {currentUserProfile
+                                                            .followers
+                                                            ?.length || 0}{' '}
+                                                        followers
+                                                    </span>
                                                 </button>
                                                 <button
                                                     onClick={() => {
-                                                        setShowFollowingModal(true);
+                                                        setShowFollowingModal(
+                                                            true
+                                                        );
                                                         closeMobileMenu();
                                                     }}
-                                                    className='flex items-center space-x-2 text-sm text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300'
-                                                >
+                                                    className='flex items-center space-x-2 text-sm text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300'>
                                                     <UserCheck className='w-4 h-4' />
-                                                    <span>{currentUserProfile.following?.length || 0} following</span>
+                                                    <span>
+                                                        {currentUserProfile
+                                                            .following
+                                                            ?.length || 0}{' '}
+                                                        following
+                                                    </span>
                                                 </button>
                                             </div>
                                         )}
@@ -349,63 +404,68 @@ function Header() {
                                         <Link
                                             to='/dashboard'
                                             onClick={closeMobileMenu}
-                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all duration-200 group'
-                                        >
+                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all duration-200 group'>
                                             <LayoutDashboard className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
-                                            <span className='font-medium'>Dashboard</span>
+                                            <span className='font-medium'>
+                                                Dashboard
+                                            </span>
                                         </Link>
 
                                         <Link
                                             to={`/profile/view/${userInfo?.username}`}
                                             onClick={closeMobileMenu}
-                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-xl transition-all duration-200 group'
-                                        >
+                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-xl transition-all duration-200 group'>
                                             <User className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
-                                            <span className='font-medium'>My Profile</span>
+                                            <span className='font-medium'>
+                                                My Profile
+                                            </span>
                                         </Link>
 
                                         <Link
                                             to='/messages'
                                             onClick={closeMobileMenu}
-                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all duration-200 group'
-                                        >
+                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all duration-200 group'>
                                             <MessageCircle className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
-                                            <span className='font-medium'>Messages</span>
+                                            <span className='font-medium'>
+                                                Messages
+                                            </span>
                                         </Link>
 
                                         <Link
                                             to='/nutrition'
                                             onClick={closeMobileMenu}
-                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-xl transition-all duration-200 group'
-                                        >
+                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-xl transition-all duration-200 group'>
                                             <UtensilsCrossed className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
-                                            <span className='font-medium'>Nutrition</span>
+                                            <span className='font-medium'>
+                                                Nutrition
+                                            </span>
                                         </Link>
 
                                         <Link
                                             to='/workout'
                                             onClick={closeMobileMenu}
-                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-xl transition-all duration-200 group'
-                                        >
+                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-xl transition-all duration-200 group'>
                                             <Dumbbell className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
-                                            <span className='font-medium'>Workout</span>
+                                            <span className='font-medium'>
+                                                Workout
+                                            </span>
                                         </Link>
 
                                         <Link
                                             to='/settings'
                                             onClick={closeMobileMenu}
-                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200 group'
-                                        >
+                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200 group'>
                                             <Settings className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
-                                            <span className='font-medium'>Settings</span>
+                                            <span className='font-medium'>
+                                                Settings
+                                            </span>
                                         </Link>
                                     </nav>
 
                                     {/* Logout Button */}
                                     <button
                                         onClick={logoutHandler}
-                                        className='flex items-center justify-center space-x-2 w-full p-3 text-white bg-linear-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl'
-                                    >
+                                        className='flex items-center justify-center space-x-2 w-full p-3 text-white bg-linear-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl'>
                                         <LogOut className='w-5 h-5' />
                                         <span>Sign Out</span>
                                     </button>
@@ -415,25 +475,24 @@ function Header() {
                                     <Link
                                         to='/'
                                         onClick={closeMobileMenu}
-                                        className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200'
-                                    >
+                                        className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200'>
                                         <Home className='w-5 h-5' />
-                                        <span className='font-medium'>Home</span>
+                                        <span className='font-medium'>
+                                            Home
+                                        </span>
                                     </Link>
 
                                     <Link
                                         to='/login'
                                         onClick={closeMobileMenu}
-                                        className='block w-full text-center px-4 py-3 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl font-medium transition-all duration-200'
-                                    >
+                                        className='block w-full text-center px-4 py-3 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl font-medium transition-all duration-200'>
                                         Sign In
                                     </Link>
 
                                     <Link
                                         to='/register'
                                         onClick={closeMobileMenu}
-                                        className='block w-full text-center px-4 py-3 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-200'
-                                    >
+                                        className='block w-full text-center px-4 py-3 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-200'>
                                         Get Started
                                     </Link>
                                 </div>
@@ -447,18 +506,22 @@ function Header() {
             <FollowersFollowingModal
                 isOpen={showFollowersModal}
                 onClose={() => setShowFollowersModal(false)}
-                type="followers"
+                type='followers'
                 users={currentUserProfile?.followers || []}
-                title={`${currentUserProfile?.followers?.length || 0} Followers`}
+                title={`${
+                    currentUserProfile?.followers?.length || 0
+                } Followers`}
             />
 
             {/* Following Modal */}
             <FollowersFollowingModal
                 isOpen={showFollowingModal}
                 onClose={() => setShowFollowingModal(false)}
-                type="following"
+                type='following'
                 users={currentUserProfile?.following || []}
-                title={`${currentUserProfile?.following?.length || 0} Following`}
+                title={`${
+                    currentUserProfile?.following?.length || 0
+                } Following`}
             />
         </>
     );

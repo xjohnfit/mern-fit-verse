@@ -3,24 +3,23 @@ import { toast } from 'sonner';
 import { setCredentials } from '@/slices/authSlice';
 import { useUpdateUserProfileMutation } from '@/slices/usersApiSlice';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-    ArrowRight,
-    User,
-    Target,
-    Mail,
-    Lock,
-    Calendar,
-    Users,
-    Eye,
-    EyeOff,
-} from 'lucide-react';
+import { ArrowRight, User } from 'lucide-react';
 
-//Utils functions imports
+// Utils functions imports
 import { formatDateToInputValue } from '@/lib/formatDate';
 import { getPasswordStrength } from '@/lib/getPasswordStrength';
 
-// Theme Settings Component
+// Components
 import ThemeSettingsSection from './components/ThemeSettingsSection';
+import ProfilePhotoSection from './components/ProfilePhotoSection';
+import ProfileHeaderSection from './components/ProfileHeaderSection';
+import BasicInfoFields from './components/BasicInfoFields';
+import PersonalInfoFields from './components/PersonalInfoFields';
+import PhysicalInfoFields from './components/PhysicalInfoFields';
+import PasswordFields from './components/PasswordFields';
+
+// Hooks
+import { useProfileValidation } from './hooks/useProfileValidation';
 
 const SettingsScreen = () => {
     const [profileData, setProfileData] = useState({
@@ -39,121 +38,24 @@ const SettingsScreen = () => {
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [errors, setErrors] = useState<{ [key: string]: string; }>({});
     const [photoFile, setPhotoFile] = useState<File | null>(null);
     const [photoPreview, setPhotoPreview] = useState<string>('');
 
     const passwordStrength = getPasswordStrength(profileData.password);
 
-    // Photo handling functions
-    const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+    // Use validation hook
+    const { errors, setErrors, validateForm, handleFieldValidation } = useProfileValidation(profileData);
 
-        // Log file details for debugging iPhone issues
-        console.log('Selected file:', {
-            name: file.name,
-            type: file.type,
-            size: file.size,
-            lastModified: file.lastModified
-        });
-
-        // Get file extension as fallback for HEIC detection
-        const fileExtension = file.name.toLowerCase().split('.').pop() || '';
-
-        // Validate file type - iOS can send empty MIME types or "application/octet-stream"
-        const validTypes = [
-            'image/jpeg',
-            'image/jpg',
-            'image/png',
-            'image/gif',
-            'image/webp',
-            'image/heic',
-            'image/heif',
-            'image/bmp',
-        ];
-        const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif', 'bmp'];
-
-        const isValidMimeType = file.type && validTypes.includes(file.type);
-        const isValidExtension = validExtensions.includes(fileExtension);
-
-        // Accept if type starts with 'image/' (catch-all for camera uploads)
-        const isImageType = file.type && file.type.startsWith('image/');
-
-        // iPhone/iOS may send empty MIME type - rely on extension
-        const hasEmptyMimeType = !file.type || file.type === '' || file.type === 'application/octet-stream';
-        const likelyIosImage = hasEmptyMimeType && isValidExtension;
-
-        if (!isValidMimeType && !isValidExtension && !isImageType && !likelyIosImage) {
-            console.error('Invalid file type detected:', file.type, fileExtension);
-            toast.error(
-                'Please select a valid image file (JPG, PNG, WebP or HEIC)'
-            );
-            return;
-        }
-
-        // Special handling for HEIC files (they often have empty or incorrect MIME type on iOS)
-        if (
-            (fileExtension === 'heic' || fileExtension === 'heif') ||
-            (file.type && (file.type.includes('heic') || file.type.includes('heif')))
-        ) {
-            console.log('HEIC file detected - Cloudinary will handle conversion');
-            toast.info(
-                'HEIC format detected. Cloudinary will optimize it automatically.'
-            );
-        }
-
-        // Validate file size (max 10MB for iPhone photos which can be large)
-        const maxSize = 10 * 1024 * 1024; // 10MB in bytes
-        if (file.size > maxSize) {
-            toast.error('Image size must be less than 10MB');
-            return;
-        }
-
+    // Photo handling
+    const handlePhotoChange = (file: File | null, preview: string) => {
         setPhotoFile(file);
-
-        // Create preview URL (for display only)
-        // Note: iOS may not display HEIC in preview, but upload will still work
-        try {
-            const previewUrl = URL.createObjectURL(file);
-            setPhotoPreview(previewUrl);
-            toast.success('Photo selected successfully!');
-        } catch (error) {
-            console.error('Error creating preview:', error);
-            toast.warning('Preview not available, but photo will be uploaded');
-            // Still set the file even if preview fails (common with HEIC on some browsers)
+        setPhotoPreview(preview);
+        if (!file) {
+            setProfileData((prev) => ({
+                ...prev,
+                photo: '',
+            }));
         }
-    };
-
-    const handlePhotoClick = () => {
-        const fileInput = document.getElementById(
-            'photo-input'
-        ) as HTMLInputElement;
-        fileInput?.click();
-    };
-
-    const handleRemovePhoto = () => {
-        // Clean up object URL to prevent memory leaks
-        if (photoPreview && photoPreview.startsWith('blob:')) {
-            URL.revokeObjectURL(photoPreview);
-        }
-
-        setPhotoFile(null);
-        setPhotoPreview('');
-        setProfileData((prev) => ({
-            ...prev,
-            photo: '',
-        }));
-
-        // Clear the file input
-        const fileInput = document.getElementById(
-            'photo-input'
-        ) as HTMLInputElement;
-        if (fileInput) {
-            fileInput.value = '';
-        }
-
-        toast.success('Photo removed');
     };
 
     const dispatch = useDispatch();
@@ -202,240 +104,8 @@ const SettingsScreen = () => {
             [name]: value,
         }));
 
-        // Real-time validation - always validate when there's an error or when field has value
-        // This ensures errors are cleared when user types valid input
-        if (errors[name] || value.trim() !== '') {
-            const error = validateField(name, value);
-            if (error) {
-                setErrors((prev) => ({
-                    ...prev,
-                    [name]: error,
-                }));
-            } else {
-                // Clear error if validation passes
-                setErrors((prev) => {
-                    const newErrors = { ...prev };
-                    delete newErrors[name];
-                    return newErrors;
-                });
-            }
-        } else if (errors[name] && value.trim() === '') {
-            // Clear error when field is empty (for optional fields)
-            const requiredFields = ['name', 'username', 'email'];
-            if (!requiredFields.includes(name)) {
-                setErrors((prev) => {
-                    const newErrors = { ...prev };
-                    delete newErrors[name];
-                    return newErrors;
-                });
-            }
-        }
-
-        // Special handling for password changes - also validate confirm password
-        if (name === 'password') {
-            // Re-validate confirm password if it has a value or error
-            if (errors.confirmPassword || profileData.confirmPassword) {
-                const confirmError = validateField(
-                    'confirmPassword',
-                    profileData.confirmPassword,
-                    value
-                );
-                if (confirmError) {
-                    setErrors((prev) => ({
-                        ...prev,
-                        confirmPassword: confirmError,
-                    }));
-                } else {
-                    setErrors((prev) => {
-                        const newErrors = { ...prev };
-                        delete newErrors.confirmPassword;
-                        return newErrors;
-                    });
-                }
-            }
-        }
-    };
-
-    const validateField = (
-        name: string,
-        value: any,
-        currentPasswordValue?: string
-    ) => {
-        let error = '';
-
-        switch (name) {
-            case 'name':
-                const nameValue = value as string;
-                if (!nameValue.trim()) {
-                    error = 'Name is required';
-                } else if (nameValue.trim().length < 2) {
-                    error = 'Name must be at least 2 characters';
-                } else if (nameValue.trim().length > 50) {
-                    error = 'Name must be less than 50 characters';
-                } else if (!/^[a-zA-Z\s]+$/.test(nameValue.trim())) {
-                    error = 'Name can only contain letters and spaces';
-                }
-                break;
-
-            case 'username':
-                const usernameValue = value as string;
-                if (!usernameValue.trim()) {
-                    error = 'Username is required';
-                } else if (usernameValue.length < 3) {
-                    error = 'Username must be at least 3 characters';
-                } else if (usernameValue.length > 20) {
-                    error = 'Username must be less than 20 characters';
-                } else if (!/^[a-zA-Z0-9_]+$/.test(usernameValue)) {
-                    error =
-                        'Username can only contain letters, numbers, and underscores';
-                } else if (/^\d+$/.test(usernameValue)) {
-                    error = 'Username cannot be only numbers';
-                }
-                break;
-
-            case 'email':
-                const emailValue = value as string;
-                if (!emailValue.trim()) {
-                    error = 'Email is required';
-                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
-                    error = 'Please enter a valid email address';
-                } else if (emailValue.length > 254) {
-                    error = 'Email address is too long';
-                }
-                break;
-
-            case 'password':
-                const passwordValue = value as string;
-                if (passwordValue) {
-                    // Only validate if password is provided (it's optional for updates)
-                    if (passwordValue.length < 8) {
-                        error = 'Password must be at least 8 characters';
-                    } else if (passwordValue.length > 128) {
-                        error = 'Password must be less than 128 characters';
-                    } else if (!/(?=.*[a-z])/.test(passwordValue)) {
-                        error =
-                            'Password must contain at least one lowercase letter';
-                    } else if (!/(?=.*[A-Z])/.test(passwordValue)) {
-                        error =
-                            'Password must contain at least one uppercase letter';
-                    } else if (!/(?=.*\d)/.test(passwordValue)) {
-                        error = 'Password must contain at least one number';
-                    } else if (!/(?=.*[@$!%*?&])/.test(passwordValue)) {
-                        error =
-                            'Password must contain at least one special character (@$!%*?&)';
-                    } else if (/\s/.test(passwordValue)) {
-                        error = 'Password cannot contain spaces';
-                    }
-                }
-                break;
-
-            case 'confirmPassword':
-                const confirmPasswordValue = value as string;
-                const currentPassword =
-                    currentPasswordValue || profileData.password;
-                if (currentPassword && !confirmPasswordValue) {
-                    error = 'Please confirm your password';
-                } else if (
-                    confirmPasswordValue &&
-                    confirmPasswordValue !== currentPassword
-                ) {
-                    error = 'Passwords do not match';
-                }
-                break;
-
-            case 'dob':
-                const dobValue = value as string;
-                if (dobValue) {
-                    const today = new Date();
-                    const birthDate = new Date(dobValue);
-                    let age = today.getFullYear() - birthDate.getFullYear();
-                    const monthDiff = today.getMonth() - birthDate.getMonth();
-
-                    if (
-                        monthDiff < 0 ||
-                        (monthDiff === 0 &&
-                            today.getDate() < birthDate.getDate())
-                    ) {
-                        age--;
-                    }
-
-                    if (birthDate >= today) {
-                        error = 'Date of birth cannot be in the future';
-                    } else if (age < 13) {
-                        error = 'You must be at least 13 years old';
-                    } else if (age > 120) {
-                        error = 'Please enter a valid date of birth';
-                    }
-                }
-                break;
-
-            case 'height':
-                const heightValue = Number(value);
-                if (value && (heightValue < 50 || heightValue > 300)) {
-                    error = 'Height must be between 50 and 300 cm';
-                }
-                break;
-
-            case 'weight':
-                const weightValue = Number(value);
-                if (value && (weightValue < 20 || weightValue > 500)) {
-                    error = 'Weight must be between 20 and 500 kg';
-                }
-                break;
-
-            default:
-                break;
-        }
-
-        return error;
-    };
-
-    const validateForm = () => {
-        const newErrors: { [key: string]: string; } = {};
-        const requiredFields = ['name', 'username', 'email'];
-
-        requiredFields.forEach((field) => {
-            const error = validateField(
-                field,
-                profileData[field as keyof typeof profileData]
-            );
-            if (error) {
-                newErrors[field] = error;
-            }
-        });
-
-        // Validate password if provided
-        if (profileData.password) {
-            const passwordError = validateField(
-                'password',
-                profileData.password
-            );
-            if (passwordError) {
-                newErrors.password = passwordError;
-            }
-
-            const confirmPasswordError = validateField(
-                'confirmPassword',
-                profileData.confirmPassword
-            );
-            if (confirmPasswordError) {
-                newErrors.confirmPassword = confirmPasswordError;
-            }
-        }
-
-        // Validate optional fields if they have values
-        ['dob', 'height', 'weight'].forEach((field) => {
-            const value = profileData[field as keyof typeof profileData];
-            if (value) {
-                const error = validateField(field, value);
-                if (error) {
-                    newErrors[field] = error;
-                }
-            }
-        });
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        // Use validation from hook
+        handleFieldValidation(name, value);
     };
 
     const handleUpdate = async (e: React.FormEvent) => {
@@ -611,148 +281,22 @@ const SettingsScreen = () => {
                             {/* Profile Picture & Goal Section */}
                             <div className='flex flex-col md:flex-row items-center md:items-start gap-6 mb-8 p-6 bg-gray-50/50 dark:bg-gray-700/30 rounded-xl border border-gray-200 dark:border-gray-600'>
                                 {/* Profile Picture */}
-                                <div className='flex justify-center w-full md:w-auto md:justify-start'>
-                                    <div className='relative group'>
-                                        <div
-                                            className='w-32 h-32 lg:w-36 lg:h-36 rounded-full bg-gray-200 dark:bg-gray-700 border-4 border-blue-500 dark:border-blue-400 overflow-hidden shadow-lg hover:shadow-xl cursor-pointer transition-all duration-200'
-                                            onClick={handlePhotoClick}>
-                                            {photoPreview ||
-                                                profileData.photo ? (
-                                                <img
-                                                    src={
-                                                        photoPreview ||
-                                                        profileData.photo
-                                                    }
-                                                    alt='Profile'
-                                                    className='w-full h-full object-cover'
-                                                />
-                                            ) : (
-                                                <div className='w-full h-full flex items-center justify-center'>
-                                                    <User className='w-12 h-12 text-gray-400 dark:text-gray-500' />
-                                                </div>
-                                            )}
-                                            {/* Overlay on hover */}
-                                            <div className='absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center rounded-full'>
-                                                <span className='text-white text-xs font-medium'>
-                                                    Change Photo
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        {/* Add/Edit Photo Button */}
-                                        <button
-                                            type='button'
-                                            onClick={handlePhotoClick}
-                                            className='absolute bottom-0 right-0 w-8 h-8 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 rounded-full flex items-center justify-center border-2 border-white dark:border-gray-800 shadow-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800'
-                                            title='Change profile photo'>
-                                            <svg
-                                                className='w-4 h-4 text-white'
-                                                fill='none'
-                                                stroke='currentColor'
-                                                viewBox='0 0 24 24'>
-                                                <path
-                                                    strokeLinecap='round'
-                                                    strokeLinejoin='round'
-                                                    strokeWidth={2}
-                                                    d='M12 4v16m8-8H4'
-                                                />
-                                            </svg>
-                                        </button>
-
-                                        {/* Remove Photo Button - Only show if there's a photo */}
-                                        {(photoPreview ||
-                                            profileData.photo) && (
-                                                <button
-                                                    type='button'
-                                                    onClick={handleRemovePhoto}
-                                                    className='absolute top-0 right-0 w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center border-2 border-white dark:border-gray-800 shadow-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800'
-                                                    title='Remove profile photo'>
-                                                    <svg
-                                                        className='w-3 h-3 text-white'
-                                                        fill='none'
-                                                        stroke='currentColor'
-                                                        viewBox='0 0 24 24'>
-                                                        <path
-                                                            strokeLinecap='round'
-                                                            strokeLinejoin='round'
-                                                            strokeWidth={2}
-                                                            d='M6 18L18 6M6 6l12 12'
-                                                        />
-                                                    </svg>
-                                                </button>
-                                            )}
-
-                                        {/* Hidden File Input */}
-                                        <input
-                                            id='photo-input'
-                                            type='file'
-                                            accept='image/*'
-                                            onChange={handlePhotoSelect}
-                                            className='hidden'
-                                        />
-                                    </div>
-                                </div>
+                                <ProfilePhotoSection
+                                    photoPreview={photoPreview}
+                                    photo={profileData.photo}
+                                    onPhotoChange={handlePhotoChange}
+                                />
 
                                 {/* Welcome & Goal Section */}
-                                <div className='flex-1 w-full space-y-4'>
-                                    {/* Welcome User Name */}
-                                    <div className='text-center md:text-left'>
-                                        <h3 className='text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-1'>
-                                            Welcome, {userInfo?.name || 'User'}!
-                                        </h3>
-                                        <p className='text-gray-600 dark:text-gray-300 text-sm sm:text-base'>
-                                            Keep your profile information
-                                            current for the best fitness
-                                            experience.
-                                        </p>
-                                    </div>
-
-                                    {/* Goal Field */}
-                                    <div className='space-y-2'>
-                                        <label
-                                            htmlFor='goal'
-                                            className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                                            Fitness Goal
-                                        </label>
-                                        <div className='relative group'>
-                                            <input
-                                                id='goal'
-                                                name='goal'
-                                                type='text'
-                                                maxLength={100}
-                                                value={profileData.goal}
-                                                onChange={handleInputChange}
-                                                className='w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md border-gray-200 dark:border-gray-600 focus:border-purple-500 focus:ring-purple-500/20'
-                                                placeholder='e.g., Lose 10kg, Build muscle, Run a marathon'
-                                            />
-                                            <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                                                <Target className='h-5 w-5 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-200' />
-                                            </div>
-                                        </div>
-                                        {profileData.goal && (
-                                            <p className='mt-1 text-xs text-green-600 dark:text-green-400 flex items-center'>
-                                                <svg
-                                                    className='w-3 h-3 mr-1'
-                                                    fill='currentColor'
-                                                    viewBox='0 0 20 20'>
-                                                    <path
-                                                        fillRule='evenodd'
-                                                        d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
-                                                        clipRule='evenodd'
-                                                    />
-                                                </svg>
-                                                Goal set - AI will personalize
-                                                your fitness plan
-                                            </p>
-                                        )}
-                                        {!profileData.goal && (
-                                            <p className='text-xs text-gray-500 dark:text-gray-400'>
-                                                Set a goal to help AI
-                                                personalize your fitness journey
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
+                                <ProfileHeaderSection
+                                    userName={userInfo?.name}
+                                    goal={profileData.goal}
+                                    onGoalChange={(value) =>
+                                        handleInputChange({
+                                            target: { name: 'goal', value },
+                                        } as any)
+                                    }
+                                />
 
                                 {/* Photo Upload Status */}
                                 {photoFile && (
@@ -789,641 +333,48 @@ const SettingsScreen = () => {
                                 )}
                             </div>
 
-                            {/* Name & Username Row */}
-                            <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
-                                {/* Name Field */}
-                                <div className='space-y-2'>
-                                    <label
-                                        htmlFor='name'
-                                        className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                                        Full Name
-                                    </label>
-                                    <div className='relative group'>
-                                        <input
-                                            id='name'
-                                            name='name'
-                                            type='text'
-                                            required
-                                            value={profileData.name}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.name
-                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                : 'border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
-                                                }`}
-                                            placeholder='Enter your full name'
-                                        />
-                                        <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                                            <User className='h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-200' />
-                                        </div>
-                                    </div>
-                                    {!errors.name &&
-                                        profileData.name &&
-                                        profileData.name.length >= 2 && (
-                                            <p className='mt-2 text-sm text-green-600 dark:text-green-400 flex items-center'>
-                                                <svg
-                                                    className='w-4 h-4 mr-1'
-                                                    fill='currentColor'
-                                                    viewBox='0 0 20 20'>
-                                                    <path
-                                                        fillRule='evenodd'
-                                                        d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
-                                                        clipRule='evenodd'
-                                                    />
-                                                </svg>
-                                                Name looks good!
-                                            </p>
-                                        )}
-                                    {errors.name && (
-                                        <p className='mt-2 text-sm text-red-500 dark:text-red-400 flex items-center'>
-                                            <svg
-                                                className='w-4 h-4 mr-1'
-                                                fill='currentColor'
-                                                viewBox='0 0 20 20'>
-                                                <path
-                                                    fillRule='evenodd'
-                                                    d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z'
-                                                    clipRule='evenodd'
-                                                />
-                                            </svg>
-                                            {errors.name}
-                                        </p>
-                                    )}
-                                </div>
+                            {/* Basic Info Fields */}
+                            <BasicInfoFields
+                                name={profileData.name}
+                                username={profileData.username}
+                                email={profileData.email}
+                                errors={errors}
+                                onChange={handleInputChange}
+                            />
 
-                                {/* Username Field */}
-                                <div className='space-y-2'>
-                                    <label
-                                        htmlFor='username'
-                                        className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                                        Username
-                                    </label>
-                                    <div className='relative group'>
-                                        <input
-                                            id='username'
-                                            name='username'
-                                            type='text'
-                                            required
-                                            autoComplete='username'
-                                            value={profileData.username}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.username
-                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                : 'border-gray-200 dark:border-gray-600 focus:border-purple-500 focus:ring-purple-500/20'
-                                                }`}
-                                            placeholder='Choose a username'
-                                        />
-                                        <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                                            <svg
-                                                className='h-5 w-5 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-200'
-                                                fill='none'
-                                                stroke='currentColor'
-                                                viewBox='0 0 24 24'>
-                                                <path
-                                                    strokeLinecap='round'
-                                                    strokeLinejoin='round'
-                                                    strokeWidth={2}
-                                                    d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
-                                                />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    {!errors.username &&
-                                        profileData.username &&
-                                        profileData.username.length >= 3 && (
-                                            <p className='mt-2 text-sm text-green-600 dark:text-green-400 flex items-center'>
-                                                <svg
-                                                    className='w-4 h-4 mr-1'
-                                                    fill='currentColor'
-                                                    viewBox='0 0 20 20'>
-                                                    <path
-                                                        fillRule='evenodd'
-                                                        d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
-                                                        clipRule='evenodd'
-                                                    />
-                                                </svg>
-                                                Username looks good!
-                                            </p>
-                                        )}
-                                    {errors.username && (
-                                        <p className='mt-2 text-sm text-red-500 dark:text-red-400 flex items-center'>
-                                            <svg
-                                                className='w-4 h-4 mr-1'
-                                                fill='currentColor'
-                                                viewBox='0 0 20 20'>
-                                                <path
-                                                    fillRule='evenodd'
-                                                    d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z'
-                                                    clipRule='evenodd'
-                                                />
-                                            </svg>
-                                            {errors.username}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
+                            {/* Personal Info Fields */}
+                            <PersonalInfoFields
+                                dob={profileData.dob}
+                                gender={profileData.gender}
+                                errors={errors}
+                                onChange={handleInputChange}
+                            />
 
-                            {/* Email Field */}
-                            <div className='space-y-2'>
-                                <label
-                                    htmlFor='email'
-                                    className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                                    Email Address
-                                </label>
-                                <div className='relative group'>
-                                    <input
-                                        id='email'
-                                        name='email'
-                                        type='email'
-                                        required
-                                        autoComplete='email'
-                                        value={profileData.email}
-                                        onChange={handleInputChange}
-                                        className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.email
-                                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                            : 'border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
-                                            }`}
-                                        placeholder='Enter your email address'
-                                    />
-                                    <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                                        <Mail className='h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-200' />
-                                    </div>
-                                </div>
-                                {!errors.email &&
-                                    profileData.email &&
-                                    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-                                        profileData.email
-                                    ) && (
-                                        <p className='mt-2 text-sm text-green-600 dark:text-green-400 flex items-center'>
-                                            <svg
-                                                className='w-4 h-4 mr-1'
-                                                fill='currentColor'
-                                                viewBox='0 0 20 20'>
-                                                <path
-                                                    fillRule='evenodd'
-                                                    d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
-                                                    clipRule='evenodd'
-                                                />
-                                            </svg>
-                                            Valid email address
-                                        </p>
-                                    )}
-                                {errors.email && (
-                                    <p className='mt-2 text-sm text-red-500 dark:text-red-400 flex items-center'>
-                                        <svg
-                                            className='w-4 h-4 mr-1'
-                                            fill='currentColor'
-                                            viewBox='0 0 20 20'>
-                                            <path
-                                                fillRule='evenodd'
-                                                d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z'
-                                                clipRule='evenodd'
-                                            />
-                                        </svg>
-                                        {errors.email}
-                                    </p>
-                                )}
-                            </div>
+                            {/* Password Fields */}
+                            <PasswordFields
+                                password={profileData.password}
+                                confirmPassword={profileData.confirmPassword}
+                                showPassword={showPassword}
+                                showConfirmPassword={showConfirmPassword}
+                                errors={errors}
+                                passwordStrength={passwordStrength}
+                                onPasswordChange={handleInputChange}
+                                onConfirmPasswordChange={handleInputChange}
+                                onToggleShowPassword={() =>
+                                    setShowPassword(!showPassword)
+                                }
+                                onToggleShowConfirmPassword={() =>
+                                    setShowConfirmPassword(!showConfirmPassword)
+                                }
+                            />
 
-                            {/* Date of Birth & Gender Row */}
-                            <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
-                                {/* Date of Birth Field */}
-                                <div className='space-y-2'>
-                                    <label
-                                        htmlFor='dob'
-                                        className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                                        Date of Birth
-                                    </label>
-                                    <div className='relative group'>
-                                        <input
-                                            id='dob'
-                                            name='dob'
-                                            type='date'
-                                            value={profileData.dob}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-3 sm:px-4 py-3 pl-10 sm:pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md text-sm ${errors.dob
-                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                : 'border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500/20'
-                                                }`}
-                                        />
-                                        <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                                            <Calendar className='h-5 w-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200' />
-                                        </div>
-                                    </div>
-                                    {!errors.dob && profileData.dob && (
-                                        <p className='mt-2 text-sm text-green-600 dark:text-green-400 flex items-center'>
-                                            <svg
-                                                className='w-4 h-4 mr-1'
-                                                fill='currentColor'
-                                                viewBox='0 0 20 20'>
-                                                <path
-                                                    fillRule='evenodd'
-                                                    d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
-                                                    clipRule='evenodd'
-                                                />
-                                            </svg>
-                                            Date selected
-                                        </p>
-                                    )}
-                                    {errors.dob && (
-                                        <p className='mt-2 text-sm text-red-500 dark:text-red-400 flex items-center'>
-                                            <svg
-                                                className='w-4 h-4 mr-1'
-                                                fill='currentColor'
-                                                viewBox='0 0 20 20'>
-                                                <path
-                                                    fillRule='evenodd'
-                                                    d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z'
-                                                    clipRule='evenodd'
-                                                />
-                                            </svg>
-                                            {errors.dob}
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* Gender Field */}
-                                <div className='space-y-2'>
-                                    <label
-                                        htmlFor='gender'
-                                        className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                                        Gender
-                                    </label>
-                                    <div className='relative group'>
-                                        <select
-                                            id='gender'
-                                            name='gender'
-                                            value={profileData.gender}
-                                            onChange={handleInputChange}
-                                            className='w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md border-gray-200 dark:border-gray-600 focus:border-purple-500 focus:ring-purple-500/20'>
-                                            <option value=''>
-                                                Select Gender
-                                            </option>
-                                            <option value='male'>Male</option>
-                                            <option value='female'>
-                                                Female
-                                            </option>
-                                            <option value='other'>Other</option>
-                                            <option value='prefer-not-to-say'>
-                                                Prefer not to say
-                                            </option>
-                                        </select>
-                                        <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                                            <Users className='h-5 w-5 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-200' />
-                                        </div>
-                                    </div>
-                                    {profileData.gender && (
-                                        <p className='mt-2 text-sm text-green-600 dark:text-green-400 flex items-center'>
-                                            <svg
-                                                className='w-4 h-4 mr-1'
-                                                fill='currentColor'
-                                                viewBox='0 0 20 20'>
-                                                <path
-                                                    fillRule='evenodd'
-                                                    d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
-                                                    clipRule='evenodd'
-                                                />
-                                            </svg>
-                                            Gender selected
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Password & Confirm Password Row */}
-                            <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
-                                {/* Password Field */}
-                                <div className='space-y-2'>
-                                    <label
-                                        htmlFor='password'
-                                        className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                                        Change Password{' '}
-                                        <span className='text-xs text-gray-500 dark:text-gray-400'>
-                                            (optional)
-                                        </span>
-                                    </label>
-                                    <div className='relative group'>
-                                        <input
-                                            id='password'
-                                            name='password'
-                                            autoComplete='new-password'
-                                            type={
-                                                showPassword
-                                                    ? 'text'
-                                                    : 'password'
-                                            }
-                                            value={profileData.password}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.password
-                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                : 'border-gray-200 dark:border-gray-600 focus:border-green-500 focus:ring-green-500/20'
-                                                }`}
-                                            placeholder='Enter new password (optional)'
-                                        />
-                                        <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                                            <Lock className='h-5 w-5 text-gray-400 group-focus-within:text-green-500 transition-colors duration-200' />
-                                        </div>
-                                        <button
-                                            type='button'
-                                            onClick={() =>
-                                                setShowPassword(!showPassword)
-                                            }
-                                            className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-green-500 transition-colors duration-200'>
-                                            {showPassword ? (
-                                                <EyeOff className='h-5 w-5' />
-                                            ) : (
-                                                <Eye className='h-5 w-5' />
-                                            )}
-                                        </button>
-                                    </div>
-                                    {/* Password Strength Indicator */}
-                                    {profileData.password && (
-                                        <div className='mt-2'>
-                                            <div className='flex justify-between items-center mb-1'>
-                                                <span className='text-xs text-gray-600 dark:text-gray-400'>
-                                                    Password Strength
-                                                </span>
-                                                <span
-                                                    className={`text-xs font-medium ${passwordStrength.score ===
-                                                        1
-                                                        ? 'text-red-500 dark:text-red-400'
-                                                        : passwordStrength.score ===
-                                                            2
-                                                            ? 'text-yellow-500 dark:text-yellow-400'
-                                                            : passwordStrength.score ===
-                                                                3
-                                                                ? 'text-blue-500 dark:text-blue-400'
-                                                                : passwordStrength.score ===
-                                                                    4
-                                                                    ? 'text-green-600 dark:text-green-400'
-                                                                    : 'text-gray-500 dark:text-gray-400'
-                                                        }`}>
-                                                    {passwordStrength.text}
-                                                </span>
-                                            </div>
-                                            <div className='w-full bg-gray-200 dark:bg-gray-600 rounded-full h-1.5'>
-                                                <div
-                                                    className={`h-1.5 rounded-full transition-all duration-300 ${passwordStrength.color}`}
-                                                    style={{
-                                                        width: `${(passwordStrength.score /
-                                                            4) *
-                                                            100
-                                                            }%`,
-                                                    }}></div>
-                                            </div>
-                                        </div>
-                                    )}
-                                    {errors.password && (
-                                        <p className='mt-2 text-sm text-red-500 dark:text-red-400 flex items-center'>
-                                            <svg
-                                                className='w-4 h-4 mr-1'
-                                                fill='currentColor'
-                                                viewBox='0 0 20 20'>
-                                                <path
-                                                    fillRule='evenodd'
-                                                    d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z'
-                                                    clipRule='evenodd'
-                                                />
-                                            </svg>
-                                            {errors.password}
-                                        </p>
-                                    )}
-                                    {!profileData.password && (
-                                        <p className='mt-2 text-sm text-gray-500 dark:text-gray-400'>
-                                            Leave blank to keep current password
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* Confirm Password Field */}
-                                <div className='space-y-2'>
-                                    <label
-                                        htmlFor='confirmPassword'
-                                        className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                                        Confirm New Password
-                                    </label>
-                                    <div className='relative group'>
-                                        <input
-                                            id='confirmPassword'
-                                            name='confirmPassword'
-                                            autoComplete='new-password'
-                                            type={
-                                                showConfirmPassword
-                                                    ? 'text'
-                                                    : 'password'
-                                            }
-                                            value={profileData.confirmPassword}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.confirmPassword
-                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                : 'border-gray-200 dark:border-gray-600 focus:border-teal-500 focus:ring-teal-500/20'
-                                                } ${!profileData.password
-                                                    ? 'opacity-50 cursor-not-allowed'
-                                                    : ''
-                                                }`}
-                                            placeholder='Confirm new password'
-                                            disabled={!profileData.password}
-                                        />
-                                        <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                                            <Lock className='h-5 w-5 text-gray-400 group-focus-within:text-teal-500 transition-colors duration-200' />
-                                        </div>
-                                        <button
-                                            type='button'
-                                            disabled={!profileData.password}
-                                            onClick={() =>
-                                                setShowConfirmPassword(
-                                                    !showConfirmPassword
-                                                )
-                                            }
-                                            className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-teal-500 transition-colors duration-200 disabled:opacity-50'>
-                                            {showConfirmPassword ? (
-                                                <EyeOff className='h-5 w-5' />
-                                            ) : (
-                                                <Eye className='h-5 w-5' />
-                                            )}
-                                        </button>
-                                    </div>
-                                    {!errors.confirmPassword &&
-                                        profileData.confirmPassword &&
-                                        profileData.password ===
-                                        profileData.confirmPassword && (
-                                            <p className='mt-2 text-sm text-green-600 dark:text-green-400 flex items-center'>
-                                                <svg
-                                                    className='w-4 h-4 mr-1'
-                                                    fill='currentColor'
-                                                    viewBox='0 0 20 20'>
-                                                    <path
-                                                        fillRule='evenodd'
-                                                        d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
-                                                        clipRule='evenodd'
-                                                    />
-                                                </svg>
-                                                Passwords match
-                                            </p>
-                                        )}
-                                    {errors.confirmPassword && (
-                                        <p className='mt-2 text-sm text-red-500 dark:text-red-400 flex items-center'>
-                                            <svg
-                                                className='w-4 h-4 mr-1'
-                                                fill='currentColor'
-                                                viewBox='0 0 20 20'>
-                                                <path
-                                                    fillRule='evenodd'
-                                                    d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z'
-                                                    clipRule='evenodd'
-                                                />
-                                            </svg>
-                                            {errors.confirmPassword}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Height & Weight Row */}
-                            <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
-                                {/* Height Field */}
-                                <div className='space-y-2'>
-                                    <label
-                                        htmlFor='height'
-                                        className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                                        Height (cm)
-                                    </label>
-                                    <div className='relative group'>
-                                        <input
-                                            id='height'
-                                            name='height'
-                                            type='number'
-                                            min='50'
-                                            max='300'
-                                            value={profileData.height}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.height
-                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                : 'border-gray-200 dark:border-gray-600 focus:border-orange-500 focus:ring-orange-500/20'
-                                                }`}
-                                            placeholder='e.g., 175'
-                                        />
-                                        <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                                            <svg
-                                                className='h-5 w-5 text-gray-400 group-focus-within:text-orange-500 transition-colors duration-200'
-                                                fill='none'
-                                                stroke='currentColor'
-                                                viewBox='0 0 24 24'>
-                                                <path
-                                                    strokeLinecap='round'
-                                                    strokeLinejoin='round'
-                                                    strokeWidth={2}
-                                                    d='M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m0 0V3a1 1 0 011 1v6a1 1 0 01-1 1H8a1 1 0 01-1-1V4a1 1 0 011-1V2m8 2v16l-4-2-4 2V4'
-                                                />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    {!errors.height &&
-                                        profileData.height &&
-                                        Number(profileData.height) >= 50 &&
-                                        Number(profileData.height) <= 300 && (
-                                            <p className='mt-2 text-sm text-green-600 dark:text-green-400 flex items-center'>
-                                                <svg
-                                                    className='w-4 h-4 mr-1'
-                                                    fill='currentColor'
-                                                    viewBox='0 0 20 20'>
-                                                    <path
-                                                        fillRule='evenodd'
-                                                        d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
-                                                        clipRule='evenodd'
-                                                    />
-                                                </svg>
-                                                Valid height
-                                            </p>
-                                        )}
-                                    {errors.height && (
-                                        <p className='mt-2 text-sm text-red-500 dark:text-red-400 flex items-center'>
-                                            <svg
-                                                className='w-4 h-4 mr-1'
-                                                fill='currentColor'
-                                                viewBox='0 0 20 20'>
-                                                <path
-                                                    fillRule='evenodd'
-                                                    d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z'
-                                                    clipRule='evenodd'
-                                                />
-                                            </svg>
-                                            {errors.height}
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* Weight Field */}
-                                <div className='space-y-2'>
-                                    <label
-                                        htmlFor='weight'
-                                        className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                                        Weight (kg)
-                                    </label>
-                                    <div className='relative group'>
-                                        <input
-                                            id='weight'
-                                            name='weight'
-                                            type='number'
-                                            min='20'
-                                            max='500'
-                                            value={profileData.weight}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.weight
-                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                : 'border-gray-200 dark:border-gray-600 focus:border-yellow-500 focus:ring-yellow-500/20'
-                                                }`}
-                                            placeholder='e.g., 70'
-                                        />
-                                        <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                                            <svg
-                                                className='h-5 w-5 text-gray-400 group-focus-within:text-yellow-500 transition-colors duration-200'
-                                                fill='none'
-                                                stroke='currentColor'
-                                                viewBox='0 0 24 24'>
-                                                <path
-                                                    strokeLinecap='round'
-                                                    strokeLinejoin='round'
-                                                    strokeWidth={2}
-                                                    d='M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3'
-                                                />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    {!errors.weight &&
-                                        profileData.weight &&
-                                        Number(profileData.weight) >= 20 &&
-                                        Number(profileData.weight) <= 500 && (
-                                            <p className='mt-2 text-sm text-green-600 dark:text-green-400 flex items-center'>
-                                                <svg
-                                                    className='w-4 h-4 mr-1'
-                                                    fill='currentColor'
-                                                    viewBox='0 0 20 20'>
-                                                    <path
-                                                        fillRule='evenodd'
-                                                        d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
-                                                        clipRule='evenodd'
-                                                    />
-                                                </svg>
-                                                Valid weight
-                                            </p>
-                                        )}
-                                    {errors.weight && (
-                                        <p className='mt-2 text-sm text-red-500 dark:text-red-400 flex items-center'>
-                                            <svg
-                                                className='w-4 h-4 mr-1'
-                                                fill='currentColor'
-                                                viewBox='0 0 20 20'>
-                                                <path
-                                                    fillRule='evenodd'
-                                                    d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z'
-                                                    clipRule='evenodd'
-                                                />
-                                            </svg>
-                                            {errors.weight}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
+                            {/* Physical Info Fields */}
+                            <PhysicalInfoFields
+                                height={profileData.height}
+                                weight={profileData.weight}
+                                errors={errors}
+                                onChange={handleInputChange}
+                            />
 
                             {/* Theme Settings Section */}
                             <ThemeSettingsSection />
@@ -1448,31 +399,21 @@ const SettingsScreen = () => {
                                             </svg>
                                             Please fix the following errors:
                                         </h4>
-                                        <ul className='text-sm text-red-600 dark:text-red-300 space-y-2'>
-                                            {Object.entries(errors)
-                                                .filter(
-                                                    ([_, error]) =>
-                                                        error && error.trim() !== ''
-                                                )
-                                                .map(([field, error]) => (
-                                                    <li
-                                                        key={field}
-                                                        className='flex items-start'>
-                                                        <span className='w-2 h-2 bg-red-500 dark:bg-red-400 rounded-full mr-3 mt-2 shrink-0'></span>
-                                                        <div className='min-w-0 flex-1'>
-                                                            <span className='capitalize font-medium'>
-                                                                {field.replace(
-                                                                    /([A-Z])/g,
-                                                                    ' $1'
-                                                                )}
-                                                                :
-                                                            </span>
-                                                            <span className='ml-1'>
-                                                                {error}
-                                                            </span>
-                                                        </div>
-                                                    </li>
-                                                ))}
+                                        <ul className='space-y-1 ml-7'>
+                                            {Object.entries(errors).map(
+                                                ([field, error]) =>
+                                                    error &&
+                                                    error.trim() !== '' && (
+                                                        <li
+                                                            key={field}
+                                                            className='text-sm text-red-600 dark:text-red-300 list-disc'>
+                                                            <span className='font-medium capitalize'>
+                                                                {field}:
+                                                            </span>{' '}
+                                                            {error}
+                                                        </li>
+                                                    )
+                                            )}
                                         </ul>
                                     </div>
                                 )}

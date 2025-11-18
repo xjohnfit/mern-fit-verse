@@ -19,7 +19,7 @@ interface FollowersFollowingModalProps {
     title: string;
 }
 
-const FollowersFollowingModal = ({
+export const FollowersFollowingModal = ({
     isOpen,
     onClose,
     type,
@@ -106,5 +106,3 @@ const FollowersFollowingModal = ({
         </div>
     );
 };
-
-export default FollowersFollowingModal;

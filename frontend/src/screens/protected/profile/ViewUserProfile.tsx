@@ -18,12 +18,12 @@ import {
 } from '@/slices/postsApiSlice';
 
 // Components
-import FollowersFollowingModal from './FollowersFollowingModal';
 import {
     ProfileHeader,
     PersonalInfoCard,
     FitnessInfoCard,
     PostsList,
+    FollowersFollowingModal
 } from './components';
 
 // UI Components

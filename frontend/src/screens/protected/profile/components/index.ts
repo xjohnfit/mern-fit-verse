@@ -4,3 +4,4 @@ export { FitnessInfoCard } from './FitnessInfoCard';
 export { CreatePostSection } from './CreatePostSection';
 export { PostCard } from './PostCard';
 export { PostsList } from './PostsList';
+export { FollowersFollowingModal } from './FollowersFollowingModal';

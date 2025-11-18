@@ -5,8 +5,17 @@ const ScrollToTop = () => {
   const location = useLocation();
 
   useEffect(() => {
-    window.scrollTo(0, 0); // Scrolls the window to the top (x=0, y=0)
-  }, [location.pathname, location.search]); // Re-run effect whenever the location changes
+    // Try multiple scroll methods to ensure it works
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTo(0, 0);
+    document.body.scrollTo(0, 0);
 
-  return null; // This component doesn't render anything visually
-}; export default ScrollToTop;
+    // Also set scrollTop directly as a fallback
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [location.pathname]);
+
+  return null;
+};
+
+export default ScrollToTop;

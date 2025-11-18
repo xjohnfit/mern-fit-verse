@@ -23,6 +23,8 @@ import App from './App';
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
+import PrivacyPolicy from './screens/PrivacyPolicy';
+import TermsOfService from './screens/TermsOfService';
 
 // Protected Screens
 import PrivateRoute from './components/common/PrivateRoute';
@@ -42,6 +44,9 @@ const router = createBrowserRouter([
             { index: true, Component: HomeScreen },
             { path: '/login', Component: LoginScreen },
             { path: '/register', Component: RegisterScreen },
+            { path: '/privacy-policy', Component: PrivacyPolicy },
+            { path: '/terms-of-service', Component: TermsOfService },
+            // End Public Routes
 
             // Private Routes
             {
