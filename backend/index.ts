@@ -38,41 +38,11 @@ cloudinary.config({
 const app: Application = express();
 const PORT: number = parseInt(process.env.PORT || '5003', 10);
 
-// Configure CORS origins
-const allowedOrigins = process.env.FRONTEND_URL
-    ? process.env.FRONTEND_URL.split(',').map((url) => url.trim())
-    : ['http://localhost:5173', 'http://localhost:3000', 'https://fitverse.codewithxjohn.com'];
-
-console.log('Allowed CORS origins:', allowedOrigins);
-
 // Middlewares
 app.use(
     cors({
-        origin: (origin, callback) => {
-            // Allow requests with no origin (mobile apps, Postman, etc.)
-            if (!origin) {
-                return callback(null, true);
-            }
-
-            // Check if origin is allowed
-            if (
-                allowedOrigins.indexOf(origin) !== -1 ||
-                allowedOrigins.includes('*')
-            ) {
-                callback(null, true);
-            } else {
-                console.warn('Blocked by CORS:', origin);
-                callback(new Error('Not allowed by CORS'));
-            }
-        },
+        origin: process.env.FRONTEND_URL || 'http://localhost:5173',
         credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-        allowedHeaders: [
-            'Content-Type',
-            'Authorization',
-            'Cookie',
-            'X-Requested-With',
-        ],
         exposedHeaders: ['Set-Cookie'],
         maxAge: 86400, // 24 hours
     })
