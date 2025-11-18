@@ -1,11 +1,9 @@
 export { AddCustomCategoryModal } from './AddCustomCategoryModal';
-export { FoodAutoComplete } from './FoodAutoComplete';
 export { MacroDistributionChart } from './MacroDistributionChart';
 export { MealCategoryCard } from './MealCategoryCard';
 export { NutritionGoalsCard } from './NutritionGoalsCard';
 export { NutritionHeader } from './NutritionHeader';
-export { SearchFoodSection } from './SearchFoodSection';
-export { default as ShowFoodItemModal } from './ShowFoodItemModal';
+export { SearchFoodModal } from './SearchFoodModal';
 export { TodaysMealsSection } from './TodaysMealsSection';
 export { MacroDistributionSection } from './MacroDistributionSection';
 export { NutritionGoalsSection } from './NutritionGoalsSection';

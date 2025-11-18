@@ -1,4 +1,4 @@
-import { X } from 'lucide-react';
+import { X, Plus } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface FoodEntry {
@@ -16,6 +16,7 @@ interface MealCategoryCardProps {
     categoryId?: string;
     onDeleteFood: (entryId: string) => void;
     onRemoveCategory?: (categoryId: string) => void;
+    onAddClick?: () => void;
 }
 
 export const MealCategoryCard = ({
@@ -26,7 +27,8 @@ export const MealCategoryCard = ({
     isCustom = false,
     categoryId,
     onDeleteFood,
-    onRemoveCategory
+    onRemoveCategory,
+    onAddClick
 }: MealCategoryCardProps) => {
     return (
         <div className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-md transition-all duration-200 relative">
@@ -45,15 +47,26 @@ export const MealCategoryCard = ({
                         </span>
                     )}
                 </div>
-                {isCustom && categoryId && onRemoveCategory && (
-                    <button
-                        onClick={() => onRemoveCategory(categoryId)}
-                        className="p-1.5 rounded-lg bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
-                        title={`Remove ${name}`}
-                    >
-                        <X className="w-4 h-4 text-red-600 dark:text-red-400" />
-                    </button>
-                )}
+                <div className="flex items-center gap-2">
+                    {onAddClick && (
+                        <button
+                            onClick={onAddClick}
+                            className="p-1.5 rounded-lg bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors"
+                            title={`Add food to ${name}`}
+                        >
+                            <Plus className="w-4 h-4 text-green-600 dark:text-green-400" />
+                        </button>
+                    )}
+                    {isCustom && categoryId && onRemoveCategory && (
+                        <button
+                            onClick={() => onRemoveCategory(categoryId)}
+                            className="p-1.5 rounded-lg bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                            title={`Remove ${name}`}
+                        >
+                            <X className="w-4 h-4 text-red-600 dark:text-red-400" />
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* Foods List */}

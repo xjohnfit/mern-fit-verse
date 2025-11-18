@@ -36,6 +36,7 @@ interface TodaysMealsSectionProps {
     onAddCustomCategory: () => void;
     onRemoveCustomCategory: (categoryId: string) => void;
     onDeleteFoodEntry: (entryId: string) => void;
+    onFoodSelect: (category: string, categoryId?: string) => void;
 }
 
 export const TodaysMealsSection = ({
@@ -47,7 +48,8 @@ export const TodaysMealsSection = ({
     setNewCategoryName,
     onAddCustomCategory,
     onRemoveCustomCategory,
-    onDeleteFoodEntry
+    onDeleteFoodEntry,
+    onFoodSelect
 }: TodaysMealsSectionProps) => {
     return (
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-xl">
@@ -92,6 +94,7 @@ export const TodaysMealsSection = ({
                         color={category.color}
                         foods={category.foods}
                         onDeleteFood={onDeleteFoodEntry}
+                        onAddClick={() => onFoodSelect(key)}
                     />
                 ))}
 
@@ -107,6 +110,7 @@ export const TodaysMealsSection = ({
                         categoryId={category.id}
                         onDeleteFood={onDeleteFoodEntry}
                         onRemoveCategory={onRemoveCustomCategory}
+                        onAddClick={() => onFoodSelect('custom', category.id)}
                     />
                 ))}
             </div>

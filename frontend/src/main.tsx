@@ -1,27 +1,36 @@
+// React Core
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import './index.css';
-import App from './App.tsx';
 
-import store from './store';
-
-import { Provider } from 'react-redux';
-import { ThemeProvider } from 'next-themes';
+// Router
 import { createBrowserRouter } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
 
-// Public routes imports
+// Redux
+import { Provider } from 'react-redux';
+import store from './store';
+
+// Theme Provider
+import { ThemeProvider } from 'next-themes';
+
+// Styles
+import './index.css';
+
+// Main App
+import App from './App';
+
+// Public Screens
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 
-// Private routes imports
+// Protected Screens
 import PrivateRoute from './components/common/PrivateRoute';
-import DashboardScreen from './screens/protected/dashboard/DashboardScreen.tsx';
-import SettingsScreen from './screens/protected/settings/SettingsScreen.tsx';
-import ViewProfileScreen from './screens/protected/profile/ViewUserProfile.tsx';
-import NutritionScreen from './screens/protected/nutrition/NutritionScreen.tsx';
-import WorkoutScreen from './screens/protected/workout/WorkoutScreen.tsx';
+import DashboardScreen from './screens/protected/dashboard/DashboardScreen';
+import SettingsScreen from './screens/protected/settings/SettingsScreen';
+import ViewProfileScreen from './screens/protected/profile/ViewUserProfile';
+import NutritionScreen from './screens/protected/nutrition/NutritionScreen';
+import WorkoutScreen from './screens/protected/workout/WorkoutScreen';
 
 const router = createBrowserRouter([
     {

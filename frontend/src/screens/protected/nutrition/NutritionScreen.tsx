@@ -27,7 +27,7 @@ import {
 
 // Components
 import {
-    ShowFoodItemModal,
+    SearchFoodModal,
     TodaysMealsSection,
     NutritionGoalsSection,
     MacroDistributionSection,
@@ -51,9 +51,10 @@ const NutritionScreen = () => {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [selectedFood, setSelectedFood] = useState<string | null>(null);
     const [showModal, setShowModal] = useState(false);
-    const [_selectedCategory, _setSelectedCategory] = useState<
+    const [selectedCategory, setSelectedCategory] = useState<
         MealCategory | string | null
     >(null);
+    const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
     const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState("");
     const [isEditingGoals, setIsEditingGoals] = useState(false);
@@ -217,25 +218,43 @@ const NutritionScreen = () => {
 
     const handleFoodSelect = (food: string) => {
         setSelectedFood(food);
+    };
+
+    const handleCategorySelect = (category: string, categoryId?: string) => {
+        setSelectedCategory(category);
+        setSelectedCategoryId(categoryId || null);
+        setSelectedFood(null); // Clear selected food when opening modal
         setShowModal(true);
     };
 
     const handleCancel = () => {
         setShowModal(false);
         setSelectedFood(null);
+        setSelectedCategory(null);
+        setSelectedCategoryId(null);
     };
 
     const handleAddFood = async (nutritionData: AddFoodData) => {
         try {
-            // Add the selected date to the nutrition data
+            // Ensure category is selected
+            if (!selectedCategory) {
+                toast.error("Please select a meal category");
+                return;
+            }
+
+            // Add the selected date and category to the nutrition data
             const dataWithDate = {
                 ...nutritionData,
                 date: formatDateForAPI(selectedDate),
+                mealCategory: selectedCategory,
+                customCategoryId: selectedCategoryId || undefined,
             };
             await addNutritionEntry(dataWithDate).unwrap();
             toast.success("Food added successfully!");
             setShowModal(false);
             setSelectedFood(null);
+            setSelectedCategory(null);
+            setSelectedCategoryId(null);
         } catch (error: any) {
             console.error("Error adding nutrition entry:", error);
             toast.error(error?.data?.message || "Failed to add food item");
@@ -300,33 +319,49 @@ const NutritionScreen = () => {
                     <NutritionTopSection
                         selectedDate={selectedDate}
                         onDateChange={setSelectedDate}
-                        onFoodSelect={handleFoodSelect}
                     />
 
-                    {/* Nutrition Goals and Macro Distribution Section */}
-                    <div className="max-w-6xl mx-auto mb-8">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            {/* Nutrition Goals - Takes 2 columns on desktop */}
-                            <NutritionGoalsSection
-                                isEditingGoals={isEditingGoals}
-                                setIsEditingGoals={setIsEditingGoals}
-                                goalValues={goalValues}
-                                handleGoalChange={handleGoalChange}
-                                handleSaveGoals={handleSaveGoals}
-                                dailyNutritionData={dailyNutritionData}
-                            />
+                    {/* Nutrition Goals */}
+                    <div className="mb-6">
+                        <NutritionGoalsSection
+                            isEditingGoals={isEditingGoals}
+                            setIsEditingGoals={setIsEditingGoals}
+                            goalValues={goalValues}
+                            handleGoalChange={handleGoalChange}
+                            handleSaveGoals={handleSaveGoals}
+                            dailyNutritionData={dailyNutritionData}
+                        />
+                    </div>
 
-                            {/* Macro Distribution Chart - Takes 1 column on desktop */}
+                    {/* Main Layout: Macro Distribution + Today's Meals */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Left Sidebar: Macro Distribution Chart */}
+                        <div className="lg:col-span-1">
                             <MacroDistributionSection
                                 dailyNutritionData={dailyNutritionData}
+                            />
+                        </div>
+
+                        {/* Right Content: Today's Meals */}
+                        <div className="lg:col-span-2">
+                            <TodaysMealsSection
+                                mealCategories={mealCategories}
+                                customCategories={customCategories}
+                                showAddCategoryModal={showAddCategoryModal}
+                                setShowAddCategoryModal={setShowAddCategoryModal}
+                                newCategoryName={newCategoryName}
+                                setNewCategoryName={setNewCategoryName}
+                                onAddCustomCategory={handleAddCustomCategory}
+                                onRemoveCustomCategory={handleRemoveCustomCategory}
+                                onDeleteFoodEntry={handleDeleteFoodEntry}
+                                onFoodSelect={handleCategorySelect}
                             />
                         </div>
                     </div>
 
                     {/* Food Modal */}
-                    {showModal && selectedFood && (
-                        <ShowFoodItemModal
-                            selectedFood={selectedFood}
+                    {showModal && (
+                        <SearchFoodModal
                             handleCancel={handleCancel}
                             handleAddFood={handleAddFood}
                             isSearching={isSearching}
@@ -336,23 +371,9 @@ const NutritionScreen = () => {
                                 id: cat.id,
                                 name: cat.name,
                             }))}
+                            onFoodSelect={handleFoodSelect}
                         />
                     )}
-
-                    {/* Today's Meals Section */}
-                    <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
-                        <TodaysMealsSection
-                            mealCategories={mealCategories}
-                            customCategories={customCategories}
-                            showAddCategoryModal={showAddCategoryModal}
-                            setShowAddCategoryModal={setShowAddCategoryModal}
-                            newCategoryName={newCategoryName}
-                            setNewCategoryName={setNewCategoryName}
-                            onAddCustomCategory={handleAddCustomCategory}
-                            onRemoveCustomCategory={handleRemoveCustomCategory}
-                            onDeleteFoodEntry={handleDeleteFoodEntry}
-                        />
-                    </div>
                 </div>
             </div>
         </div>
