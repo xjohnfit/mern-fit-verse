@@ -1,8 +1,8 @@
 import { Outlet } from "react-router";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import Header from "./components/layout/Header";
+import Footer from "./components/layout/Footer";
 import { Toaster } from "./components/ui/sonner";
-import ScrollToTop from "./components/ScrollToTop";
+import ScrollToTop from "./components/common/ScrollToTop";
 
 function App() {
   return (

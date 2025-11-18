@@ -19,9 +19,20 @@ export const getDailyNutrition = async (
 
         // If date is provided, get entries for that specific date
         // Otherwise, get today's entries
-        const targetDate = date ? new Date(date as string) : new Date();
-        const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
-        const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
+        let targetDate: Date;
+        if (date) {
+            // Parse date string in local timezone to avoid UTC conversion issues
+            const dateStr = date as string;
+            const [year, month, day] = dateStr.split('-').map(Number);
+            targetDate = new Date(year, month - 1, day);
+        } else {
+            targetDate = new Date();
+        }
+
+        const startOfDay = new Date(targetDate);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(targetDate);
+        endOfDay.setHours(23, 59, 59, 999);
 
         const entries = await NutritionEntry.find({
             user: userId,
@@ -129,9 +140,19 @@ export const addNutritionEntry = async (
         }
 
         // Create new nutrition entry
+        let entryDate: Date;
+        if (date) {
+            // Parse date string in local timezone to avoid UTC conversion issues
+            const dateStr = date as string;
+            const [year, month, day] = dateStr.split('-').map(Number);
+            entryDate = new Date(year, month - 1, day);
+        } else {
+            entryDate = new Date();
+        }
+
         const newEntry = await NutritionEntry.create({
             user: userId,
-            date: date ? new Date(date) : new Date(),
+            date: entryDate,
             mealCategory,
             customCategoryId:
                 mealCategory === 'custom' ? customCategoryId : undefined,

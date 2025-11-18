@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import AlertModal from '@/components/AlertModal';
+import AlertModal from '@/components/modals/AlertModal';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { useSelector } from 'react-redux';

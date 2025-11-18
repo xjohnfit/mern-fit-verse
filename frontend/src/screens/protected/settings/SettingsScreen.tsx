@@ -20,7 +20,7 @@ import { formatDateToInputValue } from '@/lib/formatDate';
 import { getPasswordStrength } from '@/lib/getPasswordStrength';
 
 // Theme Settings Component
-import ThemeSettingsSection from './ThemeSettingsSection';
+import ThemeSettingsSection from './components/ThemeSettingsSection';
 
 const SettingsScreen = () => {
     const [profileData, setProfileData] = useState({

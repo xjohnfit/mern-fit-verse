@@ -16,7 +16,7 @@ import {
     NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
 import { toast } from 'sonner';
-import { ThemeToggle } from './ThemeToggle';
+import { ThemeToggle } from '@/components/common/ThemeToggle';
 
 function Header() {
     const { isAuthenticated, userInfo } = useSelector(

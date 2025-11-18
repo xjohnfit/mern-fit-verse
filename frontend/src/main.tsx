@@ -16,9 +16,9 @@ import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 
 // Private routes imports
-import PrivateRoute from './components/PrivateRoute';
+import PrivateRoute from './components/common/PrivateRoute';
 import DashboardScreen from './screens/protected/dashboard/DashboardScreen.tsx';
-import SettingsScreen from './screens/protected/dashboard/SettingsScreen.tsx';
+import SettingsScreen from './screens/protected/settings/SettingsScreen.tsx';
 import ViewProfileScreen from './screens/protected/profile/ViewUserProfile.tsx';
 import NutritionScreen from './screens/protected/nutrition/NutritionScreen.tsx';
 import WorkoutScreen from './screens/protected/workout/WorkoutScreen.tsx';
