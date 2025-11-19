@@ -145,12 +145,12 @@ const WorkoutDetailScreen = () => {
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                         <div className="flex items-start gap-4">
                             <div className={`p-3 sm:p-4 rounded-lg ${isFreestyle
-                                    ? 'bg-blue-100 dark:bg-blue-900/30'
-                                    : 'bg-purple-100 dark:bg-purple-900/30'
+                                ? 'bg-blue-100 dark:bg-blue-900/30'
+                                : 'bg-purple-100 dark:bg-purple-900/30'
                                 }`}>
                                 <Dumbbell className={`w-6 h-6 sm:w-8 sm:h-8 ${isFreestyle
-                                        ? 'text-blue-600 dark:text-blue-400'
-                                        : 'text-purple-600 dark:text-purple-400'
+                                    ? 'text-blue-600 dark:text-blue-400'
+                                    : 'text-purple-600 dark:text-purple-400'
                                     }`} />
                             </div>
                             <div>
@@ -159,8 +159,8 @@ const WorkoutDetailScreen = () => {
                                         {isFreestyle ? 'Freestyle Workout' : workout.workoutType}
                                     </h1>
                                     <span className={`text-xs px-3 py-1 rounded-full ${isFreestyle
-                                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                                            : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
+                                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                                        : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
                                         }`}>
                                         {isFreestyle ? 'Freestyle' : 'Template'}
                                     </span>

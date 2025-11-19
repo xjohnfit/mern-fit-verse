@@ -1,7 +1,10 @@
 import { Request, Response } from 'express';
 import Workout from '../models/workoutModel';
 import User from '../models/userModel';
-import { convertWorkoutWeights, convertWorkoutWeightsForStorage } from '../utils/weightConversion';
+import {
+    convertWorkoutWeights,
+    convertWorkoutWeightsForStorage,
+} from '../utils/weightConversion';
 
 // @desc    Create a new workout
 // @route   POST /api/workouts
@@ -38,7 +41,10 @@ export const createWorkout = async (req: Request, res: Response) => {
             completedAt: completedAt || new Date(),
             notes,
         };
-        const convertedWorkoutData = convertWorkoutWeightsForStorage(workoutData, userWeightUnit);
+        const convertedWorkoutData = convertWorkoutWeightsForStorage(
+            workoutData,
+            userWeightUnit
+        );
 
         // Create workout
         const workout = await Workout.create({
@@ -73,7 +79,7 @@ export const getWorkouts = async (req: Request, res: Response) => {
         const userWeightUnit = user?.weightUnit || 'lbs';
 
         // Convert weights to user's preferred unit
-        const convertedWorkouts = workouts.map(workout => 
+        const convertedWorkouts = workouts.map((workout) =>
             convertWorkoutWeights(workout.toObject(), userWeightUnit)
         );
 
@@ -106,7 +112,10 @@ export const getWorkoutById = async (req: Request, res: Response) => {
         const userWeightUnit = user?.weightUnit || 'lbs';
 
         // Convert weights to user's preferred unit
-        const convertedWorkout = convertWorkoutWeights(workout.toObject(), userWeightUnit);
+        const convertedWorkout = convertWorkoutWeights(
+            workout.toObject(),
+            userWeightUnit
+        );
 
         res.json(convertedWorkout);
     } catch (error: any) {

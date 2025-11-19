@@ -57,10 +57,10 @@ const WorkoutsHistory = ({ workouts, isLoading }: WorkoutsHistoryProps) => {
         const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
         // Format time
-        const timeStr = date.toLocaleTimeString('en-US', { 
-            hour: 'numeric', 
+        const timeStr = date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
             minute: '2-digit',
-            hour12: true 
+            hour12: true
         });
 
         // Format date based on recency
@@ -72,10 +72,10 @@ const WorkoutsHistory = ({ workouts, isLoading }: WorkoutsHistoryProps) => {
         } else if (diffInDays < 7) {
             dateStr = `${diffInDays} days ago`;
         } else {
-            dateStr = date.toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric', 
-                year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined 
+            dateStr = date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
             });
         }
 

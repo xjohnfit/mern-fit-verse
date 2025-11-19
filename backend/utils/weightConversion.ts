@@ -23,7 +23,10 @@ export const kgToLbs = (kg: number): number => {
  * @param userWeightUnit - User's preferred weight unit ('kg' or 'lbs')
  * @returns Workout with converted weights
  */
-export const convertWorkoutWeights = (workout: any, userWeightUnit: string): any => {
+export const convertWorkoutWeights = (
+    workout: any,
+    userWeightUnit: string
+): any => {
     // If user prefers lbs, no conversion needed (workouts stored in lbs)
     if (userWeightUnit === 'lbs') {
         return workout;
@@ -31,7 +34,7 @@ export const convertWorkoutWeights = (workout: any, userWeightUnit: string): any
 
     // Convert from lbs to kg
     const workoutCopy = JSON.parse(JSON.stringify(workout));
-    
+
     if (workoutCopy.exercises && Array.isArray(workoutCopy.exercises)) {
         workoutCopy.exercises.forEach((exercise: any) => {
             if (exercise.sets && Array.isArray(exercise.sets)) {
@@ -53,7 +56,10 @@ export const convertWorkoutWeights = (workout: any, userWeightUnit: string): any
  * @param userWeightUnit - User's preferred weight unit ('kg' or 'lbs')
  * @returns Workout with weights converted to lbs for storage
  */
-export const convertWorkoutWeightsForStorage = (workout: any, userWeightUnit: string): any => {
+export const convertWorkoutWeightsForStorage = (
+    workout: any,
+    userWeightUnit: string
+): any => {
     // If user is already using lbs, no conversion needed
     if (userWeightUnit === 'lbs') {
         return workout;
@@ -61,7 +67,7 @@ export const convertWorkoutWeightsForStorage = (workout: any, userWeightUnit: st
 
     // Convert from kg to lbs for storage
     const workoutCopy = JSON.parse(JSON.stringify(workout));
-    
+
     if (workoutCopy.exercises && Array.isArray(workoutCopy.exercises)) {
         workoutCopy.exercises.forEach((exercise: any) => {
             if (exercise.sets && Array.isArray(exercise.sets)) {

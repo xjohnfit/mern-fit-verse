@@ -32,7 +32,10 @@ export const workoutApiSlice = apiSlice.injectEndpoints({
                 method: 'PUT',
                 body: workoutData,
             }),
-            invalidatesTags: (_result, _error, { id }) => [{ type: 'Workout', id }, 'Workout'],
+            invalidatesTags: (_result, _error, { id }) => [
+                { type: 'Workout', id },
+                'Workout',
+            ],
         }),
         deleteWorkout: builder.mutation({
             query: (id) => ({
