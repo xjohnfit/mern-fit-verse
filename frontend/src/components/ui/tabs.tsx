@@ -34,7 +34,7 @@ export const Tabs = ({
   };
 
   const [active, setActive] = useState<Tab>(getInitialTab());
-  const [tabs, setTabs] = useState<Tab[]>(propTabs);
+  const [_tabs, setTabs] = useState<Tab[]>(propTabs);
 
   useEffect(() => {
     if (defaultValue) {
