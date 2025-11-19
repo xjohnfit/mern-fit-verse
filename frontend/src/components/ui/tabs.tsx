@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
@@ -16,15 +16,34 @@ export const Tabs = ({
   activeTabClassName,
   tabClassName,
   contentClassName,
+  defaultValue,
 }: {
   tabs: Tab[];
   containerClassName?: string;
   activeTabClassName?: string;
   tabClassName?: string;
   contentClassName?: string;
+  defaultValue?: string;
 }) => {
-  const [active, setActive] = useState<Tab>(propTabs[0]);
+  const getInitialTab = () => {
+    if (defaultValue) {
+      const tab = propTabs.find(t => t.value === defaultValue);
+      if (tab) return tab;
+    }
+    return propTabs[0];
+  };
+
+  const [active, setActive] = useState<Tab>(getInitialTab());
   const [tabs, setTabs] = useState<Tab[]>(propTabs);
+
+  useEffect(() => {
+    if (defaultValue) {
+      const tabIndex = propTabs.findIndex(t => t.value === defaultValue);
+      if (tabIndex !== -1) {
+        moveSelectedTabToTop(tabIndex);
+      }
+    }
+  }, [defaultValue]);
 
   const moveSelectedTabToTop = (idx: number) => {
     const newTabs = [...propTabs];
@@ -68,14 +87,14 @@ export const Tabs = ({
               />
             )}
 
-            <span className="relative block text-black dark:text-white text-xs sm:text-sm md:text-base">
+            <span className="relative block text-black dark:text-white text-sm sm:text-base md:text-lg font-medium">
               {tab.title}
             </span>
           </button>
         ))}
       </div>
       <FadeInDiv
-        tabs={tabs}
+        tabs={propTabs}
         active={active}
         key={active.value}
         hovering={hovering}
@@ -88,6 +107,7 @@ export const Tabs = ({
 export const FadeInDiv = ({
   className,
   tabs,
+  active,
   hovering,
 }: {
   className?: string;
@@ -97,29 +117,35 @@ export const FadeInDiv = ({
   hovering?: boolean;
 }) => {
   const isActive = (tab: Tab) => {
-    return tab.value === tabs[0].value;
+    return tab.value === active.value;
   };
   return (
     <div className="relative w-full">
-      {tabs.map((tab, idx) => (
-        <motion.div
-          key={tab.value}
-          layoutId={tab.value}
-          style={{
-            scale: 1 - idx * 0.1,
-            top: hovering ? idx * -50 : 0,
-            zIndex: -idx,
-            opacity: idx < 3 ? 1 - idx * 0.1 : 0,
-            display: idx === 0 ? 'block' : 'none',
-          }}
-          animate={{
-            y: isActive(tab) ? [0, 40, 0] : 0,
-          }}
-          className={cn("w-full", idx === 0 ? "relative" : "absolute top-0 left-0", className)}
-        >
-          {tab.content}
-        </motion.div>
-      ))}
+      {tabs.map((tab, idx) => {
+        const activeIndex = tabs.findIndex(t => t.value === active.value);
+        const relativeIndex = idx - activeIndex;
+        const isCurrentActive = isActive(tab);
+
+        return (
+          <motion.div
+            key={tab.value}
+            layoutId={tab.value}
+            style={{
+              scale: isCurrentActive ? 1 : 1 - Math.abs(relativeIndex) * 0.1,
+              top: hovering && !isCurrentActive ? relativeIndex * -50 : 0,
+              zIndex: isCurrentActive ? 10 : 10 - Math.abs(relativeIndex),
+              opacity: isCurrentActive ? 1 : Math.abs(relativeIndex) < 3 ? 1 - Math.abs(relativeIndex) * 0.1 : 0,
+              display: isCurrentActive ? 'block' : 'none',
+            }}
+            animate={{
+              y: isCurrentActive ? [0, 40, 0] : 0,
+            }}
+            className={cn("w-full", isCurrentActive ? "relative" : "absolute top-0 left-0", className)}
+          >
+            {tab.content}
+          </motion.div>
+        );
+      })}
     </div>
   );
 };

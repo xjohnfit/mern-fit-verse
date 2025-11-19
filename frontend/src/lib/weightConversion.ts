@@ -20,8 +20,8 @@ export const kgToLbs = (kg: number): number => {
  * Format weight value with unit label
  * @param weight - Weight value
  * @param unit - Weight unit ('kg' or 'lbs')
- * @returns Formatted string with weight and unit
+ * @returns Formatted string with weight and unit (rounded to 1 decimal place)
  */
 export const formatWeight = (weight: number, unit: string): string => {
-    return `${weight} ${unit}`;
+    return `${weight.toFixed(1)} ${unit}`;
 };

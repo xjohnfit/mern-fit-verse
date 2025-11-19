@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 // Third-party libraries
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
@@ -44,6 +44,8 @@ import {
 const DashboardScreen = () => {
   const { userInfo } = useSelector((state: any) => state.auth);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const defaultTab = searchParams.get('tab') || undefined;
   const { data: suggestedUsers, isLoading: isLoadingSuggested, refetch } = useGetSuggestedUsersQuery({});
   const { data: feedPosts, isLoading: isLoadingPosts, refetch: refetchPosts } = useGetPostsQuery({});
   const { data: currentUserProfile, isLoading: isLoadingProfile } = useGetUserProfileQuery({});
@@ -150,16 +152,14 @@ const DashboardScreen = () => {
             containerClassName="col-span-1 h-[80px] sm:h-[90px] md:h-[100px] bg-linear-to-br from-blue-500 to-blue-700"
             className="px-4 py-0 sm:px-6 flex items-center"
           >
-            <div className="flex items-center justify-between h-full">
+            <div className="flex items-center justify-between h-full w-full">
               <div className="flex items-center gap-2 sm:gap-3">
-                <Dumbbell className="w-5 h-5 sm:w-6 sm:h-6 text-white/90" />
-                <div>
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white">
-                    {workoutStats?.totalWorkouts || 0}
-                  </h3>
-                </div>
+                <Dumbbell className="w-6 h-6 sm:w-7 sm:h-7 text-white/90" />
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+                  {workoutStats?.totalWorkouts || 0}
+                </h3>
               </div>
-              <p className="text-white/80 text-xs sm:text-sm">Total Workouts</p>
+              <p className="text-white/90 text-sm sm:text-base font-medium">Total Workouts</p>
             </div>
           </WobbleCard>
         </div>
@@ -169,16 +169,14 @@ const DashboardScreen = () => {
             containerClassName="col-span-1 h-[80px] sm:h-[90px] md:h-[100px] bg-linear-to-br from-purple-500 to-purple-700"
             className="px-4 py-0 sm:px-6 flex items-center"
           >
-            <div className="flex items-center justify-between h-full">
+            <div className="flex items-center justify-between h-full w-full">
               <div className="flex items-center gap-2 sm:gap-3">
-                <Apple className="w-5 h-5 sm:w-6 sm:h-6 text-white/90" />
-                <div>
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white">
-                    {nutritionData?.data?.totals?.calories?.toFixed(0) || 0}
-                  </h3>
-                </div>
+                <Apple className="w-6 h-6 sm:w-7 sm:h-7 text-white/90" />
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+                  {nutritionData?.data?.totals?.calories?.toFixed(0) || 0}
+                </h3>
               </div>
-              <p className="text-white/80 text-xs sm:text-sm">Calories Today</p>
+              <p className="text-white/90 text-sm sm:text-base font-medium">Calories Today</p>
             </div>
           </WobbleCard>
         </div>
@@ -187,16 +185,14 @@ const DashboardScreen = () => {
           containerClassName="col-span-1 h-[80px] sm:h-[90px] md:h-[100px] bg-linear-to-br from-green-500 to-green-700"
           className="px-4 py-0 sm:px-6 flex items-center"
         >
-          <div className="flex items-center justify-between h-full">
+          <div className="flex items-center justify-between h-full w-full">
             <div className="flex items-center gap-2 sm:gap-3">
-              <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-white/90" />
-              <div>
-                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white">
-                  {workoutStats?.workoutsThisWeek || 0}
-                </h3>
-              </div>
+              <Activity className="w-6 h-6 sm:w-7 sm:h-7 text-white/90" />
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+                {workoutStats?.workoutsThisWeek || 0}
+              </h3>
             </div>
-            <p className="text-white/80 text-xs sm:text-sm">This Week</p>
+            <p className="text-white/90 text-sm sm:text-base font-medium">This Week</p>
           </div>
         </WobbleCard>
 
@@ -204,16 +200,14 @@ const DashboardScreen = () => {
           containerClassName="col-span-1 h-[80px] sm:h-[90px] md:h-[100px] bg-linear-to-br from-orange-500 to-orange-700"
           className="px-4 py-0 sm:px-6 flex items-center"
         >
-          <div className="flex items-center justify-between h-full">
+          <div className="flex items-center justify-between h-full w-full">
             <div className="flex items-center gap-2 sm:gap-3">
-              <Users className="w-5 h-5 sm:w-6 sm:h-6 text-white/90" />
-              <div>
-                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white">
-                  {followers}
-                </h3>
-              </div>
+              <Users className="w-6 h-6 sm:w-7 sm:h-7 text-white/90" />
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+                {followers}
+              </h3>
             </div>
-            <p className="text-white/80 text-xs sm:text-sm">Followers</p>
+            <p className="text-white/90 text-sm sm:text-base font-medium">Followers</p>
           </div>
         </WobbleCard>
       </div>
@@ -669,6 +663,7 @@ const DashboardScreen = () => {
           containerClassName="mb-8"
           activeTabClassName="bg-linear-to-r from-blue-500 to-purple-600"
           contentClassName="mt-8 relative"
+          defaultValue={defaultTab}
         />
       </div>
     </div>

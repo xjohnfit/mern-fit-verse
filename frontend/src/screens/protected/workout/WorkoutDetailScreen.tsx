@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 
 // Third-party libraries
-import { ArrowLeft, Dumbbell, Clock, Calendar, Target, Zap, TrendingUp, Check, X } from "lucide-react";
+import { ArrowLeft, Dumbbell, Clock, Calendar, Target, Zap, TrendingUp, X } from "lucide-react";
 import { toast } from "sonner";
 
 // Redux slices
@@ -102,7 +102,7 @@ const WorkoutDetailScreen = () => {
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
                     <Button
                         variant="ghost"
-                        onClick={() => navigate("/dashboard")}
+                        onClick={() => navigate("/dashboard?tab=workouts")}
                         className="mb-4 -ml-2"
                     >
                         <ArrowLeft className="w-4 h-4 mr-2" />
@@ -135,7 +135,7 @@ const WorkoutDetailScreen = () => {
                 <div className="mb-6">
                     <Button
                         variant="ghost"
-                        onClick={() => navigate("/dashboard")}
+                        onClick={() => navigate("/dashboard?tab=workouts")}
                         className="mb-4 -ml-2 hover:bg-gray-100 dark:hover:bg-gray-800"
                     >
                         <ArrowLeft className="w-4 h-4 mr-2" />
@@ -278,15 +278,13 @@ const WorkoutDetailScreen = () => {
                                                     <th className="text-center py-2 px-2 text-gray-600 dark:text-gray-400">Weight ({weightUnit})</th>
                                                     <th className="text-center py-2 px-2 text-gray-600 dark:text-gray-400">Reps</th>
                                                     <th className="text-center py-2 px-2 text-gray-600 dark:text-gray-400">Volume</th>
-                                                    <th className="text-center py-2 px-2 text-gray-600 dark:text-gray-400">Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {exercise.sets.map((set: any) => (
                                                     <tr
                                                         key={set.setNumber}
-                                                        className={`border-b border-gray-100 dark:border-gray-800 ${set.completed ? 'bg-green-50 dark:bg-green-900/10' : ''
-                                                            }`}
+                                                        className="border-b border-gray-100 dark:border-gray-800"
                                                     >
                                                         <td className="py-3 px-2 font-semibold text-gray-900 dark:text-white">
                                                             {set.setNumber}
@@ -299,16 +297,6 @@ const WorkoutDetailScreen = () => {
                                                         </td>
                                                         <td className="text-center py-3 px-2 text-gray-900 dark:text-white">
                                                             {set.weight && set.reps ? formatWeight((set.weight * set.reps), weightUnit) : '-'}
-                                                        </td>
-                                                        <td className="text-center py-3 px-2">
-                                                            {set.completed ? (
-                                                                <span className="inline-flex items-center gap-1 text-green-600 dark:text-green-400">
-                                                                    <Check className="w-4 h-4" />
-                                                                    Completed
-                                                                </span>
-                                                            ) : (
-                                                                <span className="text-gray-400 dark:text-gray-600">Skipped</span>
-                                                            )}
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -325,7 +313,6 @@ const WorkoutDetailScreen = () => {
                                                             ), weightUnit
                                                         )}
                                                     </td>
-                                                    <td></td>
                                                 </tr>
                                             </tfoot>
                                         </table>
