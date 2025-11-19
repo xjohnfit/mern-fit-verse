@@ -87,7 +87,12 @@ export const Tabs = ({
               />
             )}
 
-            <span className="relative block text-black dark:text-white text-sm sm:text-base md:text-lg font-medium">
+            <span className={cn(
+              "relative block text-sm sm:text-base md:text-lg font-medium transition-colors",
+              active.value === tab.value
+                ? "text-primary-foreground"
+                : "text-foreground"
+            )}>
               {tab.title}
             </span>
           </button>

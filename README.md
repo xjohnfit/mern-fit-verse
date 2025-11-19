@@ -24,7 +24,7 @@
 - [🚀 Overview](#-overview)
 - [✨ Features](#-features)
 - [🛠 Tech Stack](#-tech-stack)
-- [🏗 Architecture](#-architecture)
+- [🏗 Project Structure](#-project-structure)
 - [⚡ Quick Start](#-quick-start)
 - [🐳 Docker Deployment](#-docker-deployment)
 - [☸️ Kubernetes Deployment](#️-kubernetes-deployment)
@@ -33,7 +33,6 @@
 - [📊 CI/CD Pipeline](#-cicd-pipeline)
 - [🔒 Security](#-security)
 - [📡 API Documentation](#-api-documentation)
-- [🎨 Frontend Architecture](#-frontend-architecture--components)
 - [🤝 Contributing](#-contributing)
 - [📄 License](#-license)
 
@@ -41,117 +40,216 @@
 
 ## 🚀 Overview
 
-**MERN FitVerse** is a modern, full-stack social fitness platform that combines fitness tracking with social networking features. Built with cutting-edge web technologies, it provides users with a comprehensive platform to share their fitness journey, connect with like-minded individuals, and achieve their health goals through community support and data-driven insights.
+**MERN FitVerse** is a comprehensive, production-ready social fitness platform that seamlessly combines social networking with advanced fitness and nutrition tracking. Built with cutting-edge web technologies and enterprise-grade DevOps practices, it provides users with a complete ecosystem to track their health journey, connect with a supportive community, and achieve their wellness goals through data-driven insights and social motivation.
 
 ### 🎯 Mission
 
-To create a vibrant fitness community where users can share their journey, motivate each other, and achieve their health and wellness goals through social interaction, data tracking, and personalized experiences. We believe fitness is more enjoyable and sustainable when shared with others.
+To create a vibrant, inclusive fitness community where users can share their journey, motivate each other, and achieve their health and wellness goals through social interaction, comprehensive tracking tools, and personalized experiences. We believe fitness is more enjoyable and sustainable when shared with others.
 
-### 🌟 Current Capabilities
+### 🌟 Platform Highlights
 
-- **🔐 Secure Authentication**: JWT-based authentication with comprehensive user validation
-- **👥 Social Networking**: Follow/unfollow users, build your fitness community
-- **📱 Social Feed**: Share posts, images, and fitness updates with your network
-- **💬 Interactive Features**: Like, comment, and engage with community posts
-- **🔔 Real-time Notifications**: Stay updated with likes, follows, and comments
-- **📊 Profile Management**: Comprehensive user profiles with fitness metrics
-- **🥗 Nutrition Tracking**: Complete meal logging with FatSecret API integration (500K+ foods)
-- **📈 Macro Tracking**: Track calories, protein, carbs, and fats with visual progress
-- **🎯 Nutrition Goals**: Set and monitor personalized daily nutrition targets
-- **📊 Visual Analytics**: Interactive pie charts and progress bars for macro distribution
-- **📅 Historical Data**: Navigate dates to view and manage past nutrition logs
-- **🍽️ Custom Meal Categories**: Create personalized meal categories beyond standard meals
-- **🎨 Modern UI/UX**: React 19 with Tailwind CSS and Radix UI components
-- **🌓 Theme Support**: Dark/light mode with system preference detection
-- **📱 Responsive Design**: Optimized for all devices with mobile-first approach
-- **🐳 Production Ready**: Docker containerization and Kubernetes deployment
-- **⚙️ CI/CD Pipeline**: Automated Jenkins pipeline with security scanning
-- **☁️ Cloud Integration**: Cloudinary for image management and optimization
+- **🔐 Enterprise Security**: JWT-based authentication with bcrypt password hashing and HTTP-only cookies
+- **👥 Social Networking**: Full-featured follow system with user discovery and community building
+- **📱 Social Feed**: Rich content sharing with images, likes, comments, and real-time notifications
+- **🥗 Advanced Nutrition Tracking**: FatSecret API integration with 500,000+ food database
+- **🍽️ Custom Meal Categories**: Personalized meal organization with up to 3 custom categories
+- **📊 Visual Analytics**: Interactive charts and progress tracking with Recharts
+- **🏋️ Workout Management**: Complete exercise library and workout logging system
+- **🎨 Modern UI/UX**: React 19 with Tailwind CSS 4 and accessible Radix UI components
+- **🌓 Theme Support**: Seamless dark/light mode with system preference detection
+- **📱 Responsive Design**: Mobile-first approach optimized for all screen sizes
+- **🐳 Production Ready**: Multi-stage Docker builds and Kubernetes orchestration
+- **⚙️ CI/CD Pipeline**: Automated Jenkins pipeline with SonarQube and OWASP security scanning
+- **☁️ Cloud Integration**: Cloudinary for optimized image storage and delivery
+- **🔍 Code Quality**: TypeScript throughout with comprehensive testing framework
 
 ---
 
 ## ✨ Features
 
-### � Authentication & Security
+### 🔐 Authentication & Security
 
 - **Secure Registration/Login**: JWT-based authentication with bcrypt password hashing
-- **User Validation**: Email format validation, username uniqueness, password strength requirements
+- **User Validation**: 
+  - Email format validation and uniqueness checks
+  - Username availability verification
+  - Password strength requirements
+  - Date of birth and gender validation
 - **Session Management**: HTTP-only cookies for secure token storage
-- **Profile Privacy**: Secure user data protection and validation
+- **Protected Routes**: Client-side route guards for authenticated access
+- **Admin Middleware**: Role-based access control for admin features
 
 ### 👥 Social Features
 
-- **User Profiles**: Complete profile system with photos, personal info, and fitness goals
-- **Follow System**: Follow/unfollow other users to build a fitness community
-- **Suggested Users**: Algorithm-based user suggestions for expanding your network
-- **Profile Views**: View other users' profiles and their fitness journey
+- **Comprehensive User Profiles**: 
+  - Profile photos with Cloudinary integration
+  - Height, weight, and weight unit preferences (kg/lbs)
+  - Fitness goals and personal information
+  - Follower and following statistics
+- **Follow System**: 
+  - Follow/unfollow functionality
+  - Follower and following lists
+  - Follow notifications
+- **User Discovery**: 
+  - Suggested users algorithm
+  - User search and profile viewing
+  - Community engagement metrics
 
 ### 📱 Social Feed & Posts
 
-- **Create Posts**: Share fitness updates, progress photos, and motivational content
-- **Image Upload**: Cloudinary integration for secure image storage and optimization
-- **Feed System**: Personalized feed showing posts from followed users
-- **Post Interactions**: Like/unlike posts to engage with the community
-- **Comments System**: Comment on posts to encourage and interact with others
-- **Content Management**: Delete your own posts and comments
-
-### 📊 User Analytics & Profiles
-
-- **Profile Metrics**: Track height, weight, fitness goals, and personal information
-- **Profile Photos**: Upload and manage profile pictures with Cloudinary
-- **User Statistics**: View followers, following counts, and post engagement
-- **Profile Updates**: Comprehensive profile editing with real-time validation
+- **Rich Post Creation**: 
+  - Text content with optional titles
+  - Image uploads via Cloudinary
+  - Post editing and deletion
+- **Feed System**: 
+  - Personalized feed from followed users
+  - Chronological post ordering
+  - Infinite scroll support
+- **Post Interactions**: 
+  - Like/unlike functionality
+  - Real-time like counts
+  - Comment system with nested replies
+- **Content Management**: 
+  - Delete own posts and comments
+  - Content ownership validation
+  - Image optimization and delivery
 
 ### 🔔 Notification System
 
-- **Real-time Notifications**: Get notified for likes, follows, comments, and interactions
-- **Notification Management**: Mark notifications as read and delete old notifications
-- **Activity Tracking**: Track all social interactions and engagement
+- **Real-time Notifications**: 
+  - Like notifications
+  - Follow notifications
+  - Comment notifications
+  - Other custom notification types
+- **Notification Management**: 
+  - Mark as read functionality
+  - Batch delete operations
+  - Unread notification counter
+- **Activity Tracking**: Complete audit trail of social interactions
 
-### 🥗 Nutrition Tracking Features
+### 🥗 Nutrition Tracking (Full Feature)
 
-- **FatSecret API Integration**: Access to 500,000+ food items from a comprehensive database
-- **Smart Food Autocomplete**: Real-time food suggestions with intelligent debounced search
-- **Detailed Food Information**: View complete nutritional breakdown with serving size adjustments
-- **Daily Meal Logging**: Track meals across standard categories (Breakfast, Lunch, Dinner, Snacks)
-- **Custom Meal Categories**: Create up to 3 personalized meal categories with custom names and colors
-- **Comprehensive Macro Tracking**: Monitor calories, protein, carbohydrates, and fats
-- **Nutrition Goals Management**: Set and track personalized daily calorie and macronutrient targets
-- **Visual Progress Tracking**: Color-coded progress bars and interactive pie charts for macro distribution
-- **Historical Data**: Navigate through dates to view past nutrition logs and track progress over time
-- **Flexible Entry Management**: Adjust serving sizes, delete entries, and reorganize meal categories
-- **Real-time Calculations**: Automatic calculation of nutrition totals and goal progress
+#### Food Database Integration
+- **FatSecret API Integration**: Access to 500,000+ verified food items
+- **Smart Food Search**: 
+  - Real-time autocomplete with debounced search (300ms delay)
+  - Minimum 2 characters for search activation
+  - Food suggestions with brand and description
+- **Detailed Food Information**: 
+  - Complete nutritional breakdown
+  - Multiple serving size options
+  - Adjustable serving quantities
+  - Calories, protein, carbs, and fats per serving
 
-### 🏋️‍♀️ Fitness Hub (Coming Soon)
+#### Meal Tracking
+- **Standard Meal Categories**: 
+  - Breakfast
+  - Lunch
+  - Dinner
+  - Snacks
+- **Custom Meal Categories**: 
+  - Create up to 3 personalized categories
+  - Custom names (max 20 characters)
+  - Custom colors for visual organization
+  - Reorder categories via drag-and-drop
+  - Delete custom categories
 
-- **Workout Planning**: Personalized workout routines and exercise tracking
-- **Exercise Library**: Comprehensive database with instructional content
-- **Progress Analytics**: Detailed workout performance metrics and insights
-- **Smart Goals**: AI-powered goal setting and achievement tracking
+#### Nutrition Goals & Analytics
+- **Personalized Goals**: 
+  - Set daily calorie targets
+  - Individual macronutrient goals (protein, carbs, fats)
+  - Goals saved to user profile
+- **Visual Progress Tracking**: 
+  - Color-coded progress bars (green/yellow/red based on goal achievement)
+  - Interactive pie chart for macro distribution
+  - Real-time percentage calculations
+- **Daily Totals**: 
+  - Automatic calculation of consumed calories and macros
+  - Goal vs. actual comparison
+  - Remaining macros display
 
-### 🥗 Nutrition Hub ✅ (Now Available!)
+#### Historical Data Management
+- **Date Navigation**: 
+  - Calendar date picker
+  - View any past or future date
+  - Today shortcut button
+- **Entry Management**: 
+  - Edit serving sizes post-addition
+  - Delete individual entries
+  - View entries by meal category
+- **Data Persistence**: All nutrition logs stored with timezone handling
 
-- **Food Database Integration**: FatSecret API integration with 500,000+ foods
-- **Smart Food Search**: Real-time autocomplete with debounced search (2+ characters)
-- **Food Details Modal**: Detailed nutrition information with serving size adjustment
-- **Daily Meal Tracking**: Track meals across Breakfast, Lunch, Dinner, and Snacks
-- **Custom Meal Categories**: Create up to 3 personalized meal categories with custom colors
-- **Macro Tracking**: Track calories, protein, carbs, and fats with visual progress bars
-- **Nutrition Goals**: Set and monitor daily calorie and macronutrient targets
-- **Macro Distribution**: Interactive pie chart showing protein/carbs/fats breakdown
-- **Date Navigation**: View and track nutrition for any date with calendar navigation
-- **Entry Management**: Edit serving sizes, delete entries, and manage meal categories
-- **Visual Progress**: Color-coded progress indicators for goals (green/yellow/red)
-- **Category Management**: Add, reorder, and delete custom meal categories
+### 🏋️ Workout & Exercise Features
+
+#### Exercise Library
+- **Comprehensive Database**: 
+  - Exercise name and descriptions
+  - Detailed instructions
+  - Exercise images
+  - Category-based organization
+- **Exercise Management**: 
+  - Create custom exercises
+  - Update exercise details
+  - Delete exercises
+  - Search and filter by category
+
+#### Workout Tracking
+- **Workout Logging**: 
+  - Freestyle or template-based workouts
+  - Duration tracking (in seconds)
+  - Exercise and set tracking
+  - Workout notes and completion timestamps
+- **Set Management**: 
+  - Set number tracking
+  - Weight and rep logging
+  - Set completion status
+  - Weight unit conversion (kg/lbs)
+- **Workout History**: 
+  - View all past workouts
+  - Workout details with exercises and sets
+  - Progress over time
+- **Weight Unit Preferences**: 
+  - User-specific weight unit (kg or lbs)
+  - Automatic conversion for storage (all stored in lbs)
+  - Display in user's preferred unit
+
+#### Custom Categories
+- **Flexible Organization**: Custom categories for exercises and meals
+- **User-specific**: Each user can create their own organizational system
+- **Order Management**: Reorder categories as needed
 
 ### 🎨 Modern User Experience
 
-- **Responsive Design**: Mobile-first approach optimized for all devices
-- **Dark/Light Themes**: System preference detection with manual toggle
-- **Modern UI Components**: Built with Radix UI primitives and Tailwind CSS
-- **Smooth Animations**: Enhanced UX with CSS animations and transitions
-- **Toast Notifications**: Real-time feedback with Sonner toast system
-- **Loading States**: Skeleton loading and proper loading indicators
+- **Responsive Design**: 
+  - Mobile-first approach
+  - Optimized for phones, tablets, and desktops
+  - Touch-friendly interactions
+- **Dark/Light Themes**: 
+  - System preference detection
+  - Manual theme toggle
+  - Persistent theme selection
+- **Modern UI Components**: 
+  - Radix UI primitives for accessibility
+  - Tailwind CSS 4 for styling
+  - Custom component library
+- **Animations & Transitions**: 
+  - Smooth page transitions
+  - Motion library integration
+  - Wobble card effects
+- **Loading States**: 
+  - Skeleton loading screens
+  - Loading indicators
+  - Optimistic UI updates
+- **Toast Notifications**: 
+  - Sonner toast system
+  - Success, error, and info messages
+  - Customizable styling
+
+### 🛡️ Admin Features
+
+- **Admin Dashboard**: Dedicated admin screen for management tasks
+- **User Management**: Admin middleware for protected admin routes
+- **Content Moderation**: Tools for managing platform content
 
 ---
 
@@ -160,243 +258,245 @@ To create a vibrant fitness community where users can share their journey, motiv
 ### Frontend Technologies
 
 ```typescript
-React 19.1.1          | Modern React with concurrent features and hooks
-TypeScript 5.9.3      | Static type checking and enhanced developer experience
-Vite 7.1.7            | Lightning-fast build tool and dev server
-Tailwind CSS 4.1.16   | Utility-first CSS framework with custom config
+React 19.1.1          | Modern React with concurrent features and advanced hooks
+TypeScript 5.9.3      | Static type checking for enhanced developer experience
+Vite 7.1.7            | Lightning-fast build tool and dev server with HMR
+Tailwind CSS 4.1.16   | Utility-first CSS framework with JIT compiler
 ```
 
-### UI/UX Libraries
+### Frontend Libraries & UI
 
 ```typescript
-Radix UI                    | Accessible, unstyled UI component primitives
-@radix-ui/react-avatar      | Avatar component with fallback support
-@radix-ui/react-navigation-menu | Accessible navigation menus
-@radix-ui/react-slot        | Composition utilities for flexible APIs
-class-variance-authority    | CVA for component variant management
-```
-
-### State Management & Routing
-
-```typescript
-Redux Toolkit 2.10.1  | Predictable state management with RTK Query
-React Router 7.9.5    | Declarative client-side routing
+// State Management & Data Fetching
+Redux Toolkit 2.10.1  | State management with RTK Query for API calls
 React Redux 9.2.0     | Official React bindings for Redux
-```
 
-### Styling & Icons
+// Routing
+React Router 7.9.5    | Declarative client-side routing with loaders
 
-```typescript
-Lucide React 0.552.0  | Beautiful, customizable SVG icons
-Sonner 2.0.7          | Toast notification system
-Next Themes 0.4.6     | Perfect dark mode support with SSR
-Tailwind Merge 3.3.1  | Utility function to merge Tailwind classes
-clsx 2.1.1            | Utility for constructing className strings
-Recharts 2.15.4       | Composable charting library for data visualization
+// UI Components (Radix UI)
+@radix-ui/react-avatar           | Accessible avatar component
+@radix-ui/react-navigation-menu  | Accessible navigation menus
+@radix-ui/react-slot             | Composition utilities
+@radix-ui/react-tabs             | Accessible tab panels
+
+// Styling & Utilities
+class-variance-authority | Component variant management
+clsx 2.1.1              | Utility for className construction
+tailwind-merge 3.3.1    | Intelligent Tailwind class merging
+
+// Icons & Animations
+Lucide React 0.552.0    | Beautiful, consistent SVG icon library
+Motion 12.23.24         | Powerful animation library
+
+// Charts & Visualization
+Recharts 2.15.4         | Composable charting library for data viz
+
+// Notifications & Themes
+Sonner 2.0.7            | Toast notification system
+Next Themes 0.4.6       | Dark mode with SSR support
+
+// Noise Effects
+Simplex Noise 4.0.3     | Noise generation for visual effects
 ```
 
 ### Backend Technologies
 
 ```typescript
 Node.js 20+           | JavaScript runtime with latest features
-Express.js 5.1.0      | Fast, unopinionated web framework
-TypeScript 5.9.3      | Type-safe backend development
-Mongoose 8.19.2       | Elegant MongoDB object modeling
+Express 5.1.0         | Fast, minimalist web framework
+TypeScript 5.9.3      | Static typing for Node.js and enhanced DX
+ts-node 10.9.2        | TypeScript execution engine for Node.js
+Mongoose 8.19.2       | Elegant MongoDB object modeling and validation
+```
+
+### Backend Libraries & Middleware
+
+```typescript
+// Authentication & Security
+jsonwebtoken 9.0.2     | JWT token generation and verification
+bcryptjs 3.0.3         | Password hashing with salt rounds
+cookie-parser 1.4.7    | Parse HTTP request cookies
+cors 2.8.5             | Cross-Origin Resource Sharing middleware
+express-async-handler  | Async error handling for Express routes
+
+// File Upload & Storage
+multer 2.0.2           | Multipart/form-data file upload handling
+cloudinary 2.8.0       | Cloud-based image storage and optimization
+
+// Development Tools
+nodemon 3.1.10         | Auto-restart dev server on file changes
+concurrently 9.2.1     | Run multiple npm scripts simultaneously
+
+// Testing
+jest 30.2.0            | JavaScript testing framework
+ts-jest 29.1.0         | TypeScript preprocessor for Jest
+@types/* packages      | TypeScript type definitions
 ```
 
 ### External APIs & Services
 
 ```typescript
-FatSecret Platform API  | Comprehensive food and nutrition database
-Cloudinary 2.8.0        | Cloud-based image and video management
-OAuth 1.0               | Secure API authentication for FatSecret
-```
-
-### Authentication & Security
-
-```typescript
-JSON Web Tokens 9.0.2 | Secure user authentication
-bcryptjs 3.0.3        | Password hashing with salt rounds
-Cookie Parser 1.4.7   | Parse HTTP request cookies
-CORS 2.8.5            | Cross-Origin Resource Sharing middleware
-```
-
-### File Upload & Storage
-
-```typescript
-Cloudinary 2.8.0      | Cloud-based image and video management
-Multer 2.0.2          | Middleware for handling multipart/form-data
-```
-
-### Development Tools
-
-```typescript
-Nodemon 3.1.10        | Auto-restart development server
-ts-node 10.9.2        | TypeScript execution environment
-Concurrently 9.2.1    | Run multiple commands concurrently
-ESLint 9.36.0         | JavaScript/TypeScript linting
-```
-
-### Testing & Quality
-
-```typescript
-Jest 30.2.0           | JavaScript testing framework
-ts-jest 29.1.0        | TypeScript preprocessor for Jest
-@types/* packages     | TypeScript type definitions
+FatSecret Platform API | Nutrition database with 500,000+ food items
+Cloudinary             | Image and video management cloud service
+MongoDB Atlas          | Cloud-hosted MongoDB database clusters
 ```
 
 ### DevOps & Infrastructure
 
 ```yaml
-Docker                | Multi-stage containerization for production
-Kubernetes            | Container orchestration with health checks
-Jenkins               | Comprehensive CI/CD pipeline automation
-SonarQube             | Code quality and security analysis
-OWASP Dependency      | Automated vulnerability scanning
-Trivy Security        | Container image security scanning
-```
-
-### Deployment & Monitoring
-
-```yaml
-Health Checks         | Comprehensive application health monitoring
-Resource Management   | CPU and memory limits with proper scaling
-Environment Config    | Secure environment variable management
-SSL/TLS Support       | Production-ready security configurations
+Docker                 | Multi-stage containerization for production builds
+Docker Compose         | Local development environment orchestration
+Kubernetes             | Container orchestration with auto-scaling
+Jenkins                | CI/CD pipeline automation with security scanning
+SonarQube              | Code quality and security vulnerability analysis
+OWASP Dependency Check | Automated dependency vulnerability scanning
+Trivy Security Scanner | Container image and filesystem security analysis
 ```
 
 ---
 
-## 🏗 Architecture
+## 🏗 Project Structure
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    MERN FitVerse Architecture               │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐      │
-│  │   Client    │    │   Server    │    │  Database   │      │
-│  │             │    │             │    │             │      │
-│  │ React 19    │◄──►│ Express.js  │◄──►│  MongoDB    │      │
-│  │ TypeScript  │    │ TypeScript  │    │  Mongoose   │      │
-│  │ Redux       │    │ JWT Auth    │    │  Atlas      │      │
-│  │ Tailwind    │    │ Middleware  │    │             │      │
-│  │ Vite        │    │ CORS        │    │             │      │
-│  └─────────────┘    └─────────────┘    └─────────────┘      │
-│                                                             │
-├─────────────────────────────────────────────────────────────┤
-│                     Infrastructure                          │
-│                                                             │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐      │
-│  │   Docker    │    │ Kubernetes  │    │  Jenkins    │      │
-│  │             │    │             │    │             │      │
-│  │ Multi-stage │    │ Deployment  │    │  CI/CD      │      │
-│  │ Builds      │    │ Services    │    │  Pipeline   │      │
-│  │ Production  │    │ ConfigMaps  │    │  Security   │      │
-│  │ Optimized   │    │ Secrets     │    │  Scanning   │      │
-│  └─────────────┘    └─────────────┘    └─────────────┘      │
-└─────────────────────────────────────────────────────────────┘
-```
+### Complete Directory Tree
 
-### 📁 Project Structure
-
-```
+```plaintext
 mern-fit-verse/
 ├── 📂 backend/                           # Express.js TypeScript backend
-│   ├── 📂 config/                        # Database connection configuration
-│   ├── 📂 controllers/                   # API route handlers and business logic
+│   ├── 📂 config/
+│   │   └── dbConnection.ts               # MongoDB connection configuration
+│   ├── 📂 controllers/                   # Business logic and route handlers
 │   │   ├── authController.ts             # User authentication (login/register)
-│   │   ├── userController.ts             # User profile and social features
+│   │   ├── userController.ts             # User profile, follow system
 │   │   ├── postController.ts             # Post creation, feed, likes, comments
 │   │   ├── notificationController.ts     # Notification management
-│   │   ├── nutritionController.ts        # Nutrition entry management
-│   │   ├── fatSecretController.ts        # FatSecret API integration
+│   │   ├── nutritionController.ts        # Nutrition entry CRUD operations
+│   │   ├── fatSecretController.ts        # FatSecret API integration with OAuth
 │   │   ├── customCategoryController.ts   # Custom meal categories
+│   │   ├── exerciseController.ts         # Exercise library management
+│   │   ├── workoutController.ts          # Workout logging and history
 │   │   └── healthController.ts           # System health monitoring
-│   ├── 📂 middlewares/                  # Express middleware functions
+│   ├── 📂 middlewares/
 │   │   ├── authMiddleware.ts             # JWT authentication middleware
+│   │   ├── adminMiddleware.ts            # Admin role verification
 │   │   ├── errorMiddleware.ts            # Global error handling
-│   │   └── uploadMiddleware.ts           # Multer file upload configuration
-│   ├── 📂 models/                       # MongoDB schemas with Mongoose
+│   │   └── uploadMiddleware.ts           # Multer file upload config
+│   ├── 📂 models/                        # MongoDB schemas with Mongoose
 │   │   ├── userModel.ts                  # User schema with auth methods
 │   │   ├── postModel.ts                  # Post schema with comments
 │   │   ├── notificationModel.ts          # Notification system schema
 │   │   ├── nutritionModel.ts             # Nutrition entry schema
-│   │   └── customCategoryModel.ts        # Custom meal category schema
+│   │   ├── customCategoryModel.ts        # Custom meal category schema
+│   │   ├── exerciseModel.ts              # Exercise library schema
+│   │   └── workoutModel.ts               # Workout logging schema
 │   ├── 📂 routes/                        # API endpoint definitions
-│   │   ├── authRoutes.ts                 # Authentication routes
-│   │   ├── userRoutes.ts                 # User management routes
-│   │   ├── postRoutes.ts                 # Post and social features routes
-│   │   ├── notificationRoutes.ts         # Notification routes
-│   │   ├── nutritionRoutes.ts            # Nutrition tracking routes
-│   │   ├── fatSecretRoutes.ts            # FatSecret API proxy routes
-│   │   ├── customCategoryRoutes.ts       # Custom category routes
-│   │   └── healthRoutes.ts               # Health check routes
-│   ├── 📂 utils/                         # Helper functions and utilities
-│   │   └── generateToken.ts              # JWT token generation utility
-│   ├── 📂 __tests__/                     # Backend test files
+│   │   ├── authRoutes.ts                 # Auth endpoints (login, register, logout)
+│   │   ├── userRoutes.ts                 # User management endpoints
+│   │   ├── postRoutes.ts                 # Social feed and interaction endpoints
+│   │   ├── notificationRoutes.ts         # Notification endpoints
+│   │   ├── NutritionRoutes.ts            # Nutrition tracking endpoints
+│   │   ├── fatSecretRoutes.ts            # FatSecret API proxy endpoints
+│   │   ├── customCategoryRoutes.ts       # Custom category endpoints
+│   │   ├── exercisesRoutes.ts            # Exercise library endpoints
+│   │   ├── workoutRoutes.ts              # Workout tracking endpoints
+│   │   └── healthRoutes.ts               # Health check endpoint
+│   ├── 📂 utils/
+│   │   ├── generateToken.ts              # JWT token generation utility
+│   │   └── weightConversion.ts           # Weight unit conversion (kg/lbs)
+│   ├── 📂 __tests__/
 │   │   └── health.test.ts                # Health endpoint tests
 │   └── 📄 index.ts                       # Express server entry point
 ├── 📂 frontend/                          # React TypeScript SPA
-│   ├── 📂 public/                        # Static assets and favicon
-│   ├── 📂 src/                           # Frontend source code
-│   │   ├── 📂 components/                # Reusable UI components
-│   │   │   ├── 📂 ui/                    # Radix UI component implementations
-│   │   │   ├── Header.tsx                # Navigation with user menu
-│   │   │   ├── Footer.tsx                # Site footer
-│   │   │   ├── AlertModal.tsx            # Alert and confirmation modals
-│   │   │   ├── FoodAutoComplete.tsx      # Food search with autocomplete
-│   │   │   ├── ShowFoodItemModal.tsx     # Food details and add modal
-│   │   │   ├── MacroDistributionChart.tsx # Macro nutrition pie chart
-│   │   │   ├── PrivateRoute.tsx          # Route authentication guard
-│   │   │   ├── ScrollToTop.tsx           # Auto-scroll utility
-│   │   │   └── ThemeToggle.tsx           # Dark/light mode toggle
-│   │   ├── 📂 screens/                   # Page components
+│   ├── 📂 public/                        # Static assets
+│   │   └── fit-verse-logo-no-bg.png      # Application logo
+│   ├── 📂 src/
+│   │   ├── 📂 components/
+│   │   │   ├── 📂 common/
+│   │   │   │   ├── PrivateRoute.tsx      # Authentication guard
+│   │   │   │   ├── ScrollToTop.tsx       # Auto-scroll utility
+│   │   │   │   └── ThemeToggle.tsx       # Dark/light mode toggle
+│   │   │   ├── 📂 layout/
+│   │   │   │   ├── Header.tsx            # Navigation with user menu
+│   │   │   │   └── Footer.tsx            # Site footer
+│   │   │   ├── 📂 modals/
+│   │   │   │   └── AlertModal.tsx        # Alert and confirmation modals
+│   │   │   └── 📂 ui/                    # Radix UI primitives
+│   │   │       ├── avatar.tsx            # Avatar component
+│   │   │       ├── button.tsx            # Button with variants
+│   │   │       ├── card.tsx              # Card component
+│   │   │       ├── chart.tsx             # Chart components
+│   │   │       ├── input.tsx             # Input component
+│   │   │       ├── navigation-menu.tsx   # Navigation menu
+│   │   │       ├── sonner.tsx            # Toast notifications
+│   │   │       ├── tabs.tsx              # Tab component
+│   │   │       └── wobble-card.tsx       # Wobble animation card
+│   │   ├── 📂 lib/                       # Utility functions
+│   │   │   ├── calculateAge.ts           # Age calculation
+│   │   │   ├── formatDate.ts             # Date formatting
+│   │   │   ├── getInitials.ts            # Avatar initials
+│   │   │   ├── getPasswordStrength.ts    # Password validation
+│   │   │   ├── utils.ts                  # General utilities (cn, clsx)
+│   │   │   └── weightConversion.ts       # Weight unit conversion
+│   │   ├── 📂 screens/
 │   │   │   ├── HomeScreen.tsx            # Landing page
 │   │   │   ├── LoginScreen.tsx           # Authentication form
 │   │   │   ├── RegisterScreen.tsx        # User registration
-│   │   │   └── 📂 protected/             # Authenticated user screens
-│   │   │       ├── DashboardScreen.tsx   # Main social feed
-│   │   │       ├── SettingsScreen.tsx    # User settings 
-│   │   │       ├── NutritionScreen.tsx   # Nutrition tracking hub
-│   │   │       ├── WorkoutScreen.tsx     # Coming soon preview
-│   │   │       ├── ViewUserProfile.tsx   # Profile viewing
-│   │   │       ├── FollowersFollowingModal.tsx # Social lists
-│   │   │       └── ThemeSettingsSection.tsx # Theme config
-│   │   ├── 📂 slices/                    # Redux Toolkit state management
-│   │   │   ├── apiSlice.ts               # RTK Query base configuration
-│   │   │   ├── authSlice.ts              # Authentication state
-│   │   │   ├── usersApiSlice.ts          # User API calls
-│   │   │   ├── postsApiSlice.ts          # Posts and social API calls
-│   │   │   ├── nutritionApiSlice.ts      # Nutrition tracking API
-│   │   │   ├── fatSecretApiSlice.ts      # FatSecret API integration
-│   │   │   └── customCategoryApiSlice.ts # Custom categories API
-│   │   ├── 📂 lib/                       # Utility functions
-│   │   │   ├── calculateAge.ts           # Age calculation utility
-│   │   │   ├── formatDate.ts             # Date formatting helpers
-│   │   │   ├── getInitials.ts            # Avatar initials generator
-│   │   │   ├── getPasswordStrength.ts    # Password validation
-│   │   │   └── utils.ts                  # General utilities (cn, clsx)
-│   │   ├── 📂 assets/                    # Static assets (images, fonts)
+│   │   │   ├── PrivacyPolicy.tsx         # Privacy policy page
+│   │   │   ├── TermsOfService.tsx        # Terms of service page
+│   │   │   └── 📂 protected/             # Authenticated screens
+│   │   │       ├── 📂 admin/
+│   │   │       │   └── AdminScreen.tsx   # Admin dashboard
+│   │   │       ├── 📂 dashboard/
+│   │   │       │   ├── DashboardScreen.tsx        # Main feed
+│   │   │       │   ├── components/                # Dashboard components
+│   │   │       │   └── types.ts                   # Type definitions
+│   │   │       ├── 📂 nutrition/
+│   │   │       │   ├── NutritionScreen.tsx        # Nutrition tracking hub
+│   │   │       │   ├── components/                # Nutrition components
+│   │   │       │   ├── constants.ts               # Nutrition constants
+│   │   │       │   └── types.ts                   # Type definitions
+│   │   │       ├── 📂 profile/
+│   │   │       │   └── (profile screens)          # Profile management
+│   │   │       ├── 📂 settings/
+│   │   │       │   └── (settings screens)         # User settings
+│   │   │       └── 📂 workout/
+│   │   │           ├── WorkoutScreen.tsx          # Workout hub
+│   │   │           ├── StartWorkoutScreen.tsx     # Active workout
+│   │   │           ├── WorkoutDetailScreen.tsx    # Workout details
+│   │   │           ├── components/                # Workout components
+│   │   │           └── types.ts                   # Type definitions
+│   │   ├── 📂 slices/                    # Redux Toolkit state
+│   │   │   ├── apiSlice.ts               # RTK Query base config
+│   │   │   ├── authSlice.ts              # Auth state management
+│   │   │   ├── usersApiSlice.ts          # User API endpoints
+│   │   │   ├── postsApiSlice.ts          # Posts API endpoints
+│   │   │   ├── nutritionApiSlice.ts      # Nutrition API endpoints
+│   │   │   ├── fatSecretApiSlice.ts      # FatSecret API endpoints
+│   │   │   ├── customCategoryApiSlice.ts # Custom categories API
+│   │   │   ├── exerciseApiSlice.ts       # Exercise API endpoints
+│   │   │   └── workoutApiSlice.ts        # Workout API endpoints
 │   │   ├── 📄 App.tsx                    # Main application component
 │   │   ├── 📄 main.tsx                   # React app entry point
 │   │   ├── 📄 store.ts                   # Redux store configuration
-│   │   └── 📄 index.css                  # Global styles and Tailwind imports
-│   ├── 📄 components.json                # Radix UI component configuration
+│   │   └── 📄 index.css                  # Global styles
+│   ├── 📄 components.json                # Radix UI configuration
 │   ├── 📄 package.json                   # Frontend dependencies
 │   ├── 📄 vite.config.ts                 # Vite build configuration
-│   └── � tailwind.config.js              # Tailwind CSS configuration
-├── �📂 kubernetes/                       # Kubernetes deployment manifests
-│   ├── � deployment.yml                  # Application deployment config
-│   └── 📄 service.yml                    # Service and networking config
-├── 📄 Dockerfile                         # Multi-stage production container
-├── 📄 Jenkinsfile                        # Complete CI/CD pipeline
+│   ├── 📄 tsconfig.json                  # TypeScript config
+│   └── 📄 eslint.config.js               # ESLint configuration
+├── 📂 kubernetes/                        # Kubernetes manifests
+│   ├── 📄 deployment.yml                 # Deployment configuration
+│   └── 📄 service.yml                    # Service configuration
+├── 📄 Dockerfile                         # Multi-stage production build
 ├── 📄 docker-compose.yml                 # Local development environment
+├── 📄 Jenkinsfile                        # Complete CI/CD pipeline
 ├── 📄 jest.config.js                     # Jest testing configuration
-├── 📄 tsconfig.json                      # TypeScript compiler configuration
-├── 📄 sonar-project.properties           # SonarQube analysis configuration
-├── 📄 owasp-suppressions.xml             # OWASP security scan suppressions
-└── 📄 package.json                       # Backend dependencies and scripts
+├── 📄 tsconfig.json                      # Root TypeScript config
+├── 📄 package.json                       # Backend dependencies
+├── 📄 sonar-project.properties           # SonarQube configuration
+├── 📄 owasp-suppressions.xml             # Security scan suppressions
+├── 📄 CONTRIBUTING.md                    # Contribution guidelines
+└── 📄 README.md                          # This file
 ```
 
 ---
@@ -406,8 +506,8 @@ mern-fit-verse/
 ### Prerequisites
 
 - **Node.js** 20.x or higher
-- **npm** or **yarn** package manager
-- **MongoDB** database (local or cloud)
+- **npm** 10.x or higher
+- **MongoDB** 7.0+ (local or cloud)
 - **Git** for version control
 
 ### 1️⃣ Clone Repository
@@ -419,38 +519,36 @@ cd mern-fit-verse
 
 ### 2️⃣ Environment Setup
 
-```bash
-# Copy environment template
-cp .env.example .env
-
-# Edit environment variables
-nano .env
-```
-
-**Required Environment Variables:**
+Create a `.env` file in the root directory:
 
 ```env
-# Database
+# Database Configuration
 MONGODB_URI=mongodb://localhost:27017/fitverse
 # or MongoDB Atlas: mongodb+srv://username:password@cluster.mongodb.net/fitverse
 
-# Authentication
-JWT_SECRET=your-super-secret-jwt-key-here
+# JWT Authentication
+JWT_SECRET=your-super-secret-jwt-key-here-minimum-32-characters
+JWT_EXPIRES_IN=7d
 
-# Application
+# Application Configuration
 NODE_ENV=development
 PORT=5003
-FRONTEND_URL=http://localhost:5173
+VITE_FRONTEND_URL=http://localhost:5173
 
-# Cloudinary (for image uploads)
+# Cloudinary Configuration (for image uploads)
 CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
 CLOUDINARY_API_KEY=your-cloudinary-api-key
 CLOUDINARY_API_SECRET=your-cloudinary-api-secret
 
-# FatSecret API (for nutrition tracking)
+# FatSecret API Configuration (for nutrition tracking)
 FATSECRET_CONSUMER_KEY=your-fatsecret-consumer-key
 FATSECRET_CONSUMER_SECRET=your-fatsecret-consumer-secret
 ```
+
+**Get API Keys:**
+
+- **Cloudinary**: [Sign up at cloudinary.com](https://cloudinary.com/users/register/free)
+- **FatSecret**: [Register at platform.fatsecret.com](https://platform.fatsecret.com/api/Default.aspx?screen=rapih)
 
 ### 3️⃣ Install Dependencies
 
@@ -459,17 +557,18 @@ FATSECRET_CONSUMER_SECRET=your-fatsecret-consumer-secret
 npm install
 
 # Install frontend dependencies
-cd frontend && npm install
+cd frontend
+npm install
 cd ..
 ```
 
-### 4️⃣ Start Development Server
+### 4️⃣ Start Development Servers
 
 ```bash
-# Start both frontend and backend concurrently
+# Option 1: Start both frontend and backend concurrently
 npm run dev
 
-# Or start individually
+# Option 2: Start individually
 npm run backend    # Backend only (http://localhost:5003)
 npm run frontend   # Frontend only (http://localhost:5173)
 ```
@@ -477,8 +576,15 @@ npm run frontend   # Frontend only (http://localhost:5173)
 ### 5️⃣ Access Application
 
 - **Frontend**: <http://localhost:5173>
-- **Backend API**: <http://localhost:5003>
+- **Backend API**: <http://localhost:5003/api>
 - **Health Check**: <http://localhost:5003/api/health>
+
+### 6️⃣ Create Your First Account
+
+1. Navigate to <http://localhost:5173>
+2. Click "Sign Up" and fill in your details
+3. Login with your credentials
+4. Start exploring the platform!
 
 ---
 
@@ -487,47 +593,61 @@ npm run frontend   # Frontend only (http://localhost:5173)
 ### Using Docker Compose (Recommended for Development)
 
 ```bash
-# Build and start all services
+# Start all services (app + MongoDB + Mongo Express)
 docker-compose up -d
 
 # View logs
-docker-compose logs -f
+docker-compose logs -f fitverse-app
 
 # Stop services
 docker-compose down
+
+# Stop and remove volumes (clean slate)
+docker-compose down -v
 ```
+
+**Services included:**
+
+- **fitverse-app**: Main application (port 5003)
+- **mongodb**: MongoDB database (port 27017)
+- **mongo-express**: Database admin UI (port 8081)
 
 ### Manual Docker Build
 
 ```bash
-# Build the image
+# Build production image
 docker build -t mern-fit-verse:latest .
 
-# Run the container
+# Run container
 docker run -d \
   --name fitverse-app \
   -p 5003:5003 \
-  -e MONGODB_URI="your-mongodb-connection-string" \
-  -e JWT_SECRET="your-jwt-secret" \
-  mern-fit-verse:latest
-```
-
-### Production Docker Setup
-
-```bash
-# Build production image
-docker build --target production -t mern-fit-verse:prod .
-
-# Run with production environment
-docker run -d \
-  --name fitverse-prod \
-  -p 80:5003 \
-  --restart unless-stopped \
   -e NODE_ENV=production \
-  -e MONGODB_URI="$PROD_MONGODB_URI" \
-  -e JWT_SECRET="$PROD_JWT_SECRET" \
-  mern-fit-verse:prod
+  -e MONGODB_URI="your-mongodb-uri" \
+  -e JWT_SECRET="your-jwt-secret" \
+  -e CLOUDINARY_CLOUD_NAME="your-cloud-name" \
+  -e CLOUDINARY_API_KEY="your-api-key" \
+  -e CLOUDINARY_API_SECRET="your-api-secret" \
+  -e FATSECRET_CONSUMER_KEY="your-consumer-key" \
+  -e FATSECRET_CONSUMER_SECRET="your-consumer-secret" \
+  mern-fit-verse:latest
+
+# View logs
+docker logs -f fitverse-app
+
+# Check health
+curl http://localhost:5003/api/health
 ```
+
+### Docker Image Details
+
+**Multi-stage Build Process:**
+
+1. **Frontend Build**: Compile React app with Vite
+2. **Backend Build**: Transpile TypeScript to JavaScript
+3. **Production**: Minimal Node.js Alpine image with compiled assets
+
+**Image Size**: ~350MB (optimized with multi-stage builds)
 
 ---
 
@@ -536,17 +656,23 @@ docker run -d \
 ### Prerequisites
 
 - Kubernetes cluster (local or cloud)
-- `kubectl` configured
-- Docker registry access
+- `kubectl` CLI configured
+- Docker registry access (Docker Hub, GCR, ECR, etc.)
 
-### 1️⃣ Create Secrets
+### 1️⃣ Create Kubernetes Secrets
 
 ```bash
-# Create MongoDB connection secret
+# Create application secrets
 kubectl create secret generic mern-fit-verse-env \
-  --from-literal=MONGODB_URI="your-mongodb-connection-string" \
+  --from-literal=NODE_ENV=production \
+  --from-literal=PORT=5003 \
+  --from-literal=MONGODB_URI="your-mongodb-uri" \
   --from-literal=JWT_SECRET="your-jwt-secret" \
-  --from-literal=NODE_ENV="production"
+  --from-literal=CLOUDINARY_CLOUD_NAME="your-cloud-name" \
+  --from-literal=CLOUDINARY_API_KEY="your-api-key" \
+  --from-literal=CLOUDINARY_API_SECRET="your-api-secret" \
+  --from-literal=FATSECRET_CONSUMER_KEY="your-consumer-key" \
+  --from-literal=FATSECRET_CONSUMER_SECRET="your-consumer-secret"
 
 # Create Docker registry secret (if using private registry)
 kubectl create secret docker-registry regcred \
@@ -559,15 +685,16 @@ kubectl create secret docker-registry regcred \
 ### 2️⃣ Deploy Application
 
 ```bash
-# Apply Kubernetes manifests
+# Deploy to Kubernetes
 kubectl apply -f kubernetes/
 
-# Check deployment status
+# Verify deployment
+kubectl get deployments
 kubectl get pods -l app=mern-fit-verse
 kubectl get services
 
 # View logs
-kubectl logs -l app=mern-fit-verse -f
+kubectl logs -l app=mern-fit-verse -f --tail=100
 ```
 
 ### 3️⃣ Access Application
@@ -576,141 +703,193 @@ kubectl logs -l app=mern-fit-verse -f
 # Port forward for local testing
 kubectl port-forward service/mern-fit-verse-service 8080:80
 
-# Or use LoadBalancer/Ingress IP (cloud deployments)
+# Access via browser
+open http://localhost:8080
+
+# Get external IP (LoadBalancer service)
 kubectl get service mern-fit-verse-service
 ```
+
+### Health Checks & Monitoring
+
+The deployment includes:
+
+- **Liveness Probe**: Checks if app is running (port 5003)
+- **Readiness Probe**: Checks if app is ready for traffic
+- **Resource Limits**: CPU and memory constraints
+- **Auto-restart**: Automatic pod restart on failure
 
 ---
 
 ## 🔧 Development
 
-### Available Scripts
+### Available NPM Scripts
 
 ```bash
 # Backend Development
-npm run backend        # Start backend with nodemon
-npm run start          # Start backend (production mode)
-npm run build          # Compile TypeScript to JavaScript
-npm run clean          # Remove build artifacts
+npm run backend          # Start backend with nodemon (auto-reload)
+npm run start            # Start backend (production mode)
+npm run build            # Compile TypeScript to JavaScript
+npm run clean            # Remove dist/ and coverage/ folders
 
-# Frontend Development  
-npm run frontend       # Start frontend dev server
-npm run build:frontend # Build frontend for production
-npm run dev            # Start both frontend and backend
+# Frontend Development
+npm run frontend         # Start frontend dev server with Vite
+npm run build:frontend   # Build frontend for production
+cd frontend && npm run dev:host  # Frontend with network access
 
-# Full Application
-npm run build:full     # Build both frontend and backend
-npm run start:prod     # Start production build
+# Full Stack Development
+npm run dev              # Start both frontend and backend concurrently
+npm run build:full       # Build both frontend and backend
+
+# Production
+npm run start:prod       # Start compiled production build
+
+# Testing & Quality
+npm run test             # Run all tests
+npm run test:backend     # Run backend tests only
+npm run test:watch       # Run tests in watch mode
+npm run lint             # Run linting checks
+npm run lint:fix         # Auto-fix linting issues
 
 # Utilities
-npm run health-check   # Test application health endpoint
-npm run lint           # Run code linting
-npm run test           # Run test suites
+npm run health-check     # Test application health endpoint
 ```
 
-### Code Style & Standards
+### Development Workflow
 
 ```bash
-# Frontend linting
-cd frontend && npm run lint
+# 1. Create feature branch
+git checkout -b feature/your-feature-name
 
-# Auto-fix linting issues
-cd frontend && npm run lint --fix
+# 2. Start development server
+npm run dev
 
-# TypeScript compilation check
-npm run build
+# 3. Make changes and test
+# Frontend: http://localhost:5173
+# Backend: http://localhost:5003
+
+# 4. Run linting and tests
+npm run lint
+npm run test
+
+# 5. Build for production
+npm run build:full
+
+# 6. Commit changes
+git add .
+git commit -m "feat: your feature description"
+
+# 7. Push and create pull request
+git push origin feature/your-feature-name
 ```
 
-### Hot Reload Development
+### Hot Reload Features
 
-The development setup includes hot reload for both frontend and backend:
-
-- **Frontend**: Vite HMR for instant UI updates
-- **Backend**: Nodemon for automatic server restarts
-- **Database**: MongoDB change streams (when implemented)
+- **Frontend**: Vite HMR for instant UI updates without page reload
+- **Backend**: Nodemon automatically restarts server on file changes
+- **TypeScript**: Watch mode for type checking during development
 
 ---
 
 ## 🧪 Testing
 
-### Test Structure (Planned)
+### Test Framework
 
-```
-tests/
-├── 📂 backend/
-│   ├── 📂 unit/          # Unit tests for controllers, models
-│   ├── 📂 integration/   # API integration tests
-│   └── 📂 e2e/           # End-to-end API tests
-├── 📂 frontend/
-│   ├── 📂 components/    # Component unit tests
-│   ├── 📂 integration/   # Feature integration tests
-│   └── 📂 e2e/           # End-to-end UI tests
-└── 📄 jest.config.js     # Test configuration
-```
+- **Jest**: JavaScript testing framework
+- **ts-jest**: TypeScript preprocessor for Jest
+- **Supertest**: HTTP assertions for API testing (planned)
 
-### Running Tests
+### Current Test Coverage
 
 ```bash
 # Run all tests
 npm run test
 
-# Run backend tests only
-npm run test:backend
+# Run with coverage report
+npm run test -- --coverage
 
-# Run frontend tests only
-cd frontend && npm run test
-
-# Run tests in watch mode
+# Run in watch mode
 npm run test:watch
 
-# Generate coverage report
-npm run test:coverage
+# Run specific test file
+npm run test backend/__tests__/health.test.ts
 ```
 
-### Test Setup (Future Implementation)
+### Test Structure (Planned)
 
-```bash
-# Install testing dependencies
-npm install --save-dev jest supertest @testing-library/react @testing-library/jest-dom
+```plaintext
+__tests__/
+├── backend/
+│   ├── unit/              # Unit tests for controllers, models, utils
+│   ├── integration/       # API integration tests
+│   └── e2e/               # End-to-end API tests
+└── frontend/
+    ├── components/        # Component unit tests
+    ├── integration/       # Feature integration tests
+    └── e2e/               # End-to-end UI tests with Playwright
+```
+
+### Writing Tests
+
+```typescript
+// Example unit test
+describe('Health Controller', () => {
+  it('should return health status', async () => {
+    const response = await request(app).get('/api/health');
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('FitVerse Health Check');
+  });
+});
 ```
 
 ---
 
 ## 📊 CI/CD Pipeline
 
-The project includes a comprehensive Jenkins pipeline with the following stages:
+The project includes a comprehensive Jenkins pipeline with security scanning and quality checks.
 
 ### Pipeline Stages
 
-1. **🧹 Setup & Cleanup**: Workspace preparation and environment info
-2. **📥 Code Checkout**: Git clone with shallow fetch optimization
-3. **📦 Dependencies**: Parallel installation for frontend and backend
-4. **🔍 Code Quality**: ESLint and TypeScript compilation checks
-5. **🔨 Build & Test**: Parallel frontend and backend builds
-6. **📊 SonarQube Analysis**: Code quality and security analysis
-7. **🚪 Quality Gate**: Enforce quality standards per environment
-8. **🔒 Security Scans**: OWASP and Trivy vulnerability scanning
-9. **🐳 Docker Build**: Multi-stage optimized container builds
-10. **🏥 Validation**: Image security scan and health checks
-11. **🧽 Cleanup**: Resource management and optimization
+```groovy
+1. 🧹 Clean Workspace         # Fresh environment for each build
+2. 📥 Checkout from Git       # Clone repository from GitHub
+3. 📊 SonarQube Analysis      # Code quality and security analysis
+4. 🚪 Quality Gate            # Enforce quality standards
+5. 📦 Install Dependencies    # npm install for backend and frontend
+6. 🔨 Build Application       # TypeScript compilation and frontend build
+7. 🧪 Run Tests               # Execute test suites
+8. 🔒 OWASP Scan              # Dependency vulnerability scanning
+9. 🐳 Docker Build            # Build production Docker image
+10. 🔍 Trivy Security Scan    # Container image security scan
+11. 📤 Docker Push            # Push to Docker Hub registry
+12. 🧽 Cleanup                # Clean up Docker resources
+```
 
 ### Pipeline Parameters
 
 - **BUILD_TYPE**: `development` | `staging` | `production`
-- **SKIP_TESTS**: Boolean flag for faster iteration
-- **SKIP_SECURITY_SCANS**: Boolean flag for rapid prototyping
-- **CUSTOM_TAG**: Override default image tagging
+- **SKIP_TESTS**: Skip test execution for faster builds
+- **SKIP_SECURITY_SCANS**: Skip OWASP and Trivy scans
+- **CUSTOM_TAG**: Override default Docker image tag
 
-### Running Pipeline
+### Running the Pipeline
 
 ```bash
-# Trigger different build types
-curl -X POST "jenkins-url/job/mern-fit-verse/buildWithParameters?BUILD_TYPE=development"
-curl -X POST "jenkins-url/job/mern-fit-verse/buildWithParameters?BUILD_TYPE=production"
+# Trigger pipeline via Jenkins UI or CLI
+# Development build
+jenkins-cli build "mern-fit-verse" -p BUILD_TYPE=development
 
-# Skip tests for faster builds
-curl -X POST "jenkins-url/job/mern-fit-verse/buildWithParameters?BUILD_TYPE=development&SKIP_TESTS=true"
+# Production build with all checks
+jenkins-cli build "mern-fit-verse" -p BUILD_TYPE=production
 ```
+
+### Quality Gates
+
+- **Code Coverage**: Minimum threshold enforced
+- **Duplicate Code**: Maximum 3% duplication allowed
+- **Code Smells**: Critical issues must be resolved
+- **Security Hotspots**: No high-severity vulnerabilities
+- **Maintainability**: Maintainability rating A or B
 
 ---
 
@@ -718,31 +897,58 @@ curl -X POST "jenkins-url/job/mern-fit-verse/buildWithParameters?BUILD_TYPE=deve
 
 ### Authentication & Authorization
 
-- **JWT Tokens**: Secure user authentication with configurable expiration
-- **bcrypt Hashing**: Password security with salt rounds
-- **HTTP-Only Cookies**: Secure token storage and CSRF protection
-- **Role-Based Access**: Middleware for protected routes
+- **JWT Tokens**: Secure stateless authentication with configurable expiration
+- **bcrypt Hashing**: Password security with 10 salt rounds
+- **HTTP-Only Cookies**: XSS protection with secure cookie storage
+- **Role-Based Access Control**: Admin middleware for protected routes
 
-### Security Measures
+### Security Best Practices
 
-- **CORS Configuration**: Controlled cross-origin resource sharing
-- **Input Validation**: Request sanitization and validation
-- **Rate Limiting**: Protection against brute force attacks (planned)
-- **Helmet.js**: Security headers and vulnerability protection (planned)
+```typescript
+// Password hashing on user creation
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
 
-### Vulnerability Scanning
+// JWT token generation with expiration
+const generateToken = (userId: string) => {
+  return jwt.sign({ userId }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+  });
+};
 
-- **OWASP Dependency Check**: Automated vulnerability scanning
-- **Trivy Security Scans**: Container and filesystem security analysis
-- **SonarQube Integration**: Code security and quality analysis
-- **Dependency Auditing**: NPM audit for known vulnerabilities
+// Protected route middleware
+export const protect = async (req, res, next) => {
+  const token = req.cookies.jwt;
+  if (!token) return res.status(401).json({ message: 'Not authorized' });
+  
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.userId);
+    next();
+  } catch (error) {
+    res.status(401).json({ message: 'Invalid token' });
+  }
+};
+```
 
-### Best Practices
+### Security Scanning
 
-- Environment variables for sensitive data
-- Secrets management in Kubernetes
-- Container security with non-root users
-- Regular security updates and patches
+- **OWASP Dependency Check**: Automated vulnerability scanning for dependencies
+- **Trivy Security Scanner**: Container and filesystem security analysis
+- **SonarQube**: Code security vulnerability detection
+- **npm audit**: Regular dependency audit checks
+
+### Environment Security
+
+- Never commit `.env` files to version control
+- Use Kubernetes secrets for production credentials
+- Rotate JWT secrets regularly
+- Enable HTTPS in production
+- Implement rate limiting for API endpoints (planned)
 
 ---
 
@@ -750,206 +956,246 @@ curl -X POST "jenkins-url/job/mern-fit-verse/buildWithParameters?BUILD_TYPE=deve
 
 ### Base URL
 
-```
+```http
 Development: http://localhost:5003/api
 Production: https://your-domain.com/api
 ```
 
-### 🔐 Authentication Endpoints
+### Authentication Endpoints
+
+#### Register User
 
 ```http
-POST /api/auth/register     # User registration with validation
-POST /api/auth/login        # User authentication
-POST /api/auth/logout       # User logout with cookie clearing
-```
-
-### 👤 User Management Endpoints
-
-```http
-GET  /api/users/profile                     # Get logged-in user profile (protected)
-PUT  /api/users/profile                     # Update user profile with photo upload (protected)
-GET  /api/users/profile/view/suggested      # Get suggested users to follow (protected)
-GET  /api/users/profile/view/:username      # View specific user's profile (protected)
-POST /api/users/profile/follow/:username    # Follow/unfollow a user (protected)
-```
-
-### 📱 Posts & Social Features
-
-```http
-POST   /api/posts/create                    # Create new post with image upload (protected)
-DELETE /api/posts/delete/:postId            # Delete user's own post (protected)
-GET    /api/posts/feed                      # Get all feed posts (protected)
-GET    /api/posts/feed/followed             # Get posts from followed users only (protected)
-GET    /api/posts/user/:username            # Get posts from specific user (protected)
-POST   /api/posts/like/:postId              # Like/unlike a post (protected)
-POST   /api/posts/comment/:postId           # Add comment to post (protected)
-DELETE /api/posts/comment/:postId/:commentId # Delete comment from post (protected)
-```
-
-### 🔔 Notification System
-
-```http
-GET    /api/notifications                   # Get user notifications (protected)
-DELETE /api/notifications                   # Delete all user notifications (protected)
-```
-
-### 🥗 Nutrition Tracking Endpoints
-
-```http
-GET    /api/nutrition                       # Get daily nutrition entries and totals (protected)
-POST   /api/nutrition/add                   # Add nutrition entry (protected)
-DELETE /api/nutrition/delete/:entryId       # Delete nutrition entry (protected)
-```
-
-### 🍎 FatSecret Food Database
-
-```http
-GET    /api/fatsecret/health                # FatSecret API health check (public)
-GET    /api/fatsecret/autocomplete          # Food autocomplete suggestions (protected)
-GET    /api/fatsecret/search                # Search for foods (protected)
-GET    /api/fatsecret/food/:foodId          # Get detailed food information (protected)
-```
-
-### 📋 Custom Meal Categories
-
-```http
-GET    /api/custom-categories               # Get user's custom meal categories (protected)
-POST   /api/custom-categories/add           # Create custom category (max 3) (protected)
-DELETE /api/custom-categories/delete/:id    # Delete custom category (protected)
-```
-
-### 🏥 System Health
-
-```http
-GET /api/health                             # Comprehensive health check dashboard
-```
-
----
-
-## 📖 Detailed API Examples
-
-### User Registration
-
-```http
-POST /api/users/register
+POST /api/auth/register
 Content-Type: application/json
 
 {
   "name": "John Doe",
   "username": "johndoe",
   "email": "john@example.com",
-  "password": "securePassword123",
-  "dob": "1990-01-01",
+  "password": "SecurePass123!",
+  "dob": "1990-01-15",
   "gender": "male"
 }
 ```
 
-### User Login
+**Response:**
+
+```json
+{
+  "_id": "user_id",
+  "name": "John Doe",
+  "username": "johndoe",
+  "email": "john@example.com",
+  "admin": false
+}
+```
+
+#### Login User
 
 ```http
-POST /api/users/auth
+POST /api/auth/login
 Content-Type: application/json
 
 {
   "email": "john@example.com",
-  "password": "securePassword123"
+  "password": "SecurePass123!"
 }
 ```
 
-### Response Format
+**Response:** Sets HTTP-only cookie with JWT token
 
 ```json
 {
-  "success": true,
-  "data": {
-    "user": {
-      "_id": "user_id",
-      "name": "John Doe",
-      "email": "john@example.com",
-      "username": "johndoe"
-    },
-    "token": "jwt_token_here"
-  },
-  "message": "User authenticated successfully"
+  "_id": "user_id",
+  "name": "John Doe",
+  "username": "johndoe",
+  "email": "john@example.com"
 }
 ```
 
-### Error Handling
-
-```json
-{
-  "success": false,
-  "message": "Invalid email or password",
-  "error": "INVALID_CREDENTIALS",
-  "statusCode": 401
-}
-```
-
-### Health Check
+#### Logout User
 
 ```http
-GET /api/health
+POST /api/auth/logout
 ```
 
-**Description:** Returns a comprehensive health check dashboard with system status, uptime, and file system verification.
+**Response:** Clears JWT cookie
 
-**Response:** HTML Dashboard Page
+### User Management Endpoints
 
-- **Content-Type:** `text/html`
-- **Status Codes:**
-  - `200 OK` - Always returns 200, check status in response content
+#### Get User Profile
 
-**Features:**
-
-- 🎯 **System Status**: Overall health status (OK/WARNING/ERROR)
-- ⏱️ **Uptime**: Server uptime in human-readable format
-- 🔧 **Environment**: Current Node.js environment
-- 📁 **File System**: Validates frontend build files existence
-  - Static path verification (`frontend/dist/`)
-  - Index file verification (`frontend/dist/index.html`)
-  - Asset counting and listing
-- 📊 **Real-time Data**: Auto-refresh capability with current timestamp
-- 🎨 **Visual Dashboard**: Modern UI with status indicators and metrics
-
-**Status Levels:**
-
-- **OK** (Green): All systems operational, frontend files found
-- **WARNING** (Amber): System running but missing frontend build files
-- **ERROR** (Red): System errors or critical issues detected
-
-**Usage Examples:**
-
-```bash
-# Browser access - Visual dashboard
-curl http://localhost:5003/api/health
-
-# Command line testing
-npm run health-check
-
-# Docker health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD curl -f http://localhost:5003/api/health || exit 1
+```http
+GET /api/users/profile
+Authorization: Cookie (jwt)
 ```
 
-**Sample Information Displayed:**
+#### Update User Profile
 
-- Server uptime and performance metrics
-- Frontend build status and file counts
-- Current working directory and paths
-- Node.js version and environment variables
-- Last check timestamp with refresh functionality
+```http
+PUT /api/users/profile
+Authorization: Cookie (jwt)
+Content-Type: multipart/form-data
 
-### Nutrition Tracking Examples
+{
+  "name": "John Doe",
+  "height": 180,
+  "weight": 75,
+  "weightUnit": "kg",
+  "goal": "Build muscle",
+  "photo": [file]
+}
+```
 
-**Add Nutrition Entry:**
+#### Get Suggested Users
+
+```http
+GET /api/users/profile/view/suggested
+Authorization: Cookie (jwt)
+```
+
+#### View User Profile
+
+```http
+GET /api/users/profile/view/:username
+Authorization: Cookie (jwt)
+```
+
+#### Follow/Unfollow User
+
+```http
+POST /api/users/profile/follow/:username
+Authorization: Cookie (jwt)
+```
+
+### Posts & Social Features
+
+#### Create Post
+
+```http
+POST /api/posts/create
+Authorization: Cookie (jwt)
+Content-Type: multipart/form-data
+
+{
+  "content": "Just finished my workout!",
+  "image": [file]  // optional
+}
+```
+
+#### Get Feed Posts
+
+```http
+GET /api/posts/feed
+Authorization: Cookie (jwt)
+```
+
+#### Get Followed Users' Posts
+
+```http
+GET /api/posts/feed/followed
+Authorization: Cookie (jwt)
+```
+
+#### Get User Posts
+
+```http
+GET /api/posts/user/:username
+Authorization: Cookie (jwt)
+```
+
+#### Like/Unlike Post
+
+```http
+POST /api/posts/like/:postId
+Authorization: Cookie (jwt)
+```
+
+#### Add Comment
+
+```http
+POST /api/posts/comment/:postId
+Authorization: Cookie (jwt)
+Content-Type: application/json
+
+{
+  "comment": "Great work! Keep it up!"
+}
+```
+
+#### Delete Comment
+
+```http
+DELETE /api/posts/comment/:postId/:commentId
+Authorization: Cookie (jwt)
+```
+
+#### Delete Post
+
+```http
+DELETE /api/posts/delete/:postId
+Authorization: Cookie (jwt)
+```
+
+### Notifications
+
+#### Get Notifications
+
+```http
+GET /api/notifications
+Authorization: Cookie (jwt)
+```
+
+#### Delete All Notifications
+
+```http
+DELETE /api/notifications
+Authorization: Cookie (jwt)
+```
+
+### Nutrition Tracking
+
+#### Get Daily Nutrition
+
+```http
+GET /api/nutrition?date=2024-01-15
+Authorization: Cookie (jwt)
+```
+
+**Response:**
+
+```json
+{
+  "entries": [
+    {
+      "_id": "entry_id",
+      "mealCategory": "breakfast",
+      "foodItem": "Oatmeal",
+      "calories": 300,
+      "protein": 10,
+      "carbs": 54,
+      "fats": 6
+    }
+  ],
+  "totals": {
+    "calories": 1850,
+    "protein": 145,
+    "carbs": 210,
+    "fats": 62
+  }
+}
+```
+
+#### Add Nutrition Entry
 
 ```http
 POST /api/nutrition/add
+Authorization: Cookie (jwt)
 Content-Type: application/json
-Authorization: Bearer {token}
 
 {
-  "date": "2024-01-15T00:00:00.000Z",
+  "date": "2024-01-15",
   "mealCategory": "breakfast",
   "foodItem": "Oatmeal with Berries",
   "calories": 350,
@@ -959,369 +1205,241 @@ Authorization: Bearer {token}
 }
 ```
 
-**Response:**
+#### Delete Nutrition Entry
 
-```json
+```http
+DELETE /api/nutrition/delete/:entryId
+Authorization: Cookie (jwt)
+```
+
+### FatSecret Food Database
+
+#### Food Autocomplete
+
+```http
+GET /api/fatsecret/autocomplete?expression=chicken&max_results=8
+Authorization: Cookie (jwt)
+```
+
+#### Search Foods
+
+```http
+GET /api/fatsecret/search?search_expression=chicken%20breast
+Authorization: Cookie (jwt)
+```
+
+#### Get Food Details
+
+```http
+GET /api/fatsecret/food/:foodId
+Authorization: Cookie (jwt)
+```
+
+### Custom Meal Categories
+
+#### Get Custom Categories
+
+```http
+GET /api/custom-categories
+Authorization: Cookie (jwt)
+```
+
+#### Add Custom Category
+
+```http
+POST /api/custom-categories/add
+Authorization: Cookie (jwt)
+Content-Type: application/json
+
 {
-  "success": true,
-  "message": "Nutrition entry added successfully",
-  "data": {
-    "_id": "entry_id",
-    "user": "user_id",
-    "date": "2024-01-15T00:00:00.000Z",
-    "mealCategory": "breakfast",
-    "foodItem": "Oatmeal with Berries",
-    "calories": 350,
-    "protein": 12,
-    "carbs": 58,
-    "fats": 8,
-    "createdAt": "2024-01-15T08:30:00.000Z"
-  }
+  "name": "Pre-Workout",
+  "color": "#FF6B6B",
+  "order": 1
 }
 ```
 
-**Get Daily Nutrition:**
+#### Delete Custom Category
 
 ```http
-GET /api/nutrition?date=2024-01-15
-Authorization: Bearer {token}
+DELETE /api/custom-categories/delete/:categoryId
+Authorization: Cookie (jwt)
 ```
 
-**Response:**
+### Exercise & Workout Endpoints
 
-```json
-{
-  "success": true,
-  "data": {
-    "entries": [
-      {
-        "_id": "entry_id",
-        "mealCategory": "breakfast",
-        "foodItem": "Oatmeal with Berries",
-        "calories": 350,
-        "protein": 12,
-        "carbs": 58,
-        "fats": 8
-      }
-    ],
-    "totals": {
-      "calories": 1850,
-      "protein": 145,
-      "carbs": 210,
-      "fats": 62
-    },
-    "date": "2024-01-15T00:00:00.000Z"
-  }
-}
-```
-
-**Food Autocomplete:**
+#### Get All Exercises
 
 ```http
-GET /api/fatsecret/autocomplete?expression=chick&max_results=8
-Authorization: Bearer {token}
+GET /api/exercises
+Authorization: Cookie (jwt)
 ```
 
-**Response:**
+#### Get Exercise by ID
 
-```json
+```http
+GET /api/exercises/:id
+Authorization: Cookie (jwt)
+```
+
+#### Create Workout
+
+```http
+POST /api/workouts
+Authorization: Cookie (jwt)
+Content-Type: application/json
+
 {
-  "success": true,
-  "data": {
-    "suggestions": {
-      "suggestion": [
-        "Chicken Breast",
-        "Chicken Thigh",
-        "Chicken Wings",
-        "Chickpeas"
+  "workoutType": "freestyle",
+  "duration": 3600,
+  "exercises": [
+    {
+      "exerciseId": "exercise_id",
+      "exerciseName": "Bench Press",
+      "sets": [
+        { "setNumber": 1, "weight": 100, "reps": 10, "completed": true }
       ]
     }
-  }
+  ],
+  "notes": "Great workout!"
 }
 ```
 
----
+#### Get User Workouts
 
-## 🎨 Frontend Architecture & Components
-
-### 📁 Component Structure
-
-```
-src/
-├── 🎯 UI Components (Radix UI Primitives)
-│   ├── ui/
-│   │   ├── avatar.tsx          # Profile picture component with fallbacks
-│   │   ├── button.tsx          # Customizable button with variants (CVA)
-│   │   ├── navigation-menu.tsx # Accessible navigation component
-│   │   └── sonner.tsx          # Toast notification system
-├── 🏗 Layout Components
-│   ├── Header.tsx              # Navigation bar with user menu and theme toggle
-│   ├── Footer.tsx              # Site footer with links and branding
-│   ├── AlertModal.tsx          # System alert and notification modals
-│   ├── PrivateRoute.tsx        # Authentication guard for protected routes
-│   ├── ScrollToTop.tsx         # Auto-scroll to top on route changes
-│   └── ThemeToggle.tsx         # Dark/light mode toggle component
+```http
+GET /api/workouts
+Authorization: Cookie (jwt)
 ```
 
-### 📱 Screen Components
+#### Delete Workout
 
-```
-screens/
-├── HomeScreen.tsx              # Landing page with hero section and features
-├── LoginScreen.tsx             # User authentication with form validation
-├── RegisterScreen.tsx          # User registration with comprehensive validation
-└── protected/                  # Protected screens requiring authentication
-    ├── DashboardScreen.tsx     # Social feed, suggested users, post interactions
-    ├── SettingsScreen.tsx      # Comprehensive user settings and profile management
-    ├── NutritionScreen.tsx     # Nutrition hub coming soon preview
-    ├── WorkoutScreen.tsx       # Workout hub coming soon preview
-    ├── ViewUserProfile.tsx     # View other users' profiles and posts
-    ├── FollowersFollowingModal.tsx # Modal for followers/following lists
-    └── ThemeSettingsSection.tsx   # Theme customization settings
+```http
+DELETE /api/workouts/:workoutId
+Authorization: Cookie (jwt)
 ```
 
-### 🔄 State Management (Redux Toolkit + RTK Query)
+### System Health
 
-```typescript
-// Store Structure
-{
-  auth: {
-    isAuthenticated: boolean,
-    userInfo: {
-      _id: string,
-      name: string,
-      username: string,
-      email: string,
-      photo?: string,
-      followers: string[],
-      following: string[],
-      // ... other user fields
-    } | null,
-    token: string | null
-  }
-}
+#### Health Check
 
-// API Slices
-├── apiSlice.ts           # Base RTK Query configuration
-├── authSlice.ts          # Authentication state management
-├── usersApiSlice.ts      # User-related API calls
-└── postsApiSlice.ts      # Posts and social features API calls
+```http
+GET /api/health
 ```
 
-### 🎨 Styling & Design System
-
-```typescript
-// Tailwind Configuration
-├── Utility-First CSS     # Comprehensive utility classes
-├── Custom CSS Variables # Theme-aware color system
-├── Component Variants   # CVA-based component styling
-├── Responsive Design    # Mobile-first breakpoints
-├── Dark/Light Themes    # System preference + manual toggle
-└── Animation System     # Smooth transitions and micro-interactions
-```
-
-### 📚 Utility Libraries
-
-```typescript
-lib/
-├── calculateAge.ts       # Age calculation from date of birth
-├── formatDate.ts         # Date formatting utilities
-├── getInitials.ts        # Generate user initials for avatars
-├── getPasswordStrength.ts # Password strength validation
-└── utils.ts              # General utility functions (cn, clsx)
-```
-
-### 🔌 Key Integrations
-
-- **Cloudinary**: Image upload and optimization for profile pictures and posts
-- **React Router**: Client-side routing with protected routes
-- **Sonner**: Toast notifications for user feedback
-- **Lucide React**: Consistent icon system throughout the app
-- **Next Themes**: Seamless dark/light mode switching
+**Response:** HTML dashboard with system status
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions from the community! Here's how you can help make MERN FitVerse better:
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
-### 🐛 Reporting Bugs
+### Quick Contribution Steps
 
-1. Check existing issues to avoid duplicates
-2. Use the bug report template
-3. Include steps to reproduce, expected behavior, and screenshots
-4. Specify your environment (OS, Node version, browser)
+```bash
+# 1. Fork the repository
+# 2. Clone your fork
+git clone https://github.com/YOUR_USERNAME/mern-fit-verse.git
 
-### 💡 Suggesting Features
+# 3. Create feature branch
+git checkout -b feature/amazing-feature
 
-1. Check the roadmap and existing feature requests
-2. Open an issue with the feature request template
-3. Describe the problem and proposed solution
-4. Include mockups or examples if applicable
+# 4. Make changes and commit
+git commit -m "feat: add amazing feature"
 
-### 🔧 Development Workflow
+# 5. Push to your fork
+git push origin feature/amazing-feature
 
-1. **Fork** the repository
-2. **Clone** your fork locally
-3. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
-4. **Make** your changes with tests
-5. **Commit** with conventional commit messages
-6. **Push** to your branch (`git push origin feature/amazing-feature`)
-7. **Create** a Pull Request
-
-### 📝 Commit Convention
-
+# 6. Open a Pull Request
 ```
-feat: add new workout tracking feature
+
+### Commit Convention
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```text
+feat: add new nutrition goal tracking
 fix: resolve authentication token expiration
 docs: update API documentation
 style: format code with prettier
 refactor: reorganize component structure
-test: add unit tests for user controller
+test: add unit tests for nutrition controller
 chore: update dependencies
 ```
-
-### 🧪 Pull Request Guidelines
-
-- Ensure all tests pass
-- Include relevant tests for new features
-- Update documentation if needed
-- Follow the existing code style
-- Keep PRs focused and atomic
-
-### 🏗 Development Setup for Contributors
-
-```bash
-# 1. Fork and clone the repository
-git clone https://github.com/YOUR_USERNAME/mern-fit-verse.git
-cd mern-fit-verse
-
-# 2. Add upstream remote
-git remote add upstream https://github.com/xjohnfit/mern-fit-verse.git
-
-# 3. Install dependencies
-npm install && cd frontend && npm install && cd ..
-
-# 4. Create environment file
-cp .env.example .env
-# Edit .env with your local configuration
-
-# 5. Start development server
-npm run dev
-
-# 6. Create feature branch
-git checkout -b feature/your-feature-name
-
-# 7. Make changes and test
-npm run lint
-npm run test
-npm run build
-
-# 8. Commit and push
-git add .
-git commit -m "feat: your feature description"
-git push origin feature/your-feature-name
-```
-
-### 🎯 Areas for Contribution
-
-- **Frontend Features**: Workout tracking, nutrition enhancements (barcode scanner, meal planning), progress charts
-- **Backend APIs**: Exercise database, workout plans, advanced nutrition analytics
-- **Testing**: Unit tests, integration tests, E2E tests for nutrition and social features
-- **Documentation**: API docs, tutorials, deployment guides, nutrition tracking usage guides
-- **UI/UX**: Design improvements, accessibility, mobile optimization, nutrition UI enhancements
-- **DevOps**: CI/CD improvements, monitoring, performance optimization
 
 ---
 
 ## 🚀 Roadmap
 
-### Phase 1: Social Foundation ✅ (Completed)
+### ✅ Phase 1: Social Foundation (Completed)
 
-- [x] **Authentication System**: Secure JWT-based auth with comprehensive validation
-- [x] **User Profiles**: Complete profile management with photos and fitness metrics
-- [x] **Social Networking**: Follow/unfollow system with user discovery
-- [x] **Social Feed**: Post creation, image upload, likes, and comments system
-- [x] **Notification System**: Real-time notifications for social interactions
-- [x] **Modern UI/UX**: Responsive design with dark/light theme support
-- [x] **Cloud Integration**: Cloudinary for image management and optimization
-- [x] **Production Ready**: Docker containerization and Kubernetes deployment
-- [x] **CI/CD Pipeline**: Comprehensive Jenkins pipeline with security scanning
-- [x] **Health Monitoring**: Advanced system health checks and monitoring
+- [x] Authentication system with JWT
+- [x] User profiles and photo uploads
+- [x] Follow/unfollow system
+- [x] Social feed with posts
+- [x] Like and comment system
+- [x] Real-time notifications
+- [x] Dark/light theme support
 
-### Phase 2: Nutrition Tracking ✅ (Completed)
+### ✅ Phase 2: Nutrition Tracking (Completed)
 
-- [x] **Food Database Integration**: FatSecret API with 500,000+ food items
-- [x] **Smart Food Search**: Real-time autocomplete with debounced search
-- [x] **Food Details**: Comprehensive nutrition information with serving size adjustment
-- [x] **Daily Meal Tracking**: Track meals across multiple categories (Breakfast, Lunch, Dinner, Snacks)
-- [x] **Custom Meal Categories**: Create up to 3 personalized meal categories
-- [x] **Macro Tracking**: Track calories, protein, carbs, and fats with visual progress
-- [x] **Nutrition Goals**: Set and monitor daily calorie and macronutrient targets
-- [x] **Visual Analytics**: Interactive pie charts and progress bars for macro distribution
-- [x] **Historical Data**: Navigate through dates to view and manage past nutrition logs
-- [x] **Entry Management**: Full CRUD operations for nutrition entries and custom categories
+- [x] FatSecret API integration
+- [x] Food search with autocomplete
+- [x] Daily meal tracking
+- [x] Custom meal categories
+- [x] Macro tracking and goals
+- [x] Visual progress charts
+- [x] Historical data navigation
 
-### Phase 3: Fitness Tracking 🚧 (In Development)
+### 🚧 Phase 3: Fitness Tracking (In Progress)
 
-- [ ] **Exercise Database**: Comprehensive exercise library with instructions and videos
-- [ ] **Workout Planning**: Create and schedule personalized workout routines
-- [ ] **Progress Tracking**: Monitor fitness metrics, sets, reps, and personal records
-- [ ] **Workout Analytics**: Performance insights and progress visualization
-- [ ] **Goal Setting**: Set and track fitness goals with achievement milestones
-- [ ] **Workout Sharing**: Share workout routines with the community
+- [x] Exercise database
+- [x] Workout logging
+- [ ] Workout templates
+- [ ] Progress tracking
+- [ ] Personal records
+- [ ] Workout analytics
 
-### Phase 4: Advanced Nutrition & Wellness 📋 (Planned)
+### 📋 Phase 4: Advanced Features (Planned)
 
-- [ ] **Meal Planning**: AI-powered personalized meal plans based on fitness goals
-- [ ] **Barcode Scanner**: Quick food logging with barcode scanning capability
-- [ ] **Recipe Database**: Community recipe sharing and meal prep guides
-- [ ] **Water Tracking**: Daily hydration monitoring and reminders
-- [ ] **Sleep Tracking**: Sleep quality and duration monitoring
-- [ ] **Nutrition Analytics**: Advanced insights, trends, and recommendations
-- [ ] **Meal Photo Recognition**: AI-powered food identification from photos
+- [ ] Meal planning with AI suggestions
+- [ ] Barcode scanner for quick food logging
+- [ ] Recipe database and sharing
+- [ ] Water and sleep tracking
+- [ ] Advanced nutrition analytics
+- [ ] Fitness device integration
 
-### Phase 5: Advanced Features 🎯 (Future)
+### 🎯 Phase 5: Mobile & Scale (Future)
 
-- [ ] **AI-Powered Recommendations**: Personalized workout and nutrition suggestions
-- [ ] **Fitness Device Integration**: Connect with popular fitness trackers and apps
-- [ ] **Video Workouts**: Guided workout videos and form correction
-- [ ] **Virtual Training**: Live and recorded training sessions
-- [ ] **Challenges & Competitions**: Community fitness challenges and leaderboards
-- [ ] **Mobile Application**: Native iOS and Android apps
-
-### Phase 6: Scale & Enterprise 🏢 (Long-term)
-
-- [ ] **Performance Optimization**: Advanced caching, CDN, and database optimization
-- [ ] **Multi-language Support**: Internationalization for global reach
-- [ ] **Premium Features**: Advanced analytics, personal trainers, custom plans
-- [ ] **Enterprise Features**: Corporate wellness programs and team challenges
-- [ ] **API Ecosystem**: Public APIs for third-party integrations
-- [ ] **Advanced Security**: SOC2 compliance and enterprise-grade security
+- [ ] React Native mobile apps
+- [ ] Offline support
+- [ ] Push notifications
+- [ ] Multi-language support
+- [ ] Premium features
+- [ ] Corporate wellness programs
 
 ---
 
-## 📞 Support & Community
+## 📞 Support & Contact
 
-### 🆘 Getting Help
+### Get Help
 
-- **GitHub Issues**: [Report bugs and request features](https://github.com/xjohnfit/mern-fit-verse/issues)
-- **Discussions**: [Community discussions and Q&A](https://github.com/xjohnfit/mern-fit-verse/discussions)
-- **Email**: [xjohnfitcodes@gmail.com](mailto:xjohnfitcodes@gmail.com)
+- **Issues**: [GitHub Issues](https://github.com/xjohnfit/mern-fit-verse/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/xjohnfit/mern-fit-verse/discussions)
+- **Email**: xjohnfitcodes@gmail.com
 
-### 🔗 Links
+### Links
 
-- **Live Demo**: [https://fitverse-demo.com](https://fitverse-demo.com)
-- **Docker Hub**: [xjohnfit/mern-fit-verse](https://hub.docker.com/r/xjohnfit/mern-fit-verse)
-- **Documentation**: [Project Wiki](https://github.com/xjohnfit/mern-fit-verse/wiki)
+- **Repository**: [github.com/xjohnfit/mern-fit-verse](https://github.com/xjohnfit/mern-fit-verse)
+- **Docker Hub**: [hub.docker.com/r/xjohnfit/mern-fit-verse](https://hub.docker.com/r/xjohnfit/mern-fit-verse)
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **ISC License** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **ISC License**.
 
-```
+```text
 ISC License
 
 Copyright (c) 2025 John Winchester
@@ -1343,19 +1461,28 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ## 🙏 Acknowledgments
 
-- **MongoDB Atlas** for database hosting
-- **Vercel/Netlify** for deployment platform
+Special thanks to:
+
+- **MongoDB** for the powerful database platform
+- **Cloudinary** for image management services
+- **FatSecret** for the comprehensive nutrition API
 - **Radix UI** for accessible component primitives
 - **Tailwind CSS** for the utility-first CSS framework
-- **React Team** for the amazing frontend library
-- **Express.js** for the robust backend framework
-- **Open Source Community** for inspiration and contributions
+- **Vercel** for hosting and deployment solutions
+- **Open Source Community** for continuous inspiration
 
 ---
 
+<div align="center">
+
 **Built with ❤️ by [John Winchester](https://github.com/xjohnfit)**
 
-**⭐ Star this repository if you found it helpful!**
+⭐ **Star this repository if you found it helpful!**
 
 [![GitHub stars](https://img.shields.io/github/stars/xjohnfit/mern-fit-verse?style=social)](https://github.com/xjohnfit/mern-fit-verse/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/xjohnfit/mern-fit-verse?style=social)](https://github.com/xjohnfit/mern-fit-verse/network/members)
+[![GitHub watchers](https://img.shields.io/github/watchers/xjohnfit/mern-fit-verse?style=social)](https://github.com/xjohnfit/mern-fit-verse/watchers)
+
+**[⬆ Back to Top](#-mern-fitverse)**
+
+</div>

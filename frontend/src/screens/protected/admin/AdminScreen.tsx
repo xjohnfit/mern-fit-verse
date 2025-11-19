@@ -187,30 +187,30 @@ const AdminScreen = () => {
               </div>
 
               {usersLoading ? (
-                <div className="text-center py-8">Loading users...</div>
+                <div className="text-center py-8 text-muted-foreground">Loading users...</div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
                     <thead>
-                      <tr className="border-b">
-                        <th className="hidden md:table-cell text-left p-3 font-semibold">Name</th>
-                        <th className="hidden md:table-cell text-left p-3 font-semibold">Username</th>
-                        <th className="text-left p-3 font-semibold text-sm md:text-base">Email</th>
-                        <th className="text-left p-3 font-semibold text-sm md:text-base">Role</th>
-                        <th className="text-left p-3 font-semibold text-sm md:text-base">Actions</th>
+                      <tr className="border-b border-border bg-muted/50">
+                        <th className="hidden md:table-cell text-left p-3 font-semibold text-foreground">Name</th>
+                        <th className="hidden md:table-cell text-left p-3 font-semibold text-foreground">Username</th>
+                        <th className="text-left p-3 font-semibold text-sm md:text-base text-foreground">Email</th>
+                        <th className="text-left p-3 font-semibold text-sm md:text-base text-foreground">Role</th>
+                        <th className="text-left p-3 font-semibold text-sm md:text-base text-foreground">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredUsers.map((user: User) => (
-                        <tr key={user._id} className="border-b hover:bg-accent/50">
-                          <td className="hidden md:table-cell p-3">{user.name}</td>
-                          <td className="hidden md:table-cell p-3">@{user.username}</td>
-                          <td className="p-3 text-sm md:text-base">{user.email}</td>
+                        <tr key={user._id} className="border-b border-border hover:bg-muted/50 transition-colors">
+                          <td className="hidden md:table-cell p-3 text-foreground">{user.name}</td>
+                          <td className="hidden md:table-cell p-3 text-muted-foreground">@{user.username}</td>
+                          <td className="p-3 text-sm md:text-base text-foreground">{user.email}</td>
                           <td className="p-3 text-sm md:text-base">
                             <span
-                              className={`px-2 py-1 rounded-full text-xs font-medium ${user.admin
-                                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
-                                : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
+                              className={`px-2.5 py-1 rounded-full text-xs font-semibold ${user.admin
+                                ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
+                                : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
                                 }`}
                             >
                               {user.admin ? 'Admin' : 'User'}
@@ -262,10 +262,10 @@ const AdminScreen = () => {
               </Button>
 
               {showExerciseForm && (
-                <form onSubmit={handleExerciseSubmit} className="space-y-4 mb-6 p-4 border rounded-lg">
+                <form onSubmit={handleExerciseSubmit} className="space-y-4 mb-6 p-6 border border-border rounded-lg bg-muted/30">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-2">Name *</label>
+                      <label className="block text-sm font-semibold mb-2 text-foreground">Name *</label>
                       <Input
                         type="text"
                         value={exerciseForm.name}
@@ -275,7 +275,7 @@ const AdminScreen = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">Category *</label>
+                      <label className="block text-sm font-semibold mb-2 text-foreground">Category *</label>
                       <Input
                         type="text"
                         value={exerciseForm.category}
@@ -286,7 +286,7 @@ const AdminScreen = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Image URL</label>
+                    <label className="block text-sm font-semibold mb-2 text-foreground">Image URL</label>
                     <Input
                       type="text"
                       value={exerciseForm.image}
@@ -295,22 +295,22 @@ const AdminScreen = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Description *</label>
+                    <label className="block text-sm font-semibold mb-2 text-foreground">Description *</label>
                     <textarea
                       value={exerciseForm.description}
                       onChange={(e) => setExerciseForm({ ...exerciseForm, description: e.target.value })}
                       placeholder="Brief description of the exercise"
-                      className="flex min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring placeholder:text-muted-foreground"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Instructions *</label>
+                    <label className="block text-sm font-semibold mb-2 text-foreground">Instructions *</label>
                     <textarea
                       value={exerciseForm.instructions}
                       onChange={(e) => setExerciseForm({ ...exerciseForm, instructions: e.target.value })}
                       placeholder="Step-by-step instructions"
-                      className="flex min-h-30 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      className="flex min-h-30 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring placeholder:text-muted-foreground"
                       required
                     />
                   </div>
@@ -338,25 +338,25 @@ const AdminScreen = () => {
               </div>
 
               {exercisesLoading ? (
-                <div className="text-center py-8">Loading exercises...</div>
+                <div className="text-center py-8 text-muted-foreground">Loading exercises...</div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {filteredExercises.map((exercise: Exercise) => (
-                    <Card key={exercise.id} className="overflow-hidden">
+                    <Card key={exercise.id} className="overflow-hidden hover:shadow-lg transition-shadow border border-border">
                       {exercise.image && (
                         <img
                           src={exercise.image}
                           alt={exercise.name}
-                          className="w-full h-48 object-cover"
+                          className="w-full h-48 object-cover bg-muted"
                           onError={(e) => {
                             (e.target as HTMLImageElement).style.display = 'none';
                           }}
                         />
                       )}
                       <CardHeader>
-                        <CardTitle className="text-lg">{exercise.name}</CardTitle>
+                        <CardTitle className="text-lg text-foreground">{exercise.name}</CardTitle>
                         <CardDescription>
-                          <span className="inline-block px-2 py-1 bg-primary/10 text-primary rounded text-xs">
+                          <span className="inline-block px-2.5 py-1 bg-primary/10 text-primary border border-primary/20 rounded-md text-xs font-medium">
                             {exercise.category}
                           </span>
                         </CardDescription>
@@ -403,8 +403,8 @@ const AdminScreen = () => {
     <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold mb-2 text-foreground">Admin Dashboard</h1>
+          <p className="text-muted-foreground text-base">
             Manage users, exercises, and system settings
           </p>
         </div>
@@ -413,7 +413,7 @@ const AdminScreen = () => {
           tabs={tabs}
           defaultValue="users"
           containerClassName="mb-8 justify-center"
-          activeTabClassName="bg-primary text-primary-foreground"
+          activeTabClassName="bg-primary dark:bg-primary"
         />
       </div>
     </div>
