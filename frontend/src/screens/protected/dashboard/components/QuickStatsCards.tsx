@@ -2,7 +2,7 @@
 import { type FC } from "react";
 
 // Icons
-import { Activity, Apple, TrendingUp } from "lucide-react";
+import { Activity, Apple, TrendingUp, Dumbbell } from "lucide-react";
 
 interface QuickStatsCardsProps {
     onNavigate: (path: string) => void;

@@ -16,7 +16,9 @@ import notificationRoutes from './routes/notificationRoutes';
 import healthRoutes from './routes/healthRoutes';
 import fatSecretRoutes from './routes/fatSecretRoutes';
 import nutritionRoutes from './routes/NutritionRoutes';
+import exerciseRoutes from './routes/exercisesRoutes';
 import customCategoryRoutes from './routes/customCategoryRoutes';
+import workoutRoutes from './routes/workoutRoutes';
 // import exerciseRoutes from './routes/exerciseRoutes';
 
 // Configurations
@@ -41,7 +43,7 @@ const PORT: number = parseInt(process.env.PORT || '5003', 10);
 // Middlewares
 app.use(
     cors({
-        origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+        origin: process.env.VITE_FRONTEND_URL || 'http://localhost:5173',
         credentials: true,
         exposedHeaders: ['Set-Cookie'],
         maxAge: 86400, // 24 hours
@@ -75,7 +77,9 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api/fatsecret', fatSecretRoutes);
 app.use('/api/nutrition', nutritionRoutes);
+app.use('/api/exercises', exerciseRoutes);
 app.use('/api/custom-categories', customCategoryRoutes);
+app.use('/api/workouts', workoutRoutes);
 
 // Serve static files from the React app in production
 if (process.env.NODE_ENV === 'production') {

@@ -18,6 +18,7 @@ export interface IUser {
     goal?: string;
     photo?: string;
     likedPosts?: string[];
+    workouts?: string[];
 
     // Nutrition goals
     nutritionGoals?: {
@@ -52,6 +53,9 @@ const userSchema = new Schema<IUser>(
         height: { type: Number, default: null },
         weight: { type: Number, default: null },
         likedPosts: [{ type: Schema.Types.ObjectId, ref: 'Post', default: [] }],
+        workouts: [
+            { type: Schema.Types.ObjectId, ref: 'Workout', default: [] },
+        ],
 
         // Nutrition goals
         nutritionGoals: {
