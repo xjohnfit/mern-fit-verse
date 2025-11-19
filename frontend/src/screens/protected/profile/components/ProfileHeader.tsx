@@ -1,5 +1,5 @@
 import { type FC } from 'react';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Users, UserCheck, MessageCircle, MoreHorizontal, User } from 'lucide-react';
 import { getInitials } from '@/lib/getInitials';
