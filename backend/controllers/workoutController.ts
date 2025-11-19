@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Workout from '../models/workoutModel';
 import User from '../models/userModel';
+import { convertWorkoutWeights, convertWorkoutWeightsForStorage } from '../utils/weightConversion';
 
 // @desc    Create a new workout
 // @route   POST /api/workouts
@@ -24,15 +25,25 @@ export const createWorkout = async (req: Request, res: Response) => {
             return;
         }
 
-        // Create workout
-        const workout = await Workout.create({
-            userId: req.user._id,
+        // Get user's weight unit preference
+        const user = await User.findById(req.user._id);
+        const userWeightUnit = user?.weightUnit || 'lbs';
+
+        // Convert weights from user's unit to lbs for storage
+        const workoutData = {
             workoutType: workoutType || 'freestyle',
             templateId,
             duration,
             exercises,
             completedAt: completedAt || new Date(),
             notes,
+        };
+        const convertedWorkoutData = convertWorkoutWeightsForStorage(workoutData, userWeightUnit);
+
+        // Create workout
+        const workout = await Workout.create({
+            userId: req.user._id,
+            ...convertedWorkoutData,
         });
 
         // Add workout ID to user's workouts array
@@ -57,7 +68,16 @@ export const getWorkouts = async (req: Request, res: Response) => {
             .sort({ completedAt: -1 })
             .limit(50);
 
-        res.json(workouts);
+        // Get user's weight unit preference
+        const user = await User.findById(req.user._id);
+        const userWeightUnit = user?.weightUnit || 'lbs';
+
+        // Convert weights to user's preferred unit
+        const convertedWorkouts = workouts.map(workout => 
+            convertWorkoutWeights(workout.toObject(), userWeightUnit)
+        );
+
+        res.json(convertedWorkouts);
     } catch (error: any) {
         res.status(500).json({ message: error.message });
     }
@@ -81,7 +101,14 @@ export const getWorkoutById = async (req: Request, res: Response) => {
             return;
         }
 
-        res.json(workout);
+        // Get user's weight unit preference
+        const user = await User.findById(req.user._id);
+        const userWeightUnit = user?.weightUnit || 'lbs';
+
+        // Convert weights to user's preferred unit
+        const convertedWorkout = convertWorkoutWeights(workout.toObject(), userWeightUnit);
+
+        res.json(convertedWorkout);
     } catch (error: any) {
         res.status(500).json({ message: error.message });
     }

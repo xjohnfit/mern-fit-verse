@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { useGetDailyNutritionQuery } from "@/slices/nutritionApiSlice";
 import { useGetPostsQuery, useLikeUnlikePostMutation, useAddCommentMutation } from "@/slices/postsApiSlice";
 import { useGetSuggestedUsersQuery, useFollowUnfollowUserMutation, useGetUserProfileQuery } from "@/slices/usersApiSlice";
-import { useGetWorkoutStatsQuery } from "@/slices/workoutApiSlice";
+import { useGetWorkoutStatsQuery, useGetWorkoutsQuery } from "@/slices/workoutApiSlice";
 
 // UI Components
 import { Tabs } from "@/components/ui/tabs";
@@ -22,6 +22,7 @@ import {
   PostsFeed,
   NutritionOverview,
   MessagesSection,
+  WorkoutsHistory,
 } from "./components";
 
 // Icons
@@ -48,6 +49,7 @@ const DashboardScreen = () => {
   const { data: currentUserProfile, isLoading: isLoadingProfile } = useGetUserProfileQuery({});
   const { data: nutritionData, isLoading: isLoadingNutrition } = useGetDailyNutritionQuery();
   const { data: workoutStats } = useGetWorkoutStatsQuery({});
+  const { data: workouts, isLoading: isLoadingWorkouts } = useGetWorkoutsQuery({});
   const [followUnfollowUser] = useFollowUnfollowUserMutation();
   const [likeUnlikePost] = useLikeUnlikePostMutation();
   const [addComment] = useAddCommentMutation();
@@ -609,6 +611,28 @@ const DashboardScreen = () => {
     </div>
   );
 
+  const WorkoutsTab = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Workout History</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            {workouts?.length || 0} workout{(workouts?.length || 0) !== 1 ? 's' : ''} completed
+          </p>
+        </div>
+        <button
+          onClick={() => navigate("/workout")}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+        >
+          <Dumbbell className="w-4 h-4" />
+          <span className="hidden sm:inline">New Workout</span>
+        </button>
+      </div>
+
+      <WorkoutsHistory workouts={workouts} isLoading={isLoadingWorkouts} />
+    </div>
+  );
+
   const tabs = [
     {
       title: "Overview",
@@ -619,6 +643,11 @@ const DashboardScreen = () => {
       title: "Statistics",
       value: "stats",
       content: <StatsTab />,
+    },
+    {
+      title: "Workouts",
+      value: "workouts",
+      content: <WorkoutsTab />,
     },
     {
       title: "Community",

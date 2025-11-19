@@ -1,6 +1,7 @@
 // React
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 
 // Third-party libraries
 import { Search, Dumbbell, Plus, ArrowLeft, X, Timer, Play, Pause, Check } from "lucide-react";
@@ -13,6 +14,9 @@ import { useCreateWorkoutMutation } from "@/slices/workoutApiSlice";
 // Components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+
+// Utils
+import { formatWeight } from "@/lib/weightConversion";
 
 interface Exercise {
     id: string;
@@ -41,6 +45,8 @@ const StartWorkoutScreen = () => {
     const { data: exercises, isLoading } = useGetExercisesQuery();
     const [createWorkout] = useCreateWorkoutMutation();
     const toastShownRef = useRef<Set<string>>(new Set());
+    const { userInfo } = useSelector((state: any) => state.auth);
+    const weightUnit = userInfo?.weightUnit || 'lbs';
 
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedExercises, setSelectedExercises] = useState<WorkoutExercise[]>(() => {
@@ -598,7 +604,7 @@ const StartWorkoutScreen = () => {
                                                                         placeholder="0"
                                                                         className="w-12 sm:w-16 h-7 sm:h-8 px-1 sm:px-2 text-xs sm:text-sm border rounded text-center focus:outline-none focus:ring-1 focus:ring-blue-500"
                                                                     />
-                                                                    <span className="text-[10px] sm:text-xs text-gray-500">kg</span>
+                                                                    <span className="text-[10px] sm:text-xs text-gray-500">{weightUnit}</span>
                                                                 </div>
                                                                 <span className="text-xs sm:text-sm text-gray-300">×</span>
                                                                 <div className="flex items-center gap-0.5 sm:gap-1">
@@ -617,7 +623,7 @@ const StartWorkoutScreen = () => {
                                                         {/* Display completed set data */}
                                                         {set.completed && set.weight > 0 && set.reps > 0 && (
                                                             <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                                                                {set.weight} kg × {set.reps} reps
+                                                                {formatWeight(set.weight, weightUnit)} × {set.reps} reps
                                                             </div>
                                                         )}
                                                     </div>

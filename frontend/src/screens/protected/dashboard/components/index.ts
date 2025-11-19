@@ -6,6 +6,7 @@ export { QuickStatsCards } from './QuickStatsCards';
 export { NutritionOverview } from './NutritionOverview';
 export { MessagesSection } from './MessagesSection';
 export { WorkoutStats } from './WorkoutStats';
+export { WorkoutsHistory } from './WorkoutsHistory';
 export { EmptyPosts } from './EmptyStates/EmptyPosts';
 export { EmptyNutrition } from './EmptyStates/EmptyNutrition';
 export { EmptyMessages } from './EmptyStates/EmptyMessages';

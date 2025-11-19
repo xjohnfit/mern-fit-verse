@@ -23,6 +23,7 @@ interface UpdateUserBody {
     gender: string;
     height: number;
     weight: number;
+    weightUnit: string;
     goal: string;
     photo: string;
 }
@@ -83,6 +84,7 @@ export const updateUserProfile = asyncHandler(
         user.goal = req.body.goal || user.goal;
         user.height = req.body.height || user.height;
         user.weight = req.body.weight || user.weight;
+        user.weightUnit = req.body.weightUnit || user.weightUnit;
 
         // Handle file upload if present
         if (req.file) {

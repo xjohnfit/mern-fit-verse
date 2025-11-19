@@ -34,6 +34,7 @@ import ViewProfileScreen from './screens/protected/profile/ViewUserProfile';
 import NutritionScreen from './screens/protected/nutrition/NutritionScreen';
 import WorkoutScreen from './screens/protected/workout/WorkoutScreen';
 import StartWorkoutScreen from './screens/protected/workout/StartWorkoutScreen';
+import WorkoutDetailScreen from './screens/protected/workout/WorkoutDetailScreen';
 
 const router = createBrowserRouter([
     {
@@ -59,6 +60,7 @@ const router = createBrowserRouter([
                     { path: '/nutrition', Component: NutritionScreen },
                     { path: '/workout', Component: WorkoutScreen },
                     { path: '/workout/start', Component: StartWorkoutScreen },
+                    { path: '/workout/:id', Component: WorkoutDetailScreen },
                 ],
             },
             // End Private Routes

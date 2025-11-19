@@ -33,6 +33,7 @@ const SettingsScreen = () => {
         photo: '',
         height: '',
         weight: '',
+        weightUnit: 'lbs',
         goal: '',
     });
 
@@ -84,6 +85,7 @@ const SettingsScreen = () => {
                 photo: userInfo.photo || '',
                 height: userInfo.height || '',
                 weight: userInfo.weight || '',
+                weightUnit: userInfo.weightUnit || 'lbs',
                 goal: userInfo.goal || '',
             }));
 
@@ -160,6 +162,9 @@ const SettingsScreen = () => {
             }
             if (profileData.weight) {
                 formData.append('weight', profileData.weight);
+            }
+            if (profileData.weightUnit) {
+                formData.append('weightUnit', profileData.weightUnit);
             }
 
             console.log('Submitting profile update...');
@@ -372,6 +377,7 @@ const SettingsScreen = () => {
                             <PhysicalInfoFields
                                 height={profileData.height}
                                 weight={profileData.weight}
+                                weightUnit={profileData.weightUnit}
                                 errors={errors}
                                 onChange={handleInputChange}
                             />

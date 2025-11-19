@@ -15,6 +15,7 @@ export interface IUser {
     // Optional fields
     height?: number;
     weight?: number;
+    weightUnit?: string; // 'kg' or 'lbs'
     goal?: string;
     photo?: string;
     likedPosts?: string[];
@@ -52,6 +53,7 @@ const userSchema = new Schema<IUser>(
         photo: { type: String, default: '' },
         height: { type: Number, default: null },
         weight: { type: Number, default: null },
+        weightUnit: { type: String, default: 'lbs', enum: ['kg', 'lbs'] },
         likedPosts: [{ type: Schema.Types.ObjectId, ref: 'Post', default: [] }],
         workouts: [
             { type: Schema.Types.ObjectId, ref: 'Workout', default: [] },
