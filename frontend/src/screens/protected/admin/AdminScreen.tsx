@@ -6,6 +6,7 @@ import { Tabs } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogBody, DialogFooter } from '@/components/ui/dialog';
 import { useGetAllUsersQuery, useUpdateUserRoleMutation } from '@/slices/usersApiSlice';
 import { useGetExercisesQuery, useCreateExerciseMutation, useUpdateExerciseMutation, useDeleteExerciseMutation } from '@/slices/exerciseApiSlice';
 
@@ -55,7 +56,7 @@ const AdminScreen = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [exerciseSearchTerm, setExerciseSearchTerm] = useState('');
   const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
-  const [showExerciseForm, setShowExerciseForm] = useState(false);
+  const [showExerciseModal, setShowExerciseModal] = useState(false);
   const [exerciseForm, setExerciseForm] = useState({
     name: '',
     description: '',
@@ -131,7 +132,20 @@ const AdminScreen = () => {
       image: exercise.image,
       category: exercise.category,
     });
-    setShowExerciseForm(true);
+    setShowExerciseModal(true);
+  };
+
+  // Handle add new exercise
+  const handleAddExercise = () => {
+    setEditingExercise(null);
+    setExerciseForm({
+      name: '',
+      description: '',
+      instructions: '',
+      image: '',
+      category: '',
+    });
+    setShowExerciseModal(true);
   };
 
   // Reset exercise form
@@ -144,7 +158,7 @@ const AdminScreen = () => {
       image: '',
       category: '',
     });
-    setShowExerciseForm(false);
+    setShowExerciseModal(false);
   };
 
   // Filter users based on search
@@ -255,77 +269,11 @@ const AdminScreen = () => {
             </CardHeader>
             <CardContent>
               <Button
-                onClick={() => setShowExerciseForm(!showExerciseForm)}
+                onClick={handleAddExercise}
                 className="mb-4"
               >
-                {showExerciseForm ? 'Cancel' : 'Add New Exercise'}
+                Add New Exercise
               </Button>
-
-              {showExerciseForm && (
-                <form onSubmit={handleExerciseSubmit} className="space-y-4 mb-6 p-6 border border-border rounded-lg bg-muted/30">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold mb-2 text-foreground">Name *</label>
-                      <Input
-                        type="text"
-                        value={exerciseForm.name}
-                        onChange={(e) => setExerciseForm({ ...exerciseForm, name: e.target.value })}
-                        placeholder="Exercise name"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold mb-2 text-foreground">Category *</label>
-                      <Input
-                        type="text"
-                        value={exerciseForm.category}
-                        onChange={(e) => setExerciseForm({ ...exerciseForm, category: e.target.value })}
-                        placeholder="e.g., Chest, Back, Legs"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 text-foreground">Image URL</label>
-                    <Input
-                      type="text"
-                      value={exerciseForm.image}
-                      onChange={(e) => setExerciseForm({ ...exerciseForm, image: e.target.value })}
-                      placeholder="https://example.com/image.jpg"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 text-foreground">Description *</label>
-                    <textarea
-                      value={exerciseForm.description}
-                      onChange={(e) => setExerciseForm({ ...exerciseForm, description: e.target.value })}
-                      placeholder="Brief description of the exercise"
-                      className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring placeholder:text-muted-foreground"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 text-foreground">Instructions *</label>
-                    <textarea
-                      value={exerciseForm.instructions}
-                      onChange={(e) => setExerciseForm({ ...exerciseForm, instructions: e.target.value })}
-                      placeholder="Step-by-step instructions"
-                      className="flex min-h-30 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring placeholder:text-muted-foreground"
-                      required
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <Button type="submit">
-                      {editingExercise ? 'Update Exercise' : 'Create Exercise'}
-                    </Button>
-                    {editingExercise && (
-                      <Button type="button" variant="outline" onClick={resetExerciseForm}>
-                        Cancel Edit
-                      </Button>
-                    )}
-                  </div>
-                </form>
-              )}
 
               <div className="mb-4">
                 <Input
@@ -340,56 +288,46 @@ const AdminScreen = () => {
               {exercisesLoading ? (
                 <div className="text-center py-8 text-muted-foreground">Loading exercises...</div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredExercises.map((exercise: Exercise) => (
-                    <Card key={exercise.id} className="overflow-hidden hover:shadow-lg transition-shadow border border-border">
-                      {exercise.image && (
-                        <img
-                          src={exercise.image}
-                          alt={exercise.name}
-                          className="w-full h-48 object-cover bg-muted"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                          }}
-                        />
-                      )}
-                      <CardHeader>
-                        <CardTitle className="text-lg text-foreground">{exercise.name}</CardTitle>
-                        <CardDescription>
-                          <span className="inline-block px-2.5 py-1 bg-primary/10 text-primary border border-primary/20 rounded-md text-xs font-medium">
-                            {exercise.category}
-                          </span>
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
-                          {exercise.description}
-                        </p>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleExerciseEdit(exercise)}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => handleExerciseDelete(exercise.id)}
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="border-b border-border bg-muted/50">
+                        <th className="text-left p-3 font-semibold text-foreground">Exercise Name</th>
+                        <th className="text-left p-3 font-semibold text-foreground">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredExercises.map((exercise: Exercise) => (
+                        <tr key={exercise.id} className="border-b border-border hover:bg-muted/50 transition-colors">
+                          <td className="p-3 text-foreground">{exercise.name}</td>
+                          <td className="p-3">
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleExerciseEdit(exercise)}
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => handleExerciseDelete(exercise.id)}
+                              >
+                                Delete
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
 
-              {filteredExercises.length === 0 && !exercisesLoading && (
-                <div className="text-center py-8 text-muted-foreground">
-                  No exercises found
+                  {filteredExercises.length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No exercises found
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
@@ -416,6 +354,83 @@ const AdminScreen = () => {
           activeTabClassName="bg-primary dark:bg-primary"
         />
       </div>
+
+      {/* Exercise Form Modal */}
+      <Dialog open={showExerciseModal} onOpenChange={setShowExerciseModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editingExercise ? 'Edit Exercise' : 'Add New Exercise'}</DialogTitle>
+            <DialogDescription>
+              {editingExercise ? 'Update the exercise details below.' : 'Fill in the details to create a new exercise.'}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleExerciseSubmit}>
+            <DialogBody>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-foreground">Name *</label>
+                    <Input
+                      type="text"
+                      value={exerciseForm.name}
+                      onChange={(e) => setExerciseForm({ ...exerciseForm, name: e.target.value })}
+                      placeholder="Exercise name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-foreground">Category *</label>
+                    <Input
+                      type="text"
+                      value={exerciseForm.category}
+                      onChange={(e) => setExerciseForm({ ...exerciseForm, category: e.target.value })}
+                      placeholder="e.g., Chest, Back, Legs"
+                      required
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2 text-foreground">Image URL</label>
+                  <Input
+                    type="text"
+                    value={exerciseForm.image}
+                    onChange={(e) => setExerciseForm({ ...exerciseForm, image: e.target.value })}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2 text-foreground">Description *</label>
+                  <textarea
+                    value={exerciseForm.description}
+                    onChange={(e) => setExerciseForm({ ...exerciseForm, description: e.target.value })}
+                    placeholder="Brief description of the exercise"
+                    className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring placeholder:text-muted-foreground"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2 text-foreground">Instructions *</label>
+                  <textarea
+                    value={exerciseForm.instructions}
+                    onChange={(e) => setExerciseForm({ ...exerciseForm, instructions: e.target.value })}
+                    placeholder="Step-by-step instructions"
+                    className="flex min-h-30 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring placeholder:text-muted-foreground"
+                    required
+                  />
+                </div>
+              </div>
+            </DialogBody>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={resetExerciseForm}>
+                Cancel
+              </Button>
+              <Button type="submit">
+                {editingExercise ? 'Update Exercise' : 'Create Exercise'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
