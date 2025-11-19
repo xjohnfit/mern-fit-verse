@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { protect } from '../middlewares/authMiddleware';
+import { admin } from '../middlewares/adminMiddleware';
 import upload from '../middlewares/uploadMiddleware';
 import multer from 'multer';
 
@@ -10,6 +11,8 @@ import {
     updateUserProfile,
     viewUserProfile,
     updateNutritionGoals,
+    getAllUsers,
+    updateUserRole,
 } from '../controllers/userController';
 
 const router = express.Router();
@@ -58,5 +61,9 @@ router.put('/nutrition-goals', protect, updateNutritionGoals); // Update nutriti
 router.get('/profile/view/suggested', protect, getSuggestedUsers); // Get suggested users to follow
 router.get('/profile/view/:username', protect, viewUserProfile); // View another user's profile
 router.post('/profile/follow/:username', protect, followUnfollowUser); // Follow/Unfollow a user
+
+// Admin routes
+router.get('/admin/users', protect, admin, getAllUsers); // Admin: Get all users
+router.put('/admin/users/:userId/role', protect, admin, updateUserRole); // Admin: Update user role
 
 export default router;

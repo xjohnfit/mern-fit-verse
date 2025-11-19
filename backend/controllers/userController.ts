@@ -356,3 +356,74 @@ export const updateNutritionGoals = asyncHandler(
         });
     }
 );
+
+// Admin: Get all users
+export const getAllUsers = asyncHandler(
+    async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        // Check if user is admin
+        if (!req.user!.admin) {
+            res.status(403);
+            throw new Error('Not authorized as admin');
+        }
+
+        const users = await User.find({})
+            .select('-password')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            count: users.length,
+            data: users,
+        });
+    }
+);
+
+// Admin: Update user role
+export const updateUserRole = asyncHandler(
+    async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        // Check if user is admin
+        if (!req.user!.admin) {
+            res.status(403);
+            throw new Error('Not authorized as admin');
+        }
+
+        const { userId } = req.params;
+        const { admin } = req.body;
+
+        if (typeof admin !== 'boolean') {
+            res.status(400);
+            throw new Error('Admin field must be a boolean value');
+        }
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            res.status(404);
+            throw new Error('User not found');
+        }
+
+        // Prevent admin from removing their own admin status
+        if (
+            user._id.toString() === req.user!._id.toString() &&
+            admin === false
+        ) {
+            res.status(400);
+            throw new Error('You cannot remove your own admin privileges');
+        }
+
+        user.admin = admin;
+        const updatedUser = await user.save();
+
+        const userWithoutPassword = await User.findById(updatedUser._id).select(
+            '-password'
+        );
+
+        res.status(200).json({
+            success: true,
+            message: `User ${
+                admin ? 'promoted to' : 'demoted from'
+            } admin successfully`,
+            data: userWithoutPassword,
+        });
+    }
+);

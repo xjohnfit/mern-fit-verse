@@ -11,6 +11,7 @@ export interface IUser {
     gender: string;
     followers: string[];
     following: string[];
+    admin: boolean;
 
     // Optional fields
     height?: number;
@@ -47,6 +48,7 @@ const userSchema = new Schema<IUser>(
         gender: { type: String, required: true },
         followers: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
         following: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
+        admin: { type: Boolean, default: false },
 
         // Optional fields
         goal: { type: String, default: '' },

@@ -22,6 +22,7 @@ import {
     Users,
     UserCheck,
     MessageCircle,
+    Shield,
 } from 'lucide-react';
 import { FollowersFollowingModal } from '@/screens/protected/profile/components';
 import {
@@ -71,8 +72,7 @@ function Header() {
             setIsMobileMenuOpen(false);
         } catch (err: string | any) {
             toast.error(
-                `Logout failed: ${
-                    err?.data?.message || err?.message || 'Unknown error'
+                `Logout failed: ${err?.data?.message || err?.message || 'Unknown error'
                 }`
             );
         }
@@ -257,6 +257,19 @@ function Header() {
                                                                 </div>
                                                             )}
                                                         </div>{' '}
+                                                        {userInfo?.admin && (
+                                                            <NavigationMenuLink
+                                                                asChild>
+                                                                <Link
+                                                                    to='/admin'
+                                                                    className='flex flex-row items-center space-x-3 w-full px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:text-amber-600 dark:hover:text-amber-400 transition-all duration-200 group'>
+                                                                    <Shield className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
+                                                                    <span className='font-medium'>
+                                                                        Admin Panel
+                                                                    </span>
+                                                                </Link>
+                                                            </NavigationMenuLink>
+                                                        )}
                                                         <NavigationMenuLink
                                                             asChild>
                                                             <Link
@@ -451,6 +464,18 @@ function Header() {
                                             </span>
                                         </Link>
 
+                                        {userInfo?.admin && (
+                                            <Link
+                                                to='/admin'
+                                                onClick={closeMobileMenu}
+                                                className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-xl transition-all duration-200 group'>
+                                                <Shield className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
+                                                <span className='font-medium'>
+                                                    Admin Panel
+                                                </span>
+                                            </Link>
+                                        )}
+
                                         <Link
                                             to='/settings'
                                             onClick={closeMobileMenu}
@@ -508,9 +533,8 @@ function Header() {
                 onClose={() => setShowFollowersModal(false)}
                 type='followers'
                 users={currentUserProfile?.followers || []}
-                title={`${
-                    currentUserProfile?.followers?.length || 0
-                } Followers`}
+                title={`${currentUserProfile?.followers?.length || 0
+                    } Followers`}
             />
 
             {/* Following Modal */}
@@ -519,9 +543,8 @@ function Header() {
                 onClose={() => setShowFollowingModal(false)}
                 type='following'
                 users={currentUserProfile?.following || []}
-                title={`${
-                    currentUserProfile?.following?.length || 0
-                } Following`}
+                title={`${currentUserProfile?.following?.length || 0
+                    } Following`}
             />
         </>
     );

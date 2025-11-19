@@ -28,6 +28,7 @@ import TermsOfService from './screens/TermsOfService';
 
 // Protected Screens
 import PrivateRoute from './components/common/PrivateRoute';
+import AdminScreen from './screens/protected/admin/AdminScreen';
 import DashboardScreen from './screens/protected/dashboard/DashboardScreen';
 import SettingsScreen from './screens/protected/settings/SettingsScreen';
 import ViewProfileScreen from './screens/protected/profile/ViewUserProfile';
@@ -54,6 +55,7 @@ const router = createBrowserRouter([
             {
                 element: <PrivateRoute />,
                 children: [
+                    { path: '/admin', Component: AdminScreen },
                     { path: '/dashboard', Component: DashboardScreen },
                     { path: "/settings", Component: SettingsScreen },
                     { path: "/profile/view/:username", Component: ViewProfileScreen },

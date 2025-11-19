@@ -79,6 +79,24 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ['User'],
         }),
+        // Admin endpoints
+        getAllUsers: builder.query({
+            query: () => ({
+                url: `${BASE_URL}/users/admin/users`,
+                method: 'GET',
+                credentials: 'include',
+            }),
+            providesTags: ['User'],
+        }),
+        updateUserRole: builder.mutation({
+            query: ({ userId, admin }) => ({
+                url: `${BASE_URL}/users/admin/users/${userId}/role`,
+                method: 'PUT',
+                credentials: 'include',
+                body: { admin },
+            }),
+            invalidatesTags: ['User'],
+        }),
     }),
 });
 
@@ -92,4 +110,6 @@ export const {
     useFollowUnfollowUserMutation,
     useGetSuggestedUsersQuery,
     useUpdateNutritionGoalsMutation,
+    useGetAllUsersQuery,
+    useUpdateUserRoleMutation,
 } = usersApiSlice;
