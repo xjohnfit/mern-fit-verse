@@ -90,8 +90,8 @@ export const Tabs = ({
             <span className={cn(
               "relative block text-sm sm:text-base md:text-lg font-medium transition-colors",
               active.value === tab.value
-                ? "text-primary-foreground"
-                : "text-foreground"
+                ? "text-gray-900 dark:text-white"
+                : "text-gray-600 dark:text-gray-400"
             )}>
               {tab.title}
             </span>

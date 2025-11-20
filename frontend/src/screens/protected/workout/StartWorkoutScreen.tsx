@@ -23,27 +23,8 @@ import { Button } from "@/components/ui/button";
 // Utils
 import { formatWeight } from "@/lib/weightConversion";
 
-interface Exercise {
-    id: string;
-    name: string;
-    description: string;
-    instructions: string;
-    image: string;
-    category: string;
-}
-
-interface WorkoutSet {
-    id: string;
-    setNumber: number;
-    completed: boolean;
-    restTimeRemaining: number;
-    weight: number;
-    reps: number;
-}
-
-interface WorkoutExercise extends Exercise {
-    sets: WorkoutSet[];
-}
+// Types
+import type { Exercise, WorkoutSet, WorkoutExercise } from "@/screens/protected/workout/types";
 
 const StartWorkoutScreen = () => {
     const navigate = useNavigate();
@@ -487,7 +468,7 @@ const StartWorkoutScreen = () => {
                 })),
                 completedAt: new Date().toISOString(),
             };
-            
+
             await createWorkout(workoutData).unwrap();
             toast.success(`Workout saved! Duration: ${formatTime(workoutTime)}`);
 

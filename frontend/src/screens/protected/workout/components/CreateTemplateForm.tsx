@@ -18,7 +18,7 @@ interface TemplateDetailsFormProps {
     onFolderChange: (folderId: string) => void;
 }
 
-export const TemplateDetailsForm = ({
+export const CreateTemplateForm = ({
     name,
     description,
     folderId,

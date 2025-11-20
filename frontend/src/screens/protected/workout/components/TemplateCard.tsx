@@ -106,10 +106,10 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
                     {showMenu && (
                         <>
                             <div
-                                className="fixed inset-0 z-10"
+                                className="fixed inset-0 z-40"
                                 onClick={() => setShowMenu(false)}
                             />
-                            <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-20">
+                            <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                                 <button
                                     onClick={() => {
                                         handleEditTemplate();

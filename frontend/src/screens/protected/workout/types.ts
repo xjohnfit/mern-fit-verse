@@ -1,31 +1,52 @@
 // Workout Types
 
+// Basic Exercise type (used in multiple components)
 export interface Exercise {
     id: string;
     name: string;
+    description?: string;
     category: string;
-    muscleGroup: string[];
-    equipment: string;
+    muscleGroup?: string[];
+    equipment?: string;
     instructions?: string;
+    image?: string;
     imageUrl?: string;
 }
 
+// Template Set type (used in template creation/editing)
+export interface TemplateSet {
+    setNumber: number;
+    targetReps: number;
+    targetWeight: number;
+    notes?: string;
+}
+
+// Template Exercise type (used in template creation/editing)
+export interface TemplateExercise {
+    exerciseId: string;
+    exerciseName: string;
+    sets: TemplateSet[];
+    restTime: number;
+    notes?: string;
+}
+
+// Workout Set type (used during active workout)
 export interface WorkoutSet {
     id: string;
     setNumber: number;
     reps: number;
-    weight?: number;
+    weight: number;
+    completed: boolean;
+    restTimeRemaining: number;
     duration?: number; // in seconds for time-based exercises
     distance?: number; // for cardio exercises
-    completed: boolean;
     notes?: string;
 }
 
-export interface WorkoutExercise {
-    id: string;
-    exercise: Exercise;
+// Workout Exercise type (extends Exercise with sets)
+export interface WorkoutExercise extends Exercise {
     sets: WorkoutSet[];
-    restTime: number; // in seconds
+    restTime?: number; // in seconds
     notes?: string;
 }
 

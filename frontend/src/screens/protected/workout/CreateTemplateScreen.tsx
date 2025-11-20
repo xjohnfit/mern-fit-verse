@@ -14,24 +14,14 @@ import { useGetTemplateFoldersQuery } from "@/slices/workoutTemplateFolderApiSli
 // Components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TemplateDetailsForm } from "./components/TemplateDetailsForm";
-import { ExerciseSearchDialog } from "./components/ExerciseSearchDialog";
-import { EmptyExercisesState } from "./components/EmptyExercisesState";
-import { TemplateExerciseCard } from "./components/TemplateExerciseCard";
-import { TemplateFormActions } from "./components/TemplateFormActions";
+import { CreateTemplateForm } from "@/screens/protected/workout/components/CreateTemplateForm";
+import { ExerciseSearchDialog } from "@/screens/protected/workout/components/ExerciseSearchDialog";
+import { EmptyExercisesState } from "@/screens/protected/workout/components/EmptyExercisesState";
+import { TemplateExerciseCard } from "@/screens/protected/workout/components/TemplateExerciseCard";
+import { TemplateFormActions } from "@/screens/protected/workout/components/TemplateFormActions";
 
-interface TemplateExercise {
-    exerciseId: string;
-    exerciseName: string;
-    sets: {
-        setNumber: number;
-        targetReps: number;
-        targetWeight: number;
-        notes?: string;
-    }[];
-    restTime: number;
-    notes?: string;
-}
+// Types
+import type { TemplateExercise } from "@/screens/protected/workout/types";
 
 const CreateTemplateScreen = () => {
     const navigate = useNavigate();
@@ -180,7 +170,7 @@ const CreateTemplateScreen = () => {
                 </div>
 
                 {/* Template Details */}
-                <TemplateDetailsForm
+                <CreateTemplateForm
                     name={templateName}
                     description={templateDescription}
                     folderId={selectedFolderId}
