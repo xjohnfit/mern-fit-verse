@@ -12,7 +12,6 @@ import { IUser } from '../models/userModel';
 // Custom request interface with user property
 interface AuthenticatedRequest extends Request {
     user?: IUser;
-    file?: Express.Multer.File;
 }
 interface UpdateUserBody {
     name: string;
@@ -86,21 +85,11 @@ export const updateUserProfile = asyncHandler(
         user.weight = req.body.weight || user.weight;
         user.weightUnit = req.body.weightUnit || user.weightUnit;
 
-        // Handle file upload if present
-        if (req.file) {
+        // Handle photo upload if base64 image is provided
+        if (req.body.photo) {
             try {
                 // Log upload details for debugging
-                console.log('Processing file upload:', {
-                    filename: req.file.originalname,
-                    mimetype: req.file.mimetype,
-                    size: req.file.size,
-                    bufferLength: req.file.buffer.length,
-                });
-
-                // Validate buffer exists
-                if (!req.file.buffer || req.file.buffer.length === 0) {
-                    throw new Error('File buffer is empty or invalid');
-                }
+                console.log('Processing image upload from base64 data');
 
                 // Delete the previous photo from Cloudinary if it exists
                 if (user.photo) {
@@ -120,40 +109,10 @@ export const updateUserProfile = asyncHandler(
                     }
                 }
 
-                // Convert buffer to base64
-                const b64 = Buffer.from(req.file.buffer).toString('base64');
-                console.log('Buffer converted to base64, length:', b64.length);
-
-                // Handle MIME type for iOS uploads (can be empty or 'application/octet-stream')
-                let mimeType = req.file.mimetype;
-                const fileExtension =
-                    req.file.originalname.toLowerCase().split('.').pop() || '';
-
-                // If MIME type is missing or generic, infer from extension
-                if (!mimeType || mimeType === 'application/octet-stream') {
-                    const mimeMap: { [key: string]: string } = {
-                        jpg: 'image/jpeg',
-                        jpeg: 'image/jpeg',
-                        png: 'image/png',
-                        gif: 'image/gif',
-                        webp: 'image/webp',
-                        heic: 'image/heic',
-                        heif: 'image/heif',
-                        bmp: 'image/bmp',
-                    };
-                    mimeType = mimeMap[fileExtension] || 'image/jpeg';
-                    console.log(
-                        `Inferred MIME type from extension: ${mimeType}`
-                    );
-                }
-
-                const dataURI = `data:${mimeType};base64,${b64}`;
-                console.log('Starting Cloudinary upload...');
-
-                // Upload to Cloudinary with automatic format optimization
+                // Upload to Cloudinary - Cloudinary handles base64 data URI directly
                 // Cloudinary natively supports HEIC and will automatically convert to browser-compatible formats
                 const cloudinaryResult = await cloudinary.uploader.upload(
-                    dataURI,
+                    req.body.photo,
                     {
                         folder: 'fit-verse/users',
                         resource_type: 'auto', // Auto-detect the resource type

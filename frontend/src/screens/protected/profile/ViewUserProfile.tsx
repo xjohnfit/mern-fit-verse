@@ -54,6 +54,8 @@ const ViewUserProfile = () => {
     const [showCreatePost, setShowCreatePost] = useState(false);
     const [postContent, setPostContent] = useState('');
     const [postImage, setPostImage] = useState<string | null>(null);
+    const [deletePostId, setDeletePostId] = useState<string | null>(null);
+    const [deleteCommentInfo, setDeleteCommentInfo] = useState<{ postId: string; commentId: string; } | null>(null);
     const [showFollowersModal, setShowFollowersModal] = useState(false);
     const [showFollowingModal, setShowFollowingModal] = useState(false);
 

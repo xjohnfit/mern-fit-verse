@@ -321,7 +321,6 @@ cors 2.8.5             | Cross-Origin Resource Sharing middleware
 express-async-handler  | Async error handling for Express routes
 
 // File Upload & Storage
-multer 2.0.2           | Multipart/form-data file upload handling
 cloudinary 2.8.0       | Cloud-based image storage and optimization
 
 // Development Tools
@@ -379,8 +378,7 @@ mern-fit-verse/
 │   ├── 📂 middlewares/
 │   │   ├── authMiddleware.ts             # JWT authentication middleware
 │   │   ├── adminMiddleware.ts            # Admin role verification
-│   │   ├── errorMiddleware.ts            # Global error handling
-│   │   └── uploadMiddleware.ts           # Multer file upload config
+│   │   └── errorMiddleware.ts            # Global error handling
 │   ├── 📂 models/                        # MongoDB schemas with Mongoose
 │   │   ├── userModel.ts                  # User schema with auth methods
 │   │   ├── postModel.ts                  # Post schema with comments

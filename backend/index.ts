@@ -52,22 +52,9 @@ app.use(
     })
 );
 
-// Body parsers - but skip for multipart/form-data routes
-app.use((req, res, next) => {
-    // Skip body parsing for file upload routes (let multer handle it)
-    if (req.path === '/api/users/profile' && req.method === 'PUT') {
-        return next();
-    }
-    express.json({ limit: '50mb' })(req, res, next);
-});
-
-app.use((req, res, next) => {
-    // Skip urlencoded parsing for file upload routes
-    if (req.path === '/api/users/profile' && req.method === 'PUT') {
-        return next();
-    }
-    express.urlencoded({ extended: true, limit: '50mb' })(req, res, next);
-});
+// Body parsers with increased limit for base64 images
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 app.use(cookieParser());
 

@@ -131,44 +131,55 @@ const SettingsScreen = () => {
         }
 
         try {
-            // Use FormData for file upload
-            const formData = new FormData();
-            formData.append('_id', userInfo._id);
-            formData.append('name', profileData.name);
-            formData.append('username', profileData.username);
-            formData.append('email', profileData.email);
-            formData.append('dob', profileData.dob);
-            formData.append('gender', profileData.gender);
-            formData.append('goal', profileData.goal);
+            // Prepare JSON payload
+            const updateData: any = {
+                name: profileData.name,
+                username: profileData.username,
+                email: profileData.email,
+                dob: profileData.dob,
+                gender: profileData.gender,
+                goal: profileData.goal,
+            };
 
-            // Include photo file if selected
+            // Convert photo file to base64 if selected
             if (photoFile) {
-                console.log('Appending photo file to FormData:', {
+                console.log('Converting photo file to base64:', {
                     name: photoFile.name,
                     type: photoFile.type,
                     size: photoFile.size
                 });
-                formData.append('photo', photoFile, photoFile.name);
+
+                // Convert file to base64
+                const base64 = await new Promise<string>((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        resolve(reader.result as string);
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(photoFile);
+                });
+
+                updateData.photo = base64;
             }
 
             // Only include password if it's provided
             if (profileData.password) {
-                formData.append('password', profileData.password);
+                updateData.password = profileData.password;
             }
 
             // Only include height and weight if they have valid values
             if (profileData.height) {
-                formData.append('height', profileData.height);
+                updateData.height = profileData.height;
             }
             if (profileData.weight) {
-                formData.append('weight', profileData.weight);
+                updateData.weight = profileData.weight;
             }
             if (profileData.weightUnit) {
-                formData.append('weightUnit', profileData.weightUnit);
+                updateData.weightUnit = profileData.weightUnit;
             }
 
             console.log('Submitting profile update...');
-            const res = await updateUserProfile(formData).unwrap();
+            const res = await updateUserProfile(updateData).unwrap();
             console.log('Profile update successful:', res);
             dispatch(setCredentials({ ...res }));
             toast.success('Profile updated successfully');
