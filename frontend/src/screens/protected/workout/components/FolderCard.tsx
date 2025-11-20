@@ -14,6 +14,7 @@ import type { WorkoutTemplateFolder } from "@/slices/workoutTemplateFolderApiSli
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TemplateCard } from "./TemplateCard";
+import AlertModal from "@/components/modals/AlertModal";
 
 interface FolderCardProps {
     folder: WorkoutTemplateFolder;
@@ -24,26 +25,27 @@ interface FolderCardProps {
 export const FolderCard = ({ folder, templates, onEditFolder }: FolderCardProps) => {
     const [isExpanded, setIsExpanded] = useState(true);
     const [showMenu, setShowMenu] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteFolder, { isLoading: isDeleting }] = useDeleteTemplateFolderMutation();
 
     const folderTemplates = templates.filter(t => t.folderId === folder._id);
 
-    const handleDeleteFolder = async () => {
-        if (!window.confirm(`Are you sure you want to delete the "${folder.name}" folder? Templates will be moved to "Unsorted".`)) {
-            return;
-        }
+    const handleDeleteFolder = () => {
+        setShowDeleteModal(true);
+        setShowMenu(false);
+    };
 
+    const confirmDeleteFolder = async () => {
         try {
             await deleteFolder(folder._id).unwrap();
             toast.success("Folder deleted successfully");
         } catch (error: any) {
             toast.error(error?.data?.message || "Failed to delete folder");
         }
-        setShowMenu(false);
     };
 
     return (
-        <Card className="overflow-hidden border-l-4 py-0" style={{ borderLeftColor: folder.color }}>
+        <Card className="border-l-4 py-0" style={{ borderLeftColor: folder.color }}>
             <CardContent className="p-0">
                 {/* Folder Header */}
                 <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50">
@@ -132,6 +134,18 @@ export const FolderCard = ({ folder, templates, onEditFolder }: FolderCardProps)
                     </div>
                 )}
             </CardContent>
+
+            {/* Delete Folder Confirmation Modal */}
+            <AlertModal
+                isOpen={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={confirmDeleteFolder}
+                title="Delete Folder"
+                message={`Are you sure you want to delete the "${folder.name}" folder? Templates will be moved to "Unsorted".`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                variant="danger"
+            />
         </Card>
     );
 };

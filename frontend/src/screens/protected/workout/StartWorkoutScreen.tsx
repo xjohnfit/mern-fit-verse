@@ -19,6 +19,7 @@ import {
 // Components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import AlertModal from "@/components/modals/AlertModal";
 
 // Utils
 import { formatWeight } from "@/lib/weightConversion";
@@ -64,6 +65,7 @@ const StartWorkoutScreen = () => {
         }
     });
     const [showExerciseSearch, setShowExerciseSearch] = useState(false);
+    const [showCancelModal, setShowCancelModal] = useState(false);
     const [activeRestTimer, setActiveRestTimer] = useState<{ exerciseId: string; setId: string; startTime: number; } | null>(null);
 
     // Initialize workout start time
@@ -351,35 +353,80 @@ const StartWorkoutScreen = () => {
     };
 
     const handleCompleteSet = (exerciseId: string, setId: string) => {
-        setSelectedExercises(prev => prev.map(ex => {
-            if (ex.id !== exerciseId) return ex;
-            const setIndex = ex.sets.findIndex(s => s.id === setId);
-            if (setIndex === -1) return ex;
+        setSelectedExercises(prev => {
+            const updatedExercises = prev.map(ex => {
+                if (ex.id !== exerciseId) return ex;
+                const setIndex = ex.sets.findIndex(s => s.id === setId);
+                if (setIndex === -1) return ex;
 
-            const updatedSets = ex.sets.map(set =>
-                set.id === setId ? { ...set, completed: true } : set
-            );
+                const currentSet = ex.sets[setIndex];
+                const isCompleting = !currentSet.completed;
 
-            // Start timer for next incomplete set
-            const nextIncompleteSet = updatedSets.find((s, idx) => idx > setIndex && !s.completed);
-            const toastKey = `complete-${setId}`;
-            if (!toastShownRef.current.has(toastKey)) {
-                toastShownRef.current.add(toastKey);
-                if (nextIncompleteSet) {
-                    setActiveRestTimer({
-                        exerciseId,
-                        setId: nextIncompleteSet.id,
-                        startTime: Date.now()
-                    });
-                    toast.success(`Set ${setIndex + 1} complete! Rest timer started.`);
-                } else {
-                    toast.success(`Set ${setIndex + 1} complete!`);
+                const updatedSets = ex.sets.map(set =>
+                    set.id === setId ? { ...set, completed: !set.completed } : set
+                );
+
+                return { ...ex, sets: updatedSets };
+            });
+
+            // Find the current exercise and set
+            const currentExerciseIndex = updatedExercises.findIndex(ex => ex.id === exerciseId);
+            const currentExercise = updatedExercises[currentExerciseIndex];
+            const setIndex = currentExercise.sets.findIndex(s => s.id === setId);
+            const isCompleting = !prev.find(ex => ex.id === exerciseId)?.sets[setIndex]?.completed;
+
+            // Only start timer if completing (not uncompleting)
+            if (isCompleting) {
+                // Look for next incomplete set in current exercise
+                const nextIncompleteSetInExercise = currentExercise.sets.find((s, idx) => idx > setIndex && !s.completed);
+
+                const toastKey = `complete-${setId}`;
+                if (!toastShownRef.current.has(toastKey)) {
+                    toastShownRef.current.add(toastKey);
+
+                    if (nextIncompleteSetInExercise) {
+                        // Found next set in same exercise
+                        setActiveRestTimer({
+                            exerciseId,
+                            setId: nextIncompleteSetInExercise.id,
+                            startTime: Date.now()
+                        });
+                        toast.success(`Set ${setIndex + 1} complete! Rest timer started.`);
+                    } else {
+                        // No more sets in current exercise, look for next exercise with incomplete sets
+                        let foundNextSet = false;
+                        for (let i = currentExerciseIndex + 1; i < updatedExercises.length; i++) {
+                            const nextExercise = updatedExercises[i];
+                            const firstIncompleteSet = nextExercise.sets.find(s => !s.completed);
+                            if (firstIncompleteSet) {
+                                setActiveRestTimer({
+                                    exerciseId: nextExercise.id,
+                                    setId: firstIncompleteSet.id,
+                                    startTime: Date.now()
+                                });
+                                toast.success(`Set ${setIndex + 1} complete! Moving to next exercise. Rest timer started.`);
+                                foundNextSet = true;
+                                break;
+                            }
+                        }
+                        if (!foundNextSet) {
+                            toast.success(`Set ${setIndex + 1} complete! All sets done!`);
+                        }
+                    }
+                    setTimeout(() => toastShownRef.current.delete(toastKey), 3000);
                 }
-                setTimeout(() => toastShownRef.current.delete(toastKey), 3000);
+            } else {
+                // Uncompleting a set
+                const toastKey = `uncomplete-${setId}`;
+                if (!toastShownRef.current.has(toastKey)) {
+                    toastShownRef.current.add(toastKey);
+                    toast.info(`Set ${setIndex + 1} marked as incomplete`);
+                    setTimeout(() => toastShownRef.current.delete(toastKey), 3000);
+                }
             }
 
-            return { ...ex, sets: updatedSets };
-        }));
+            return updatedExercises;
+        });
     };
 
     const handleRemoveExercise = (exerciseId: string) => {
@@ -495,6 +542,24 @@ const StartWorkoutScreen = () => {
         navigate("/workout");
     };
 
+    const handleCancelWorkout = () => {
+        setShowCancelModal(true);
+    };
+
+    const confirmCancelWorkout = () => {
+        // Set flag to prevent useEffects from saving to sessionStorage
+        isFinishingRef.current = true;
+        setIsTimerRunning(false);
+
+        // Clear session storage immediately and synchronously
+        ["workout_timer_running", "workout_exercises", "workout_start_time", "workout_paused_time", "workout_pause_start"].forEach(key => {
+            sessionStorage.removeItem(key);
+        });
+
+        toast.info("Workout cancelled");
+        navigate("/workout");
+    };
+
     return (
         <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900/20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -553,14 +618,25 @@ const StartWorkoutScreen = () => {
                                 {selectedExercises.length} exercise{selectedExercises.length !== 1 ? "s" : ""} added
                             </p>
                         </div>
-                        <Button
-                            size="lg"
-                            onClick={handleFinishWorkout}
-                            className="bg-green-600 hover:bg-green-700 text-white"
-                        >
-                            <Dumbbell className="w-5 h-5 mr-2" />
-                            Finish Workout
-                        </Button>
+                        <div className="flex gap-2">
+                            <Button
+                                size="lg"
+                                variant="outline"
+                                onClick={handleCancelWorkout}
+                                className="border-red-500 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                            >
+                                <X className="w-5 h-5 mr-2" />
+                                Cancel
+                            </Button>
+                            <Button
+                                size="lg"
+                                onClick={handleFinishWorkout}
+                                className="bg-green-600 hover:bg-green-700 text-white"
+                            >
+                                <Dumbbell className="w-5 h-5 mr-2" />
+                                Finish
+                            </Button>
+                        </div>
                     </div>
                 </div>
 
@@ -699,13 +775,13 @@ const StartWorkoutScreen = () => {
                                                         ? "bg-green-50 border-green-500 dark:bg-green-900/20"
                                                         : activeRestTimer?.setId === set.id
                                                             ? "border-blue-500 dark:bg-blue-900/20"
-                                                            : "bg-gray-50 border-gray-200 dark:bg-gray-800"
+                                                            : "bg-gray-50 border-gray-200 dark:border-gray-700 dark:bg-gray-800"
                                                         }`}
                                                 >
-                                                    {/* Progress Bar Background */}
+                                                    {/* Progress Bar Background - starts full and drains */}
                                                     {activeRestTimer?.setId === set.id && (
                                                         <div
-                                                            className="absolute inset-0 bg-blue-100 dark:bg-blue-900/30 transition-all duration-1000 ease-linear"
+                                                            className="absolute inset-0 bg-blue-100 dark:bg-blue-900/30 transition-all"
                                                             style={{
                                                                 width: `${(set.restTimeRemaining / 120) * 100}%`,
                                                                 transition: 'width 1s linear'
@@ -718,9 +794,8 @@ const StartWorkoutScreen = () => {
                                                             size="sm"
                                                             variant="ghost"
                                                             onClick={() => handleCompleteSet(exercise.id, set.id)}
-                                                            disabled={set.completed}
                                                             className={`w-8 h-8 p-0 rounded-full ${set.completed
-                                                                ? "bg-green-500 text-white cursor-default"
+                                                                ? "bg-green-500 text-white hover:bg-green-600"
                                                                 : "bg-white border-2 border-gray-300 hover:border-blue-500"
                                                                 }`}
                                                         >
@@ -733,39 +808,32 @@ const StartWorkoutScreen = () => {
                                                             )}
                                                         </div>
 
-                                                        {/* Weight and Reps Inputs */}
-                                                        {!set.completed && (
-                                                            <div className="flex items-center gap-1 sm:gap-2">
-                                                                <div className="flex items-center gap-0.5 sm:gap-1">
-                                                                    <input
-                                                                        type="number"
-                                                                        value={set.weight || ''}
-                                                                        onChange={(e) => handleUpdateSet(exercise.id, set.id, 'weight', parseFloat(e.target.value) || 0)}
-                                                                        placeholder="0"
-                                                                        className="w-12 sm:w-16 h-7 sm:h-8 px-1 sm:px-2 text-xs sm:text-sm border rounded text-center focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                                                    />
-                                                                    <span className="text-[10px] sm:text-xs text-gray-500">{weightUnit}</span>
-                                                                </div>
-                                                                <span className="text-xs sm:text-sm text-gray-300">×</span>
-                                                                <div className="flex items-center gap-0.5 sm:gap-1">
-                                                                    <input
-                                                                        type="number"
-                                                                        value={set.reps || ''}
-                                                                        onChange={(e) => handleUpdateSet(exercise.id, set.id, 'reps', parseInt(e.target.value) || 0)}
-                                                                        placeholder="0"
-                                                                        className="w-12 sm:w-16 h-7 sm:h-8 px-1 sm:px-2 text-xs sm:text-sm border rounded text-center focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                                                    />
-                                                                    <span className="text-[10px] sm:text-xs text-gray-500">reps</span>
-                                                                </div>
+                                                        {/* Weight and Reps Inputs - Always visible */}
+                                                        <div className="flex items-center gap-1 sm:gap-2">
+                                                            <div className="flex items-center gap-0.5 sm:gap-1">
+                                                                <input
+                                                                    type="number"
+                                                                    value={set.weight || ''}
+                                                                    onChange={(e) => handleUpdateSet(exercise.id, set.id, 'weight', parseFloat(e.target.value) || 0)}
+                                                                    placeholder="0"
+                                                                    className={`w-12 sm:w-16 h-7 sm:h-8 px-1 sm:px-2 text-xs sm:text-sm border rounded text-center focus:outline-none focus:ring-1 focus:ring-blue-500 ${set.completed ? 'bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700' : ''
+                                                                        }`}
+                                                                />
+                                                                <span className="text-[10px] sm:text-xs text-gray-500">{weightUnit}</span>
                                                             </div>
-                                                        )}
-
-                                                        {/* Display completed set data */}
-                                                        {set.completed && set.weight > 0 && set.reps > 0 && (
-                                                            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                                                                {formatWeight(set.weight, weightUnit)} × {set.reps} reps
+                                                            <span className="text-xs sm:text-sm text-gray-300">×</span>
+                                                            <div className="flex items-center gap-0.5 sm:gap-1">
+                                                                <input
+                                                                    type="number"
+                                                                    value={set.reps || ''}
+                                                                    onChange={(e) => handleUpdateSet(exercise.id, set.id, 'reps', parseInt(e.target.value) || 0)}
+                                                                    placeholder="0"
+                                                                    className={`w-12 sm:w-16 h-7 sm:h-8 px-1 sm:px-2 text-xs sm:text-sm border rounded text-center focus:outline-none focus:ring-1 focus:ring-blue-500 ${set.completed ? 'bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700' : ''
+                                                                        }`}
+                                                                />
+                                                                <span className="text-[10px] sm:text-xs text-gray-500">reps</span>
                                                             </div>
-                                                        )}
+                                                        </div>
                                                     </div>
 
                                                     <div className="relative flex items-center gap-2 z-10">
@@ -827,6 +895,18 @@ const StartWorkoutScreen = () => {
                     )}
                 </div>
             </div>
+
+            {/* Cancel Workout Confirmation Modal */}
+            <AlertModal
+                isOpen={showCancelModal}
+                onClose={() => setShowCancelModal(false)}
+                onConfirm={confirmCancelWorkout}
+                title="Cancel Workout"
+                message="Are you sure you want to cancel this workout? All progress will be lost and cannot be recovered."
+                confirmText="Yes, Cancel Workout"
+                cancelText="Keep Working Out"
+                variant="danger"
+            />
         </div>
     );
 };

@@ -1,4 +1,5 @@
 // React
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 
@@ -12,6 +13,7 @@ import { useGetWorkoutByIdQuery, useDeleteWorkoutMutation } from "@/slices/worko
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import AlertModal from "@/components/modals/AlertModal";
 
 // Utils
 import { formatWeight } from "@/lib/weightConversion";
@@ -23,6 +25,7 @@ const WorkoutDetailScreen = () => {
     const [deleteWorkout, { isLoading: isDeleting }] = useDeleteWorkoutMutation();
     const { userInfo } = useSelector((state: any) => state.auth);
     const weightUnit = userInfo?.weightUnit || 'lbs';
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     const formatDuration = (seconds: number) => {
         const hrs = Math.floor(seconds / 3600);
@@ -68,11 +71,11 @@ const WorkoutDetailScreen = () => {
         return { completed: completedSets, total: totalSets };
     };
 
-    const handleDeleteWorkout = async () => {
-        if (!window.confirm("Are you sure you want to delete this workout? This action cannot be undone.")) {
-            return;
-        }
+    const handleDeleteWorkout = () => {
+        setShowDeleteModal(true);
+    };
 
+    const confirmDeleteWorkout = async () => {
         try {
             await deleteWorkout(id).unwrap();
             toast.success("Workout deleted successfully");
@@ -323,6 +326,18 @@ const WorkoutDetailScreen = () => {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Delete Workout Confirmation Modal */}
+            <AlertModal
+                isOpen={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={confirmDeleteWorkout}
+                title="Delete Workout"
+                message="Are you sure you want to delete this workout? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                variant="danger"
+            />
         </div>
     );
 };

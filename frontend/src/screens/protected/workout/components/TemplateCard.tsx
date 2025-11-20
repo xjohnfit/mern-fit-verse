@@ -12,6 +12,7 @@ import type { WorkoutTemplate } from "@/slices/workoutTemplateApiSlice";
 
 // Components
 import { Button } from "@/components/ui/button";
+import AlertModal from "@/components/modals/AlertModal";
 
 interface TemplateCardProps {
     template: WorkoutTemplate;
@@ -20,6 +21,7 @@ interface TemplateCardProps {
 export const TemplateCard = ({ template }: TemplateCardProps) => {
     const navigate = useNavigate();
     const [showMenu, setShowMenu] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteTemplate, { isLoading: isDeleting }] = useDeleteTemplateMutation();
 
     const totalSets = template.exercises.reduce((acc, exercise) => acc + exercise.sets.length, 0);
@@ -35,18 +37,18 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
         navigate(`/workout/template/edit/${template._id}`);
     };
 
-    const handleDeleteTemplate = async () => {
-        if (!window.confirm(`Are you sure you want to delete the "${template.name}" template?`)) {
-            return;
-        }
+    const handleDeleteTemplate = () => {
+        setShowDeleteModal(true);
+        setShowMenu(false);
+    };
 
+    const confirmDeleteTemplate = async () => {
         try {
             await deleteTemplate(template._id).unwrap();
             toast.success("Template deleted successfully");
         } catch (error: any) {
             toast.error(error?.data?.message || "Failed to delete template");
         }
-        setShowMenu(false);
     };
 
     return (
@@ -133,6 +135,18 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
                     )}
                 </div>
             </div>
+
+            {/* Delete Template Confirmation Modal */}
+            <AlertModal
+                isOpen={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={confirmDeleteTemplate}
+                title="Delete Template"
+                message={`Are you sure you want to delete the "${template.name}" template? This action cannot be undone.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                variant="danger"
+            />
         </div>
     );
 };

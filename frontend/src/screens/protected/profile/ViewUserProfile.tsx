@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useSelector } from 'react-redux';
+import AlertModal from '@/components/modals/AlertModal';
 
 // API Slices
 import {
@@ -126,16 +127,20 @@ const ViewUserProfile = () => {
         }
     };
 
-    const handleDeletePost = async (postId: string) => {
-        if (window.confirm('Are you sure you want to delete this post?')) {
-            try {
-                await deletePost(postId).unwrap();
-                toast.success('Post deleted successfully');
-                refetchPosts();
-            } catch (error: any) {
-                toast.error(error?.data?.message || 'Failed to delete post');
-            }
+    const handleDeletePost = (postId: string) => {
+        setDeletePostId(postId);
+    };
+
+    const confirmDeletePost = async () => {
+        if (!deletePostId) return;
+        try {
+            await deletePost(deletePostId).unwrap();
+            toast.success('Post deleted successfully');
+            refetchPosts();
+        } catch (error: any) {
+            toast.error(error?.data?.message || 'Failed to delete post');
         }
+        setDeletePostId(null);
     };
 
     const handleAddComment = async (postId: string) => {
@@ -152,16 +157,20 @@ const ViewUserProfile = () => {
         }
     };
 
-    const handleDeleteComment = async (postId: string, commentId: string) => {
-        if (window.confirm('Are you sure you want to delete this comment?')) {
-            try {
-                await deleteComment({ postId, commentId }).unwrap();
-                toast.success('Comment deleted successfully');
-                refetchPosts();
-            } catch (error: any) {
-                toast.error(error?.data?.message || 'Failed to delete comment');
-            }
+    const handleDeleteComment = (postId: string, commentId: string) => {
+        setDeleteCommentInfo({ postId, commentId });
+    };
+
+    const confirmDeleteComment = async () => {
+        if (!deleteCommentInfo) return;
+        try {
+            await deleteComment(deleteCommentInfo).unwrap();
+            toast.success('Comment deleted successfully');
+            refetchPosts();
+        } catch (error: any) {
+            toast.error(error?.data?.message || 'Failed to delete comment');
         }
+        setDeleteCommentInfo(null);
     };
 
     const toggleComments = (postId: string) => {
@@ -413,6 +422,30 @@ const ViewUserProfile = () => {
                 type='following'
                 users={user.following}
                 title='Following'
+            />
+
+            {/* Delete Post Confirmation Modal */}
+            <AlertModal
+                isOpen={deletePostId !== null}
+                onClose={() => setDeletePostId(null)}
+                onConfirm={confirmDeletePost}
+                title="Delete Post"
+                message="Are you sure you want to delete this post? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                variant="danger"
+            />
+
+            {/* Delete Comment Confirmation Modal */}
+            <AlertModal
+                isOpen={deleteCommentInfo !== null}
+                onClose={() => setDeleteCommentInfo(null)}
+                onConfirm={confirmDeleteComment}
+                title="Delete Comment"
+                message="Are you sure you want to delete this comment? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                variant="danger"
             />
         </div>
     );
