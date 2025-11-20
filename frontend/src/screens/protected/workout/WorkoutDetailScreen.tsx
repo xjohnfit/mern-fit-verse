@@ -156,7 +156,7 @@ const WorkoutDetailScreen = () => {
                             <div>
                                 <div className="flex items-center gap-2 mb-2">
                                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                                        {isFreestyle ? 'Freestyle Workout' : workout.workoutType}
+                                        {isFreestyle ? 'Freestyle Workout' : (workout.templateName || 'Template Workout')}
                                     </h1>
                                     <span className={`text-xs px-3 py-1 rounded-full ${isFreestyle
                                         ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'

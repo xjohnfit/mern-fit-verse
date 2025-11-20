@@ -17,6 +17,7 @@ export interface IWorkout extends Document {
     userId: mongoose.Types.ObjectId;
     workoutType: 'freestyle' | 'template';
     templateId?: mongoose.Types.ObjectId;
+    templateName?: string;
     duration: number; // in seconds
     exercises: IWorkoutExercise[];
     completedAt: Date;
@@ -75,6 +76,9 @@ const workoutSchema = new Schema<IWorkout>(
         templateId: {
             type: Schema.Types.ObjectId,
             ref: 'Template',
+        },
+        templateName: {
+            type: String,
         },
         duration: {
             type: Number,

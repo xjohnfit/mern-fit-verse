@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 
 // Third-party libraries
-import { Dumbbell, Plus, Play, Timer } from "lucide-react";
+import { Dumbbell, Plus, Play, Timer, FolderPlus } from "lucide-react";
 
 // Redux
 import { useGetTemplateFoldersQuery } from "@/slices/workoutTemplateFolderApiSlice";
@@ -130,13 +130,28 @@ const WorkoutScreen = () => {
                     />
                 </div>
 
+                {/* Action Buttons */}
+                <div className="flex items-center gap-2 mb-4">
+                    <button
+                        onClick={() => setShowCreateFolderDialog(true)}
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 border-2 border-indigo-500 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg font-medium transition-colors text-xs sm:text-sm"
+                    >
+                        <FolderPlus className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="hidden xs:inline">New </span>Folder
+                    </button>
+                    <button
+                        onClick={() => navigate("/workout/template/create")}
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-linear-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-lg font-medium transition-colors text-xs sm:text-sm"
+                    >
+                        <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="hidden xs:inline">New </span>Template
+                    </button>
+                </div>
+
                 {/* Saved Templates Section */}
                 <Card>
                     <CardHeader>
-                        <TemplatesHeader
-                            onCreateFolder={() => setShowCreateFolderDialog(true)}
-                            onCreateTemplate={() => navigate("/workout/template/create")}
-                        />
+                        <TemplatesHeader />
                     </CardHeader>
                     <CardContent>
                         {isLoading ? (

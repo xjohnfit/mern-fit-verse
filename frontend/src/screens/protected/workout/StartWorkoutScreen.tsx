@@ -450,11 +450,17 @@ const StartWorkoutScreen = () => {
         isFinishingRef.current = true;
         setIsTimerRunning(false);
 
-        if (selectedExercises.length === 0) {
-            toast.info("Workout Canceled.");
+        // Check if at least one set is completed
+        const hasCompletedSet = selectedExercises.some(exercise =>
+            exercise.sets.some(set => set.completed)
+        );
+
+        if (selectedExercises.length === 0 || !hasCompletedSet) {
+            const message = selectedExercises.length === 0
+                ? "Workout Canceled."
+                : "Workout Canceled. No sets were completed.";
+            toast.info(message);
             // Clear session storage immediately and synchronously
-            sessionStorage.clear();
-            // Or selectively remove keys
             ["workout_timer_running", "workout_exercises", "workout_start_time", "workout_paused_time", "workout_pause_start"].forEach(key => {
                 sessionStorage.removeItem(key);
             });
@@ -465,7 +471,9 @@ const StartWorkoutScreen = () => {
         try {
             // Prepare workout data for backend
             const workoutData = {
-                workoutType: "freestyle",
+                workoutType: templateId ? "template" : "freestyle",
+                templateId: templateId || undefined,
+                templateName: template?.data?.name || undefined,
                 duration: workoutTime,
                 exercises: selectedExercises.map((exercise) => ({
                     exerciseId: exercise.id,
@@ -479,7 +487,7 @@ const StartWorkoutScreen = () => {
                 })),
                 completedAt: new Date().toISOString(),
             };
-
+            
             await createWorkout(workoutData).unwrap();
             toast.success(`Workout saved! Duration: ${formatTime(workoutTime)}`);
 

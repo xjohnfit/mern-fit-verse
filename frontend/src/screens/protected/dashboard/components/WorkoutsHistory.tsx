@@ -25,6 +25,7 @@ interface WorkoutExercise {
 interface Workout {
     _id: string;
     workoutType: string;
+    templateName?: string;
     duration: number;
     exercises: WorkoutExercise[];
     completedAt: string;
@@ -164,7 +165,7 @@ const WorkoutsHistory = ({ workouts, isLoading }: WorkoutsHistoryProps) => {
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
                                             <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
-                                                {isFreestyle ? 'Freestyle Workout' : workout.workoutType}
+                                                {isFreestyle ? 'Freestyle Workout' : (workout.templateName || 'Template Workout')}
                                             </h3>
                                             <span className={`text-xs px-2 py-1 rounded-full ${isFreestyle
                                                 ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'

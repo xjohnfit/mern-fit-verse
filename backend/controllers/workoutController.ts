@@ -14,6 +14,7 @@ export const createWorkout = async (req: Request, res: Response) => {
         const {
             workoutType,
             templateId,
+            templateName,
             duration,
             exercises,
             completedAt,
@@ -36,6 +37,7 @@ export const createWorkout = async (req: Request, res: Response) => {
         const workoutData = {
             workoutType: workoutType || 'freestyle',
             templateId,
+            templateName,
             duration,
             exercises,
             completedAt: completedAt || new Date(),
