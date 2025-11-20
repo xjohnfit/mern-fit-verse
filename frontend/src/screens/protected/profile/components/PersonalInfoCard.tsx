@@ -2,7 +2,7 @@ import { type FC } from 'react';
 import { Calendar, User, Cake } from 'lucide-react';
 import { formatDateToMMDDYYYY } from '@/lib/formatDate';
 import { calculateAge } from '@/lib/calculateAge';
-import { type UserProfile } from '@/screens/protected/profile/types';
+import { type UserProfile } from '@/screens/protected/profile/profile.types';
 
 interface PersonalInfoCardProps {
     user: UserProfile;

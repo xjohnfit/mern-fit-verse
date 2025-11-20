@@ -1,0 +1,6 @@
+1. remove multer handler for images upload and let cloudinary handle it
+2. update Jenkinsfile stage numbers
+3. change ts output dir to /backend/dist
+4. implement real time messaging
+5. implement AI suggestions
+6. maybe add support to pt br language

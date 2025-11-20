@@ -1,9 +1,6 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface EmptyExercisesStateProps {
-    onAddClick: () => void;
-}
+import type { EmptyExercisesStateProps } from "@/screens/protected/workout/workout.types";
 
 export const EmptyExercisesState = ({ onAddClick }: EmptyExercisesStateProps) => {
     return (

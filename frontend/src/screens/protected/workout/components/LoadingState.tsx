@@ -1,6 +1,4 @@
-interface LoadingStateProps {
-    message?: string;
-}
+import type { LoadingStateProps } from "@/screens/protected/workout/workout.types";
 
 export const LoadingState = ({ message = "Loading..." }: LoadingStateProps) => {
     return (

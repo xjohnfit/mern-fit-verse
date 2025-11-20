@@ -3,7 +3,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Plus, X, Image as ImageIcon } from 'lucide-react';
 import { getInitials } from '@/lib/getInitials';
-import { type UserProfile } from '@/screens/protected/profile/types';
+import { type UserProfile } from '@/screens/protected/profile/profile.types';
 
 interface CreatePostSectionProps {
     isOwnProfile: boolean;

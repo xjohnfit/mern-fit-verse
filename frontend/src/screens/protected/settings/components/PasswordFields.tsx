@@ -1,21 +1,5 @@
 import { Lock, Eye, EyeOff } from 'lucide-react';
-
-interface PasswordFieldsProps {
-    password: string;
-    confirmPassword: string;
-    showPassword: boolean;
-    showConfirmPassword: boolean;
-    errors: { [key: string]: string; };
-    passwordStrength: {
-        score: number;
-        text: string;
-        color: string;
-    };
-    onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onConfirmPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onToggleShowPassword: () => void;
-    onToggleShowConfirmPassword: () => void;
-}
+import type { PasswordFieldsProps } from '@/screens/protected/settings/settings.types';
 
 const PasswordFields = ({
     password,
@@ -50,8 +34,8 @@ const PasswordFields = ({
                         value={password}
                         onChange={onPasswordChange}
                         className={`w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.password
-                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                : 'border-gray-200 dark:border-gray-600 focus:border-green-500 focus:ring-green-500/20'
+                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                            : 'border-gray-200 dark:border-gray-600 focus:border-green-500 focus:ring-green-500/20'
                             }`}
                         placeholder='Enter new password (optional)'
                     />
@@ -78,14 +62,14 @@ const PasswordFields = ({
                             </span>
                             <span
                                 className={`text-xs font-medium ${passwordStrength.score === 1
-                                        ? 'text-red-500 dark:text-red-400'
-                                        : passwordStrength.score === 2
-                                            ? 'text-yellow-500 dark:text-yellow-400'
-                                            : passwordStrength.score === 3
-                                                ? 'text-blue-500 dark:text-blue-400'
-                                                : passwordStrength.score === 4
-                                                    ? 'text-green-600 dark:text-green-400'
-                                                    : 'text-gray-500 dark:text-gray-400'
+                                    ? 'text-red-500 dark:text-red-400'
+                                    : passwordStrength.score === 2
+                                        ? 'text-yellow-500 dark:text-yellow-400'
+                                        : passwordStrength.score === 3
+                                            ? 'text-blue-500 dark:text-blue-400'
+                                            : passwordStrength.score === 4
+                                                ? 'text-green-600 dark:text-green-400'
+                                                : 'text-gray-500 dark:text-gray-400'
                                     }`}>
                                 {passwordStrength.text}
                             </span>
@@ -138,8 +122,8 @@ const PasswordFields = ({
                         value={confirmPassword}
                         onChange={onConfirmPasswordChange}
                         className={`w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.confirmPassword
-                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                : 'border-gray-200 dark:border-gray-600 focus:border-teal-500 focus:ring-teal-500/20'
+                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                            : 'border-gray-200 dark:border-gray-600 focus:border-teal-500 focus:ring-teal-500/20'
                             } ${!password ? 'opacity-50 cursor-not-allowed' : ''
                             }`}
                         placeholder='Confirm new password'

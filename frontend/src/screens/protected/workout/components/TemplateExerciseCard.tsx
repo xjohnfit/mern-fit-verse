@@ -3,31 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ExerciseSetRow } from "./ExerciseSetRow";
-
-interface TemplateSet {
-    setNumber: number;
-    targetReps: number;
-    targetWeight: number;
-    notes?: string;
-}
-
-interface TemplateExercise {
-    exerciseId: string;
-    exerciseName: string;
-    sets: TemplateSet[];
-    restTime: number;
-    notes?: string;
-}
-
-interface TemplateExerciseCardProps {
-    exercise: TemplateExercise;
-    index: number;
-    onRemove: () => void;
-    onAddSet: () => void;
-    onRemoveSet: (setNumber: number) => void;
-    onUpdateSet: (setNumber: number, field: 'targetReps' | 'targetWeight', value: number) => void;
-    onUpdateRestTime: (restTime: number) => void;
-}
+import type { TemplateExerciseCardProps } from "@/screens/protected/workout/workout.types";
 
 export const TemplateExerciseCard = ({
     exercise,

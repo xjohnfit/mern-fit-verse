@@ -5,7 +5,7 @@ import { type FC } from "react";
 import { MacroDistributionChart } from "./MacroDistributionChart";
 
 // Types
-import { type DailyNutritionData } from "@/screens/protected/nutrition/types";
+import { type DailyNutritionData } from "@/screens/protected/nutrition/nutrition.types";
 
 interface MacroDistributionSectionProps {
     dailyNutritionData: DailyNutritionData | undefined;

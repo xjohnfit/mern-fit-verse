@@ -1,11 +1,6 @@
 import { toast } from 'sonner';
 import { User } from 'lucide-react';
-
-interface ProfilePhotoSectionProps {
-    photoPreview: string;
-    photo: string;
-    onPhotoChange: (file: File | null, preview: string) => void;
-}
+import type { ProfilePhotoSectionProps } from '@/screens/protected/settings/settings.types';
 
 const ProfilePhotoSection = ({
     photoPreview,

@@ -64,9 +64,9 @@ const router = createBrowserRouter([
                     { path: '/nutrition', Component: NutritionScreen },
                     { path: '/workout', Component: WorkoutScreen },
                     { path: '/workout/start', Component: StartWorkoutScreen },
+                    { path: '/workout/:id', Component: WorkoutDetailScreen },
                     { path: '/workout/template/create', Component: CreateTemplateScreen },
                     { path: '/workout/template/edit/:id', Component: EditTemplateScreen },
-                    { path: '/workout/:id', Component: WorkoutDetailScreen },
                 ],
             },
             // End Private Routes

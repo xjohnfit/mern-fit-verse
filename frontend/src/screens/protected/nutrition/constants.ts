@@ -1,5 +1,5 @@
 import { Coffee, Sun, Cookie, Moon } from 'lucide-react';
-import { type MealCategory, type MealCategoryConfig } from './types';
+import { type MealCategory, type MealCategoryConfig } from './nutrition.types';
 
 /**
  * Base configuration for meal categories

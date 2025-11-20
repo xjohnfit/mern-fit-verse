@@ -1,6 +1,6 @@
 import { type FC } from 'react';
 import { Ruler, Weight, Target } from 'lucide-react';
-import { type UserProfile } from '@/screens/protected/profile/types';
+import { type UserProfile } from '@/screens/protected/profile/profile.types';
 
 interface FitnessInfoCardProps {
     user: UserProfile;

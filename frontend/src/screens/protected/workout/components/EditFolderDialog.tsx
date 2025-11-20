@@ -14,6 +14,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+// Types
+import type { ColorPreset } from "@/screens/protected/workout/workout.types";
+
 interface EditFolderDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
@@ -118,8 +121,8 @@ export const EditFolderDialog = ({ open, onOpenChange, folder }: EditFolderDialo
                                     type="button"
                                     onClick={() => setSelectedColor(color.value)}
                                     className={`w-full aspect-square rounded-lg transition-all duration-200 ${selectedColor === color.value
-                                            ? "ring-2 ring-offset-2 ring-gray-900 dark:ring-gray-100 scale-110"
-                                            : "hover:scale-105"
+                                        ? "ring-2 ring-offset-2 ring-gray-900 dark:ring-gray-100 scale-110"
+                                        : "hover:scale-105"
                                         }`}
                                     style={{ backgroundColor: color.value }}
                                     title={color.name}

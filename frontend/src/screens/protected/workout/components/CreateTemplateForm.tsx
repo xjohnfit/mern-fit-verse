@@ -1,22 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { FolderSelector } from "./FolderSelector";
-
-interface Folder {
-    _id: string;
-    name: string;
-    color: string;
-}
-
-interface TemplateDetailsFormProps {
-    name: string;
-    description: string;
-    folderId: string;
-    folders: Folder[];
-    onNameChange: (name: string) => void;
-    onDescriptionChange: (description: string) => void;
-    onFolderChange: (folderId: string) => void;
-}
+import type { TemplateDetailsFormProps } from "@/screens/protected/workout/workout.types";
 
 export const CreateTemplateForm = ({
     name,

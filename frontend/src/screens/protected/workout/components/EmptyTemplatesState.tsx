@@ -1,10 +1,6 @@
 import { FileText, FolderPlus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface EmptyTemplatesStateProps {
-    onCreateFolder: () => void;
-    onCreateTemplate: () => void;
-}
+import type { EmptyTemplatesStateProps } from "@/screens/protected/workout/workout.types";
 
 export const EmptyTemplatesState = ({ onCreateFolder, onCreateTemplate }: EmptyTemplatesStateProps) => {
     return (

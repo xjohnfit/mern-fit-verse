@@ -38,7 +38,7 @@ import { toast } from 'sonner';
 import { getInitials } from '@/lib/getInitials';
 
 // Types
-import { type RootState, type UserProfile } from './types';
+import { type RootState, type UserProfile } from './profile.types';
 
 const ViewUserProfile = () => {
     const { username } = useParams<{ username: string; }>();

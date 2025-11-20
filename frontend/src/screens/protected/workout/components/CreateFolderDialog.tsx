@@ -13,12 +13,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-interface CreateFolderDialogProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-}
+// Types
+import type { CreateFolderDialogProps, ColorPreset } from "@/screens/protected/workout/workout.types";
 
-const PRESET_COLORS = [
+const PRESET_COLORS: ColorPreset[] = [
     { name: "Blue", value: "#3b82f6" },
     { name: "Purple", value: "#a855f7" },
     { name: "Pink", value: "#ec4899" },
@@ -108,8 +106,8 @@ export const CreateFolderDialog = ({ open, onOpenChange }: CreateFolderDialogPro
                                     type="button"
                                     onClick={() => setSelectedColor(color.value)}
                                     className={`w-full aspect-square rounded-lg transition-all duration-200 ${selectedColor === color.value
-                                            ? "ring-2 ring-offset-2 ring-gray-900 dark:ring-gray-100 scale-110"
-                                            : "hover:scale-105"
+                                        ? "ring-2 ring-offset-2 ring-gray-900 dark:ring-gray-100 scale-110"
+                                        : "hover:scale-105"
                                         }`}
                                     style={{ backgroundColor: color.value }}
                                     title={color.name}

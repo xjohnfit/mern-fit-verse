@@ -1,16 +1,5 @@
 import { FolderOpen } from "lucide-react";
-
-interface Folder {
-    _id: string;
-    name: string;
-    color: string;
-}
-
-interface FolderSelectorProps {
-    folders: Folder[];
-    selectedFolderId: string;
-    onSelectFolder: (folderId: string) => void;
-}
+import type { FolderSelectorProps } from "@/screens/protected/workout/workout.types";
 
 export const FolderSelector = ({ folders, selectedFolderId, onSelectFolder }: FolderSelectorProps) => {
     if (folders.length === 0) return null;
@@ -25,8 +14,8 @@ export const FolderSelector = ({ folders, selectedFolderId, onSelectFolder }: Fo
                     type="button"
                     onClick={() => onSelectFolder("")}
                     className={`p-3 rounded-lg border-2 transition-all text-left ${selectedFolderId === ""
-                            ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
-                            : "border-gray-300 dark:border-gray-700 hover:border-gray-400"
+                        ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
+                        : "border-gray-300 dark:border-gray-700 hover:border-gray-400"
                         }`}
                 >
                     <p className="text-sm font-medium text-gray-900 dark:text-white">Unsorted</p>
@@ -37,8 +26,8 @@ export const FolderSelector = ({ folders, selectedFolderId, onSelectFolder }: Fo
                         type="button"
                         onClick={() => onSelectFolder(folder._id)}
                         className={`p-3 rounded-lg border-2 transition-all text-left ${selectedFolderId === folder._id
-                                ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
-                                : "border-gray-300 dark:border-gray-700 hover:border-gray-400"
+                            ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
+                            : "border-gray-300 dark:border-gray-700 hover:border-gray-400"
                             }`}
                         style={{
                             borderLeftColor: selectedFolderId === folder._id ? folder.color : undefined,

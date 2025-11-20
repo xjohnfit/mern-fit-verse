@@ -10,16 +10,16 @@ import { formatDateToInputValue } from '@/lib/formatDate';
 import { getPasswordStrength } from '@/lib/getPasswordStrength';
 
 // Components
-import ThemeSettingsSection from './components/ThemeSettingsSection';
-import ProfilePhotoSection from './components/ProfilePhotoSection';
-import ProfileHeaderSection from './components/ProfileHeaderSection';
-import BasicInfoFields from './components/BasicInfoFields';
-import PersonalInfoFields from './components/PersonalInfoFields';
-import PhysicalInfoFields from './components/PhysicalInfoFields';
-import PasswordFields from './components/PasswordFields';
+import ThemeSettingsSection from '@/screens/protected/settings/components/ThemeSettingsSection';
+import ProfilePhotoSection from '@/screens/protected/settings/components/ProfilePhotoSection';
+import ProfileHeaderSection from '@/screens/protected/settings/components/ProfileHeaderSection';
+import BasicInfoFields from '@/screens/protected/settings/components/BasicInfoFields';
+import PersonalInfoFields from '@/screens/protected/settings/components/PersonalInfoFields';
+import PhysicalInfoFields from '@/screens/protected/settings/components/PhysicalInfoFields';
+import PasswordFields from '@/screens/protected/settings/components/PasswordFields';
 
 // Hooks
-import { useProfileValidation } from './hooks/useProfileValidation';
+import { useProfileValidation } from '@/screens/protected/settings/hooks/useProfileValidation';
 
 const SettingsScreen = () => {
     const [profileData, setProfileData] = useState({

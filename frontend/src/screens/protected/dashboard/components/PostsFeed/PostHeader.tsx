@@ -2,7 +2,7 @@
 import { type FC } from "react";
 
 // Types
-import { type PostUser } from "@/screens/protected/dashboard/types";
+import { type PostUser } from "@/screens/protected/dashboard/dashboard.types";
 
 // UI components
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";

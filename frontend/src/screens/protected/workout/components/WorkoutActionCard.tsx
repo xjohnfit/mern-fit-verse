@@ -1,19 +1,6 @@
-import type { LucideIcon } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-interface WorkoutActionCardProps {
-    title: string;
-    description: string;
-    icon: LucideIcon;
-    iconGradient?: string;
-    benefits: string[];
-    benefitColor?: string;
-    buttonText: string;
-    buttonGradient?: string;
-    hoverBorderColor?: string;
-    onClick: () => void;
-}
+import type { WorkoutActionCardProps } from "@/screens/protected/workout/workout.types";
 
 export const WorkoutActionCard = ({
     title,

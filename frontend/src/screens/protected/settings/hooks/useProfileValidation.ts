@@ -1,18 +1,5 @@
 import { useState } from 'react';
-
-interface ProfileData {
-    name: string;
-    username: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-    dob: string;
-    gender: string;
-    photo: string;
-    height: string;
-    weight: string;
-    goal: string;
-}
+import type { ProfileData } from '@/screens/protected/settings/settings.types';
 
 export const useProfileValidation = (profileData: ProfileData) => {
     const [errors, setErrors] = useState<{ [key: string]: string }>({});

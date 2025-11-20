@@ -1,10 +1,5 @@
 import { Target } from 'lucide-react';
-
-interface ProfileHeaderSectionProps {
-    userName: string;
-    goal: string;
-    onGoalChange: (value: string) => void;
-}
+import type { ProfileHeaderSectionProps } from '@/screens/protected/settings/settings.types';
 
 const ProfileHeaderSection = ({
     userName,

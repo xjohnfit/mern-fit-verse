@@ -41,7 +41,7 @@ import {
     type CustomCategory,
     type GoalValues,
     type AddFoodData,
-} from "./types";
+} from "./nutrition.types";
 
 // Constants & Utils
 import { formatDateForAPI } from "@/lib/formatDate";

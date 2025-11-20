@@ -1,11 +1,4 @@
-import type { LucideIcon } from "lucide-react";
-
-interface PageHeaderProps {
-    icon: LucideIcon;
-    title: string;
-    description: string;
-    iconGradient?: string;
-}
+import type { PageHeaderProps } from "@/screens/protected/workout/workout.types";
 
 export const PageHeader = ({
     icon: Icon,

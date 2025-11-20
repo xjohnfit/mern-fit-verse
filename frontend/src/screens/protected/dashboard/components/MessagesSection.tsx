@@ -5,7 +5,7 @@ import { type FC } from "react";
 import { toast } from "sonner";
 
 // Types
-import { type FollowedUser } from "@/screens/protected/dashboard/types";
+import { type FollowedUser } from "@/screens/protected/dashboard/dashboard.types";
 
 // UI components
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";

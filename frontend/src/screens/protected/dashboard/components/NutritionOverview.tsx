@@ -2,7 +2,7 @@
 import { type FC } from "react";
 
 // Types
-import { type NutritionData } from "@/screens/protected/dashboard/types";
+import { type NutritionData } from "@/screens/protected/dashboard/dashboard.types";
 
 // UI components
 import { Button } from "@/components/ui/button";

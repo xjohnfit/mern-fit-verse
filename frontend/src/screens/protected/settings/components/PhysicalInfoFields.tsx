@@ -1,10 +1,4 @@
-interface PhysicalInfoFieldsProps {
-    height: string;
-    weight: string;
-    weightUnit: string;
-    errors: { [key: string]: string; };
-    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-}
+import type { PhysicalInfoFieldsProps } from '@/screens/protected/settings/settings.types';
 
 const PhysicalInfoFields = ({
     height,

@@ -2,7 +2,7 @@
 import { type FC } from "react";
 
 // Types
-import { type Post } from "@/screens/protected/dashboard/types";
+import { type Post } from "@/screens/protected/dashboard/dashboard.types";
 
 // Components
 import { PostHeader } from "./PostHeader";

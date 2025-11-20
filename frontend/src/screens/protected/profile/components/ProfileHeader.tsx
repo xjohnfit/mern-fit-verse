@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Users, UserCheck, MessageCircle, MoreHorizontal, User } from 'lucide-react';
 import { getInitials } from '@/lib/getInitials';
-import { type UserProfile } from '@/screens/protected/profile/types';
+import { type UserProfile } from '@/screens/protected/profile/profile.types';
 
 interface ProfileHeaderProps {
     user: UserProfile;

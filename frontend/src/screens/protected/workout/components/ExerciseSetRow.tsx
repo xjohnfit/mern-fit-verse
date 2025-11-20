@@ -1,15 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface ExerciseSetRowProps {
-    setNumber: number;
-    targetReps: number;
-    targetWeight: number;
-    canRemove: boolean;
-    onChange: (field: 'targetReps' | 'targetWeight', value: number) => void;
-    onRemove: () => void;
-}
+import type { ExerciseSetRowProps } from "@/screens/protected/workout/workout.types";
 
 export const ExerciseSetRow = ({
     setNumber,

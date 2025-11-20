@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { formatWeight } from "@/lib/weightConversion";
 
 // Types
-import type { Exercise, WorkoutSet, WorkoutExercise } from "@/screens/protected/workout/types";
+import type { Exercise, WorkoutSet, WorkoutExercise } from "@/screens/protected/workout/workout.types";
 
 const StartWorkoutScreen = () => {
     const navigate = useNavigate();

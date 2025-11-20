@@ -5,7 +5,7 @@ import { type FC } from "react";
 import { NutritionGoalsCard } from "./NutritionGoalsCard";
 
 // Types
-import { type GoalValues, type DailyNutritionData } from "@/screens/protected/nutrition/types";
+import { type GoalValues, type DailyNutritionData } from "@/screens/protected/nutrition/nutrition.types";
 
 interface NutritionGoalsSectionProps {
     isEditingGoals: boolean;

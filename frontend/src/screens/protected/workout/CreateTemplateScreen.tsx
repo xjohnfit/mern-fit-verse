@@ -21,7 +21,7 @@ import { TemplateExerciseCard } from "@/screens/protected/workout/components/Tem
 import { TemplateFormActions } from "@/screens/protected/workout/components/TemplateFormActions";
 
 // Types
-import type { TemplateExercise } from "@/screens/protected/workout/types";
+import type { TemplateExercise } from "@/screens/protected/workout/workout.types";
 
 const CreateTemplateScreen = () => {
     const navigate = useNavigate();

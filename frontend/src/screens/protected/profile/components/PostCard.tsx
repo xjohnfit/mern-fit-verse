@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { getInitials } from '@/lib/getInitials';
 import { formatRelativeTime } from '@/lib/formatDate';
-import { type Post, type UserProfile } from '@/screens/protected/profile/types';
+import { type Post, type UserProfile } from '@/screens/protected/profile/profile.types';
 
 interface PostCardProps {
     post: Post;

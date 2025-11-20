@@ -1,13 +1,6 @@
 import { Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface TemplateFormActionsProps {
-    onCancel: () => void;
-    onSave: () => void;
-    isSaving: boolean;
-    canSave: boolean;
-    saveButtonText?: string;
-}
+import type { TemplateFormActionsProps } from "@/screens/protected/workout/workout.types";
 
 export const TemplateFormActions = ({
     onCancel,

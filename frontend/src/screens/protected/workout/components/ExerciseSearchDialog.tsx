@@ -2,23 +2,7 @@ import { Search, Plus, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-interface Exercise {
-    id: string;
-    name: string;
-    category: string;
-    image?: string;
-}
-
-interface ExerciseSearchDialogProps {
-    isOpen: boolean;
-    onClose: () => void;
-    exercises: Exercise[];
-    isLoading: boolean;
-    searchTerm: string;
-    onSearchChange: (term: string) => void;
-    onAddExercise: (exercise: Exercise) => void;
-}
+import type { ExerciseSearchDialogProps } from "@/screens/protected/workout/workout.types";
 
 export const ExerciseSearchDialog = ({
     isOpen,

@@ -1,12 +1,5 @@
 import { User, Mail } from 'lucide-react';
-
-interface BasicInfoFieldsProps {
-    name: string;
-    username: string;
-    email: string;
-    errors: { [key: string]: string; };
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
+import type { BasicInfoFieldsProps } from '@/screens/protected/settings/settings.types';
 
 const BasicInfoFields = ({
     name,
@@ -35,8 +28,8 @@ const BasicInfoFields = ({
                             value={name}
                             onChange={onChange}
                             className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.name
-                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                    : 'border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
+                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                : 'border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
                                 }`}
                             placeholder='Enter your full name'
                         />
@@ -93,8 +86,8 @@ const BasicInfoFields = ({
                             value={username}
                             onChange={onChange}
                             className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.username
-                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                    : 'border-gray-200 dark:border-gray-600 focus:border-purple-500 focus:ring-purple-500/20'
+                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                : 'border-gray-200 dark:border-gray-600 focus:border-purple-500 focus:ring-purple-500/20'
                                 }`}
                             placeholder='Choose a username'
                         />
@@ -163,8 +156,8 @@ const BasicInfoFields = ({
                         value={email}
                         onChange={onChange}
                         className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.email
-                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                : 'border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
+                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                            : 'border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
                             }`}
                         placeholder='Enter your email address'
                     />
