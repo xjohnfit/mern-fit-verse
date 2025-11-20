@@ -9,8 +9,8 @@ import {
     Send,
 } from 'lucide-react';
 import { getInitials } from '@/lib/getInitials';
-import { formatRelativeTime } from '../../../../lib/formatDate';
-import { type Post, type UserProfile } from '../types';
+import { formatRelativeTime } from '@/lib/formatDate';
+import { type Post, type UserProfile } from '@/screens/protected/profile/types';
 
 interface PostCardProps {
     post: Post;
@@ -101,8 +101,8 @@ export const PostCard: FC<PostCardProps> = ({
                     size="sm"
                     onClick={onLike}
                     className={`flex items-center space-x-2 ${isLiked
-                            ? 'text-red-500 hover:text-red-600'
-                            : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                        ? 'text-red-500 hover:text-red-600'
+                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                         }`}
                 >
                     <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />

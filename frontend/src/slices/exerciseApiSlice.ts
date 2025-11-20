@@ -1,4 +1,4 @@
-import { apiSlice } from './apiSlice';
+import { apiSlice } from '@/slices/apiSlice';
 
 const BASE_URL = '/api/exercises';
 

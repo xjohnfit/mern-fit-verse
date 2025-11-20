@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 import { Activity } from 'lucide-react';
 import { PostCard } from './PostCard';
-import { type Post, type UserProfile } from '../types';
+import { type Post, type UserProfile } from '@/screens/protected/profile/types';
 
 interface PostsListProps {
     posts: Post[] | undefined;

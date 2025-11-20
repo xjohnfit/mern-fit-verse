@@ -2,11 +2,11 @@
 import { type FC } from "react";
 
 // Types
-import { type Post } from "../../types";
+import { type Post } from "@/screens/protected/dashboard/types";
 
 // Components
 import { PostCard } from "./PostCard";
-import { EmptyPosts } from "../EmptyStates/EmptyPosts";
+import { EmptyPosts } from "@/screens/protected/dashboard/components/EmptyStates/EmptyPosts";
 
 interface PostsFeedProps {
     posts: Post[] | undefined;

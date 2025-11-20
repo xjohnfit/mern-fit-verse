@@ -1,4 +1,4 @@
-import { apiSlice } from './apiSlice';
+import { apiSlice } from '@/slices/apiSlice';
 
 const WORKOUTS_URL = '/api/workouts';
 

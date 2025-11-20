@@ -8,34 +8,36 @@ import { RouterProvider } from 'react-router/dom';
 
 // Redux
 import { Provider } from 'react-redux';
-import store from './store';
+import store from '@/store';
 
 // Theme Provider
 import { ThemeProvider } from 'next-themes';
 
 // Styles
-import './index.css';
+import '@/index.css';
 
 // Main App
-import App from './App';
+import App from '@/App';
 
 // Public Screens
-import HomeScreen from './screens/HomeScreen';
-import LoginScreen from './screens/LoginScreen';
-import RegisterScreen from './screens/RegisterScreen';
-import PrivacyPolicy from './screens/PrivacyPolicy';
-import TermsOfService from './screens/TermsOfService';
+import HomeScreen from '@/screens/HomeScreen';
+import LoginScreen from '@/screens/LoginScreen';
+import RegisterScreen from '@/screens/RegisterScreen';
+import PrivacyPolicy from '@/screens/PrivacyPolicy';
+import TermsOfService from '@/screens/TermsOfService';
 
 // Protected Screens
-import PrivateRoute from './components/common/PrivateRoute';
-import AdminScreen from './screens/protected/admin/AdminScreen';
-import DashboardScreen from './screens/protected/dashboard/DashboardScreen';
-import SettingsScreen from './screens/protected/settings/SettingsScreen';
-import ViewProfileScreen from './screens/protected/profile/ViewUserProfile';
-import NutritionScreen from './screens/protected/nutrition/NutritionScreen';
-import WorkoutScreen from './screens/protected/workout/WorkoutScreen';
-import StartWorkoutScreen from './screens/protected/workout/StartWorkoutScreen';
-import WorkoutDetailScreen from './screens/protected/workout/WorkoutDetailScreen';
+import PrivateRoute from '@/components/common/PrivateRoute';
+import AdminScreen from '@/screens/protected/admin/AdminScreen';
+import DashboardScreen from '@/screens/protected/dashboard/DashboardScreen';
+import SettingsScreen from '@/screens/protected/settings/SettingsScreen';
+import ViewProfileScreen from '@/screens/protected/profile/ViewUserProfile';
+import NutritionScreen from '@/screens/protected/nutrition/NutritionScreen';
+import WorkoutScreen from '@/screens/protected/workout/WorkoutScreen';
+import StartWorkoutScreen from '@/screens/protected/workout/StartWorkoutScreen';
+import WorkoutDetailScreen from '@/screens/protected/workout/WorkoutDetailScreen';
+import CreateTemplateScreen from '@/screens/protected/workout/CreateTemplateScreen';
+import EditTemplateScreen from '@/screens/protected/workout/EditTemplateScreen';
 
 const router = createBrowserRouter([
     {
@@ -62,6 +64,8 @@ const router = createBrowserRouter([
                     { path: '/nutrition', Component: NutritionScreen },
                     { path: '/workout', Component: WorkoutScreen },
                     { path: '/workout/start', Component: StartWorkoutScreen },
+                    { path: '/workout/template/create', Component: CreateTemplateScreen },
+                    { path: '/workout/template/edit/:id', Component: EditTemplateScreen },
                     { path: '/workout/:id', Component: WorkoutDetailScreen },
                 ],
             },

@@ -1,6 +1,6 @@
 import { type FC } from 'react';
 import { Ruler, Weight, Target } from 'lucide-react';
-import { type UserProfile } from '../types';
+import { type UserProfile } from '@/screens/protected/profile/types';
 
 interface FitnessInfoCardProps {
     user: UserProfile;
@@ -49,7 +49,7 @@ export const FitnessInfoCard: FC<FitnessInfoCardProps> = ({ user }) => {
                                     Weight
                                 </p>
                                 <p className="font-medium text-gray-900 dark:text-gray-100">
-                                    {user.weight} kg
+                                    {user.weight} {user.weightUnit || 'kg'}
                                 </p>
                             </div>
                         </div>

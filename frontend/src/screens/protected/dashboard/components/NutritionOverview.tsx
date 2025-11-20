@@ -2,14 +2,14 @@
 import { type FC } from "react";
 
 // Types
-import { type NutritionData } from "../types";
+import { type NutritionData } from "@/screens/protected/dashboard/types";
 
 // UI components
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 // Custom components
-import { MacroDistributionChart } from "../../nutrition/components/MacroDistributionChart";
+import { MacroDistributionChart } from "@/screens/protected/nutrition/components/MacroDistributionChart";
 import { EmptyNutrition } from "./EmptyStates/EmptyNutrition";
 
 // Icons

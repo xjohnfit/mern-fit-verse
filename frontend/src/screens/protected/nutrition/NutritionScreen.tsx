@@ -44,7 +44,7 @@ import {
 } from "./types";
 
 // Constants & Utils
-import { formatDateForAPI } from "../../../lib/formatDate";
+import { formatDateForAPI } from "@/lib/formatDate";
 import { mealCategoriesConfig, availableColors } from "./constants";
 
 const NutritionScreen = () => {

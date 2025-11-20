@@ -17,6 +17,8 @@ export const apiSlice = createApi({
         'Exercise',
         'Nutrition',
         'CustomCategory',
+        'WorkoutTemplate',
+        'WorkoutTemplateFolder',
     ],
     endpoints: (_builder) => ({}),
 });

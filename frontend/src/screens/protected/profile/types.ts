@@ -45,6 +45,7 @@ export interface UserProfile {
     }>;
     height?: number;
     weight?: number;
+    weightUnit?: string;
     goal?: string;
     photo?: string;
     createdAt: string;

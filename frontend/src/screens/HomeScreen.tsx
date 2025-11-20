@@ -11,7 +11,18 @@ import {
     ArrowRight,
     Play,
     Star,
-    CheckCircle
+    Apple,
+    Bell,
+    Heart,
+    MessageCircle,
+    BarChart3,
+    Utensils,
+    Calendar,
+    Shield,
+    Zap,
+    Image,
+    Cloud,
+    Activity
 } from 'lucide-react';
 
 const HomeScreen = () => {
@@ -33,39 +44,59 @@ const HomeScreen = () => {
         {
             icon: Dumbbell,
             title: "Workout Tracking",
-            description: "Log your workouts, track sets, reps, and weights with our intuitive interface."
+            description: "Log workouts with comprehensive exercise library, track sets, reps, and weights with detailed history."
         },
         {
-            icon: Target,
-            title: "Goal Setting",
-            description: "Set personalized fitness goals and track your progress towards achieving them."
+            icon: Apple,
+            title: "Nutrition Tracking",
+            description: "Access 500,000+ foods via FatSecret API with custom meal categories and daily calorie tracking."
+        },
+        {
+            icon: Users,
+            title: "Social Community",
+            description: "Connect with fitness enthusiasts, share posts with images, follow friends, and stay motivated together."
         },
         {
             icon: TrendingUp,
             title: "Progress Analytics",
-            description: "Visualize your fitness journey with detailed charts and performance metrics."
+            description: "Visualize your fitness journey with interactive charts, workout stats, and nutrition insights."
         },
         {
-            icon: Users,
-            title: "Community Support",
-            description: "Connect with like-minded fitness enthusiasts and share your achievements."
+            icon: Bell,
+            title: "Real-time Notifications",
+            description: "Stay updated with likes, comments, follows, and community interactions instantly."
+        },
+        {
+            icon: Target,
+            title: "Personalized Goals",
+            description: "Set custom fitness objectives, track weight progress, and achieve milestones at your own pace."
+        },
+        {
+            icon: Image,
+            title: "Media Sharing",
+            description: "Upload and share progress photos with Cloudinary integration for optimized image delivery."
+        },
+        {
+            icon: Shield,
+            title: "Secure Platform",
+            description: "Enterprise-grade JWT authentication, encrypted passwords, and HTTP-only cookies for safety."
         }
     ];
 
     const testimonials = [
         {
             name: "Sarah Johnson",
-            comment: "FitVerse transformed my fitness routine. I've never been more motivated!",
+            comment: "FitVerse combines social networking with fitness tracking perfectly. The nutrition feature with 500k+ foods is incredible!",
             rating: 5
         },
         {
             name: "Mike Chen",
-            comment: "The progress tracking features are amazing. I can see my improvements daily.",
+            comment: "The workout logging is so detailed and the social feed keeps me motivated. Love seeing everyone's progress!",
             rating: 5
         },
         {
             name: "Emily Davis",
-            comment: "User-friendly interface and great workout suggestions. Highly recommended!",
+            comment: "Custom meal categories and real-time notifications make this the best fitness app I've used. Highly recommended!",
             rating: 5
         }
     ];
@@ -114,7 +145,10 @@ const HomeScreen = () => {
                                 {isAuthenticated ? `Welcome back, ${userInfo?.name?.split(' ')[0]}!` : 'Welcome to FitVerse'}
                             </h1>
                             <p className='text-lg md:text-xl mt-4 text-gray-700 dark:text-white/90 font-normal inter-var max-w-3xl mx-auto mb-8'>
-                                Your ultimate fitness companion for tracking workouts, monitoring progress, and achieving your health goals.
+                                {isAuthenticated
+                                    ? "Track workouts, log nutrition, share your journey, and connect with a supportive fitness community—all in one place."
+                                    : "Your complete social fitness platform for tracking workouts, monitoring nutrition, sharing progress, and connecting with a motivated community."
+                                }
                             </p>
 
                             {/* CTA Buttons */}
@@ -155,7 +189,7 @@ const HomeScreen = () => {
                         </div>
 
                         {/* Features Section */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
                             {features.map((feature, index) => {
                                 const IconComponent = feature.icon;
                                 return (
@@ -168,6 +202,69 @@ const HomeScreen = () => {
                                     </div>
                                 );
                             })}
+                        </div>
+
+                        {/* Platform Highlights Section - New */}
+                        <div className="section-card rounded-xl p-8 mb-16">
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">
+                                🌟 Platform Highlights
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div className="flex items-start gap-3">
+                                    <div className="shrink-0 w-10 h-10 bg-linear-to-r from-[#38bdf8] to-[#818cf8] rounded-lg flex items-center justify-center">
+                                        <Utensils className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-gray-900 dark:text-white font-semibold mb-1">FatSecret API Integration</h4>
+                                        <p className="text-gray-600 dark:text-white/70 text-sm">Access to 500,000+ verified food items with detailed nutritional information</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="shrink-0 w-10 h-10 bg-linear-to-r from-[#818cf8] to-[#c084fc] rounded-lg flex items-center justify-center">
+                                        <Calendar className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-gray-900 dark:text-white font-semibold mb-1">Custom Meal Categories</h4>
+                                        <p className="text-gray-600 dark:text-white/70 text-sm">Create up to 3 personalized meal categories beyond standard meals</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="shrink-0 w-10 h-10 bg-linear-to-r from-[#c084fc] to-[#e879f9] rounded-lg flex items-center justify-center">
+                                        <Heart className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-gray-900 dark:text-white font-semibold mb-1">Social Feed</h4>
+                                        <p className="text-gray-600 dark:text-white/70 text-sm">Share posts with images, like, comment, and engage with your community</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="shrink-0 w-10 h-10 bg-linear-to-r from-[#38bdf8] to-[#818cf8] rounded-lg flex items-center justify-center">
+                                        <Activity className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-gray-900 dark:text-white font-semibold mb-1">Workout Library</h4>
+                                        <p className="text-gray-600 dark:text-white/70 text-sm">Complete exercise database with detailed logging and history tracking</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="shrink-0 w-10 h-10 bg-linear-to-r from-[#818cf8] to-[#c084fc] rounded-lg flex items-center justify-center">
+                                        <Cloud className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-gray-900 dark:text-white font-semibold mb-1">Cloudinary Integration</h4>
+                                        <p className="text-gray-600 dark:text-white/70 text-sm">Optimized image storage and delivery for profile photos and posts</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="shrink-0 w-10 h-10 bg-linear-to-r from-[#c084fc] to-[#e879f9] rounded-lg flex items-center justify-center">
+                                        <BarChart3 className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-gray-900 dark:text-white font-semibold mb-1">Visual Analytics</h4>
+                                        <p className="text-gray-600 dark:text-white/70 text-sm">Interactive charts with Recharts for tracking progress and trends</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         {/* Stats Section */}
@@ -216,25 +313,25 @@ const HomeScreen = () => {
                                 </h2>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                                     <div className="text-center">
-                                        <div className="flex items-center justify-center w-12 h-12 bg-linear-to-r from-[#38bdf8] to-[#818cf8] rounded-full text-white font-bold text-xl mb-4 mx-auto">
+                                        <div className="flex items-center justify-center w-16 h-16 bg-linear-to-r from-[#38bdf8] to-[#818cf8] rounded-full text-white font-bold text-2xl mb-4 mx-auto shadow-lg shadow-blue-500/30">
                                             1
                                         </div>
-                                        <h3 className="text-gray-900 dark:text-white font-semibold text-lg mb-2">Sign Up</h3>
-                                        <p className="text-gray-600 dark:text-white/70">Create your free FitVerse account in seconds</p>
+                                        <h3 className="text-gray-900 dark:text-white font-semibold text-lg mb-2">Create Account</h3>
+                                        <p className="text-gray-600 dark:text-white/70">Sign up with your email, set your profile, and join the FitVerse community</p>
                                     </div>
                                     <div className="text-center">
-                                        <div className="flex items-center justify-center w-12 h-12 bg-linear-to-r from-[#818cf8] to-[#c084fc] rounded-full text-white font-bold text-xl mb-4 mx-auto">
+                                        <div className="flex items-center justify-center w-16 h-16 bg-linear-to-r from-[#818cf8] to-[#c084fc] rounded-full text-white font-bold text-2xl mb-4 mx-auto shadow-lg shadow-purple-500/30">
                                             2
                                         </div>
-                                        <h3 className="text-gray-900 dark:text-white font-semibold text-lg mb-2">Set Goals</h3>
-                                        <p className="text-gray-600 dark:text-white/70">Define your fitness objectives and preferences</p>
+                                        <h3 className="text-gray-900 dark:text-white font-semibold text-lg mb-2">Track Progress</h3>
+                                        <p className="text-gray-600 dark:text-white/70">Log workouts, track nutrition from 500k+ foods, and monitor your daily progress</p>
                                     </div>
                                     <div className="text-center">
-                                        <div className="flex items-center justify-center w-12 h-12 bg-linear-to-r from-[#c084fc] to-[#e879f9] rounded-full text-white font-bold text-xl mb-4 mx-auto">
+                                        <div className="flex items-center justify-center w-16 h-16 bg-linear-to-r from-[#c084fc] to-[#e879f9] rounded-full text-white font-bold text-2xl mb-4 mx-auto shadow-lg shadow-pink-500/30">
                                             3
                                         </div>
-                                        <h3 className="text-gray-900 dark:text-white font-semibold text-lg mb-2">Start Training</h3>
-                                        <p className="text-gray-600 dark:text-white/70">Begin your fitness journey with personalized workouts</p>
+                                        <h3 className="text-gray-900 dark:text-white font-semibold text-lg mb-2">Connect & Share</h3>
+                                        <p className="text-gray-600 dark:text-white/70">Follow friends, share your journey with photos, and stay motivated together</p>
                                     </div>
                                 </div>
                             </div>
@@ -244,24 +341,71 @@ const HomeScreen = () => {
                         {isAuthenticated && (
                             <div className="section-card rounded-xl p-8">
                                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">
-                                    Your Fitness Hub Awaits
+                                    Your Complete Fitness Hub
                                 </h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="flex items-center gap-3 text-gray-900 dark:text-white">
-                                        <CheckCircle className="w-5 h-5 text-[#38bdf8]" />
-                                        <span>Track your daily workouts and exercises</span>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
+                                        <Dumbbell className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
+                                        <div>
+                                            <p className="font-semibold">Workout Tracking</p>
+                                            <p className="text-sm text-gray-600 dark:text-white/70">Log exercises, sets, reps, and weight</p>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-3 text-gray-900 dark:text-white">
-                                        <CheckCircle className="w-5 h-5 text-[#38bdf8]" />
-                                        <span>Monitor your fitness progress over time</span>
+                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
+                                        <Apple className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
+                                        <div>
+                                            <p className="font-semibold">Nutrition Database</p>
+                                            <p className="text-sm text-gray-600 dark:text-white/70">500,000+ foods with FatSecret API</p>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-3 text-gray-900 dark:text-white">
-                                        <CheckCircle className="w-5 h-5 text-[#38bdf8]" />
-                                        <span>Set and achieve personalized goals</span>
+                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
+                                        <Calendar className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
+                                        <div>
+                                            <p className="font-semibold">Custom Meal Categories</p>
+                                            <p className="text-sm text-gray-600 dark:text-white/70">Create up to 3 personalized categories</p>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-3 text-gray-900 dark:text-white">
-                                        <CheckCircle className="w-5 h-5 text-[#38bdf8]" />
-                                        <span>Access your data from anywhere</span>
+                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
+                                        <Users className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
+                                        <div>
+                                            <p className="font-semibold">Follow System</p>
+                                            <p className="text-sm text-gray-600 dark:text-white/70">Connect with friends and community</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
+                                        <MessageCircle className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
+                                        <div>
+                                            <p className="font-semibold">Social Feed</p>
+                                            <p className="text-sm text-gray-600 dark:text-white/70">Share posts, photos, likes, and comments</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
+                                        <Bell className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
+                                        <div>
+                                            <p className="font-semibold">Real-time Notifications</p>
+                                            <p className="text-sm text-gray-600 dark:text-white/70">Stay updated on all interactions</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
+                                        <BarChart3 className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
+                                        <div>
+                                            <p className="font-semibold">Progress Analytics</p>
+                                            <p className="text-sm text-gray-600 dark:text-white/70">Interactive charts and visualizations</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
+                                        <Image className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
+                                        <div>
+                                            <p className="font-semibold">Media Sharing</p>
+                                            <p className="text-sm text-gray-600 dark:text-white/70">Upload photos via Cloudinary</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
+                                        <Zap className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
+                                        <div>
+                                            <p className="font-semibold">Dark Mode Support</p>
+                                            <p className="text-sm text-gray-600 dark:text-white/70">Seamless theme switching</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

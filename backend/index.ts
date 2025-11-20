@@ -19,6 +19,8 @@ import nutritionRoutes from './routes/NutritionRoutes';
 import exerciseRoutes from './routes/exercisesRoutes';
 import customCategoryRoutes from './routes/customCategoryRoutes';
 import workoutRoutes from './routes/workoutRoutes';
+import workoutTemplateRoutes from './routes/workoutTemplateRoutes';
+import workoutTemplateFolderRoutes from './routes/workoutTemplateFolderRoutes';
 // import exerciseRoutes from './routes/exerciseRoutes';
 
 // Configurations
@@ -80,6 +82,8 @@ app.use('/api/nutrition', nutritionRoutes);
 app.use('/api/exercises', exerciseRoutes);
 app.use('/api/custom-categories', customCategoryRoutes);
 app.use('/api/workouts', workoutRoutes);
+app.use('/api/workout-templates', workoutTemplateRoutes);
+app.use('/api/workout-template-folders', workoutTemplateFolderRoutes);
 
 // Serve static files from the React app in production
 if (process.env.NODE_ENV === 'production') {

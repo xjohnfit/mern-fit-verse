@@ -26,7 +26,7 @@ import {
     PostsList,
     FollowersFollowingModal
 } from './components';
-import { SuggestedUsersList } from '../dashboard/components/SuggestedUsersList';
+import { SuggestedUsersList } from '@/screens/protected/dashboard/components/SuggestedUsersList';
 
 // UI Components
 import { User, Plus, X, Image as ImageIcon } from 'lucide-react';

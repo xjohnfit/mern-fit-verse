@@ -1,2 +1,5 @@
 // Export all workout components
-// This file will be populated as components are created
+export { CreateFolderDialog } from './CreateFolderDialog';
+export { EditFolderDialog } from './EditFolderDialog';
+export { FolderCard } from './FolderCard';
+export { TemplateCard } from './TemplateCard';

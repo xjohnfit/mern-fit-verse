@@ -1,6 +1,6 @@
 // React
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { useSelector } from "react-redux";
 
 // Third-party libraries
@@ -10,6 +10,11 @@ import { toast } from "sonner";
 // Redux slices
 import { useGetExercisesQuery } from "@/slices/exerciseApiSlice";
 import { useCreateWorkoutMutation } from "@/slices/workoutApiSlice";
+import {
+    useGetTemplateByIdQuery,
+    type WorkoutTemplateExercise,
+    type WorkoutTemplateSet
+} from "@/slices/workoutTemplateApiSlice";
 
 // Components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,9 +47,17 @@ interface WorkoutExercise extends Exercise {
 
 const StartWorkoutScreen = () => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const templateId = searchParams.get('templateId');
+
     const { data: exercises, isLoading } = useGetExercisesQuery();
+    const { data: template } = useGetTemplateByIdQuery(templateId!, {
+        skip: !templateId,
+    });
     const [createWorkout] = useCreateWorkoutMutation();
     const toastShownRef = useRef<Set<string>>(new Set());
+    const isFinishingRef = useRef(false);
+    const templateLoadedRef = useRef(false);
     const { userInfo } = useSelector((state: any) => state.auth);
     const weightUnit = userInfo?.weightUnit || 'lbs';
 
@@ -70,73 +83,191 @@ const StartWorkoutScreen = () => {
         }
     });
     const [showExerciseSearch, setShowExerciseSearch] = useState(false);
-    const [activeRestTimer, setActiveRestTimer] = useState<{ exerciseId: string; setId: string; } | null>(null);
-    const [workoutTime, setWorkoutTime] = useState(() => {
-        const savedTime = sessionStorage.getItem("workout_time");
-        if (!savedTime) {
-            // Initialize sessionStorage for new workout
-            sessionStorage.setItem("workout_time", "0");
+    const [activeRestTimer, setActiveRestTimer] = useState<{ exerciseId: string; setId: string; startTime: number; } | null>(null);
+
+    // Initialize workout start time
+    const [workoutStartTime] = useState(() => {
+        const savedStartTime = sessionStorage.getItem("workout_start_time");
+        if (!savedStartTime) {
+            const startTime = Date.now();
+            sessionStorage.setItem("workout_start_time", startTime.toString());
             sessionStorage.setItem("workout_timer_running", "true");
+            return startTime;
         }
-        return savedTime ? parseInt(savedTime) : 0;
+        return parseInt(savedStartTime);
     });
+
+    // Initialize paused time
+    const [pausedTime, setPausedTime] = useState(() => {
+        const savedPausedTime = sessionStorage.getItem("workout_paused_time");
+        const savedPauseStart = sessionStorage.getItem("workout_pause_start");
+
+        let paused = savedPausedTime ? parseInt(savedPausedTime) : 0;
+
+        // Handle pause start time from previous session
+        if (savedPauseStart) {
+            const pauseStart = parseInt(savedPauseStart);
+            const additionalPause = Date.now() - pauseStart;
+            paused += additionalPause;
+            sessionStorage.setItem("workout_paused_time", paused.toString());
+            sessionStorage.removeItem("workout_pause_start");
+        }
+
+        return paused;
+    });
+
+    // Initialize pause start time
+    const [pauseStartTime, setPauseStartTime] = useState<number | null>(() => {
+        // Always return null since we handled it in pausedTime initialization
+        return null;
+    });
+
+    // Initialize timer running state
     const [isTimerRunning, setIsTimerRunning] = useState(() => {
         const savedRunning = sessionStorage.getItem("workout_timer_running");
         return savedRunning ? savedRunning === "true" : true;
     });
 
-    // Timer effect
+    // Initialize workout time based on elapsed time
+    const [workoutTime, setWorkoutTime] = useState(() => {
+        const savedStartTime = sessionStorage.getItem("workout_start_time");
+        const savedPausedTime = sessionStorage.getItem("workout_paused_time");
+        if (savedStartTime) {
+            const startTime = parseInt(savedStartTime);
+            const paused = savedPausedTime ? parseInt(savedPausedTime) : 0;
+            return Math.floor((Date.now() - startTime - paused) / 1000);
+        }
+        return 0;
+    });
+
+    // Timer effect - uses timestamp-based calculation
     useEffect(() => {
         let interval: number;
         if (isTimerRunning) {
             interval = window.setInterval(() => {
-                setWorkoutTime(prev => {
-                    const newTime = prev + 1;
-                    sessionStorage.setItem("workout_time", newTime.toString());
-                    return newTime;
-                });
-            }, 1000);
+                const elapsed = Math.floor((Date.now() - workoutStartTime - pausedTime) / 1000);
+                setWorkoutTime(elapsed);
+            }, 100); // Update more frequently for accuracy
         }
         return () => clearInterval(interval);
-    }, [isTimerRunning]);
+    }, [isTimerRunning, workoutStartTime, pausedTime]);
 
-    // Save timer running state
+    // Save timer running state and handle pause/resume
     useEffect(() => {
+        // Don't save to sessionStorage if we're finishing the workout
+        if (isFinishingRef.current) return;
+
         sessionStorage.setItem("workout_timer_running", isTimerRunning.toString());
+
+        if (!isTimerRunning && pauseStartTime === null) {
+            // Just paused
+            const newPauseStart = Date.now();
+            setPauseStartTime(newPauseStart);
+            sessionStorage.setItem("workout_pause_start", newPauseStart.toString());
+        } else if (isTimerRunning && pauseStartTime !== null) {
+            // Just resumed
+            const pauseDuration = Date.now() - pauseStartTime;
+            const newPausedTime = pausedTime + pauseDuration;
+            setPausedTime(newPausedTime);
+            sessionStorage.setItem("workout_paused_time", newPausedTime.toString());
+            setPauseStartTime(null);
+            sessionStorage.removeItem("workout_pause_start");
+        }
     }, [isTimerRunning]);
 
     // Save selected exercises
     useEffect(() => {
+        // Don't save to sessionStorage if we're finishing the workout
+        if (isFinishingRef.current) return;
         sessionStorage.setItem("workout_exercises", JSON.stringify(selectedExercises));
     }, [selectedExercises]);
 
-    // Rest timer effect
+    // Load template exercises if templateId is provided
+    useEffect(() => {
+        if (template?.data && !templateLoadedRef.current && exercises) {
+            templateLoadedRef.current = true;
+
+            const templateData = template.data;
+
+            // Convert template exercises to workout exercises
+            const templateExercises: WorkoutExercise[] = templateData.exercises.map((templateExercise: WorkoutTemplateExercise) => {
+                // Find the full exercise data
+                const exerciseData = exercises.find(ex => ex.id === templateExercise.exerciseId);
+
+                if (!exerciseData) return null;
+
+                // Create workout sets from template sets
+                const workoutSets: WorkoutSet[] = templateExercise.sets.map((templateSet: WorkoutTemplateSet, index: number) => ({
+                    id: `${exerciseData.id}-set-${index + 1}`,
+                    setNumber: index + 1,
+                    completed: false,
+                    restTimeRemaining: templateExercise.restTime,
+                    weight: templateSet.targetWeight || 0,
+                    reps: templateSet.targetReps,
+                }));
+
+                return {
+                    id: exerciseData.id,
+                    name: exerciseData.name,
+                    description: exerciseData.description,
+                    instructions: exerciseData.instructions,
+                    image: exerciseData.image,
+                    category: exerciseData.category,
+                    sets: workoutSets,
+                };
+            }).filter(Boolean) as WorkoutExercise[];
+
+            if (templateExercises.length > 0) {
+                setSelectedExercises(templateExercises);
+                toast.success(`Loaded template: ${templateData.name}`);
+            }
+        }
+    }, [template, exercises]);
+
+    // Rest timer effect - uses timestamp-based calculation
     useEffect(() => {
         if (!activeRestTimer) return;
 
         const interval = window.setInterval(() => {
-            setSelectedExercises(prev => prev.map(ex => {
-                if (ex.id !== activeRestTimer.exerciseId) return ex;
-                return {
-                    ...ex,
-                    sets: ex.sets.map(set => {
-                        if (set.id !== activeRestTimer.setId) return set;
-                        const newTime = set.restTimeRemaining - 1;
-                        if (newTime <= 0) {
-                            setActiveRestTimer(null);
-                            const toastKey = `rest-complete-${activeRestTimer.setId}`;
-                            if (!toastShownRef.current.has(toastKey)) {
-                                toastShownRef.current.add(toastKey);
-                                toast.success("Rest time complete!");
-                                setTimeout(() => toastShownRef.current.delete(toastKey), 3000);
-                            }
-                            return { ...set, restTimeRemaining: 0 };
-                        }
-                        return { ...set, restTimeRemaining: newTime };
-                    })
-                };
-            }));
-        }, 1000);
+            const elapsed = Math.floor((Date.now() - activeRestTimer.startTime) / 1000);
+            const restDuration = 120; // 2 minutes in seconds
+            const remaining = restDuration - elapsed;
+
+            if (remaining <= 0) {
+                setActiveRestTimer(null);
+                const toastKey = `rest-complete-${activeRestTimer.setId}`;
+                if (!toastShownRef.current.has(toastKey)) {
+                    toastShownRef.current.add(toastKey);
+                    toast.success("Rest time complete!");
+                    setTimeout(() => toastShownRef.current.delete(toastKey), 3000);
+                }
+                // Update the set's rest time to 0
+                setSelectedExercises(prev => prev.map(ex => {
+                    if (ex.id !== activeRestTimer.exerciseId) return ex;
+                    return {
+                        ...ex,
+                        sets: ex.sets.map(set =>
+                            set.id === activeRestTimer.setId
+                                ? { ...set, restTimeRemaining: 0 }
+                                : set
+                        )
+                    };
+                }));
+            } else {
+                // Update the rest time remaining
+                setSelectedExercises(prev => prev.map(ex => {
+                    if (ex.id !== activeRestTimer.exerciseId) return ex;
+                    return {
+                        ...ex,
+                        sets: ex.sets.map(set =>
+                            set.id === activeRestTimer.setId
+                                ? { ...set, restTimeRemaining: remaining }
+                                : set
+                        )
+                    };
+                }));
+            }
+        }, 100); // Update more frequently for accuracy
 
         return () => clearInterval(interval);
     }, [activeRestTimer]);
@@ -254,7 +385,11 @@ const StartWorkoutScreen = () => {
             if (!toastShownRef.current.has(toastKey)) {
                 toastShownRef.current.add(toastKey);
                 if (nextIncompleteSet) {
-                    setActiveRestTimer({ exerciseId, setId: nextIncompleteSet.id });
+                    setActiveRestTimer({
+                        exerciseId,
+                        setId: nextIncompleteSet.id,
+                        startTime: Date.now()
+                    });
                     toast.success(`Set ${setIndex + 1} complete! Rest timer started.`);
                 } else {
                     toast.success(`Set ${setIndex + 1} complete!`);
@@ -311,14 +446,18 @@ const StartWorkoutScreen = () => {
     };
 
     const handleFinishWorkout = async () => {
+        // Set flag to prevent useEffects from saving to sessionStorage
+        isFinishingRef.current = true;
         setIsTimerRunning(false);
 
         if (selectedExercises.length === 0) {
             toast.info("Workout Canceled.");
-            // Clear session storage
-            sessionStorage.removeItem("workout_time");
-            sessionStorage.removeItem("workout_timer_running");
-            sessionStorage.removeItem("workout_exercises");
+            // Clear session storage immediately and synchronously
+            sessionStorage.clear();
+            // Or selectively remove keys
+            ["workout_timer_running", "workout_exercises", "workout_start_time", "workout_paused_time", "workout_pause_start"].forEach(key => {
+                sessionStorage.removeItem(key);
+            });
             navigate("/workout");
             return;
         }
@@ -343,16 +482,28 @@ const StartWorkoutScreen = () => {
 
             await createWorkout(workoutData).unwrap();
             toast.success(`Workout saved! Duration: ${formatTime(workoutTime)}`);
+
+            // Clear session storage immediately before navigation
+            ["workout_timer_running", "workout_exercises", "workout_start_time", "workout_paused_time", "workout_pause_start"].forEach(key => {
+                sessionStorage.removeItem(key);
+            });
+            navigate("/workout");
         } catch (error: any) {
             console.error("Failed to save workout:", error);
             toast.error("Failed to save workout. Please try again.");
-        } finally {
-            // Clear session storage
-            sessionStorage.removeItem("workout_time");
-            sessionStorage.removeItem("workout_timer_running");
-            sessionStorage.removeItem("workout_exercises");
+
+            // Clear session storage even on error before navigation
+            ["workout_timer_running", "workout_exercises", "workout_start_time", "workout_paused_time", "workout_pause_start"].forEach(key => {
+                sessionStorage.removeItem(key);
+            });
             navigate("/workout");
         }
+    };
+
+    const handleBackToWorkout = () => {
+        // Navigate back without clearing session storage
+        // The workout session will be preserved for resuming later
+        navigate("/workout");
     };
 
     return (
@@ -362,7 +513,7 @@ const StartWorkoutScreen = () => {
                 <div className="mb-6">
                     <Button
                         variant="ghost"
-                        onClick={() => navigate("/workout")}
+                        onClick={handleBackToWorkout}
                         className="mb-4 -ml-2 hover:bg-gray-100 dark:hover:bg-gray-800"
                     >
                         <ArrowLeft className="w-4 h-4 mr-2" />
@@ -407,7 +558,7 @@ const StartWorkoutScreen = () => {
                     <div className="flex items-center justify-between mb-4">
                         <div>
                             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
-                                Freestyle Workout
+                                {template?.data?.name || "Freestyle Workout"}
                             </h1>
                             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
                                 {selectedExercises.length} exercise{selectedExercises.length !== 1 ? "s" : ""} added

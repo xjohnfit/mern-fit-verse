@@ -2,7 +2,7 @@
 import { type FC } from "react";
 
 // Types
-import { type SuggestedUser } from "../types";
+import { type SuggestedUser } from "@/screens/protected/dashboard/types";
 
 // UI components
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
