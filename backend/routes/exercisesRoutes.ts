@@ -7,11 +7,13 @@ import {
     createExercise,
     updateExercise,
     deleteExercise,
+    getExercisesByCategory,
 } from '../controllers/exerciseController';
 
 const router = express.Router();
 
 router.get('/', getAllExercises);
+router.get('/by-category', getExercisesByCategory);
 router.get('/:id', getExerciseById);
 router.post('/', protect, admin, createExercise);
 router.put('/:id', protect, admin, updateExercise);

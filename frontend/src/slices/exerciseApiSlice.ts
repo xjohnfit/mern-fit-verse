@@ -81,6 +81,23 @@ export const exerciseApiSlice = apiSlice.injectEndpoints({
                 method: 'DELETE',
             }),
         }),
+
+        // Get exercises grouped by category
+        getExercisesByCategory: builder.query<Record<string, Exercise[]>, void>(
+            {
+                query: () => `${BASE_URL}/by-category`,
+                transformResponse: (
+                    response: Record<string, ExerciseResponse[]>
+                ) => {
+                    const transformed: Record<string, Exercise[]> = {};
+                    for (const category in response) {
+                        transformed[category] =
+                            response[category].map(transformExercise);
+                    }
+                    return transformed;
+                },
+            }
+        ),
     }),
 });
 
@@ -90,4 +107,5 @@ export const {
     useCreateExerciseMutation,
     useUpdateExerciseMutation,
     useDeleteExerciseMutation,
+    useGetExercisesByCategoryQuery,
 } = exerciseApiSlice;

@@ -59,7 +59,8 @@ const AdminScreen = () => {
           tabs={tabs}
           defaultValue="users"
           containerClassName="mb-8 justify-center"
-          activeTabClassName="bg-primary dark:bg-primary"
+          activeTabClassName="bg-linear-to-r from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700"
+          tabClassName="hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
         />
       </div>
     </div>

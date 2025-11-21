@@ -29,13 +29,21 @@ const ExerciseFormModal = ({ isOpen, onClose, onSubmit, form, onFormChange, isEd
                                 </div>
                                 <div>
                                     <label className="block text-sm font-semibold mb-2 text-foreground">Category *</label>
-                                    <Input
-                                        type="text"
+                                    <select
                                         value={form.category}
                                         onChange={(e) => onFormChange({ ...form, category: e.target.value })}
-                                        placeholder="e.g., Chest, Back, Legs"
+                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                         required
-                                    />
+                                    >
+                                        <option value="">Select a category</option>
+                                        <option value="Chest">Chest</option>
+                                        <option value="Back">Back</option>
+                                        <option value="Arms">Arms</option>
+                                        <option value="Legs">Legs</option>
+                                        <option value="Glutes">Glutes</option>
+                                        <option value="Core">Core</option>
+                                        <option value="Shoulders">Shoulders</option>
+                                    </select>
                                 </div>
                             </div>
                             <div>
