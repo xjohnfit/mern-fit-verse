@@ -46,7 +46,7 @@ export const FolderCard = ({ folder, templates, onEditFolder }: FolderCardProps)
 
     return (
         <Card className="border-l-4 py-0" style={{ borderLeftColor: folder.color }}>
-            <CardContent className="p-0">
+            <CardContent className="p-0 overflow-hidden rounded-lg">
                 {/* Folder Header */}
                 <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50">
                     <button

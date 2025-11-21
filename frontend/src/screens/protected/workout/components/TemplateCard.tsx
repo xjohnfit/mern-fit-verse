@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 // Third-party libraries
-import { FileText, MoreVertical, Play, Edit, Trash2, Clock, Target } from "lucide-react";
+import { FileText, Play, Edit, Trash2, Clock, Target } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
 
@@ -20,9 +20,8 @@ interface TemplateCardProps {
 
 export const TemplateCard = ({ template }: TemplateCardProps) => {
     const navigate = useNavigate();
-    const [showMenu, setShowMenu] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [deleteTemplate, { isLoading: isDeleting }] = useDeleteTemplateMutation();
+    const [deleteTemplate] = useDeleteTemplateMutation();
 
     const totalSets = template.exercises.reduce((acc, exercise) => acc + exercise.sets.length, 0);
     const avgRestTime = template.exercises.reduce((acc, exercise) => acc + exercise.restTime, 0) / template.exercises.length;
@@ -35,11 +34,6 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
     const handleEditTemplate = () => {
         // Navigate to edit template
         navigate(`/workout/template/edit/${template._id}`);
-    };
-
-    const handleDeleteTemplate = () => {
-        setShowDeleteModal(true);
-        setShowMenu(false);
     };
 
     const confirmDeleteTemplate = async () => {
@@ -95,45 +89,25 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
                     <span className="text-xs sm:text-sm">Start</span>
                 </Button>
 
-                <div className="relative">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setShowMenu(!showMenu)}
-                        className="h-8 w-8 sm:h-9 sm:w-9 p-0"
-                    >
-                        <MoreVertical className="w-4 h-4" />
-                    </Button>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleEditTemplate}
+                    className="h-8 w-8 sm:h-9 sm:w-9 p-0 hover:bg-blue-100 dark:hover:bg-blue-900/30"
+                    title="Edit template"
+                >
+                    <Edit className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                </Button>
 
-                    {showMenu && (
-                        <>
-                            <div
-                                className="fixed inset-0 z-40"
-                                onClick={() => setShowMenu(false)}
-                            />
-                            <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                                <button
-                                    onClick={() => {
-                                        handleEditTemplate();
-                                        setShowMenu(false);
-                                    }}
-                                    className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-lg transition-colors"
-                                >
-                                    <Edit className="w-4 h-4" />
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={handleDeleteTemplate}
-                                    disabled={isDeleting}
-                                    className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-b-lg transition-colors"
-                                >
-                                    <Trash2 className="w-4 h-4" />
-                                    {isDeleting ? "Deleting..." : "Delete"}
-                                </button>
-                            </div>
-                        </>
-                    )}
-                </div>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowDeleteModal(true)}
+                    className="h-8 w-8 sm:h-9 sm:w-9 p-0 hover:bg-red-100 dark:hover:bg-red-900/30"
+                    title="Delete template"
+                >
+                    <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
+                </Button>
             </div>
 
             {/* Delete Template Confirmation Modal */}

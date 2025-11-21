@@ -30,13 +30,13 @@ const HomeScreen = () => {
     const { isAuthenticated, userInfo } = useSelector((state: any) => state.auth);
 
     useEffect(() => {
-        const hasSeenAlert = localStorage.getItem('hasSeenExperimentalWarning');
+        const hasSeenAlert = sessionStorage.getItem('hasSeenExperimentalWarning');
 
         if (!hasSeenAlert) {
             // Show the modal for the first time visiting the home route
             setAlertVisible(true);
-            // Mark that the user has now seen the alert
-            localStorage.setItem('hasSeenExperimentalWarning', 'true');
+            // Mark that the user has now seen the alert (cleared when tab/browser closes)
+            sessionStorage.setItem('hasSeenExperimentalWarning', 'true');
         }
     }, []);
 
@@ -107,7 +107,7 @@ const HomeScreen = () => {
                 isOpen={alertVisible}
                 onClose={() => setAlertVisible(false)}
                 title="Welcome to FitVerse!"
-                message="Start your fitness journey today."
+                message="FitVerse is currently in an experimental phase. While we strive to provide a seamless experience, you may encounter occasional bugs or incomplete features. We appreciate your understanding and encourage you to provide feedback to help us improve!"
                 variant="info"
                 showCancel={false}
             />
@@ -170,7 +170,7 @@ const HomeScreen = () => {
                                             </Link>
                                         </Button>
                                         <Button asChild variant="outline" size="lg" className="border-gray-300 dark:border-white/30 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white bg-transparent text-lg px-8 py-4 h-auto">
-                                            <Link to="/profile" className="flex items-center gap-2">
+                                            <Link to={`/profile/view/${userInfo?.username}`} className="flex items-center gap-2">
                                                 <Target className="w-5 h-5" />
                                                 View Profile
                                             </Link>
