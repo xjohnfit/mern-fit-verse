@@ -8,7 +8,7 @@ import { clearCredentials } from '@/slices/authSlice';
 import { apiSlice } from '@/slices/apiSlice';
 import { useState, useEffect } from 'react';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
     User,
     LogOut,
@@ -20,12 +20,9 @@ import {
     Settings,
     Home,
     Search,
-    Users,
-    UserCheck,
     MessageCircle,
     Shield,
 } from 'lucide-react';
-import { FollowersFollowingModal } from '@/screens/protected/profile/components';
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -42,15 +39,9 @@ function Header() {
         (state: any) => state.auth
     );
     const [logoutApiCall] = useLogoutMutation();
-    const { data: currentUserProfile } = useGetUserProfileQuery(
-        {},
-        { skip: !isAuthenticated }
-    );
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [showFollowersModal, setShowFollowersModal] = useState(false);
-    const [showFollowingModal, setShowFollowingModal] = useState(false);
 
     // Close mobile menu on window resize
     useEffect(() => {
@@ -345,42 +336,6 @@ function Header() {
                                                 </p>
                                             </div>
                                         </div>
-                                        {currentUserProfile && (
-                                            <div className='flex items-center space-x-4'>
-                                                <button
-                                                    onClick={() => {
-                                                        setShowFollowersModal(
-                                                            true
-                                                        );
-                                                        closeMobileMenu();
-                                                    }}
-                                                    className='flex items-center space-x-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'>
-                                                    <Users className='w-4 h-4' />
-                                                    <span>
-                                                        {currentUserProfile
-                                                            .followers
-                                                            ?.length || 0}{' '}
-                                                        followers
-                                                    </span>
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        setShowFollowingModal(
-                                                            true
-                                                        );
-                                                        closeMobileMenu();
-                                                    }}
-                                                    className='flex items-center space-x-2 text-sm text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300'>
-                                                    <UserCheck className='w-4 h-4' />
-                                                    <span>
-                                                        {currentUserProfile
-                                                            .following
-                                                            ?.length || 0}{' '}
-                                                        following
-                                                    </span>
-                                                </button>
-                                            </div>
-                                        )}
                                     </div>
 
                                     {/* Navigation Links */}
@@ -497,26 +452,6 @@ function Header() {
                     </div>
                 </>
             )}
-
-            {/* Followers Modal */}
-            <FollowersFollowingModal
-                isOpen={showFollowersModal}
-                onClose={() => setShowFollowersModal(false)}
-                type='followers'
-                users={currentUserProfile?.followers || []}
-                title={`${currentUserProfile?.followers?.length || 0
-                    } Followers`}
-            />
-
-            {/* Following Modal */}
-            <FollowersFollowingModal
-                isOpen={showFollowingModal}
-                onClose={() => setShowFollowingModal(false)}
-                type='following'
-                users={currentUserProfile?.following || []}
-                title={`${currentUserProfile?.following?.length || 0
-                    } Following`}
-            />
         </>
     );
 }

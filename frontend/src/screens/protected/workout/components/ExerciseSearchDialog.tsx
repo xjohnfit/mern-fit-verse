@@ -47,29 +47,52 @@ export const ExerciseSearchDialog = ({
                         <p className="text-sm text-gray-600 dark:text-gray-400">Loading exercises...</p>
                     </div>
                 ) : exercises.length > 0 ? (
-                    <div className="space-y-2 max-h-96 overflow-y-auto">
-                        {exercises.map((exercise) => (
-                            <div
-                                key={exercise.id}
-                                onClick={() => onAddExercise(exercise)}
-                                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                            >
-                                <div className="flex items-center gap-3 flex-1">
-                                    {exercise.image && (
-                                        <img
-                                            src={exercise.image}
-                                            alt={exercise.name}
-                                            className="w-10 h-10 object-cover rounded-md"
-                                        />
-                                    )}
-                                    <div>
-                                        <p className="font-medium text-gray-900 dark:text-white">{exercise.name}</p>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">{exercise.category}</p>
+                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                        {(() => {
+                            // Group exercises by category
+                            const exercisesByCategory = exercises.reduce((acc: Record<string, typeof exercises>, exercise) => {
+                                const category = exercise.category;
+                                if (!acc[category]) {
+                                    acc[category] = [];
+                                }
+                                acc[category].push(exercise);
+                                return acc;
+                            }, {});
+
+                            // Sort categories alphabetically
+                            const sortedCategories = Object.keys(exercisesByCategory).sort();
+
+                            return sortedCategories.map((category) => (
+                                <div key={category} className="space-y-2">
+                                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 capitalize px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-md">
+                                        {category} ({exercisesByCategory[category].length})
+                                    </h3>
+                                    <div className="space-y-2">
+                                        {exercisesByCategory[category].map((exercise) => (
+                                            <div
+                                                key={exercise.id}
+                                                onClick={() => onAddExercise(exercise)}
+                                                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                                            >
+                                                <div className="flex items-center gap-3 flex-1">
+                                                    {exercise.image && (
+                                                        <img
+                                                            src={exercise.image}
+                                                            alt={exercise.name}
+                                                            className="w-10 h-10 object-cover rounded-md"
+                                                        />
+                                                    )}
+                                                    <div>
+                                                        <p className="font-medium text-gray-900 dark:text-white">{exercise.name}</p>
+                                                    </div>
+                                                </div>
+                                                <Plus className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
-                                <Plus className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                            </div>
-                        ))}
+                            ));
+                        })()}
                     </div>
                 ) : (
                     <p className="text-center py-8 text-gray-600 dark:text-gray-400">No exercises found</p>
