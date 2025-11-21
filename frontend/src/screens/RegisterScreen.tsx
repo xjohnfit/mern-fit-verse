@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useRegisterMutation } from '@/slices/usersApiSlice';
 import { setCredentials } from '@/slices/authSlice';
+import { apiSlice } from '@/slices/apiSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { ArrowRight, Eye, EyeOff, User, AtSign, Mail, Lock, Calendar, Users } from 'lucide-react';
@@ -224,6 +225,8 @@ const RegisterScreen = () => {
         try {
             const { confirmPassword, terms, ...submitData } = formData;
             const res = await register(submitData).unwrap();
+            // Reset API cache to ensure fresh data for the new user
+            dispatch(apiSlice.util.resetApiState());
             dispatch(setCredentials({ ...res }));
             toast.success('Registration successful! Welcome to FitVerse!');
             navigate('/dashboard');
@@ -280,8 +283,8 @@ const RegisterScreen = () => {
                                             value={formData.name}
                                             onChange={handleInputChange}
                                             className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.name
-                                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                    : 'border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
+                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
                                                 }`}
                                             placeholder='Enter your full name'
                                         />
@@ -312,8 +315,8 @@ const RegisterScreen = () => {
                                             value={formData.username}
                                             onChange={handleInputChange}
                                             className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.username
-                                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                    : 'border-gray-200 dark:border-gray-600 focus:border-purple-500 focus:ring-purple-500/20'
+                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-gray-200 dark:border-gray-600 focus:border-purple-500 focus:ring-purple-500/20'
                                                 }`}
                                             placeholder='Choose a username'
                                         />
@@ -345,8 +348,8 @@ const RegisterScreen = () => {
                                         value={formData.email}
                                         onChange={handleInputChange}
                                         className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.email
-                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                : 'border-gray-200 dark:border-gray-600 focus:border-green-500 focus:ring-green-500/20'
+                                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                            : 'border-gray-200 dark:border-gray-600 focus:border-green-500 focus:ring-green-500/20'
                                             }`}
                                         placeholder='Enter your email address'
                                     />
@@ -379,8 +382,8 @@ const RegisterScreen = () => {
                                             value={formData.password}
                                             onChange={handleInputChange}
                                             className={`w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.password
-                                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                    : 'border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500/20'
+                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500/20'
                                                 }`}
                                             placeholder='Create a password'
                                         />
@@ -401,7 +404,7 @@ const RegisterScreen = () => {
                                             <div className='flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1'>
                                                 <span>Password Strength</span>
                                                 <span className={`font-medium ${passwordStrength.score <= 2 ? 'text-red-500' :
-                                                        passwordStrength.score === 3 ? 'text-yellow-500' : 'text-green-500'
+                                                    passwordStrength.score === 3 ? 'text-yellow-500' : 'text-green-500'
                                                     }`}>
                                                     {passwordStrength.text}
                                                 </span>
@@ -434,12 +437,12 @@ const RegisterScreen = () => {
                                             id='confirmPassword'
                                             name='confirmPassword'
                                             type={showConfirmPassword ? 'text' : 'password'}
-                                            
+
                                             value={formData.confirmPassword}
                                             onChange={handleInputChange}
                                             className={`w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.confirmPassword
-                                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                    : 'border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500/20'
+                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500/20'
                                                 }`}
                                             placeholder='Confirm your password'
                                         />
@@ -477,12 +480,12 @@ const RegisterScreen = () => {
                                             id='dob'
                                             name='dob'
                                             type='date'
-                                            
+
                                             value={formData.dob}
                                             onChange={handleInputChange}
                                             className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.dob
-                                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                    : 'border-gray-200 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500/20'
+                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-gray-200 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500/20'
                                                 }`}
                                         />
                                         <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
@@ -508,12 +511,12 @@ const RegisterScreen = () => {
                                         <select
                                             id='gender'
                                             name='gender'
-                                            
+
                                             value={formData.gender}
                                             onChange={handleInputChange}
                                             className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.gender
-                                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                    : 'border-gray-200 dark:border-gray-600 focus:border-teal-500 focus:ring-teal-500/20'
+                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-gray-200 dark:border-gray-600 focus:border-teal-500 focus:ring-teal-500/20'
                                                 }`}
                                         >
                                             <option value=''>Select your gender</option>

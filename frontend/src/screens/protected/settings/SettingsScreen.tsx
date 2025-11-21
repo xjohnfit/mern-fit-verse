@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { setCredentials } from '@/slices/authSlice';
 import { useUpdateUserProfileMutation } from '@/slices/usersApiSlice';
 import { useSelector, useDispatch } from 'react-redux';
-import { ArrowRight, User } from 'lucide-react';
+import { User } from 'lucide-react';
 
 // Utils functions imports
 import { formatDateToInputValue } from '@/lib/formatDate';
@@ -20,6 +20,7 @@ import PasswordFields from '@/screens/protected/settings/components/PasswordFiel
 
 // Hooks
 import { useProfileValidation } from '@/screens/protected/settings/hooks/useProfileValidation';
+import { SubmitButton } from '@/screens/protected/settings/components/SubmitButton';
 
 const SettingsScreen = () => {
     const [profileData, setProfileData] = useState({
@@ -45,7 +46,8 @@ const SettingsScreen = () => {
     const passwordStrength = getPasswordStrength(profileData.password);
 
     // Use validation hook
-    const { errors, setErrors, validateForm, handleFieldValidation } = useProfileValidation(profileData);
+    const { errors, setErrors, validateForm, handleFieldValidation } =
+        useProfileValidation(profileData);
 
     // Photo handling
     const handlePhotoChange = (file: File | null, preview: string) => {
@@ -146,7 +148,7 @@ const SettingsScreen = () => {
                 console.log('Converting photo file to base64:', {
                     name: photoFile.name,
                     type: photoFile.type,
-                    size: photoFile.size
+                    size: photoFile.size,
                 });
 
                 // Convert file to base64
@@ -207,15 +209,19 @@ const SettingsScreen = () => {
                 status: err?.status,
                 data: err?.data,
                 message: err?.message,
-                originalStatus: err?.originalStatus
+                originalStatus: err?.originalStatus,
             });
 
             // For production debugging - show error in toast
-            const errorDetails = JSON.stringify({
-                status: err?.status,
-                message: err?.message || err?.data?.message,
-                type: typeof err
-            }, null, 2);
+            const errorDetails = JSON.stringify(
+                {
+                    status: err?.status,
+                    message: err?.message || err?.data?.message,
+                    type: typeof err,
+                },
+                null,
+                2
+            );
             console.log('ERROR DETAILS FOR DEBUGGING:', errorDetails);
 
             // Handle different types of errors
@@ -225,7 +231,8 @@ const SettingsScreen = () => {
                 errorMessage =
                     'Unable to connect to the server. Please check your connection. (Network Error)';
             } else if (err?.status === 413) {
-                errorMessage = 'File size too large. Please choose a smaller image (max 10MB).';
+                errorMessage =
+                    'File size too large. Please choose a smaller image (max 10MB).';
             } else if (err?.status === 400 && err?.data?.message) {
                 errorMessage = err.data.message;
             } else if (err?.data?.message) {
@@ -313,40 +320,6 @@ const SettingsScreen = () => {
                                         } as any)
                                     }
                                 />
-
-                                {/* Photo Upload Status */}
-                                {photoFile && (
-                                    <div className='w-full mt-4 md:w-auto md:ml-auto'>
-                                        <div className='bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 rounded-xl p-3'>
-                                            <div className='flex items-center justify-center md:justify-start space-x-2'>
-                                                <svg
-                                                    className='w-4 h-4 text-green-600 dark:text-green-400 shrink-0'
-                                                    fill='none'
-                                                    stroke='currentColor'
-                                                    viewBox='0 0 24 24'>
-                                                    <path
-                                                        strokeLinecap='round'
-                                                        strokeLinejoin='round'
-                                                        strokeWidth={2}
-                                                        d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
-                                                    />
-                                                </svg>
-                                                <span className='text-green-700 dark:text-green-400 text-sm font-medium'>
-                                                    New photo selected
-                                                </span>
-                                            </div>
-                                            <p className='text-green-600 dark:text-green-300 text-xs mt-1 text-center md:text-left truncate'>
-                                                {photoFile.name} (
-                                                {(
-                                                    photoFile.size /
-                                                    1024 /
-                                                    1024
-                                                ).toFixed(2)}{' '}
-                                                MB)
-                                            </p>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
 
                             {/* Basic Info Fields */}
@@ -400,70 +373,48 @@ const SettingsScreen = () => {
                             {Object.values(errors).some(
                                 (error) => error && error.trim() !== ''
                             ) && (
-                                    <div className='bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 rounded-xl p-4'>
-                                        <h4 className='text-red-700 dark:text-red-400 font-medium mb-3 flex items-center'>
-                                            <svg
-                                                className='w-5 h-5 mr-2 shrink-0'
-                                                fill='none'
-                                                stroke='currentColor'
-                                                viewBox='0 0 24 24'>
-                                                <path
-                                                    strokeLinecap='round'
-                                                    strokeLinejoin='round'
-                                                    strokeWidth={2}
-                                                    d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.96-.833-2.73 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z'
-                                                />
-                                            </svg>
-                                            Please fix the following errors:
-                                        </h4>
-                                        <ul className='space-y-1 ml-7'>
-                                            {Object.entries(errors).map(
-                                                ([field, error]) =>
-                                                    error &&
-                                                    error.trim() !== '' && (
-                                                        <li
-                                                            key={field}
-                                                            className='text-sm text-red-600 dark:text-red-300 list-disc'>
-                                                            <span className='font-medium capitalize'>
-                                                                {field}:
-                                                            </span>{' '}
-                                                            {error}
-                                                        </li>
-                                                    )
-                                            )}
-                                        </ul>
-                                    </div>
-                                )}
+                                <div className='bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 rounded-xl p-4'>
+                                    <h4 className='text-red-700 dark:text-red-400 font-medium mb-3 flex items-center'>
+                                        <svg
+                                            className='w-5 h-5 mr-2 shrink-0'
+                                            fill='none'
+                                            stroke='currentColor'
+                                            viewBox='0 0 24 24'>
+                                            <path
+                                                strokeLinecap='round'
+                                                strokeLinejoin='round'
+                                                strokeWidth={2}
+                                                d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.96-.833-2.73 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z'
+                                            />
+                                        </svg>
+                                        Please fix the following errors:
+                                    </h4>
+                                    <ul className='space-y-1 ml-7'>
+                                        {Object.entries(errors).map(
+                                            ([field, error]) =>
+                                                error &&
+                                                error.trim() !== '' && (
+                                                    <li
+                                                        key={field}
+                                                        className='text-sm text-red-600 dark:text-red-300 list-disc'>
+                                                        <span className='font-medium capitalize'>
+                                                            {field}:
+                                                        </span>{' '}
+                                                        {error}
+                                                    </li>
+                                                )
+                                        )}
+                                    </ul>
+                                </div>
+                            )}
 
                             {/* Submit Button */}
                             <div className='pt-6'>
-                                <button
-                                    disabled={
-                                        isLoading ||
-                                        Object.values(errors).some(
-                                            (error) =>
-                                                error && error.trim() !== ''
-                                        ) ||
-                                        !profileData.name.trim() ||
-                                        !profileData.username.trim() ||
-                                        !profileData.email.trim()
-                                    }
-                                    type='submit'
-                                    className='w-full group relative overflow-hidden bg-linear-to-r from-blue-500 via-purple-500 to-indigo-500 text-white py-4 px-6 rounded-xl font-semibold text-base hover:from-blue-600 hover:via-purple-600 hover:to-indigo-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:from-gray-400 disabled:via-gray-400 disabled:to-gray-400 min-h-14'>
-                                    {isLoading ? (
-                                        <div className='flex items-center justify-center space-x-3'>
-                                            <div className='w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin'></div>
-                                            <span>
-                                                Updating your profile...
-                                            </span>
-                                        </div>
-                                    ) : (
-                                        <div className='flex items-center justify-center space-x-2'>
-                                            <span>Update Profile</span>
-                                            <ArrowRight className='h-5 w-5 group-hover:translate-x-1 transition-transform duration-200' />
-                                        </div>
-                                    )}
-                                </button>
+                                <SubmitButton
+                                    isLoading={isLoading}
+                                    errors={errors}
+                                    profileData={profileData}
+                                />
                                 <p className='text-sm text-gray-500 dark:text-gray-400 text-center mt-3'>
                                     Your information is secure and will only be
                                     used to improve your fitness experience

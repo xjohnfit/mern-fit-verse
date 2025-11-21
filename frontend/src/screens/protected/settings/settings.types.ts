@@ -76,3 +76,14 @@ export interface ProfilePhotoSectionProps {
     photo: string;
     onPhotoChange: (file: File | null, preview: string) => void;
 }
+
+// SubmitButton Props
+export interface SubmitButtonProps {
+  isLoading: boolean;
+  errors: Record<string, string | undefined>;
+  profileData: {
+    name: string;
+    username: string;
+    email: string;
+  };
+}

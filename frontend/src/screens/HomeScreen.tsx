@@ -1,5 +1,7 @@
 import { Button } from '@/components/ui/button';
 import AlertModal from '@/components/modals/AlertModal';
+import { AnimatedTestimonials } from '@/components/ui/animated-testimonials';
+import { TypewriterEffectSmooth } from '@/components/ui/typewriter-effect';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { useSelector } from 'react-redux';
@@ -10,7 +12,6 @@ import {
     Users,
     ArrowRight,
     Play,
-    Star,
     Apple,
     Bell,
     Heart,
@@ -85,19 +86,22 @@ const HomeScreen = () => {
 
     const testimonials = [
         {
+            quote: "FitVerse combines social networking with fitness tracking perfectly. The nutrition feature with 500k+ foods is incredible! I've lost 20 pounds and gained so much confidence.",
             name: "Sarah Johnson",
-            comment: "FitVerse combines social networking with fitness tracking perfectly. The nutrition feature with 500k+ foods is incredible!",
-            rating: 5
+            designation: "Fitness Enthusiast • Lost 20 lbs",
+            src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop"
         },
         {
+            quote: "The workout logging is so detailed and the social feed keeps me motivated. Love seeing everyone's progress! The community here is incredibly supportive and inspiring.",
             name: "Mike Chen",
-            comment: "The workout logging is so detailed and the social feed keeps me motivated. Love seeing everyone's progress!",
-            rating: 5
+            designation: "CrossFit Athlete • 2 Years Active",
+            src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2070&auto=format&fit=crop"
         },
         {
+            quote: "Custom meal categories and real-time notifications make this the best fitness app I've used. Highly recommended! The analytics help me track my macros perfectly.",
             name: "Emily Davis",
-            comment: "Custom meal categories and real-time notifications make this the best fitness app I've used. Highly recommended!",
-            rating: 5
+            designation: "Nutritionist • Marathon Runner",
+            src: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=2070&auto=format&fit=crop"
         }
     ];
 
@@ -148,9 +152,22 @@ const HomeScreen = () => {
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24">
                         {/* Hero Section */}
                         <div className="text-center mb-16">
-                            <h1 className='text-3xl md:text-5xl lg:text-7xl text-gray-900 dark:text-white font-bold inter-var mb-6 max-w-4xl mx-auto'>
-                                {isAuthenticated ? `Welcome back, ${userInfo?.name?.split(' ')[0]}!` : 'Welcome to FitVerse'}
-                            </h1>
+                            {isAuthenticated ? (
+                                <div className="flex justify-center items-center mb-6">
+                                    <TypewriterEffectSmooth
+                                        words={[
+                                            { text: "Welcome" },
+                                            { text: "back," },
+                                            { text: `${userInfo?.name?.split(' ')[0]}!`, className: "text-blue-500 dark:text-blue-400" }
+                                        ]}
+                                        className="text-3xl md:text-5xl lg:text-7xl"
+                                    />
+                                </div>
+                            ) : (
+                                <h1 className='text-3xl md:text-5xl lg:text-7xl text-gray-900 dark:text-white font-bold inter-var mb-6 max-w-4xl mx-auto'>
+                                    Welcome to FitVerse
+                                </h1>
+                            )}
                             <p className='text-lg md:text-xl mt-4 text-gray-700 dark:text-white/90 font-normal inter-var max-w-3xl mx-auto mb-8'>
                                 {isAuthenticated
                                     ? "Track workouts, log nutrition, share your journey, and connect with a supportive fitness community—all in one place."
@@ -291,26 +308,15 @@ const HomeScreen = () => {
                         </div>
 
                         {/* Testimonials Section */}
-                        {!isAuthenticated && (
-                            <div className="mb-16">
-                                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white text-center mb-12">
-                                    What Our Users Say
-                                </h2>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                    {testimonials.map((testimonial, index) => (
-                                        <div key={index} className="section-card rounded-xl p-6 transition-all duration-300 hover:scale-105">
-                                            <div className="flex items-center gap-1 mb-4">
-                                                {[...Array(testimonial.rating)].map((_, i) => (
-                                                    <Star key={i} className="w-4 h-4 fill-[#38bdf8] text-[#38bdf8]" />
-                                                ))}
-                                            </div>
-                                            <p className="text-gray-700 dark:text-white/80 mb-4 italic">"{testimonial.comment}"</p>
-                                            <div className="text-gray-900 dark:text-white font-semibold">{testimonial.name}</div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
+                        <div className="mb-16">
+                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white text-center mb-4">
+                                What Our Users Say
+                            </h2>
+                            <p className="text-center text-gray-600 dark:text-white/70 mb-8 max-w-2xl mx-auto">
+                                Real stories from real members who transformed their fitness journey with FitVerse
+                            </p>
+                            <AnimatedTestimonials testimonials={testimonials} autoplay={true} />
+                        </div>
 
                         {/* Quick Start Guide for New Users */}
                         {!isAuthenticated && (

@@ -5,6 +5,7 @@ import {
     useGetUserProfileQuery,
 } from '@/slices/usersApiSlice';
 import { clearCredentials } from '@/slices/authSlice';
+import { apiSlice } from '@/slices/apiSlice';
 import { useState, useEffect } from 'react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -66,6 +67,8 @@ function Header() {
     const logoutHandler = async () => {
         try {
             await logoutApiCall().unwrap();
+            // Reset API cache to clear all cached data
+            dispatch(apiSlice.util.resetApiState());
             dispatch(clearCredentials());
             toast.success('Logged out successfully');
             navigate('/');
@@ -96,15 +99,19 @@ function Header() {
     };
 
     const avatar = userInfo ? (
-        <Avatar className='w-10 h-10 ring-2 ring-blue-500/20 dark:ring-blue-400/30 transition-all duration-300 hover:ring-blue-500/40 dark:hover:ring-blue-400/50'>
-            <AvatarImage
+        userInfo.photo ? (
+            <img
                 src={userInfo.photo}
                 alt={userInfo.name}
+                className='w-8 h-8 rounded-full object-cover ring-2 ring-blue-500/20 dark:ring-blue-400/30 transition-all duration-300 hover:ring-blue-500/40 dark:hover:ring-blue-400/50'
             />
-            <AvatarFallback className='bg-linear-to-br from-blue-500 to-purple-600 text-white font-semibold text-sm'>
-                {getInitials(userInfo.name)}
-            </AvatarFallback>
-        </Avatar>
+        ) : (
+            <Avatar className='w-8 h-8 ring-2 ring-blue-500/20 dark:ring-blue-400/30 transition-all duration-300 hover:ring-blue-500/40 dark:hover:ring-blue-400/50'>
+                <AvatarFallback className='bg-linear-to-br from-blue-500 to-purple-600 text-white font-semibold text-sm'>
+                    {getInitials(userInfo.name)}
+                </AvatarFallback>
+            </Avatar>
+        )
     ) : null;
 
     return (
@@ -206,12 +213,12 @@ function Header() {
                                     <NavigationMenu>
                                         <NavigationMenuList>
                                             <NavigationMenuItem>
-                                                <NavigationMenuTrigger className='h-auto p-2 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-lg hover:scale-105 rounded-xl border-0 transition-all duration-300 ease-in-out'>
+                                                <NavigationMenuTrigger className='h-auto p-2 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-lg rounded-xl border-0 transition-all duration-300 ease-in-out'>
                                                     {avatar}
                                                 </NavigationMenuTrigger>
                                                 <NavigationMenuContent className='min-w-60 p-2'>
                                                     <div className='space-y-1'>
-                                                        <div className='px-3 py-2 border-b border-gray-200 dark:border-gray-700'>
+                                                        <div className='px-4 py-3 mb-2 rounded-lg bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-100 dark:border-blue-800/30'>
                                                             <p className='font-semibold text-gray-900 dark:text-gray-100'>
                                                                 {userInfo?.name}
                                                             </p>
@@ -220,42 +227,6 @@ function Header() {
                                                                     userInfo?.email
                                                                 }
                                                             </p>
-                                                            {currentUserProfile && (
-                                                                <div className='flex items-center space-x-4 mt-2'>
-                                                                    <button
-                                                                        onClick={() =>
-                                                                            setShowFollowersModal(
-                                                                                true
-                                                                            )
-                                                                        }
-                                                                        className='flex items-center space-x-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'>
-                                                                        <Users className='w-3 h-3' />
-                                                                        <span>
-                                                                            {currentUserProfile
-                                                                                .followers
-                                                                                ?.length ||
-                                                                                0}{' '}
-                                                                            followers
-                                                                        </span>
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={() =>
-                                                                            setShowFollowingModal(
-                                                                                true
-                                                                            )
-                                                                        }
-                                                                        className='flex items-center space-x-1 text-xs text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300'>
-                                                                        <UserCheck className='w-3 h-3' />
-                                                                        <span>
-                                                                            {currentUserProfile
-                                                                                .following
-                                                                                ?.length ||
-                                                                                0}{' '}
-                                                                            following
-                                                                        </span>
-                                                                    </button>
-                                                                </div>
-                                                            )}
                                                         </div>{' '}
                                                         {userInfo?.admin && (
                                                             <NavigationMenuLink

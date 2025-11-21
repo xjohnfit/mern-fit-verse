@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLoginMutation } from '@/slices/usersApiSlice';
 import { setCredentials } from '@/slices/authSlice';
+import { apiSlice } from '@/slices/apiSlice';
 import { toast } from 'sonner';
 import { ArrowRight, Eye, EyeOff, Mail, Lock, LogIn, Chrome, Facebook } from 'lucide-react';
 
@@ -31,7 +32,7 @@ const LoginScreen = () => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
-        
+
         setFormData((prev) => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : value,
@@ -44,6 +45,8 @@ const LoginScreen = () => {
         try {
             const { rememberMe, ...loginData } = formData;
             const res = await login(loginData).unwrap();
+            // Reset API cache to ensure fresh data for the new user
+            dispatch(apiSlice.util.resetApiState());
             dispatch(setCredentials({ ...res }));
             toast.success('Welcome back! Login successful.');
             navigate('/dashboard');

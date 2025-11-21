@@ -126,11 +126,13 @@ const DashboardScreen = () => {
   const joinDate = currentUserProfile?.createdAt ? new Date(currentUserProfile.createdAt) : new Date();
   const daysActive = Math.floor((new Date().getTime() - joinDate.getTime()) / (1000 * 60 * 60 * 24));
 
-  const hasNutritionData = nutritionData?.data?.totals &&
-    (nutritionData.data.totals.calories > 0 ||
-      nutritionData.data.totals.protein > 0 ||
-      nutritionData.data.totals.carbs > 0 ||
-      nutritionData.data.totals.fats > 0);
+  // Always show nutrition data, default to 0 if no data exists
+  const nutritionTotals = {
+    calories: nutritionData?.data?.totals?.calories || 0,
+    protein: nutritionData?.data?.totals?.protein || 0,
+    carbs: nutritionData?.data?.totals?.carbs || 0,
+    fats: nutritionData?.data?.totals?.fats || 0,
+  };
 
   // Tab content components
   const OverviewTab = () => (
@@ -204,45 +206,39 @@ const DashboardScreen = () => {
           <Apple className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 dark:text-purple-400" />
           Nutrition
         </h2>
-        {hasNutritionData && (
-          <WobbleCard
-            containerClassName="bg-linear-to-br from-indigo-600 to-purple-600"
-            className="py-6 sm:py-10 md:py-20"
-          >
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-base sm:text-lg md:text-xl font-bold text-white">Today's Nutrition</h3>
-                <Flame className="w-5 h-5 sm:w-6 sm:h-6 text-white/80" />
+        <WobbleCard
+          containerClassName="bg-linear-to-br from-indigo-600 to-purple-600"
+          className="py-6 sm:py-10 md:py-20"
+        >
+          <div className="space-y-4">
+            <div className="grid grid-cols-4 gap-2 sm:gap-4">
+              <div className="text-center">
+                <p className="text-lg sm:text-2xl md:text-3xl font-bold text-white">
+                  {nutritionTotals.calories.toFixed(0)}
+                </p>
+                <p className="text-white/70 text-xs sm:text-sm">Calories</p>
               </div>
-              <div className="grid grid-cols-4 gap-2 sm:gap-4">
-                <div className="text-center">
-                  <p className="text-lg sm:text-2xl md:text-3xl font-bold text-white">
-                    {nutritionData?.data?.totals?.calories?.toFixed(0) || 0}
-                  </p>
-                  <p className="text-white/70 text-xs sm:text-sm">Calories</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-lg sm:text-2xl md:text-3xl font-bold text-white">
-                    {nutritionData?.data?.totals?.protein?.toFixed(0) || 0}g
-                  </p>
-                  <p className="text-white/70 text-xs sm:text-sm">Protein</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-lg sm:text-2xl md:text-3xl font-bold text-white">
-                    {nutritionData?.data?.totals?.carbs?.toFixed(0) || 0}g
-                  </p>
-                  <p className="text-white/70 text-xs sm:text-sm">Carbs</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-lg sm:text-2xl md:text-3xl font-bold text-white">
-                    {nutritionData?.data?.totals?.fats?.toFixed(0) || 0}g
-                  </p>
-                  <p className="text-white/70 text-xs sm:text-sm">Fats</p>
-                </div>
+              <div className="text-center">
+                <p className="text-lg sm:text-2xl md:text-3xl font-bold text-white">
+                  {nutritionTotals.protein.toFixed(0)}g
+                </p>
+                <p className="text-white/70 text-xs sm:text-sm">Protein</p>
+              </div>
+              <div className="text-center">
+                <p className="text-lg sm:text-2xl md:text-3xl font-bold text-white">
+                  {nutritionTotals.carbs.toFixed(0)}g
+                </p>
+                <p className="text-white/70 text-xs sm:text-sm">Carbs</p>
+              </div>
+              <div className="text-center">
+                <p className="text-lg sm:text-2xl md:text-3xl font-bold text-white">
+                  {nutritionTotals.fats.toFixed(0)}g
+                </p>
+                <p className="text-white/70 text-xs sm:text-sm">Fats</p>
               </div>
             </div>
-          </WobbleCard>
-        )}
+          </div>
+        </WobbleCard>
       </div>
 
       {/* Social Section */}
@@ -420,77 +416,57 @@ const DashboardScreen = () => {
     <div className="space-y-6">
       <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-6">Nutrition Tracking</h2>
 
-      {hasNutritionData ? (
-        <>
-          {/* Today's Macros */}
-          <WobbleCard
-            containerClassName="bg-linear-to-br from-orange-600 to-red-600"
-            className="py-6 sm:py-10 md:py-20"
-          >
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white">Today's Intake</h3>
-                <Flame className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white/80" />
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-                <div>
-                  <p className="text-orange-200 text-xs sm:text-sm mb-2">Calories</p>
-                  <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
-                    {nutritionData?.data?.totals?.calories?.toFixed(0) || 0}
-                  </p>
-                  <p className="text-orange-300 text-xs mt-1">kcal</p>
-                </div>
-                <div>
-                  <p className="text-orange-200 text-xs sm:text-sm mb-2">Protein</p>
-                  <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
-                    {nutritionData?.data?.totals?.protein?.toFixed(0) || 0}
-                  </p>
-                  <p className="text-orange-300 text-xs mt-1">grams</p>
-                </div>
-                <div>
-                  <p className="text-orange-200 text-xs sm:text-sm mb-2">Carbs</p>
-                  <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
-                    {nutritionData?.data?.totals?.carbs?.toFixed(0) || 0}
-                  </p>
-                  <p className="text-orange-300 text-xs mt-1">grams</p>
-                </div>
-                <div>
-                  <p className="text-orange-200 text-xs sm:text-sm mb-2">Fats</p>
-                  <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
-                    {nutritionData?.data?.totals?.fats?.toFixed(0) || 0}
-                  </p>
-                  <p className="text-orange-300 text-xs mt-1">grams</p>
-                </div>
-              </div>
-            </div>
-          </WobbleCard>
-
-          {/* Detailed Nutrition Overview */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
-            <NutritionOverview
-              nutritionData={nutritionData}
-              isLoading={isLoadingNutrition}
-              onNavigate={navigate}
-            />
+      {/* Today's Macros - Always shown */}
+      <WobbleCard
+        containerClassName="bg-linear-to-br from-orange-600 to-red-600"
+        className="py-6 sm:py-10 md:py-20"
+      >
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white">Today's Intake</h3>
+            <Flame className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white/80" />
           </div>
-        </>
-      ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8 sm:p-12 text-center">
-          <Apple className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-2">
-            No Nutrition Data Yet
-          </h3>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-6">
-            Start tracking your meals to see your nutrition overview
-          </p>
-          <button
-            onClick={() => navigate("/nutrition")}
-            className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            Track Nutrition
-          </button>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            <div>
+              <p className="text-orange-200 text-xs sm:text-sm mb-2">Calories</p>
+              <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+                {nutritionTotals.calories.toFixed(0)}
+              </p>
+              <p className="text-orange-300 text-xs mt-1">kcal</p>
+            </div>
+            <div>
+              <p className="text-orange-200 text-xs sm:text-sm mb-2">Protein</p>
+              <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+                {nutritionTotals.protein.toFixed(0)}
+              </p>
+              <p className="text-orange-300 text-xs mt-1">grams</p>
+            </div>
+            <div>
+              <p className="text-orange-200 text-xs sm:text-sm mb-2">Carbs</p>
+              <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+                {nutritionTotals.carbs.toFixed(0)}
+              </p>
+              <p className="text-orange-300 text-xs mt-1">grams</p>
+            </div>
+            <div>
+              <p className="text-orange-200 text-xs sm:text-sm mb-2">Fats</p>
+              <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+                {nutritionTotals.fats.toFixed(0)}
+              </p>
+              <p className="text-orange-300 text-xs mt-1">grams</p>
+            </div>
+          </div>
         </div>
-      )}
+      </WobbleCard>
+
+      {/* Detailed Nutrition Overview */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
+        <NutritionOverview
+          nutritionData={nutritionData}
+          isLoading={isLoadingNutrition}
+          onNavigate={navigate}
+        />
+      </div>
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
