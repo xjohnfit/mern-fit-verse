@@ -88,8 +88,67 @@ export const updateUserProfile = asyncHandler(
         // Handle photo upload if base64 image is provided
         if (req.body.photo) {
             try {
-                // Log upload details for debugging
-                console.log('Processing image upload from base64 data');
+                // Validate and sanitize the photo data
+                let photoData = req.body.photo;
+
+                // Log upload details for debugging (truncated for security)
+                console.log('Processing image upload');
+                console.log('Photo data type:', typeof photoData);
+                console.log('Photo data length:', photoData?.length || 0);
+                console.log('Photo data prefix:', photoData?.substring(0, 50));
+
+                // Check if photo data is a string
+                if (typeof photoData !== 'string' || !photoData.trim()) {
+                    res.status(400);
+                    throw new Error(
+                        'Invalid photo data format. Expected base64 string.'
+                    );
+                }
+
+                // Ensure the data is properly formatted as a data URI
+                // Mobile apps might send just the base64 string without the prefix
+                if (!photoData.startsWith('data:')) {
+                    // Try to detect the image format from the base64 data
+                    const base64Data = photoData.trim();
+
+                    // Common image format signatures in base64
+                    let mimeType = 'image/jpeg'; // default
+                    if (base64Data.startsWith('/9j/')) {
+                        mimeType = 'image/jpeg';
+                    } else if (base64Data.startsWith('iVBORw0KGgo')) {
+                        mimeType = 'image/png';
+                    } else if (base64Data.startsWith('R0lGOD')) {
+                        mimeType = 'image/gif';
+                    } else if (base64Data.startsWith('UklGR')) {
+                        mimeType = 'image/webp';
+                    }
+
+                    photoData = `data:${mimeType};base64,${base64Data}`;
+                    console.log(
+                        'Added data URI prefix with detected type:',
+                        mimeType
+                    );
+                }
+
+                // Validate data URI format
+                const dataURIPattern =
+                    /^data:image\/(jpeg|jpg|png|gif|webp|heic|heif);base64,/i;
+                if (!dataURIPattern.test(photoData)) {
+                    res.status(400);
+                    throw new Error(
+                        'Invalid image format. Supported formats: JPEG, PNG, GIF, WebP, HEIC'
+                    );
+                }
+
+                // Check size (50MB limit already set in express.json, but double-check)
+                const sizeInBytes = (photoData.length * 3) / 4;
+                const sizeInMB = sizeInBytes / (1024 * 1024);
+                console.log(`Image size: ${sizeInMB.toFixed(2)}MB`);
+
+                if (sizeInMB > 50) {
+                    res.status(400);
+                    throw new Error('Image size exceeds 50MB limit');
+                }
 
                 // Delete the previous photo from Cloudinary if it exists
                 if (user.photo) {
@@ -112,7 +171,7 @@ export const updateUserProfile = asyncHandler(
                 // Upload to Cloudinary - Cloudinary handles base64 data URI directly
                 // Cloudinary natively supports HEIC and will automatically convert to browser-compatible formats
                 const cloudinaryResult = await cloudinary.uploader.upload(
-                    req.body.photo,
+                    photoData,
                     {
                         folder: 'fit-verse/users',
                         resource_type: 'auto', // Auto-detect the resource type

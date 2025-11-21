@@ -53,8 +53,30 @@ app.use(
 );
 
 // Body parsers with increased limit for base64 images
-app.use(express.json({ limit: '50mb' }));
+app.use(
+    express.json({
+        limit: '50mb',
+        verify: (req, res, buf, encoding) => {
+            // Add raw body for debugging if needed
+            if (buf && buf.length) {
+                (req as any).rawBody = buf.toString(encoding as BufferEncoding);
+            }
+        },
+    })
+);
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Error handler for JSON parsing errors
+app.use((err: any, req: any, res: any, next: any) => {
+    if (err instanceof SyntaxError && 'body' in err) {
+        console.error('JSON Parse Error:', err);
+        return res.status(400).json({
+            message: 'Invalid JSON format in request body',
+            error: 'PARSING_ERROR',
+        });
+    }
+    next(err);
+});
 
 app.use(cookieParser());
 
