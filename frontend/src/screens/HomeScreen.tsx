@@ -103,7 +103,14 @@ const HomeScreen = () => {
 
     return (
         <>
-            {alertVisible && <AlertModal setAlertVisible={setAlertVisible} />}
+            <AlertModal
+                isOpen={alertVisible}
+                onClose={() => setAlertVisible(false)}
+                title="Welcome to FitVerse!"
+                message="Start your fitness journey today."
+                variant="info"
+                showCancel={false}
+            />
 
             {/* Spotlight Background Container */}
             <div className="min-h-screen relative overflow-hidden bg-linear-to-br from-slate-50 via-slate-100 to-indigo-50 dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">

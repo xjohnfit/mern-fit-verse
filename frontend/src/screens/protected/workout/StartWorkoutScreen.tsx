@@ -21,9 +21,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AlertModal from "@/components/modals/AlertModal";
 
-// Utils
-import { formatWeight } from "@/lib/weightConversion";
-
 // Types
 import type { Exercise, WorkoutSet, WorkoutExercise } from "@/screens/protected/workout/workout.types";
 
@@ -358,9 +355,6 @@ const StartWorkoutScreen = () => {
                 if (ex.id !== exerciseId) return ex;
                 const setIndex = ex.sets.findIndex(s => s.id === setId);
                 if (setIndex === -1) return ex;
-
-                const currentSet = ex.sets[setIndex];
-                const isCompleting = !currentSet.completed;
 
                 const updatedSets = ex.sets.map(set =>
                     set.id === setId ? { ...set, completed: !set.completed } : set

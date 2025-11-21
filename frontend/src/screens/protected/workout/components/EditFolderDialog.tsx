@@ -14,9 +14,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-// Types
-import type { ColorPreset } from "@/screens/protected/workout/workout.types";
-
 interface EditFolderDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
