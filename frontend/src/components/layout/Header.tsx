@@ -1,9 +1,6 @@
 import { Link, useNavigate } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-    useLogoutMutation,
-    useGetUserProfileQuery,
-} from '@/slices/usersApiSlice';
+import { useLogoutMutation } from '@/slices/usersApiSlice';
 import { clearCredentials } from '@/slices/authSlice';
 import { apiSlice } from '@/slices/apiSlice';
 import { useState, useEffect } from 'react';

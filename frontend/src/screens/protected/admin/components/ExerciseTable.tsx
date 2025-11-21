@@ -41,7 +41,18 @@ const ExerciseTable = ({ exercises, onEdit, onDelete, isLoading }: ExerciseTable
                             <tbody>
                                 {exercisesByCategory[category].map((exercise) => (
                                     <tr key={exercise.id} className="border-b border-border hover:bg-muted/50 transition-colors">
-                                        <td className="p-3 text-foreground w-2/3">{exercise.name}</td>
+                                        <td className="p-3 text-foreground w-2/3">
+                                            <div className="flex items-center gap-3">
+                                                {exercise.image && (
+                                                    <img
+                                                        src={exercise.image}
+                                                        alt={exercise.name}
+                                                        className="w-12 h-12 object-cover rounded-md"
+                                                    />
+                                                )}
+                                                <span>{exercise.name}</span>
+                                            </div>
+                                        </td>
                                         <td className="p-3 w-1/3">
                                             <div className="flex gap-2">
                                                 <Button
