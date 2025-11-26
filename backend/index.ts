@@ -1,12 +1,16 @@
 // Dependencies imports
-import express, { Application } from 'express';
+import express, { type Application } from 'express';
 import cors from 'cors';
 import path from 'path';
-import { v2 as cloudinary } from 'cloudinary';
-import connectDB from './config/dbConnection';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+
+// Middleware imports
 import { notFound, errorHandler } from './middlewares/errorMiddleware';
+
+// Config imports
+import './config/cloudinary'
+import connectDB from './config/dbConnection';
 
 // Routes imports
 import authRoutes from './routes/authRoutes';
@@ -21,7 +25,6 @@ import customCategoryRoutes from './routes/customCategoryRoutes';
 import workoutRoutes from './routes/workoutRoutes';
 import workoutTemplateRoutes from './routes/workoutTemplateRoutes';
 import workoutTemplateFolderRoutes from './routes/workoutTemplateFolderRoutes';
-// import exerciseRoutes from './routes/exerciseRoutes';
 
 // Configurations
 dotenv.config({
@@ -31,21 +34,13 @@ dotenv.config({
             : '.env.development',
 });
 
-// Cloudinary configuration
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-    secure: true,
-});
-
 const app: Application = express();
 const PORT: number = parseInt(process.env.PORT || '5003', 10);
 
 // Middlewares
 app.use(
     cors({
-        origin: process.env.VITE_FRONTEND_URL || 'http://localhost:5173',
+        origin: ['process.env.FRONTEND_URL'],
         credentials: true,
         exposedHeaders: ['Set-Cookie'],
         maxAge: 86400, // 24 hours
