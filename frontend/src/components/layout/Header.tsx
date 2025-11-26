@@ -16,7 +16,6 @@ import {
     Dumbbell,
     Settings,
     Home,
-    Search,
     MessageCircle,
     Shield,
 } from 'lucide-react';
@@ -30,6 +29,7 @@ import {
 } from '@/components/ui/navigation-menu';
 import { toast } from 'sonner';
 import { ThemeToggle } from '@/components/common/ThemeToggle';
+import { NotificationBell } from '@/components/common/NotificationBell';
 
 function Header() {
     const { isAuthenticated, userInfo } = useSelector(
@@ -129,34 +129,6 @@ function Header() {
                                 </p>
                             </div>
                         </Link>
-
-                        {/* Search Bar - Desktop Only */}
-                        <div className='hidden lg:flex flex-1 max-w-md mx-8 justify-end'>
-                            <div className='relative w-full max-w-sm'>
-                                <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                                    <Search className='h-4 w-4 text-gray-400 dark:text-gray-500' />
-                                </div>
-                                <input
-                                    type='text'
-                                    placeholder='Search users, workouts, nutrition...'
-                                    className='w-full pl-10 pr-4 py-2 text-sm bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-200'
-                                />
-                            </div>
-                        </div>
-
-                        {/* Mobile Search Bar */}
-                        <div className='flex-1 mx-4 lg:hidden'>
-                            <div className='relative max-w-sm'>
-                                <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                                    <Search className='h-4 w-4 text-gray-400 dark:text-gray-500' />
-                                </div>
-                                <input
-                                    type='text'
-                                    placeholder='Search...'
-                                    className='w-full pl-10 pr-4 py-2 text-sm bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-200'
-                                />
-                            </div>
-                        </div>
 
                         {/* Desktop Navigation */}
                         <nav className='hidden lg:flex items-center space-x-1'>
@@ -259,7 +231,8 @@ function Header() {
                                         </NavigationMenuList>
                                     </NavigationMenu>
 
-                                    <div className='ml-3 pl-3 border-l border-gray-300 dark:border-gray-600'>
+                                    <div className='ml-3 pl-3 border-l border-gray-300 dark:border-gray-600 flex items-center space-x-2'>
+                                        <NotificationBell />
                                         <ThemeToggle />
                                     </div>
                                 </div>
@@ -292,17 +265,46 @@ function Header() {
                         </nav>
 
                         {/* Mobile Navigation Toggle */}
-                        <div className='lg:hidden flex items-center space-x-3'>
-                            <ThemeToggle />
-                            <button
-                                onClick={toggleMobileMenu}
-                                className='p-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200'>
-                                {isMobileMenuOpen ? (
-                                    <X className='w-6 h-6' />
-                                ) : (
-                                    <Menu className='w-6 h-6' />
-                                )}
-                            </button>
+                        <div className='lg:hidden flex items-center space-x-2'>
+                            {isAuthenticated && (
+                                <>
+                                    <Link
+                                        to='/dashboard'
+                                        className='p-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200'>
+                                        <LayoutDashboard className='w-5 h-5' />
+                                    </Link>
+                                    <Link
+                                        to={`/profile/view/${userInfo?.username}`}
+                                        className='p-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200'>
+                                        <User className='w-5 h-5' />
+                                    </Link>
+                                    <Link
+                                        to='/messages'
+                                        className='p-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200'>
+                                        <MessageCircle className='w-5 h-5' />
+                                    </Link>
+                                    <Link
+                                        to='/nutrition'
+                                        className='p-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200'>
+                                        <UtensilsCrossed className='w-5 h-5' />
+                                    </Link>
+                                    <Link
+                                        to='/workout'
+                                        className='p-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all duration-200'>
+                                        <Dumbbell className='w-5 h-5' />
+                                    </Link>
+                                    <NotificationBell />
+                                    <button
+                                        onClick={toggleMobileMenu}
+                                        className='p-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200'>
+                                        {isMobileMenuOpen ? (
+                                            <X className='w-6 h-6' />
+                                        ) : (
+                                            <Menu className='w-6 h-6' />
+                                        )}
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -322,71 +324,24 @@ function Header() {
                                 <div className='space-y-6'>
                                     {/* User Info Card */}
                                     <div className='p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl'>
-                                        <div className='flex items-center space-x-4 mb-3'>
-                                            {avatar}
-                                            <div className='flex-1 min-w-0'>
-                                                <p className='font-semibold text-gray-900 dark:text-gray-100 truncate'>
-                                                    {userInfo?.name}
-                                                </p>
-                                                <p className='text-sm text-gray-600 dark:text-gray-400 truncate'>
-                                                    {userInfo?.email}
-                                                </p>
+                                        <div className='flex items-center justify-between mb-3'>
+                                            <div className='flex items-center space-x-4'>
+                                                {avatar}
+                                                <div className='flex-1 min-w-0'>
+                                                    <p className='font-semibold text-gray-900 dark:text-gray-100 truncate'>
+                                                        {userInfo?.name}
+                                                    </p>
+                                                    <p className='text-sm text-gray-600 dark:text-gray-400 truncate'>
+                                                        {userInfo?.email}
+                                                    </p>
+                                                </div>
                                             </div>
+                                            <ThemeToggle />
                                         </div>
                                     </div>
 
                                     {/* Navigation Links */}
                                     <nav className='space-y-2'>
-                                        <Link
-                                            to='/dashboard'
-                                            onClick={closeMobileMenu}
-                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all duration-200 group'>
-                                            <LayoutDashboard className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
-                                            <span className='font-medium'>
-                                                Dashboard
-                                            </span>
-                                        </Link>
-
-                                        <Link
-                                            to={`/profile/view/${userInfo?.username}`}
-                                            onClick={closeMobileMenu}
-                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-xl transition-all duration-200 group'>
-                                            <User className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
-                                            <span className='font-medium'>
-                                                My Profile
-                                            </span>
-                                        </Link>
-
-                                        <Link
-                                            to='/messages'
-                                            onClick={closeMobileMenu}
-                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all duration-200 group'>
-                                            <MessageCircle className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
-                                            <span className='font-medium'>
-                                                Messages
-                                            </span>
-                                        </Link>
-
-                                        <Link
-                                            to='/nutrition'
-                                            onClick={closeMobileMenu}
-                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-xl transition-all duration-200 group'>
-                                            <UtensilsCrossed className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
-                                            <span className='font-medium'>
-                                                Nutrition
-                                            </span>
-                                        </Link>
-
-                                        <Link
-                                            to='/workout'
-                                            onClick={closeMobileMenu}
-                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-xl transition-all duration-200 group'>
-                                            <Dumbbell className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
-                                            <span className='font-medium'>
-                                                Workout
-                                            </span>
-                                        </Link>
-
                                         {userInfo?.admin && (
                                             <Link
                                                 to='/admin'
@@ -408,15 +363,15 @@ function Header() {
                                                 Settings
                                             </span>
                                         </Link>
-                                    </nav>
 
-                                    {/* Logout Button */}
-                                    <button
-                                        onClick={logoutHandler}
-                                        className='flex items-center justify-center space-x-2 w-full p-3 text-white bg-linear-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl'>
-                                        <LogOut className='w-5 h-5' />
-                                        <span>Sign Out</span>
-                                    </button>
+                                        {/* Logout Button */}
+                                        <button
+                                            onClick={logoutHandler}
+                                            className='flex items-center justify-center space-x-2 w-full p-3 text-white bg-linear-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl'>
+                                            <LogOut className='w-5 h-5' />
+                                            <span>Sign Out</span>
+                                        </button>
+                                    </nav>
                                 </div>
                             ) : (
                                 <div className='space-y-4'>

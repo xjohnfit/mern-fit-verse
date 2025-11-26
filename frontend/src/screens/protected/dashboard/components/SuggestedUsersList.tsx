@@ -28,7 +28,7 @@ export const SuggestedUsersList: FC<SuggestedUsersListProps> = ({
     onUserClick,
 }) => {
     return (
-        <div className="hidden xl:block bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+        <div className="sm:block bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
             <div className="flex items-center space-x-2 mb-4">
                 <Users className="w-5 h-5 text-blue-600" />
                 <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">

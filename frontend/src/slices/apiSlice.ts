@@ -19,6 +19,7 @@ export const apiSlice = createApi({
         'CustomCategory',
         'WorkoutTemplate',
         'WorkoutTemplateFolder',
+        'Notification',
     ],
     endpoints: (_builder) => ({}),
 });

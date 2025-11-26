@@ -55,6 +55,7 @@ const WorkoutsHistory = ({ workouts, isLoading }: WorkoutsHistoryProps) => {
         const date = new Date(dateString);
         const now = new Date();
         const diffInMs = now.getTime() - date.getTime();
+        const diffInHours = diffInMs / (1000 * 60 * 60);
         const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
         // Format time
@@ -66,21 +67,26 @@ const WorkoutsHistory = ({ workouts, isLoading }: WorkoutsHistoryProps) => {
 
         // Format date based on recency
         let dateStr = '';
-        if (diffInDays === 0) {
-            dateStr = "Today";
+        if (diffInHours < 24) {
+            // Less than 24 hours: show actual date and time
+            dateStr = date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+            });
+            return `${dateStr} at ${timeStr}`;
         } else if (diffInDays === 1) {
-            dateStr = "Yesterday";
+            return "1 day ago";
         } else if (diffInDays < 7) {
-            dateStr = `${diffInDays} days ago`;
+            return `${diffInDays} days ago`;
         } else {
             dateStr = date.toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
                 year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
             });
+            return dateStr;
         }
-
-        return `${dateStr} at ${timeStr}`;
     };
 
     const calculateTotalVolume = (workout: Workout) => {
