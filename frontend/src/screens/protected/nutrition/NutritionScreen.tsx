@@ -68,12 +68,6 @@ const NutritionScreen = () => {
     // Get the formatted date string for the current selected date
     const dateString = formatDateForAPI(selectedDate);
 
-    // Debug: Log the date being sent to the API
-    useEffect(() => {
-        console.log("Selected date:", selectedDate);
-        console.log("Formatted date for API:", dateString);
-    }, [selectedDate, dateString]);
-
     // API hooks
     const { data: dailyNutritionData, isLoading: _isLoadingNutrition } =
         useGetDailyNutritionQuery(dateString);
@@ -198,7 +192,6 @@ const NutritionScreen = () => {
         useLazyGetFoodByIdQuery();
 
     useEffect(() => {
-        console.log("searchData:", searchData);
         // Updated to match actual API response structure
         const foodsArr = searchData?.data?.foods_search?.results?.food;
         if (

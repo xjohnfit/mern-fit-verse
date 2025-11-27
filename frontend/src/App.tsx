@@ -14,7 +14,7 @@ function App() {
         }
       }} />
       <Header />
-      <main className="pt-16">
+      <main>
         <Outlet />
       </main>
       <Footer />

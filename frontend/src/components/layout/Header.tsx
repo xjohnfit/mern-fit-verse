@@ -104,7 +104,7 @@ function Header() {
 
     return (
         <>
-            <header className='fixed top-0 left-0 right-0 z-50 w-full backdrop-blur-xl bg-white/95 dark:bg-gray-900/95 border-b border-gray-200/50 dark:border-gray-800/50 shadow-sm'>
+            <header className='sticky top-0 left-0 right-0 z-50 w-full backdrop-blur-xl bg-white/95 dark:bg-gray-900/95 border-b border-gray-200/50 dark:border-gray-800/50 shadow-sm'>
                 <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
                     <div className='flex items-center justify-between h-16'>
                         {/* Logo Section */}
@@ -324,7 +324,7 @@ function Header() {
                                 <div className='space-y-6'>
                                     {/* User Info Card */}
                                     <div className='p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl'>
-                                        <div className='flex items-center justify-between mb-3'>
+                                        <div className='flex items-center justify-between'>
                                             <div className='flex items-center space-x-4'>
                                                 {avatar}
                                                 <div className='flex-1 min-w-0'>
