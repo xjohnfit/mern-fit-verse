@@ -88,7 +88,7 @@ export const CreatePostSection: FC<CreatePostSectionProps> = ({
                                     <span>Add Photo</span>
                                     <input
                                         type="file"
-                                        accept="image/*"
+                                        accept="image/*,.heic,.heif"
                                         onChange={handleImageUpload}
                                         className="hidden"
                                     />

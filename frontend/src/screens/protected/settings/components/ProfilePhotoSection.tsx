@@ -188,7 +188,7 @@ const ProfilePhotoSection = ({
                 <input
                     ref={fileInputRef}
                     type='file'
-                    accept='image/*'
+                    accept='image/*,.heic,.heif'
                     onChange={handlePhotoSelect}
                     className='hidden'
                 />
