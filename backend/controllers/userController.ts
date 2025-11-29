@@ -121,6 +121,12 @@ export const updateUserProfile = asyncHandler(
                         mimeType = 'image/gif';
                     } else if (base64Data.startsWith('UklGR')) {
                         mimeType = 'image/webp';
+                    } else if (
+                        base64Data.startsWith('AAAA') &&
+                        base64Data.includes('ZnR5cGhlaWM')
+                    ) {
+                        // HEIC files start with specific bytes
+                        mimeType = 'image/heic';
                     }
 
                     photoData = `data:${mimeType};base64,${base64Data}`;
@@ -130,13 +136,37 @@ export const updateUserProfile = asyncHandler(
                     );
                 }
 
-                // Validate data URI format
+                // Fix incorrect MIME types from mobile browsers (especially iPhone)
+                // iPhone Chrome may send HEIC as application/octet-stream
+                if (
+                    photoData.startsWith(
+                        'data:application/octet-stream;base64,'
+                    )
+                ) {
+                    const base64Part = photoData.split(',')[1];
+                    if (
+                        base64Part &&
+                        base64Part.startsWith('AAAA') &&
+                        base64Part.includes('ZnR5cGhlaWM')
+                    ) {
+                        // This is a HEIC file, fix the MIME type
+                        photoData = photoData.replace(
+                            'data:application/octet-stream',
+                            'data:image/heic'
+                        );
+                        console.log(
+                            'Detected and corrected HEIC file from application/octet-stream'
+                        );
+                    }
+                }
+
+                // Accept image/* MIME types and application/octet-stream (common for HEIC from mobile devices)
                 const dataURIPattern =
-                    /^data:image\/(jpeg|jpg|png|gif|webp|heic|heif);base64,/i;
+                    /^data:(image\/(jpeg|jpg|png|gif|webp|heic|heif|bmp)|application\/octet-stream);base64,/i;
                 if (!dataURIPattern.test(photoData)) {
                     res.status(400);
                     throw new Error(
-                        'Invalid image format. Supported formats: JPEG, PNG, GIF, WebP, HEIC'
+                        'Invalid image format. Supported formats: JPEG, PNG, GIF, WebP, HEIC, BMP'
                     );
                 }
 
@@ -168,8 +198,7 @@ export const updateUserProfile = asyncHandler(
                     }
                 }
 
-                // Upload to Cloudinary - Cloudinary handles base64 data URI directly
-                // Cloudinary natively supports HEIC and will automatically convert to browser-compatible formats
+                // Upload to Cloudinary
                 const cloudinaryResult = await cloudinary.uploader.upload(
                     photoData,
                     {
