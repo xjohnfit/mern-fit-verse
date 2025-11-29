@@ -5,16 +5,25 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 
-// Middleware imports
-import { notFound, errorHandler } from './middlewares/errorMiddleware';
+// Load environment variables FIRST before any config imports
+dotenv.config({
+    path:
+        process.env.NODE_ENV === 'production'
+            ? '.env.production'
+            : '.env.development',
+});
 
 // Config imports
-import './config/cloudinary'
+import './config/cloudinary';
 import connectDB from './config/dbConnection';
+
+// Middleware imports
+import { notFound, errorHandler } from './middlewares/errorMiddleware';
 
 // Routes imports
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
+import messageRoutes from './routes/messageRoutes';
 import postsRoutes from './routes/postRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import healthRoutes from './routes/healthRoutes';
@@ -26,14 +35,7 @@ import workoutRoutes from './routes/workoutRoutes';
 import workoutTemplateRoutes from './routes/workoutTemplateRoutes';
 import workoutTemplateFolderRoutes from './routes/workoutTemplateFolderRoutes';
 
-// Configurations
-dotenv.config({
-    path:
-        process.env.NODE_ENV === 'production'
-            ? '.env.production'
-            : '.env.development',
-});
-
+// Initialize Express app
 const app: Application = express();
 const PORT: number = parseInt(process.env.PORT || '5003', 10);
 
@@ -78,6 +80,7 @@ app.use(cookieParser());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/messages', messageRoutes);
 app.use('/api/posts', postsRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/health', healthRoutes);

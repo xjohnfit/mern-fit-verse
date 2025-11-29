@@ -106,7 +106,7 @@ pipeline {
                 '''
             }
         }
-        stage('5.1. Run Tests') {
+        stage('6. Run Tests') {
             steps {
                 script {
                     try {
@@ -138,7 +138,7 @@ pipeline {
                 }
             }
         }
-        stage('6. OWASP Dependency Check') {
+        stage('7. OWASP Dependency Check') {
             steps {
                 script {
                     try {
@@ -155,7 +155,7 @@ pipeline {
                 }
             }
         }
-        stage('7. Trivy File System Scan') {
+        stage('8. Trivy File System Scan') {
             steps {
                 sh '''
                     echo "🔍 Running Trivy filesystem scan..."
@@ -164,7 +164,7 @@ pipeline {
                 '''
             }
         }
-        stage('8. Build & Push Docker Image') {
+        stage('9. Build & Push Docker Image') {
             steps {
                 script {
                     def docker_image
@@ -178,7 +178,7 @@ pipeline {
                 }
             }
         }
-        stage('9. Trivy Image Scan') {
+        stage('10. Trivy Image Scan') {
             steps {
                 script {
                     sh '''
@@ -202,7 +202,7 @@ pipeline {
                 }
             }
         }
-        stage('10. Cleanup Artifacts') {
+        stage('11. Cleanup Artifacts') {
             steps {
                 script {
                     sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
@@ -210,7 +210,7 @@ pipeline {
                 }
             }
         }
-        stage('11. Update Kubernetes Deployment for ArgoCD') {
+        stage('12. Update Kubernetes Deployment for ArgoCD') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
                     script {
@@ -255,7 +255,7 @@ pipeline {
                 }
             }
         }
-        stage('12. Collect Reports') {
+        stage('13. Collect Reports') {
             steps {
                 script {
                     echo '📊 Collecting scan reports...'
@@ -291,7 +291,7 @@ pipeline {
                 }
             }
         }
-        stage('13. Docker Cleanup') {
+        stage('14. Docker Cleanup') {
             steps {
                 script {
                     sh '''

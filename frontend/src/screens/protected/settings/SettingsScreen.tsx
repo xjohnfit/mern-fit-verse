@@ -26,24 +26,24 @@ const SettingsScreen = () => {
                 goal: profileData.goal,
             };
 
-            // Convert photo file to base64 if selected
+            // Handle photo upload if file is provided
             if (photoFile) {
-                console.log('Converting photo file to base64:', {
-                    name: photoFile.name,
-                    type: photoFile.type,
-                    size: photoFile.size,
-                });
-
-                const base64 = await new Promise<string>((resolve, reject) => {
+                // Wait for FileReader to complete before proceeding
+                const photoData = await new Promise<string>((resolve, reject) => {
                     const reader = new FileReader();
-                    reader.onloadend = () => {
+
+                    reader.onload = () => {
                         resolve(reader.result as string);
                     };
-                    reader.onerror = reject;
+
+                    reader.onerror = () => {
+                        reject(new Error('Failed to read photo file'));
+                    };
+
                     reader.readAsDataURL(photoFile);
                 });
 
-                updateData.photo = base64;
+                updateData.photo = photoData;
             }
 
             // Only include password if it's provided
@@ -62,29 +62,12 @@ const SettingsScreen = () => {
                 updateData.weightUnit = profileData.weightUnit;
             }
 
-            console.log('Submitting profile update...');
             const res = await updateUserProfile(updateData).unwrap();
-            console.log('Profile update successful:', res);
             dispatch(setCredentials({ ...res }));
             toast.success('Profile updated successfully');
         } catch (err: string | any) {
             console.error('Profile update error:', err);
-
-            let errorMessage = 'An error occurred';
-
-            if (err?.status === 'FETCH_ERROR') {
-                errorMessage =
-                    'Unable to connect to the server. Please check your connection.';
-            } else if (err?.status === 413) {
-                errorMessage =
-                    'File size too large. Please choose a smaller image (max 10MB).';
-            } else if (err?.data?.message) {
-                errorMessage = err.data.message;
-            } else if (err?.message) {
-                errorMessage = err.message;
-            }
-
-            toast.error(errorMessage, { duration: 6000 });
+            toast.error(err?.data?.message || 'Failed to update profile');
         }
     };
 

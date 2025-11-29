@@ -1,4 +1,5 @@
 import { type FC } from 'react';
+import { useNavigate } from 'react-router';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Users, UserCheck, MessageCircle, MoreHorizontal, User } from 'lucide-react';
@@ -24,6 +25,21 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({
     onShowFollowers,
     onShowFollowing,
 }) => {
+    const navigate = useNavigate();
+
+    const handleMessageClick = () => {
+        navigate('/messages', {
+            state: {
+                selectedUser: {
+                    _id: user._id,
+                    name: user.name,
+                    username: user.username,
+                    photo: user.photo
+                }
+            }
+        });
+    };
+
     return (
         <div className="relative">
             <div className="h-64 sm:h-64 md:h-80 bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700"></div>
@@ -106,6 +122,7 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({
                                             )}
                                         </Button>
                                         <Button
+                                            onClick={handleMessageClick}
                                             variant="outline"
                                             className="text-white border-white bg-transparent hover:bg-white/10 text-xs flex-1"
                                             size="sm"
@@ -205,6 +222,7 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({
                                     )}
                                 </Button>
                                 <Button
+                                    onClick={handleMessageClick}
                                     variant="outline"
                                     className="text-white border-white bg-transparent hover:bg-white/10"
                                 >

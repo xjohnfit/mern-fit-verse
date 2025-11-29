@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { toast } from 'sonner';
 import { User } from 'lucide-react';
 import type { ProfilePhotoSectionProps } from '@/screens/protected/settings/settings.types';
@@ -7,17 +8,10 @@ const ProfilePhotoSection = ({
     photo,
     onPhotoChange,
 }: ProfilePhotoSectionProps) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-
-        // Log file details for debugging iPhone issues
-        console.log('Selected file:', {
-            name: file.name,
-            type: file.type,
-            size: file.size,
-            lastModified: file.lastModified,
-        });
 
         // Get file extension as fallback for HEIC detection
         const fileExtension = file.name.toLowerCase().split('.').pop() || '';
@@ -104,10 +98,7 @@ const ProfilePhotoSection = ({
     };
 
     const handlePhotoClick = () => {
-        const fileInput = document.getElementById(
-            'photo-input'
-        ) as HTMLInputElement;
-        fileInput?.click();
+        fileInputRef.current?.click();
     };
 
     const handleRemovePhoto = () => {
@@ -119,11 +110,8 @@ const ProfilePhotoSection = ({
         onPhotoChange(null, '');
 
         // Clear the file input
-        const fileInput = document.getElementById(
-            'photo-input'
-        ) as HTMLInputElement;
-        if (fileInput) {
-            fileInput.value = '';
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
         }
 
         toast.success('Photo removed');
@@ -198,7 +186,7 @@ const ProfilePhotoSection = ({
 
                 {/* Hidden File Input */}
                 <input
-                    id='photo-input'
+                    ref={fileInputRef}
                     type='file'
                     accept='image/*'
                     onChange={handlePhotoSelect}

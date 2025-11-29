@@ -5,8 +5,6 @@ export const apiSlice = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: '',
         prepareHeaders: (headers, _api) => {
-            // Don't set Content-Type for FormData - let browser set it automatically
-            // This is important for file uploads with multipart/form-data
             return headers;
         },
     }),
@@ -20,6 +18,7 @@ export const apiSlice = createApi({
         'WorkoutTemplate',
         'WorkoutTemplateFolder',
         'Notification',
+        'Message',
     ],
     endpoints: (_builder) => ({}),
 });
