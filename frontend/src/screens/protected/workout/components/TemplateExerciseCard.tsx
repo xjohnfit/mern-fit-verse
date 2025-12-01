@@ -1,7 +1,6 @@
 import { Plus, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ExerciseSetRow } from "./ExerciseSetRow";
 import type { TemplateExerciseCardProps } from "@/screens/protected/workout/workout.types";
 
@@ -11,8 +10,7 @@ export const TemplateExerciseCard = ({
     onRemove,
     onAddSet,
     onRemoveSet,
-    onUpdateSet,
-    onUpdateRestTime
+    onUpdateSet
 }: TemplateExerciseCardProps) => {
     return (
         <Card className="border-l-4 border-l-purple-500">
@@ -53,7 +51,7 @@ export const TemplateExerciseCard = ({
                     ))}
                 </div>
 
-                {/* Add Set & Rest Time */}
+                {/* Add Set */}
                 <div className="flex items-center gap-2">
                     <Button
                         size="sm"
@@ -64,17 +62,6 @@ export const TemplateExerciseCard = ({
                         <Plus className="w-4 h-4 mr-1" />
                         Add Set
                     </Button>
-                    <div className="flex items-center gap-2 ml-auto">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Rest:</span>
-                        <Input
-                            type="number"
-                            value={exercise.restTime || 60}
-                            onChange={(e) => onUpdateRestTime(parseInt(e.target.value) || 60)}
-                            className="w-20"
-                            min="0"
-                        />
-                        <span className="text-sm text-gray-600 dark:text-gray-400">sec</span>
-                    </div>
                 </div>
             </CardContent>
         </Card>

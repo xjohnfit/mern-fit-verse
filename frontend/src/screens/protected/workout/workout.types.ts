@@ -26,7 +26,6 @@ export interface TemplateExercise {
     exerciseId: string;
     exerciseName: string;
     sets: TemplateSet[];
-    restTime: number;
     notes?: string;
 }
 
@@ -37,7 +36,7 @@ export interface WorkoutSet {
     reps: number;
     weight: number;
     completed: boolean;
-    restTimeRemaining: number;
+    restTimeRemaining?: number; // Optional, for active rest timer
     duration?: number; // in seconds for time-based exercises
     distance?: number; // for cardio exercises
     notes?: string;
@@ -46,7 +45,6 @@ export interface WorkoutSet {
 // Workout Exercise type (extends Exercise with sets)
 export interface WorkoutExercise extends Exercise {
     sets: WorkoutSet[];
-    restTime?: number; // in seconds
     notes?: string;
 }
 
@@ -201,7 +199,6 @@ export interface TemplateExerciseCardProps {
         field: 'targetReps' | 'targetWeight',
         value: number
     ) => void;
-    onUpdateRestTime: (restTime: number) => void;
 }
 
 export interface TemplateFormActionsProps {

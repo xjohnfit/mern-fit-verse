@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 // Third-party libraries
-import { FileText, Play, Edit, Trash2, Clock, Target } from "lucide-react";
+import { FileText, Play, Edit, Trash2, Target } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
 
@@ -24,7 +24,6 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
     const [deleteTemplate] = useDeleteTemplateMutation();
 
     const totalSets = template.exercises.reduce((acc, exercise) => acc + exercise.sets.length, 0);
-    const avgRestTime = template.exercises.reduce((acc, exercise) => acc + exercise.restTime, 0) / template.exercises.length;
 
     const handleStartWorkout = () => {
         // Navigate to start workout with template
@@ -69,10 +68,6 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
                         <div className="flex items-center gap-1">
                             <Target className="w-3 h-3" />
                             <span>{totalSets} sets</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            <span>{Math.round(avgRestTime)}s avg rest</span>
                         </div>
                     </div>
                 </div>

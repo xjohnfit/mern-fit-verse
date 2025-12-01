@@ -129,7 +129,8 @@ const WorkoutDetailScreen = () => {
 
     const sets = calculateCompletedSets();
     const volume = calculateTotalVolume();
-    const isFreestyle = workout.workoutType === "freestyle";
+    // Consider a workout as template-based if it has templateName or workoutType is "template"
+    const isFreestyle = workout.workoutType === "freestyle" && !workout.templateName;
 
     return (
         <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900/20">

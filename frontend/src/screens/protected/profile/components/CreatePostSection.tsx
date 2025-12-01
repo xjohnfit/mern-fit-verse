@@ -34,17 +34,19 @@ export const CreatePostSection: FC<CreatePostSectionProps> = ({
 
     return (
         <>
-            <Button
-                onClick={() => setShowCreatePost(!showCreatePost)}
-                className="flex items-center space-x-2"
-                size="sm"
-            >
-                <Plus className="w-4 h-4" />
-                <span className="sm:inline">Create Post</span>
-            </Button>
+            <div className="flex items-center justify-end mt-3">
+                <Button
+                    onClick={() => setShowCreatePost(!showCreatePost)}
+                    className="flex items-center space-x-2"
+                    size="sm"
+                >
+                    <Plus className="w-4 h-4" />
+                    <span className="sm:inline">Create Post</span>
+                </Button>
+            </div>
 
             {showCreatePost && (
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mt-4 mb-6 border border-gray-200 dark:border-gray-600 col-span-full">
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mt-4 mb-6 border border-gray-200 dark:border-gray-600">
                     <div className="flex space-x-3">
                         <Avatar className="w-10 h-10 shrink-0">
                             <AvatarImage

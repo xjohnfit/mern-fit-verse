@@ -341,13 +341,22 @@ function Header() {
                                     <div className='p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl'>
                                         <div className='flex items-center justify-between'>
                                             <div className='flex items-center space-x-4'>
-                                                {avatar}
+                                                {userInfo?.photo ? (
+                                                    <img
+                                                        src={getPhotoUrl(userInfo.photo)}
+                                                        alt={userInfo.name}
+                                                        className='w-12 h-12 rounded-full object-cover ring-2 ring-blue-500/20 dark:ring-blue-400/30 transition-all duration-300'
+                                                    />
+                                                ) : (
+                                                    <Avatar className='w-12 h-12 ring-2 ring-blue-500/20 dark:ring-blue-400/30 transition-all duration-300'>
+                                                        <AvatarFallback className='bg-linear-to-br from-blue-500 to-purple-600 text-white font-semibold text-base'>
+                                                            {getInitials(userInfo?.name || '')}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                )}
                                                 <div className='flex-1 min-w-0'>
                                                     <p className='font-semibold text-gray-900 dark:text-gray-100 truncate'>
                                                         {userInfo?.name}
-                                                    </p>
-                                                    <p className='text-sm text-gray-600 dark:text-gray-400 truncate'>
-                                                        {userInfo?.email}
                                                     </p>
                                                 </div>
                                             </div>

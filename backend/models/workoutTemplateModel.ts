@@ -11,7 +11,7 @@ export interface IWorkoutTemplateExercise {
     exerciseId: string;
     exerciseName: string;
     sets: IWorkoutTemplateSet[];
-    restTime: number; // in seconds
+    restTime?: number; // in seconds (optional, deprecated)
     notes?: string;
 }
 
@@ -57,7 +57,8 @@ const workoutTemplateExerciseSchema = new Schema<IWorkoutTemplateExercise>({
     sets: [workoutTemplateSetSchema],
     restTime: {
         type: Number,
-        default: 60, // default 60 seconds rest
+        default: 60, // default 60 seconds rest (deprecated field)
+        required: false,
     },
     notes: {
         type: String,

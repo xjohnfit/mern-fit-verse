@@ -27,7 +27,17 @@ import type { Exercise, WorkoutSet, WorkoutExercise } from "@/screens/protected/
 const StartWorkoutScreen = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const templateId = searchParams.get('templateId');
+    const templateIdFromUrl = searchParams.get('templateId');
+
+    // Initialize and persist templateId
+    const [templateId] = useState<string | null>(() => {
+        const savedTemplateId = sessionStorage.getItem("workout_template_id");
+        if (templateIdFromUrl) {
+            sessionStorage.setItem("workout_template_id", templateIdFromUrl);
+            return templateIdFromUrl;
+        }
+        return savedTemplateId;
+    });
 
     const { data: exercises, isLoading } = useGetExercisesQuery();
     const { data: template } = useGetTemplateByIdQuery(templateId!, {
@@ -181,7 +191,6 @@ const StartWorkoutScreen = () => {
                     id: `${exerciseData.id}-set-${index + 1}`,
                     setNumber: index + 1,
                     completed: false,
-                    restTimeRemaining: templateExercise.restTime,
                     weight: templateSet.targetWeight || 0,
                     reps: templateSet.targetReps,
                 }));
@@ -199,6 +208,8 @@ const StartWorkoutScreen = () => {
 
             if (templateExercises.length > 0) {
                 setSelectedExercises(templateExercises);
+                // Save template name to sessionStorage
+                sessionStorage.setItem("workout_template_name", templateData.name);
                 toast.success(`Loaded template: ${templateData.name}`);
             }
         }
@@ -483,7 +494,7 @@ const StartWorkoutScreen = () => {
                 : "Workout Canceled. No sets were completed.";
             toast.info(message);
             // Clear session storage immediately and synchronously
-            ["workout_timer_running", "workout_exercises", "workout_start_time", "workout_paused_time", "workout_pause_start"].forEach(key => {
+            ["workout_timer_running", "workout_exercises", "workout_start_time", "workout_paused_time", "workout_pause_start", "workout_template_id", "workout_template_name"].forEach(key => {
                 sessionStorage.removeItem(key);
             });
             navigate("/workout");
@@ -491,11 +502,15 @@ const StartWorkoutScreen = () => {
         }
 
         try {
+            // Get template data from sessionStorage as fallback
+            const savedTemplateName = sessionStorage.getItem("workout_template_name");
+            const finalTemplateName = template?.data?.name || savedTemplateName || "Template Workout";
+
             // Prepare workout data for backend
             const workoutData = {
                 workoutType: templateId ? "template" : "freestyle",
                 templateId: templateId || undefined,
-                templateName: template?.data?.name || undefined,
+                templateName: templateId ? finalTemplateName : undefined,
                 duration: workoutTime,
                 exercises: selectedExercises.map((exercise) => ({
                     exerciseId: exercise.id,
@@ -514,7 +529,7 @@ const StartWorkoutScreen = () => {
             toast.success(`Workout saved! Duration: ${formatTime(workoutTime)}`);
 
             // Clear session storage immediately before navigation
-            ["workout_timer_running", "workout_exercises", "workout_start_time", "workout_paused_time", "workout_pause_start"].forEach(key => {
+            ["workout_timer_running", "workout_exercises", "workout_start_time", "workout_paused_time", "workout_pause_start", "workout_template_id", "workout_template_name"].forEach(key => {
                 sessionStorage.removeItem(key);
             });
             navigate("/workout");
@@ -523,7 +538,7 @@ const StartWorkoutScreen = () => {
             toast.error("Failed to save workout. Please try again.");
 
             // Clear session storage even on error before navigation
-            ["workout_timer_running", "workout_exercises", "workout_start_time", "workout_paused_time", "workout_pause_start"].forEach(key => {
+            ["workout_timer_running", "workout_exercises", "workout_start_time", "workout_paused_time", "workout_pause_start", "workout_template_id", "workout_template_name"].forEach(key => {
                 sessionStorage.removeItem(key);
             });
             navigate("/workout");
@@ -546,7 +561,7 @@ const StartWorkoutScreen = () => {
         setIsTimerRunning(false);
 
         // Clear session storage immediately and synchronously
-        ["workout_timer_running", "workout_exercises", "workout_start_time", "workout_paused_time", "workout_pause_start"].forEach(key => {
+        ["workout_timer_running", "workout_exercises", "workout_start_time", "workout_paused_time", "workout_pause_start", "workout_template_id", "workout_template_name"].forEach(key => {
             sessionStorage.removeItem(key);
         });
 
@@ -606,7 +621,7 @@ const StartWorkoutScreen = () => {
                     <div className="flex items-center justify-between mb-4">
                         <div>
                             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
-                                {template?.data?.name || "Freestyle Workout"}
+                                {template?.data?.name || (templateId ? template?.data.name : "Freestyle Workout")}
                             </h1>
                             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
                                 {selectedExercises.length} exercise{selectedExercises.length !== 1 ? "s" : ""} added
@@ -773,7 +788,7 @@ const StartWorkoutScreen = () => {
                                                         }`}
                                                 >
                                                     {/* Progress Bar Background - starts full and drains */}
-                                                    {activeRestTimer?.setId === set.id && (
+                                                    {activeRestTimer?.setId === set.id && set.restTimeRemaining !== undefined && (
                                                         <div
                                                             className="absolute inset-0 bg-blue-100 dark:bg-blue-900/30 transition-all"
                                                             style={{
@@ -832,7 +847,7 @@ const StartWorkoutScreen = () => {
 
                                                     <div className="relative flex items-center gap-2 z-10">
                                                         {/* Rest Timer */}
-                                                        {activeRestTimer?.setId === set.id && (
+                                                        {activeRestTimer?.setId === set.id && set.restTimeRemaining !== undefined && (
                                                             <div className="flex items-center gap-1 sm:gap-2 text-blue-600 dark:text-blue-400">
                                                                 <Timer className="w-3 h-3 sm:w-4 sm:h-4" />
                                                                 <span className="font-mono font-semibold text-xs sm:text-sm">

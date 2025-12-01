@@ -50,7 +50,6 @@ const CreateTemplateScreen = () => {
             sets: [
                 { setNumber: 1, targetReps: 10, targetWeight: 0, notes: "" }
             ],
-            restTime: 60,
             notes: "",
         };
 
@@ -110,12 +109,6 @@ const CreateTemplateScreen = () => {
         }));
     };
 
-    const handleUpdateRestTime = (exerciseId: string, restTime: number) => {
-        setTemplateExercises(templateExercises.map(ex =>
-            ex.exerciseId === exerciseId ? { ...ex, restTime } : ex
-        ));
-    };
-
     const handleSaveTemplate = async () => {
         if (!templateName.trim()) {
             toast.error("Please enter a template name");
@@ -162,8 +155,8 @@ const CreateTemplateScreen = () => {
                             <h1 className="text-3xl sm:text-4xl font-bold bg-linear-to-r from-purple-600 via-indigo-600 to-blue-600 dark:from-purple-400 dark:via-indigo-400 dark:to-blue-400 bg-clip-text text-transparent mb-2">
                                 Create Workout Template
                             </h1>
-                            <p className="text-gray-600 dark:text-gray-400">
-                                Build a reusable workout plan with exercises, sets, and rest times
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                Build a reusable workout plan with exercises and sets
                             </p>
                         </div>
                     </div>
@@ -225,7 +218,6 @@ const CreateTemplateScreen = () => {
                                     onAddSet={() => handleAddSet(exercise.exerciseId)}
                                     onRemoveSet={(setNumber) => handleRemoveSet(exercise.exerciseId, setNumber)}
                                     onUpdateSet={(setNumber, field, value) => handleUpdateSet(exercise.exerciseId, setNumber, field, value)}
-                                    onUpdateRestTime={(restTime) => handleUpdateRestTime(exercise.exerciseId, restTime)}
                                 />
                             ))
                         )}

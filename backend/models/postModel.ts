@@ -20,7 +20,7 @@ export interface IPost {
 
 const postSchema = new Schema<IPost>({
     title: { type: String, required: false },
-    content: { type: String, required: true },
+    content: { type: String, required: false },
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     image: { type: String, required: false },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],

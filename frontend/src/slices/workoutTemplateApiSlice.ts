@@ -16,7 +16,7 @@ export interface WorkoutTemplateExercise {
     exerciseId: string;
     exerciseName: string;
     sets: WorkoutTemplateSet[];
-    restTime: number;
+    restTime?: number; // deprecated, optional
     notes?: string;
 }
 

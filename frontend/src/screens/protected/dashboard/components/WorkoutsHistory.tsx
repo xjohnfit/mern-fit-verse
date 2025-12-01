@@ -147,7 +147,8 @@ const WorkoutsHistory = ({ workouts, isLoading }: WorkoutsHistoryProps) => {
             {workouts.map((workout) => {
                 const sets = calculateCompletedSets(workout);
                 const volume = calculateTotalVolume(workout);
-                const isFreestyle = workout.workoutType === "freestyle";
+                // Consider a workout as template-based if it has templateName or workoutType is "template"
+                const isFreestyle = workout.workoutType === "freestyle" && !workout.templateName;
 
                 return (
                     <Card

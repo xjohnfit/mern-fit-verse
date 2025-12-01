@@ -80,7 +80,6 @@ const EditTemplateScreen = () => {
             sets: [
                 { setNumber: 1, targetReps: 10, targetWeight: 0, notes: "" }
             ],
-            restTime: 60,
             notes: "",
         };
 
@@ -140,13 +139,7 @@ const EditTemplateScreen = () => {
         }));
     };
 
-    const handleUpdateRestTime = (exerciseId: string, restTime: number) => {
-        setTemplateExercises(templateExercises.map(ex =>
-            ex.exerciseId === exerciseId ? { ...ex, restTime } : ex
-        ));
-    };
-
-    const handleUpdateTemplate = async () => {
+    const handleSaveTemplate = async () => {
         if (!templateName.trim()) {
             toast.error("Please enter a template name");
             return;
@@ -266,7 +259,6 @@ const EditTemplateScreen = () => {
                                     onAddSet={() => handleAddSet(exercise.exerciseId)}
                                     onRemoveSet={(setNumber) => handleRemoveSet(exercise.exerciseId, setNumber)}
                                     onUpdateSet={(setNumber, field, value) => handleUpdateSet(exercise.exerciseId, setNumber, field, value)}
-                                    onUpdateRestTime={(restTime) => handleUpdateRestTime(exercise.exerciseId, restTime)}
                                 />
                             ))
                         )}

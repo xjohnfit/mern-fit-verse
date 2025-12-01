@@ -28,7 +28,9 @@ export const FolderCard = ({ folder, templates, onEditFolder }: FolderCardProps)
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteFolder, { isLoading: isDeleting }] = useDeleteTemplateFolderMutation();
 
-    const folderTemplates = templates.filter(t => t.folderId === folder._id);
+    const folderTemplates = templates
+        .filter(t => t.folderId === folder._id)
+        .sort((a, b) => a.name.localeCompare(b.name));
 
     const handleDeleteFolder = () => {
         setShowDeleteModal(true);
