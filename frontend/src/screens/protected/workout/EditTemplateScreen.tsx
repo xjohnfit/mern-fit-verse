@@ -139,7 +139,7 @@ const EditTemplateScreen = () => {
         }));
     };
 
-    const handleSaveTemplate = async () => {
+    const handleUpdateTemplate = async () => {
         if (!templateName.trim()) {
             toast.error("Please enter a template name");
             return;

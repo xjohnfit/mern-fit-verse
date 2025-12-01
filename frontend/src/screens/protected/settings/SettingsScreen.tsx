@@ -4,6 +4,7 @@ import { useUpdateUserProfileMutation } from '@/slices/usersApiSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { User } from 'lucide-react';
 import { addCacheBuster } from '@/lib/cacheBuster';
+import { kgToLbs } from '@/lib/weightConversion';
 
 // Components
 import { Tabs } from '@/components/ui/tabs';
@@ -76,8 +77,17 @@ const SettingsScreen = () => {
                 updateData.height = profileData.height;
             }
             if (profileData.weight) {
-                updateData.weight = profileData.weight;
+                // Always convert weight to lbs before saving to database
+                const weightValue = parseFloat(profileData.weight);
+                if (profileData.weightUnit === 'kg') {
+                    // User entered weight in kg, convert to lbs for database
+                    updateData.weight = kgToLbs(weightValue);
+                } else {
+                    // Already in lbs
+                    updateData.weight = weightValue;
+                }
             }
+            // Always store the user's preferred unit for display purposes
             if (profileData.weightUnit) {
                 updateData.weightUnit = profileData.weightUnit;
             }

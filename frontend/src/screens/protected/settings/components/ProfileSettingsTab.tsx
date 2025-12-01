@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { formatDateToInputValue } from '@/lib/formatDate';
 import { getPasswordStrength } from '@/lib/getPasswordStrength';
 import { useProfileValidation } from '@/screens/protected/settings/hooks/useProfileValidation';
+import { lbsToKg, kgToLbs } from '@/lib/weightConversion';
 
 import ProfilePhotoSection from '@/screens/protected/settings/components/ProfilePhotoSection';
 import ProfileHeaderSection from '@/screens/protected/settings/components/ProfileHeaderSection';
@@ -65,6 +66,21 @@ const ProfileSettingsTab = ({ userInfo, isLoading, onUpdate }: ProfileSettingsTa
 
     useEffect(() => {
         if (userInfo) {
+            // Weight is stored in lbs in the database
+            // Convert to user's preferred unit for display
+            const userWeightUnit = userInfo.weightUnit || 'lbs';
+            let displayWeight = '';
+
+            if (userInfo.weight) {
+                if (userWeightUnit === 'kg') {
+                    // Convert from lbs (database) to kg for display
+                    displayWeight = lbsToKg(parseFloat(userInfo.weight)).toString();
+                } else {
+                    // Already in lbs, use as is
+                    displayWeight = userInfo.weight;
+                }
+            }
+
             setProfileData((prev) => ({
                 ...prev,
                 name: userInfo.name || '',
@@ -74,8 +90,8 @@ const ProfileSettingsTab = ({ userInfo, isLoading, onUpdate }: ProfileSettingsTa
                 gender: userInfo.gender || '',
                 photo: userInfo.photo || '',
                 height: userInfo.height || '',
-                weight: userInfo.weight || '',
-                weightUnit: userInfo.weightUnit || 'lbs',
+                weight: displayWeight,
+                weightUnit: userWeightUnit,
                 goal: userInfo.goal || '',
             }));
 
@@ -89,6 +105,29 @@ const ProfileSettingsTab = ({ userInfo, isLoading, onUpdate }: ProfileSettingsTa
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
         const { name, value } = e.target;
+
+        // Handle weight unit change - convert displayed weight to new unit
+        if (name === 'weightUnit' && profileData.weight) {
+            const currentWeight = parseFloat(profileData.weight);
+            let convertedWeight = currentWeight;
+
+            if (value === 'kg' && profileData.weightUnit === 'lbs') {
+                // Converting from lbs to kg display
+                convertedWeight = lbsToKg(currentWeight);
+            } else if (value === 'lbs' && profileData.weightUnit === 'kg') {
+                // Converting from kg to lbs display
+                convertedWeight = kgToLbs(currentWeight);
+            }
+
+            setProfileData((prev) => ({
+                ...prev,
+                weightUnit: value,
+                weight: convertedWeight.toString(),
+            }));
+            handleFieldValidation(name, value);
+            return;
+        }
+
         setProfileData((prev) => ({
             ...prev,
             [name]: value,
