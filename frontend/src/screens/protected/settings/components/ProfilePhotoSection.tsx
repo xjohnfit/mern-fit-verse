@@ -126,6 +126,7 @@ const ProfilePhotoSection = ({
                             src={photoPreview || photo}
                             alt='Profile'
                             className='w-full h-full object-cover'
+                            key={photoPreview || photo}
                         />
                     ) : (
                         <div className='w-full h-full flex items-center justify-center'>

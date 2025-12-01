@@ -3,6 +3,7 @@ import { setCredentials } from '@/slices/authSlice';
 import { useUpdateUserProfileMutation } from '@/slices/usersApiSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { User } from 'lucide-react';
+import { addCacheBuster } from '@/lib/cacheBuster';
 
 // Components
 import { Tabs } from '@/components/ui/tabs';
@@ -82,7 +83,14 @@ const SettingsScreen = () => {
             }
 
             const res = await updateUserProfile(updateData).unwrap();
-            dispatch(setCredentials({ ...res }));
+
+            // Add timestamp to photo URL to bust cache on mobile devices
+            const updatedUser = { ...res };
+            if (updatedUser.photo) {
+                updatedUser.photo = addCacheBuster(updatedUser.photo);
+            }
+
+            dispatch(setCredentials(updatedUser));
             console.log('=== PHOTO UPLOAD END (SUCCESS) ===');
             toast.success('Profile updated successfully');
         } catch (err: string | any) {

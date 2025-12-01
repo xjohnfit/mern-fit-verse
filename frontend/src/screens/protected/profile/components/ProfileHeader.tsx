@@ -46,7 +46,7 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({
 
             {/* Profile Info Overlay */}
             <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/50 to-transparent">
-                <div className="max-w-6xl mx-auto px-4 py-8">
+                <div className="max-w-6xl mx-auto px-4 py-12">
                     {/* Mobile Instagram-style Layout */}
                     <div className="block sm:hidden">
                         <div className="flex items-start space-x-4">
@@ -66,10 +66,12 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({
                             </div>
 
                             {/* Name, Username & Stats - Right */}
-                            <div className="flex-1 text-white h-32 flex flex-col">
+                            <div className="flex-1 text-white h-32 flex flex-col min-w-0">
                                 <div className="flex-1">
-                                    <h1 className="text-3xl font-bold mb-0.5">{user.name}</h1>
-                                    <p className="text-sm text-gray-200 mb-2">
+                                    <h1 className="text-2xl sm:text-3xl font-bold mb-0.5 wrap-break-word line-clamp-2">
+                                        {user.name}
+                                    </h1>
+                                    <p className="text-sm text-gray-200 mb-2 truncate">
                                         @{user.username}
                                     </p>
                                 </div>
@@ -166,11 +168,11 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({
                             {/* Name, Username & Stats */}
 
                             {/* Name, Username & Stats */}
-                            <div className="text-white pb-4">
-                                <h1 className="text-2xl md:text-3xl font-bold mb-1">
+                            <div className="text-white pb-4 max-w-xs md:max-w-md lg:max-w-lg">
+                                <h1 className="text-2xl md:text-3xl font-bold mb-1 wrap-break-word line-clamp-2">
                                     {user.name}
                                 </h1>
-                                <p className="text-lg text-gray-200 mb-2">@{user.username}</p>
+                                <p className="text-lg text-gray-200 mb-2 truncate">@{user.username}</p>
 
                                 {/* Stats Row */}
                                 <div className="flex items-center space-x-6">

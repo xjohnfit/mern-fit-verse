@@ -4,6 +4,7 @@ import { useLogoutMutation } from '@/slices/usersApiSlice';
 import { clearCredentials } from '@/slices/authSlice';
 import { apiSlice } from '@/slices/apiSlice';
 import { useState, useEffect } from 'react';
+import { getPhotoUrl } from '@/lib/cacheBuster';
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -89,7 +90,7 @@ function Header() {
     const avatar = userInfo ? (
         userInfo.photo ? (
             <img
-                src={userInfo.photo}
+                src={getPhotoUrl(userInfo.photo)}
                 alt={userInfo.name}
                 className='w-8 h-8 rounded-full object-cover ring-2 ring-blue-500/20 dark:ring-blue-400/30 transition-all duration-300 hover:ring-blue-500/40 dark:hover:ring-blue-400/50'
             />
