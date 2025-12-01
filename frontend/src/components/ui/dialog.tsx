@@ -60,7 +60,7 @@ export const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
 export const DialogContent = ({ children, className = '' }: DialogContentProps) => {
     return (
         <div
-            className={`relative bg-background border border-border rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto mx-4 ${className}`}
+            className={`relative bg-background border border-border rounded-lg shadow-lg w-full max-w-2xl max-h-[80vh] overflow-y-auto mx-4 ${className}`}
             onClick={(e) => e.stopPropagation()}
         >
             {children}

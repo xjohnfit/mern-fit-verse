@@ -1,6 +1,6 @@
-1. image upload on create exercise
-2. update Jenkinsfile stage numbers
 3. change ts output dir to /backend/dist
 4. implement real time messaging
 5. implement AI suggestions
 6. maybe add support to pt br language
+
+7. move all files from backend into backend folder and fix .envs, dockerfile, jenkins, readme etc

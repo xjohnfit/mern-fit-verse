@@ -14,10 +14,13 @@ interface MessagesListProps {
 }
 
 export const MessagesList = ({ selectedUser, currentUserId }: MessagesListProps) => {
-    const { data: messages = [], isLoading } = useGetMessagesQuery(
+    const { data: messages = [], isLoading, error } = useGetMessagesQuery(
         {
             senderId: currentUserId || '',
             receiverId: selectedUser._id,
+        },
+        {
+            skip: !currentUserId || !selectedUser._id,
         }
     );
 
@@ -27,6 +30,17 @@ export const MessagesList = ({ selectedUser, currentUserId }: MessagesListProps)
                 <div className="text-center">
                     <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-gray-500 dark:text-gray-400">Loading messages...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+                <div className="text-center">
+                    <p className="text-red-500 dark:text-red-400">Failed to load messages</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">Please try again later</p>
                 </div>
             </div>
         );
@@ -57,19 +71,30 @@ export const MessagesList = ({ selectedUser, currentUserId }: MessagesListProps)
                                 }`}
                         >
                             <div
-                                className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-4 py-2 ${message.senderId === currentUserId
-                                    ? 'bg-primary text-white'
-                                    : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
+                                className={`max-w-[90%] sm:max-w-[75%] rounded-2xl px-4 py-2.5 shadow-sm ${message.senderId === currentUserId
+                                    ? 'bg-gray-100 text-black'
+                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600'
                                     }`}
                             >
                                 {message.image && (
                                     <img
                                         src={message.image}
                                         alt="Message attachment"
-                                        className="rounded-lg mb-2 max-w-full"
+                                        className="rounded-lg mb-2 max-w-full shadow-sm"
                                     />
                                 )}
-                                <p className="text-sm">{message.text}</p>
+                                <p className="text-sm break-word leading-relaxed">{message.text}</p>
+                                {message.createdAt && (
+                                    <p className={`text-[10px] mt-1 ${message.senderId === currentUserId
+                                        ? 'text-black'
+                                        : 'text-gray-600 dark:text-gray-400'
+                                        }`}>
+                                        {new Date(message.createdAt).toLocaleTimeString([], {
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </p>
+                                )}
                             </div>
                         </div>
                     ))}

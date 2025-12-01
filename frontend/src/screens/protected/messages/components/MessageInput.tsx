@@ -7,13 +7,15 @@ interface MessageInputProps {
     setMessageText: (text: string) => void;
     onSendMessage: () => void;
     recipientName: string;
+    isLoading?: boolean;
 }
 
 export const MessageInput = ({
     messageText,
     setMessageText,
     onSendMessage,
-    recipientName
+    recipientName,
+    isLoading = false
 }: MessageInputProps) => {
     const handleKeyPress = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -31,17 +33,21 @@ export const MessageInput = ({
                         placeholder={`Message ${recipientName}...`}
                         value={messageText}
                         onChange={(e) => setMessageText(e.target.value)}
-                        onKeyPress={handleKeyPress}
+                        onKeyDown={handleKeyPress}
                         className="resize-none bg-gray-100 dark:bg-gray-700 border-0"
                     />
                 </div>
                 <Button
                     onClick={onSendMessage}
-                    disabled={!messageText.trim()}
+                    disabled={!messageText.trim() || isLoading}
                     size="icon"
                     className="shrink-0"
                 >
-                    <Send className="w-5 h-5" />
+                    {isLoading ? (
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                        <Send className="w-5 h-5" />
+                    )}
                 </Button>
             </div>
         </div>

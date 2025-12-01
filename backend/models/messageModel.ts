@@ -21,8 +21,8 @@ const messageSchema = new Schema(
             ref: 'User',
             required: true,
         },
-        text: { type: String, required: true },
-        image: { type: String },
+        text: { type: String, required: false },
+        image: { type: String , required: false },
     },
     { timestamps: true }
 );

@@ -4,6 +4,8 @@ import { ChatHeader } from './ChatHeader';
 import { MessagesList } from './MessagesList';
 import { MessageInput } from './MessageInput';
 import { EmptyState } from './EmptyState';
+import { useSendMessageMutation } from '@/slices/messageApiSlice';
+import { toast } from 'sonner';
 
 interface User {
     _id: string;
@@ -25,13 +27,23 @@ export const ConversationArea = ({
 }: ConversationAreaProps) => {
     const navigate = useNavigate();
     const [messageText, setMessageText] = useState('');
+    const [sendMessage, { isLoading }] = useSendMessageMutation();
 
-    const handleSendMessage = () => {
-        if (!messageText.trim()) return;
+    const handleSendMessage = async () => {
+        if (!messageText.trim() || !currentUserId || !selectedUser) return;
 
-        // TODO: Implement socket.io send message
-        console.log('Sending message:', messageText);
-        setMessageText('');
+        try {
+            await sendMessage({
+                senderId: currentUserId,
+                receiverId: selectedUser._id,
+                text: messageText.trim(),
+            }).unwrap();
+
+            setMessageText('');
+        } catch (error: any) {
+            console.error('Failed to send message:', error);
+            toast.error(error?.data?.message || 'Failed to send message');
+        }
     };
 
     const handleUserClick = () => {
@@ -58,6 +70,7 @@ export const ConversationArea = ({
                         setMessageText={setMessageText}
                         onSendMessage={handleSendMessage}
                         recipientName={selectedUser.name}
+                        isLoading={isLoading}
                     />
                 </>
             ) : (
