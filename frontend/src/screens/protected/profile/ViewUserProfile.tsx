@@ -344,7 +344,7 @@ const ViewUserProfile = () => {
                                                     <span>Add Photo</span>
                                                     <input
                                                         type="file"
-                                                        accept="image/*,.heic,.heif"
+                                                        accept="image/*"
                                                         onChange={handleImageUpload}
                                                         className="hidden"
                                                     />

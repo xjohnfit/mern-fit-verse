@@ -162,22 +162,26 @@ export const updateUserProfile = asyncHandler(
 
                 // Accept image/* MIME types and application/octet-stream (common for HEIC from mobile devices)
                 const dataURIPattern =
-                    /^data:(image\/(jpeg|jpg|png|gif|webp|heic|heif|bmp)|application\/octet-stream);base64,/i;
+                    /^data:(image\/(jpeg|jpg|png|gif|webp|heic|heif|bmp|avif)|application\/octet-stream);base64,/i;
                 if (!dataURIPattern.test(photoData)) {
+                    console.error(
+                        'Invalid photo data format:',
+                        photoData.substring(0, 100)
+                    );
                     res.status(400);
                     throw new Error(
-                        'Invalid image format. Supported formats: JPEG, PNG, GIF, WebP, HEIC, BMP'
+                        'Invalid image format. Supported formats: JPEG, PNG, GIF, WebP, HEIC, AVIF, BMP'
                     );
                 }
 
-                // Check size (50MB limit already set in express.json, but double-check)
+                // Check size (10MB limit for better mobile compatibility)
                 const sizeInBytes = (photoData.length * 3) / 4;
                 const sizeInMB = sizeInBytes / (1024 * 1024);
                 console.log(`Image size: ${sizeInMB.toFixed(2)}MB`);
 
-                if (sizeInMB > 50) {
+                if (sizeInMB > 10) {
                     res.status(400);
-                    throw new Error('Image size exceeds 50MB limit');
+                    throw new Error('Image size exceeds 10MB limit');
                 }
 
                 // Delete the previous photo from Cloudinary if it exists
@@ -198,12 +202,13 @@ export const updateUserProfile = asyncHandler(
                     }
                 }
 
-                // Upload to Cloudinary
+                // Upload to Cloudinary with format conversion for HEIC/HEIF
                 const cloudinaryResult = await cloudinary.uploader.upload(
                     photoData,
                     {
                         folder: 'fit-verse/users',
                         resource_type: 'auto', // Auto-detect the resource type
+                        format: 'jpg', // Convert HEIC/HEIF to JPG for better compatibility
                         transformation: [
                             {
                                 width: 800,

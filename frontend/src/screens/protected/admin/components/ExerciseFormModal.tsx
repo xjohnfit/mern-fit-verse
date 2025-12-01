@@ -1,9 +1,50 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogBody, DialogFooter } from '@/components/ui/dialog';
 import type { ExerciseFormModalProps } from '../admin.types';
 
 const ExerciseFormModal = ({ isOpen, onClose, onSubmit, form, onFormChange, isEditing }: ExerciseFormModalProps) => {
+    const [imagePreview, setImagePreview] = useState<string>(form.image || '');
+    const [isUploading, setIsUploading] = useState(false);
+
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('Please select an image file');
+            return;
+        }
+
+        // Validate file size (5MB limit)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Image size should be less than 5MB');
+            return;
+        }
+
+        setIsUploading(true);
+
+        // Convert to base64
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const base64String = reader.result as string;
+            setImagePreview(base64String);
+            onFormChange({ ...form, image: base64String });
+            setIsUploading(false);
+        };
+        reader.onerror = () => {
+            alert('Failed to read image file');
+            setIsUploading(false);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleRemoveImage = () => {
+        setImagePreview('');
+        onFormChange({ ...form, image: '' });
+    };
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent>
@@ -47,13 +88,37 @@ const ExerciseFormModal = ({ isOpen, onClose, onSubmit, form, onFormChange, isEd
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold mb-2 text-foreground">Image URL</label>
-                                <Input
-                                    type="text"
-                                    value={form.image}
-                                    onChange={(e) => onFormChange({ ...form, image: e.target.value })}
-                                    placeholder="https://example.com/image.jpg"
-                                />
+                                <label className="block text-sm font-semibold mb-2 text-foreground">Exercise Image</label>
+                                <div className="space-y-3">
+                                    {imagePreview && (
+                                        <div className="relative inline-block">
+                                            <img
+                                                src={imagePreview}
+                                                alt="Preview"
+                                                className="w-32 h-32 object-cover rounded-md border border-border"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={handleRemoveImage}
+                                                className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-destructive/90"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    )}
+                                    <div>
+                                        <Input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageChange}
+                                            disabled={isUploading}
+                                            className="cursor-pointer"
+                                        />
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                            {isUploading ? 'Processing image...' : 'Max size: 5MB. Supported formats: JPG, PNG, GIF, WebP'}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold mb-2 text-foreground">Description *</label>
@@ -81,8 +146,8 @@ const ExerciseFormModal = ({ isOpen, onClose, onSubmit, form, onFormChange, isEd
                         <Button type="button" variant="outline" onClick={onClose}>
                             Cancel
                         </Button>
-                        <Button type="submit">
-                            {isEditing ? 'Update Exercise' : 'Create Exercise'}
+                        <Button type="submit" disabled={isUploading}>
+                            {isUploading ? 'Processing...' : isEditing ? 'Update Exercise' : 'Create Exercise'}
                         </Button>
                     </DialogFooter>
                 </form>

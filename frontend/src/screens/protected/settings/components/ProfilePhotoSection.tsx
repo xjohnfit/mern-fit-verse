@@ -14,9 +14,7 @@ const ProfilePhotoSection = ({
         if (!file) return;
 
         // Get file extension as fallback for HEIC detection
-        const fileExtension = file.name.toLowerCase().split('.').pop() || '';
-
-        // Validate file type - iOS can send empty MIME types or "application/octet-stream"
+        const fileExtension = file.name.toLowerCase().split('.').pop() || '';        // Validate file type - iOS can send empty MIME types or "application/octet-stream"
         const validTypes = [
             'image/jpeg',
             'image/jpg',
@@ -188,7 +186,7 @@ const ProfilePhotoSection = ({
                 <input
                     ref={fileInputRef}
                     type='file'
-                    accept='image/*,.heic,.heif'
+                    accept='image/*'
                     onChange={handlePhotoSelect}
                     className='hidden'
                 />

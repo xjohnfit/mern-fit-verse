@@ -51,7 +51,7 @@ const AdminScreen = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2 text-foreground">Admin Dashboard</h1>
           <p className="text-muted-foreground text-base">
-            Manage users, exercises, and system settings
+            Manage users & exercises
           </p>
         </div>
 

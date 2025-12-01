@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import ExerciseModel from '../models/exerciseModel';
+import { v2 as cloudinary } from 'cloudinary';
 
 export const getAllExercises = asyncHandler(
     async (req: Request, res: Response) => {
@@ -23,8 +24,19 @@ export const getExerciseById = asyncHandler(
 
 export const createExercise = asyncHandler(
     async (req: Request, res: Response) => {
-        const exerciseData = req.body;
-        const newExercise = new ExerciseModel(exerciseData);
+        let { image, ...exerciseData } = req.body;
+
+        // Upload image to Cloudinary if provided
+        if (image && image.startsWith('data:image')) {
+            const uploadedImage = await cloudinary.uploader.upload(image, {
+                folder: 'fit-verse/exercises',
+                resource_type: 'auto',
+                format: 'jpg',
+            });
+            image = uploadedImage.secure_url;
+        }
+
+        const newExercise = new ExerciseModel({ ...exerciseData, image });
         const savedExercise = await newExercise.save();
         res.status(201).json(savedExercise);
     }
@@ -33,10 +45,21 @@ export const createExercise = asyncHandler(
 export const updateExercise = asyncHandler(
     async (req: Request, res: Response) => {
         const { id } = req.params;
-        const exerciseData = req.body;
+        let { image, ...exerciseData } = req.body;
+
+        // Upload image to Cloudinary if it's a new base64 image
+        if (image && image.startsWith('data:image')) {
+            const uploadedImage = await cloudinary.uploader.upload(image, {
+                folder: 'fit-verse/exercises',
+                resource_type: 'auto',
+                format: 'jpg',
+            });
+            image = uploadedImage.secure_url;
+        }
+
         const updatedExercise = await ExerciseModel.findByIdAndUpdate(
             id,
-            exerciseData,
+            { ...exerciseData, image },
             { new: true }
         );
         if (updatedExercise) {

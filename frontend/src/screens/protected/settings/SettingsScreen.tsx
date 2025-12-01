@@ -28,15 +28,36 @@ const SettingsScreen = () => {
 
             // Handle photo upload if file is provided
             if (photoFile) {
+                console.log('=== PHOTO UPLOAD START ===');
+                console.log('Photo file details:', {
+                    name: photoFile.name,
+                    type: photoFile.type,
+                    size: photoFile.size,
+                    sizeInMB: (photoFile.size / (1024 * 1024)).toFixed(2) + 'MB'
+                });
+
+                // Validate file size (10MB limit for mobile compatibility)
+                const maxSizeInMB = 10;
+                const fileSizeInMB = photoFile.size / (1024 * 1024);
+                if (fileSizeInMB > maxSizeInMB) {
+                    toast.error(`Image size (${fileSizeInMB.toFixed(2)}MB) exceeds ${maxSizeInMB}MB limit`);
+                    return;
+                }
+
                 // Wait for FileReader to complete before proceeding
                 const photoData = await new Promise<string>((resolve, reject) => {
                     const reader = new FileReader();
 
                     reader.onload = () => {
-                        resolve(reader.result as string);
+                        const result = reader.result as string;
+                        console.log('Photo read successfully');
+                        console.log('Base64 string length:', result.length);
+                        console.log('Base64 prefix:', result.substring(0, 50));
+                        resolve(result);
                     };
 
-                    reader.onerror = () => {
+                    reader.onerror = (error) => {
+                        console.error('FileReader error:', error);
                         reject(new Error('Failed to read photo file'));
                     };
 
@@ -44,9 +65,7 @@ const SettingsScreen = () => {
                 });
 
                 updateData.photo = photoData;
-            }
-
-            // Only include password if it's provided
+            }            // Only include password if it's provided
             if (profileData.password) {
                 updateData.password = profileData.password;
             }
@@ -64,10 +83,21 @@ const SettingsScreen = () => {
 
             const res = await updateUserProfile(updateData).unwrap();
             dispatch(setCredentials({ ...res }));
+            console.log('=== PHOTO UPLOAD END (SUCCESS) ===');
             toast.success('Profile updated successfully');
         } catch (err: string | any) {
-            console.error('Profile update error:', err);
-            toast.error(err?.data?.message || 'Failed to update profile');
+            console.error('=== PROFILE UPDATE ERROR ===');
+            console.error('Error object:', err);
+            console.error('Error data:', err?.data);
+            console.error('Error message:', err?.data?.message || err?.message);
+            console.error('Error status:', err?.status);
+            console.error('Full error:', JSON.stringify(err, null, 2));
+            console.error('=== PHOTO UPLOAD END (FAILED) ===');
+
+            const errorMessage = err?.data?.message || err?.message || 'Failed to update profile';
+            toast.error(errorMessage, {
+                description: 'Check browser console (F12) for detailed error logs'
+            });
         }
     };
 
