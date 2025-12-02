@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: fit-verse-frontend
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: fit-verse-frontend
+    template:
+        metadata:
+            labels:
+                app: fit-verse-frontend
+        spec:
+            containers:
+                - name: fit-verse-frontend
+                  image: xjohnfit/fitverse-frontend:1.0.0-1
+                  resources:
+                      limits:
+                          cpu: '1'
+                          memory: '512Mi'
+                      requests:
+                          cpu: '200m'
+                          memory: '256Mi'
+                  ports:
+                      - containerPort: 5005
+                  envFrom:
+                      - secretRef:
+                            name: mern-fit-verse-env
+                  livenessProbe:
+                      httpGet:
+                          path: /api/health
+                          port: 5005
+                      initialDelaySeconds: 30
+                      periodSeconds: 30
+                      timeoutSeconds: 10
+                      failureThreshold: 3
+                  readinessProbe:
+                      httpGet:
+                          path: /api/health
+                          port: 5005
+                      initialDelaySeconds: 5
+                      periodSeconds: 10
+                      timeoutSeconds: 5
+                      failureThreshold: 3
+            imagePullSecrets:
+                - name: regcred
