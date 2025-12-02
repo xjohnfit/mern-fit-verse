@@ -14,7 +14,7 @@ spec:
         spec:
             containers:
                 - name: fit-verse-api
-                  image: xjohnfit/fit-verse-api:1.0.0-beta
+                  image: xjohnfit/fitverse-api:1.0.0-1
                   resources:
                       limits:
                           cpu: '1'
