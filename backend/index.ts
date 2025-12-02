@@ -1,9 +1,12 @@
 // Dependencies imports
-import express, { type Application } from 'express';
+import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+
+// Socket.io, app, and server imports
+import { app, server } from './config/socket.io';
 
 // Load environment variables FIRST before any config imports
 dotenv.config({
@@ -35,8 +38,6 @@ import workoutRoutes from './routes/workoutRoutes';
 import workoutTemplateRoutes from './routes/workoutTemplateRoutes';
 import workoutTemplateFolderRoutes from './routes/workoutTemplateFolderRoutes';
 
-// Initialize Express app
-const app: Application = express();
 const PORT: number = parseInt(process.env.PORT || '5003', 10);
 
 // Middlewares
@@ -53,12 +54,6 @@ app.use(
 app.use(
     express.json({
         limit: '50mb',
-        verify: (req, res, buf, encoding) => {
-            // Add raw body for debugging if needed
-            if (buf && buf.length) {
-                (req as any).rawBody = buf.toString(encoding as BufferEncoding);
-            }
-        },
     })
 );
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
@@ -128,7 +123,7 @@ const startServer = async (): Promise<void> => {
     try {
         await connectDB();
 
-        app.listen(PORT, () => {
+        server.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
             console.log(`Environment: ${process.env.NODE_ENV}`);
         });

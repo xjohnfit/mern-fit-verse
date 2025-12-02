@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import { v2 as cloudinary } from 'cloudinary';
 import { Request, Response } from 'express';
 import { Message } from '../models/messageModel';
+import { io, getReceiverSocketId } from '../config/socket.io';
 
 export const getMessages = asyncHandler(async (req: Request, res: Response) => {
     const { senderId, receiverId } = req.params;
@@ -31,5 +32,12 @@ export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
         image: imageUrl,
     });
     const savedMessage = await newMessage.save();
+
+    // Emit the message to the receiver via Socket.IO
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+        io.to(receiverSocketId).emit('new-message', savedMessage);
+    }
+
     res.status(201).json(savedMessage);
 });

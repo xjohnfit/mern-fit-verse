@@ -14,35 +14,20 @@ const socketSlice = createSlice({
     name: 'socket',
     initialState,
     reducers: {
-        setOnlineUsers: (state, action: PayloadAction<string[]>) => {
+        setOnlineUsers(state, action: PayloadAction<string[]>) {
             state.onlineUsers = action.payload;
         },
-        addOnlineUser: (state, action: PayloadAction<string>) => {
-            if (!state.onlineUsers.includes(action.payload)) {
-                state.onlineUsers.push(action.payload);
-            }
+        setConnected(state) {
+            state.isConnected = true;
         },
-        removeOnlineUser: (state, action: PayloadAction<string>) => {
-            state.onlineUsers = state.onlineUsers.filter(
-                (id) => id !== action.payload
-            );
-        },
-        setConnectionStatus: (state, action: PayloadAction<boolean>) => {
-            state.isConnected = action.payload;
-        },
-        clearSocketState: (state) => {
-            state.onlineUsers = [];
+        setDisconnected(state) {
             state.isConnected = false;
+            state.onlineUsers = [];
         },
     },
 });
 
-export const {
-    setOnlineUsers,
-    addOnlineUser,
-    removeOnlineUser,
-    setConnectionStatus,
-    clearSocketState,
-} = socketSlice.actions;
+export const { setOnlineUsers, setConnected, setDisconnected } =
+    socketSlice.actions;
 
 export default socketSlice.reducer;

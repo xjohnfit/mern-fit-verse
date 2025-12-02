@@ -1,5 +1,16 @@
 import { MessageCircle } from 'lucide-react';
 import { useGetMessagesQuery } from '@/slices/messageApiSlice';
+import { useEffect, useRef, useState } from 'react';
+import { getSocket } from '@/hooks/useSocket';
+
+interface Message {
+    _id: string;
+    senderId: string;
+    receiverId: string;
+    text: string;
+    image?: string;
+    createdAt: string;
+}
 
 interface User {
     _id: string;
@@ -24,6 +35,50 @@ export const MessagesList = ({ selectedUser, currentUserId }: MessagesListProps)
         }
     );
 
+    const [allMessages, setAllMessages] = useState<Message[]>([]);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+    // Update local messages when query data changes
+    useEffect(() => {
+        setAllMessages(messages);
+    }, [messages]);
+
+    // Listen for real-time messages
+    useEffect(() => {
+        const socket = getSocket();
+        if (!socket) return;
+
+        const handleNewMessage = (message: Message) => {
+            // Only add message if it's part of the current conversation
+            if (
+                (message.senderId === selectedUser._id && message.receiverId === currentUserId) ||
+                (message.senderId === currentUserId && message.receiverId === selectedUser._id)
+            ) {
+                setAllMessages((prev) => {
+                    // Check if message already exists to avoid duplicates
+                    if (prev.some((m) => m._id === message._id)) {
+                        return prev;
+                    }
+                    return [...prev, message];
+                });
+            }
+        };
+
+        socket.on('new-message', handleNewMessage);
+
+        return () => {
+            socket.off('new-message', handleNewMessage);
+        };
+    }, [selectedUser._id, currentUserId]);
+
+    // Auto-scroll to bottom when new messages arrive
+    useEffect(() => {
+        if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+        }
+    }, [allMessages]);
+
     if (isLoading) {
         return (
             <div className="flex-1 flex items-center justify-center bg-background">
@@ -47,8 +102,8 @@ export const MessagesList = ({ selectedUser, currentUserId }: MessagesListProps)
     }
 
     return (
-        <div className="flex-1 overflow-y-auto p-4 bg-background">
-            {messages.length === 0 ? (
+        <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 bg-background">
+            {allMessages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center px-4">
                     <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                         <MessageCircle className="w-10 h-10 text-primary" />
@@ -62,7 +117,7 @@ export const MessagesList = ({ selectedUser, currentUserId }: MessagesListProps)
                 </div>
             ) : (
                 <div className="space-y-4">
-                    {messages.map((message) => (
+                    {allMessages.map((message) => (
                         <div
                             key={message._id}
                             className={`flex ${message.senderId === currentUserId
@@ -98,6 +153,7 @@ export const MessagesList = ({ selectedUser, currentUserId }: MessagesListProps)
                             </div>
                         </div>
                     ))}
+                    <div ref={messagesEndRef} />
                 </div>
             )}
         </div>
