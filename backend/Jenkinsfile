@@ -113,7 +113,7 @@ pipeline {
                                     mkdir -p coverage
 
                                     $SCANNER_HOME/bin/sonar-scanner \
-                                      -Dsonar.projectKey=FitVerse-API \
+                                      -Dsonar.projectKey=fit-verse-api \
                                       -Dsonar.projectName="FitVerse Backend API" \
                                       -Dsonar.projectVersion=${RELEASE} \
                                       -Dsonar.sources=. \
