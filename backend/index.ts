@@ -38,7 +38,7 @@ import workoutRoutes from './routes/workoutRoutes';
 import workoutTemplateRoutes from './routes/workoutTemplateRoutes';
 import workoutTemplateFolderRoutes from './routes/workoutTemplateFolderRoutes';
 
-const PORT: number = parseInt(process.env.PORT || '5003', 10);
+const PORT: number = parseInt(process.env.PORT || '5004', 10);
 
 // Middlewares
 app.use(

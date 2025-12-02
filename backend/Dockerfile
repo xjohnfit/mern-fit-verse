@@ -51,10 +51,10 @@ USER nodejs
 
 # Set environment variables
 ENV NODE_ENV=production
-ENV PORT=5003
+ENV PORT=5004
 
 # Expose backend API port
-EXPOSE 5003
+EXPOSE 5004
 
 # Add health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
