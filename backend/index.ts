@@ -73,6 +73,11 @@ app.use((err: any, req: any, res: any, next: any) => {
 app.use(cookieParser());
 
 // Routes
+
+app.get('/', (req, res) => {
+    res.send('API is running...');
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
