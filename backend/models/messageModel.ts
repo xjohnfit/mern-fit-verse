@@ -4,7 +4,7 @@ interface IMessage {
     senderId: mongoose.Schema.Types.ObjectId;
     receiverId: mongoose.Schema.Types.ObjectId;
     text: string;
-    image?: string;
+    image: string;
     createdAt?: Date;
     updatedAt?: Date;
 }

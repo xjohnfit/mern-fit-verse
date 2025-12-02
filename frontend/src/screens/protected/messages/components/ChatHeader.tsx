@@ -18,7 +18,7 @@ interface ChatHeaderProps {
 
 export const ChatHeader = ({ selectedUser, onBackClick, onUserClick }: ChatHeaderProps) => {
     return (
-        <div className="p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-4 bg-card border-b border-border">
             <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                     {/* Back button for mobile */}
@@ -26,7 +26,7 @@ export const ChatHeader = ({ selectedUser, onBackClick, onUserClick }: ChatHeade
                         variant="ghost"
                         size="icon"
                         onClick={onBackClick}
-                        className="md:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                        className="md:hidden text-muted-foreground hover:text-foreground"
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </Button>
@@ -49,10 +49,10 @@ export const ChatHeader = ({ selectedUser, onBackClick, onUserClick }: ChatHeade
                             )}
                         </Avatar>
                         <div>
-                            <p className="font-semibold text-gray-900 dark:text-white">
+                            <p className="font-semibold text-foreground">
                                 {selectedUser.name}
                             </p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                            <p className="text-sm text-muted-foreground">
                                 @{selectedUser.username}
                             </p>
                         </div>
@@ -61,7 +61,7 @@ export const ChatHeader = ({ selectedUser, onBackClick, onUserClick }: ChatHeade
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    className="text-muted-foreground hover:text-foreground"
                 >
                     <MoreVertical className="w-5 h-5" />
                 </Button>

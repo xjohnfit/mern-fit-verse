@@ -26,7 +26,7 @@ export const MessagesList = ({ selectedUser, currentUserId }: MessagesListProps)
 
     if (isLoading) {
         return (
-            <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+            <div className="flex-1 flex items-center justify-center bg-background">
                 <div className="text-center">
                     <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-gray-500 dark:text-gray-400">Loading messages...</p>
@@ -37,26 +37,26 @@ export const MessagesList = ({ selectedUser, currentUserId }: MessagesListProps)
 
     if (error) {
         return (
-            <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+            <div className="flex-1 flex items-center justify-center bg-background">
                 <div className="text-center">
-                    <p className="text-red-500 dark:text-red-400">Failed to load messages</p>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">Please try again later</p>
+                    <p className="text-destructive">Failed to load messages</p>
+                    <p className="text-muted-foreground text-sm mt-2">Please try again later</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-900">
+        <div className="flex-1 overflow-y-auto p-4 bg-background">
             {messages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center px-4">
-                    <div className="w-20 h-20 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mb-4">
+                    <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                         <MessageCircle className="w-10 h-10 text-primary" />
                     </div>
-                    <p className="text-gray-900 dark:text-white font-semibold text-lg mb-2">
+                    <p className="text-foreground font-semibold text-lg mb-2">
                         Start a conversation
                     </p>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm max-w-sm">
+                    <p className="text-muted-foreground text-sm max-w-sm">
                         Send a message to {selectedUser.name} to start chatting
                     </p>
                 </div>
@@ -72,8 +72,8 @@ export const MessagesList = ({ selectedUser, currentUserId }: MessagesListProps)
                         >
                             <div
                                 className={`max-w-[90%] sm:max-w-[75%] rounded-2xl px-4 py-2.5 shadow-sm ${message.senderId === currentUserId
-                                    ? 'bg-gray-100 text-black'
-                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600'
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'bg-card text-card-foreground border border-border'
                                     }`}
                             >
                                 {message.image && (
@@ -86,8 +86,8 @@ export const MessagesList = ({ selectedUser, currentUserId }: MessagesListProps)
                                 <p className="text-sm break-word leading-relaxed">{message.text}</p>
                                 {message.createdAt && (
                                     <p className={`text-[10px] mt-1 ${message.senderId === currentUserId
-                                        ? 'text-black'
-                                        : 'text-gray-600 dark:text-gray-400'
+                                        ? 'text-primary-foreground/80'
+                                        : 'text-muted-foreground'
                                         }`}>
                                         {new Date(message.createdAt).toLocaleTimeString([], {
                                             hour: '2-digit',

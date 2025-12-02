@@ -28,22 +28,22 @@ export const UsersSidebar = ({
     onUserClick
 }: UsersSidebarProps) => {
     return (
-        <div className={`w-full md:w-80 bg-white dark:bg-gray-800 md:border-r border-gray-200 dark:border-gray-700 flex flex-col ${selectedUser ? 'hidden md:flex' : 'flex'}`}>
+        <div className={`w-full md:w-80 bg-card md:border-r border-border flex flex-col ${selectedUser ? 'hidden md:flex' : 'flex'}`}>
             {/* Header */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            <div className="p-4 border-b border-border">
+                <h1 className="text-xl font-bold text-foreground mb-4">
                     Messages
                 </h1>
 
                 {/* Search */}
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                         type="text"
                         placeholder="Search messages..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10 bg-gray-100 dark:bg-gray-700 border-0"
+                        className="pl-10 bg-muted/50 border-0"
                     />
                 </div>
             </div>
@@ -54,10 +54,10 @@ export const UsersSidebar = ({
                     <div className="p-4 space-y-3">
                         {[1, 2, 3, 4, 5].map((i) => (
                             <div key={i} className="animate-pulse flex items-center space-x-3">
-                                <div className="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+                                <div className="w-12 h-12 bg-muted rounded-full"></div>
                                 <div className="flex-1">
-                                    <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4 mb-2"></div>
-                                    <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
+                                    <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                                    <div className="h-3 bg-muted rounded w-1/2"></div>
                                 </div>
                             </div>
                         ))}
@@ -68,8 +68,8 @@ export const UsersSidebar = ({
                             <div
                                 key={user._id}
                                 onClick={() => onUserClick(user)}
-                                className={`p-4 border-b border-gray-100 dark:border-gray-700 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 ${selectedUser?._id === user._id
-                                    ? 'bg-primary/10 dark:bg-primary/20'
+                                className={`p-4 border-b border-border cursor-pointer transition-colors hover:bg-muted/50 ${selectedUser?._id === user._id
+                                    ? 'bg-primary/10'
                                     : ''
                                     }`}
                             >
@@ -88,10 +88,10 @@ export const UsersSidebar = ({
                                         )}
                                     </Avatar>
                                     <div className="flex-1 min-w-0">
-                                        <p className="font-semibold text-gray-900 dark:text-white truncate">
+                                        <p className="font-semibold text-foreground truncate">
                                             {user.name}
                                         </p>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                                        <p className="text-sm text-muted-foreground truncate">
                                             @{user.username}
                                         </p>
                                     </div>
@@ -101,11 +101,11 @@ export const UsersSidebar = ({
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full p-6 text-center">
-                        <MessageCircle className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" />
-                        <p className="text-gray-500 dark:text-gray-400 font-medium">
+                        <MessageCircle className="w-16 h-16 text-muted-foreground/50 mb-4" />
+                        <p className="text-muted-foreground font-medium">
                             {searchQuery ? 'No users found' : 'No conversations yet'}
                         </p>
-                        <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
+                        <p className="text-sm text-muted-foreground/70 mt-2">
                             {searchQuery
                                 ? 'Try searching for a different user'
                                 : 'Start following people to message them'}

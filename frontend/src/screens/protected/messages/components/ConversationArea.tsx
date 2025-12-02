@@ -27,19 +27,32 @@ export const ConversationArea = ({
 }: ConversationAreaProps) => {
     const navigate = useNavigate();
     const [messageText, setMessageText] = useState('');
+    const [image, setImage] = useState<File | null>(null);
     const [sendMessage, { isLoading }] = useSendMessageMutation();
 
     const handleSendMessage = async () => {
-        if (!messageText.trim() || !currentUserId || !selectedUser) return;
+        if ((!messageText.trim() && !image) || !currentUserId || !selectedUser) return;
 
         try {
+            let imageBase64 = '';
+            if (image) {
+                imageBase64 = await new Promise<string>((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result as string);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(image);
+                });
+            }
+
             await sendMessage({
                 senderId: currentUserId,
                 receiverId: selectedUser._id,
                 text: messageText.trim(),
+                ...(imageBase64 && { image: imageBase64 }),
             }).unwrap();
 
             setMessageText('');
+            setImage(null);
         } catch (error: any) {
             console.error('Failed to send message:', error);
             toast.error(error?.data?.message || 'Failed to send message');
@@ -68,6 +81,8 @@ export const ConversationArea = ({
                     <MessageInput
                         messageText={messageText}
                         setMessageText={setMessageText}
+                        image={image}
+                        setImage={setImage}
                         onSendMessage={handleSendMessage}
                         recipientName={selectedUser.name}
                         isLoading={isLoading}

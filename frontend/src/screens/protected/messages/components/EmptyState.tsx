@@ -2,15 +2,15 @@ import { MessageCircle } from 'lucide-react';
 
 export const EmptyState = () => {
     return (
-        <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+        <div className="flex-1 flex items-center justify-center bg-background px-4">
             <div className="text-center">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <MessageCircle className="w-10 h-10 sm:w-12 sm:h-12 text-primary" />
                 </div>
-                <p className="text-gray-900 dark:text-white font-semibold text-lg sm:text-xl mb-2">
+                <p className="text-foreground font-semibold text-lg sm:text-xl mb-2">
                     Your Messages
                 </p>
-                <p className="text-gray-500 dark:text-gray-400 text-sm max-w-sm mx-auto">
+                <p className="text-muted-foreground text-sm max-w-sm mx-auto">
                     Select a conversation from the left to start messaging
                 </p>
             </div>
