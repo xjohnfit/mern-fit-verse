@@ -21,8 +21,8 @@ services:
   # MERN FitVerse Application
   fitverse-app:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: backend/Dockerfile
       target: production
     container_name: fitverse-app
     restart: unless-stopped
@@ -39,8 +39,9 @@ services:
       - "5003:5003"
     volumes:
       # Mount source code for development (optional)
-      - .:/app
-      - /app/node_modules
+      - ./:/app/backend
+      - /app/backend/node_modules
+      - ../frontend:/app/frontend
       - /app/frontend/node_modules
     networks:
       - fitverse-network

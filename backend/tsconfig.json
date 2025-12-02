@@ -24,11 +24,11 @@
         "declaration": false,
         "incremental": false
     },
-    "include": ["backend/**/*.ts", "backend/**/**/*.ts"],
+    "include": ["**/*.ts", "**/**/*.ts"],
     "exclude": [
         "node_modules",
         "dist",
-        "frontend",
+        "../frontend",
         "kubernetes",
         "**/*.test.ts",
         "**/__tests__/**",

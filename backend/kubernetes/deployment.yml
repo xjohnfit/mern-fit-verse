@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: mern-fit-verse
+    name: fit-verse-api
 spec:
     replicas: 1
     selector:
         matchLabels:
-            app: mern-fit-verse
+            app: fit-verse-api
     template:
         metadata:
             labels:
-                app: mern-fit-verse
+                app: fit-verse-api
         spec:
             containers:
-                - name: mern-fit-verse
-                  image: xjohnfit/mern-fit-verse:1.0.0-109
+                - name: fit-verse-api
+                  image: xjohnfit/fit-verse-api:1.0.0-beta
                   resources:
                       limits:
                           cpu: '1'
