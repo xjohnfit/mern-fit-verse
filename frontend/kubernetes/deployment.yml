@@ -26,7 +26,7 @@ spec:
                       - containerPort: 5005
                   envFrom:
                       - secretRef:
-                            name: mern-fit-verse-env
+                            name: fit-verse-frontend-secrets
                   livenessProbe:
                       httpGet:
                           path: /api/health

@@ -4,3 +4,5 @@
 6. maybe add support to pt br language
 
 7. move all files from backend into backend folder and fix .envs, dockerfile, jenkins, readme etc
+
+8. re-do api/health page for a better UI
