@@ -58,7 +58,7 @@ EXPOSE 5004
 
 # Add health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:5003/api/health || exit 1
+    CMD curl -f http://localhost:5004/api/health || exit 1
 
 # Start the backend API
 CMD ["node", "dist/index.js"]

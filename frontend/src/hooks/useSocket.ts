@@ -20,7 +20,7 @@ export const useSocket = () => {
         if (userInfo && !socket) {
             // Initialize socket connection
             socket = io(
-                import.meta.env.VITE_BACKEND_URL || 'http://localhost:5003',
+                import.meta.env.VITE_BACKEND_URL || 'http://localhost:5004',
                 {
                     withCredentials: true,
                 }

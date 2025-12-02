@@ -30,13 +30,13 @@ services:
       - mongodb
     environment:
       NODE_ENV: development
-      PORT: 5003
+      PORT: 5004
       MONGODB_URI: mongodb://admin:fitverse_password_2024@mongodb:27017/fitverse?authSource=admin
       JWT_SECRET: your-super-secret-jwt-key-development
       JWT_EXPIRES_IN: 7d
       FRONTEND_URL: http://localhost:5173
     ports:
-      - "5003:5003"
+      - "5004:5004"
     volumes:
       # Mount source code for development (optional)
       - ./:/app/backend

@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 // Backend proxy configuration
 const BASE_URL =
     import.meta.env.MODE === 'development'
-        ? 'http://localhost:5003/api/fatsecret'
+        ? 'http://localhost:5004/api/fatsecret'
         : '/api/fatsecret';
 
 // Types for API responses

@@ -99,7 +99,7 @@ FRONTEND_URL=http://localhost:5173
 
 **Frontend** (`.env.development` or `.env.production`):
 ```env
-VITE_BACKEND_URL=http://localhost:5003
+VITE_BACKEND_URL=http://localhost:5004
 ```
 
 ## Features Implemented

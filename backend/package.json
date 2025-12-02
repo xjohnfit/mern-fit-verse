@@ -14,7 +14,7 @@
         "lint:fix": "eslint . --ext .ts --fix",
         "clean": "rimraf dist coverage",
         "prestart:prod": "npm run build",
-        "health-check": "curl -f http://localhost:5003/api/health || exit 1"
+        "health-check": "curl -f http://localhost:5004/api/health || exit 1"
     },
     "author": "",
     "license": "ISC",
