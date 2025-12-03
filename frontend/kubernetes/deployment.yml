@@ -27,21 +27,5 @@ spec:
                   envFrom:
                       - secretRef:
                             name: fit-verse-frontend-secrets
-                  livenessProbe:
-                      httpGet:
-                          path: /api/health
-                          port: 5005
-                      initialDelaySeconds: 30
-                      periodSeconds: 30
-                      timeoutSeconds: 10
-                      failureThreshold: 3
-                  readinessProbe:
-                      httpGet:
-                          path: /api/health
-                          port: 5005
-                      initialDelaySeconds: 5
-                      periodSeconds: 10
-                      timeoutSeconds: 5
-                      failureThreshold: 3
             imagePullSecrets:
                 - name: regcred
