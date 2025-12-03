@@ -9,6 +9,11 @@ import {
 
 let socket: Socket | null = null;
 
+const SOCKET_URL =
+    import.meta.env.VITE_MODE === 'development'
+        ? 'http://localhost:5004'
+        : 'https://api.fitverse.codewithxjohn.com'; 
+
 export const useSocket = () => {
     const dispatch = useDispatch();
     const { userInfo } = useSelector((state: any) => state.auth);
@@ -19,11 +24,8 @@ export const useSocket = () => {
     useEffect(() => {
         if (userInfo && !socket) {
             // Initialize socket connection
-            socket = io(
-                import.meta.env.VITE_BACKEND_URL || 'http://localhost:5004',
-                {
-                    withCredentials: true,
-                }
+            socket = io(SOCKET_URL,
+                { withCredentials: true }
             );
 
             socket.on('connect', () => {
