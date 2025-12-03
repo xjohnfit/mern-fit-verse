@@ -17,7 +17,7 @@ export interface SendMessageRequest {
     image?: string;
 }
 
-const MESSAGE_URL = '/api/messages';
+const MESSAGE_URL = '/messages';
 
 export const messageApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({

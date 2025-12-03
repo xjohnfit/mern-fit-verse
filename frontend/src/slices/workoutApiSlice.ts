@@ -3,7 +3,7 @@ import { apiSlice } from '@/slices/apiSlice';
 const BASE_URL =
     import.meta.env.VITE_MODE === 'development'
         ? 'http://localhost:5004/api'
-        : 'https://api.fitverse.codewithxjohn.com/api/workouts';
+        : 'https://api.fitverse.codewithxjohn.com';
 
 export const workoutApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
