@@ -7,19 +7,10 @@ const BASE_URL =
 
 export const usersApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        getUserProfile: builder.query({
-            query: () => ({
-                url: `${BASE_URL}/users/profile`,
-                method: 'GET',
-                credentials: 'include', // Include cookies in the request
-            }),
-            providesTags: ['User'],
-        }),
         login: builder.mutation({
             query: (data) => ({
                 url: `${BASE_URL}/auth/login`,
                 method: 'POST',
-                credentials: 'include', // Include cookies in the request
                 body: data,
             }),
         }),
@@ -27,7 +18,6 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             query: (data) => ({
                 url: `${BASE_URL}/auth/register`,
                 method: 'POST',
-                credentials: 'include', // Include cookies in the request
                 body: data,
             }),
         }),
@@ -35,14 +25,19 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             query: () => ({
                 url: `${BASE_URL}/auth/logout`,
                 method: 'POST',
-                credentials: 'include', // Include cookies in the request
             }),
+        }),
+        getUserProfile: builder.query({
+            query: () => ({
+                url: `${BASE_URL}/users/profile`,
+                method: 'GET',
+            }),
+            providesTags: ['User'],
         }),
         updateUserProfile: builder.mutation({
             query: (data) => ({
                 url: `${BASE_URL}/users/profile`,
                 method: 'PUT',
-                credentials: 'include',
                 body: data,
             }),
             invalidatesTags: ['User'],
@@ -51,14 +46,12 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             query: (username) => ({
                 url: `${BASE_URL}/users/profile/view/${username}`,
                 method: 'GET',
-                credentials: 'include', // Include cookies in the request
             }),
         }),
         followUnfollowUser: builder.mutation({
             query: (username) => ({
                 url: `${BASE_URL}/users/profile/follow/${username}`,
                 method: 'POST',
-                credentials: 'include', // Include cookies in the request
             }),
             invalidatesTags: ['User'],
         }),
@@ -66,7 +59,6 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             query: () => ({
                 url: `${BASE_URL}/users/profile/view/suggested`,
                 method: 'GET',
-                credentials: 'include', // Include cookies in the request
             }),
             providesTags: ['User'],
         }),
@@ -74,7 +66,6 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             query: (data) => ({
                 url: `${BASE_URL}/users/nutrition-goals`,
                 method: 'PUT',
-                credentials: 'include',
                 body: data,
             }),
             invalidatesTags: ['User'],
@@ -84,7 +75,6 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             query: () => ({
                 url: `${BASE_URL}/users/admin/users`,
                 method: 'GET',
-                credentials: 'include',
             }),
             providesTags: ['User'],
         }),
@@ -92,7 +82,6 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             query: ({ userId, admin }) => ({
                 url: `${BASE_URL}/users/admin/users/${userId}/role`,
                 method: 'PUT',
-                credentials: 'include',
                 body: { admin },
             }),
             invalidatesTags: ['User'],

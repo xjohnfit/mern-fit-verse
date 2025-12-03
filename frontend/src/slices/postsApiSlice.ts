@@ -8,7 +8,6 @@ export const postsApiSlice = apiSlice.injectEndpoints({
             query: () => ({
                 url: `${BASE_URL}/feed`,
                 method: 'GET',
-                credentials: 'include',
             }),
             providesTags: ['Posts'],
         }),
@@ -18,7 +17,6 @@ export const postsApiSlice = apiSlice.injectEndpoints({
             query: () => ({
                 url: `${BASE_URL}/feed/followed`,
                 method: 'GET',
-                credentials: 'include',
             }),
             providesTags: ['Posts'],
         }),
@@ -28,7 +26,6 @@ export const postsApiSlice = apiSlice.injectEndpoints({
             query: (username) => ({
                 url: `${BASE_URL}/user/${username}`,
                 method: 'GET',
-                credentials: 'include',
             }),
             providesTags: ['Posts'],
         }),
@@ -38,7 +35,6 @@ export const postsApiSlice = apiSlice.injectEndpoints({
             query: (post) => ({
                 url: `${BASE_URL}/create`,
                 method: 'POST',
-                credentials: 'include',
                 body: post,
             }),
             invalidatesTags: ['Posts'],
@@ -49,7 +45,6 @@ export const postsApiSlice = apiSlice.injectEndpoints({
             query: (postId) => ({
                 url: `${BASE_URL}/delete/${postId}`,
                 method: 'DELETE',
-                credentials: 'include',
             }),
             invalidatesTags: ['Posts'],
         }),
@@ -59,7 +54,6 @@ export const postsApiSlice = apiSlice.injectEndpoints({
             query: (postId) => ({
                 url: `${BASE_URL}/like/${postId}`,
                 method: 'POST',
-                credentials: 'include',
             }),
             invalidatesTags: ['Posts'],
         }),
@@ -69,7 +63,6 @@ export const postsApiSlice = apiSlice.injectEndpoints({
             query: ({ postId, comment }) => ({
                 url: `${BASE_URL}/comment/${postId}`,
                 method: 'POST',
-                credentials: 'include',
                 body: { comment },
             }),
             invalidatesTags: ['Posts'],
@@ -80,7 +73,6 @@ export const postsApiSlice = apiSlice.injectEndpoints({
             query: ({ postId, commentId }) => ({
                 url: `${BASE_URL}/comment/${postId}/${commentId}`,
                 method: 'DELETE',
-                credentials: 'include',
             }),
             invalidatesTags: ['Posts'],
         }),

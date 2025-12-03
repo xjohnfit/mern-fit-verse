@@ -8,7 +8,6 @@ export const workoutApiSlice = apiSlice.injectEndpoints({
             query: (workoutData) => ({
                 url: `${BASE_URL}`,
                 method: 'POST',
-                credentials: 'include',
                 body: workoutData,
             }),
             invalidatesTags: ['Workout'],
@@ -17,7 +16,6 @@ export const workoutApiSlice = apiSlice.injectEndpoints({
             query: () => ({
                 url: `${BASE_URL}`,
                 method: 'GET',
-                credentials: 'include',
             }),
             providesTags: ['Workout'],
         }),
@@ -25,7 +23,6 @@ export const workoutApiSlice = apiSlice.injectEndpoints({
             query: (id) => ({
                 url: `${BASE_URL}/${id}`,
                 method: 'GET',
-                credentials: 'include',
             }),
             providesTags: (_result, _error, id) => [{ type: 'Workout', id }],
         }),
@@ -51,7 +48,6 @@ export const workoutApiSlice = apiSlice.injectEndpoints({
             query: () => ({
                 url: `${BASE_URL}/stats`,
                 method: 'GET',
-                credentials: 'include',
             }),
             providesTags: ['Workout'],
         }),

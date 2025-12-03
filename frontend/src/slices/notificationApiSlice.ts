@@ -23,7 +23,6 @@ export const notificationApiSlice = apiSlice.injectEndpoints({
             query: () => ({
                 url: `${NOTIFICATIONS_URL}`,
                 method: 'GET',
-                credentials: 'include',
             }),
             providesTags: ['Notification'],
         }),
@@ -33,7 +32,6 @@ export const notificationApiSlice = apiSlice.injectEndpoints({
             query: () => ({
                 url: `${NOTIFICATIONS_URL}`,
                 method: 'DELETE',
-                credentials: 'include',
             }),
             invalidatesTags: ['Notification'],
         }),
