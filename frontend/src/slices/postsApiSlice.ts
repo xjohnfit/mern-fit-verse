@@ -6,7 +6,7 @@ export const postsApiSlice = apiSlice.injectEndpoints({
         //Get feed posts -  returns all posts in the collection
         getPosts: builder.query({
             query: () => ({
-                url: `${BASE_URL}/posts/feed`,
+                url: `${BASE_URL}/feed`,
                 method: 'GET',
                 credentials: 'include',
             }),
@@ -16,7 +16,7 @@ export const postsApiSlice = apiSlice.injectEndpoints({
         //Get followed users posts
         getFollowedUsersPosts: builder.query({
             query: () => ({
-                url: `${BASE_URL}/posts/feed/followed`,
+                url: `${BASE_URL}/feed/followed`,
                 method: 'GET',
                 credentials: 'include',
             }),
@@ -26,7 +26,7 @@ export const postsApiSlice = apiSlice.injectEndpoints({
         // Get specific user posts
         getUserPosts: builder.query({
             query: (username) => ({
-                url: `${BASE_URL}/posts/user/${username}`,
+                url: `${BASE_URL}/user/${username}`,
                 method: 'GET',
                 credentials: 'include',
             }),
@@ -36,7 +36,7 @@ export const postsApiSlice = apiSlice.injectEndpoints({
         // Create Post
         createPost: builder.mutation({
             query: (post) => ({
-                url: `${BASE_URL}/posts/create`,
+                url: `${BASE_URL}/create`,
                 method: 'POST',
                 credentials: 'include',
                 body: post,
@@ -47,7 +47,7 @@ export const postsApiSlice = apiSlice.injectEndpoints({
         // Delete Post
         deletePost: builder.mutation({
             query: (postId) => ({
-                url: `${BASE_URL}/posts/delete/${postId}`,
+                url: `${BASE_URL}/delete/${postId}`,
                 method: 'DELETE',
                 credentials: 'include',
             }),
@@ -57,7 +57,7 @@ export const postsApiSlice = apiSlice.injectEndpoints({
         // Like/Unlike Post
         likeUnlikePost: builder.mutation({
             query: (postId) => ({
-                url: `${BASE_URL}/posts/like/${postId}`,
+                url: `${BASE_URL}/like/${postId}`,
                 method: 'POST',
                 credentials: 'include',
             }),
@@ -67,7 +67,7 @@ export const postsApiSlice = apiSlice.injectEndpoints({
         // Add Comment
         addComment: builder.mutation({
             query: ({ postId, comment }) => ({
-                url: `${BASE_URL}/posts/comment/${postId}`,
+                url: `${BASE_URL}/comment/${postId}`,
                 method: 'POST',
                 credentials: 'include',
                 body: { comment },
@@ -78,7 +78,7 @@ export const postsApiSlice = apiSlice.injectEndpoints({
         // Delete Comment
         deleteComment: builder.mutation({
             query: ({ postId, commentId }) => ({
-                url: `${BASE_URL}/posts/comment/${postId}/${commentId}`,
+                url: `${BASE_URL}/comment/${postId}/${commentId}`,
                 method: 'DELETE',
                 credentials: 'include',
             }),
