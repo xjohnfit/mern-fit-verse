@@ -1,6 +1,7 @@
 // Dependencies imports
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 
@@ -61,7 +62,6 @@ app.use(
         limit: '50mb',
     })
 );
-
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Error handler for JSON parsing errors
