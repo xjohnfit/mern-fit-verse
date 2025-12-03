@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![MERN FitVerse Logo](frontend/public/fit-verse-logo-no-bg.png)
+<img src="frontend/public/fit-verse-logo-no-bg.png" alt="MERN FitVerse Logo" width="250">
 
 **A Modern Full-Stack Social Fitness Platform with Microservices Architecture**
 
