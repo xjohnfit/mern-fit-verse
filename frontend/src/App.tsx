@@ -6,7 +6,7 @@ import ScrollToTop from "@/components/common/ScrollToTop";
 import { useSocket } from "@/hooks/useSocket";
 
 function App() {
-  // Initialize socket connection
+  // Initialize socket.io connection
   useSocket();
 
   return (
