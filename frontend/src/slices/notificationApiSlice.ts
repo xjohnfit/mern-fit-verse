@@ -1,9 +1,6 @@
 import { apiSlice } from '@/slices/apiSlice';
 
-const BASE_URL =
-    import.meta.env.VITE_MODE === 'development'
-        ? 'http://localhost:5004/api'
-        : 'https://api.fitverse.codewithxjohn.com/api';
+const NOTIFICATIONS_URL = '/notifications';
 
 export interface Notification {
     _id: string;
@@ -24,7 +21,7 @@ export const notificationApiSlice = apiSlice.injectEndpoints({
         // Get notifications
         getNotifications: builder.query<Notification[], void>({
             query: () => ({
-                url: `${BASE_URL}/notifications`,
+                url: `${NOTIFICATIONS_URL}`,
                 method: 'GET',
                 credentials: 'include',
             }),
@@ -34,7 +31,7 @@ export const notificationApiSlice = apiSlice.injectEndpoints({
         // Delete notifications
         deleteNotifications: builder.mutation<{ message: string }, void>({
             query: () => ({
-                url: `${BASE_URL}/notifications`,
+                url: `${NOTIFICATIONS_URL}`,
                 method: 'DELETE',
                 credentials: 'include',
             }),
