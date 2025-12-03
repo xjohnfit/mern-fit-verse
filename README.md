@@ -259,8 +259,8 @@ FitVerse uses a modern microservices architecture that separates concerns and en
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                         Load Balancer                        │
-│                    (NGINX / K8s Ingress)                     │
+│                         Load Balancer                       │
+│                    (NGINX / K8s Ingress)                    │
 └─────────────────────┬───────────────────────┬───────────────┘
                       │                       │
          ┌────────────▼────────────┐ ┌───────▼──────────┐
@@ -273,13 +273,13 @@ FitVerse uses a modern microservices architecture that separates concerns and en
                       │                      │
                       │                      │
          ┌────────────▼──────────────────────▼──────────┐
-         │          External Services                    │
-         ├───────────────────────────────────────────────┤
-         │  • MongoDB Atlas (Database)                   │
-         │  • Cloudinary (Image Storage)                 │
-         │  • FatSecret API (Nutrition Data)             │
-         │  • Socket.IO (Real-time Communication)        │
-         └───────────────────────────────────────────────┘
+         │          External Services                   │
+         ├──────────────────────────────────────────────┤
+         │  • MongoDB Atlas (Database)                  │
+         │  • Cloudinary (Image Storage)                │
+         │  • FatSecret API (Nutrition Data)            │
+         │  • Socket.IO (Real-time Communication)       │
+         └──────────────────────────────────────────────┘
 ```
 
 ### Service Separation Benefits
