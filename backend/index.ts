@@ -62,6 +62,15 @@ app.use(
         limit: '50mb',
     })
 );
+
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self' ws://localhost:5173 wss://api.fitverse.codewithxjohn.com;"
+  );
+  next();
+});
+
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Error handler for JSON parsing errors
