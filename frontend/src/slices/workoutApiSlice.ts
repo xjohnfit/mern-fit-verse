@@ -9,7 +9,7 @@ export const workoutApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         createWorkout: builder.mutation({
             query: (workoutData) => ({
-                url: `${BASE_URL}/workouts`,
+                url: `${BASE_URL}`,
                 method: 'POST',
                 credentials: 'include',
                 body: workoutData,
@@ -18,7 +18,7 @@ export const workoutApiSlice = apiSlice.injectEndpoints({
         }),
         getWorkouts: builder.query({
             query: () => ({
-                url: `${BASE_URL}/workouts`,
+                url: `${BASE_URL}`,
                 method: 'GET',
                 credentials: 'include',
             }),
@@ -26,7 +26,7 @@ export const workoutApiSlice = apiSlice.injectEndpoints({
         }),
         getWorkoutById: builder.query({
             query: (id) => ({
-                url: `${BASE_URL}/workouts/${id}`,
+                url: `${BASE_URL}/${id}`,
                 method: 'GET',
                 credentials: 'include',
             }),
@@ -34,7 +34,7 @@ export const workoutApiSlice = apiSlice.injectEndpoints({
         }),
         updateWorkout: builder.mutation({
             query: ({ id, ...workoutData }) => ({
-                url: `${BASE_URL}/workouts/${id}`,
+                url: `${BASE_URL}/${id}`,
                 method: 'PUT',
                 body: workoutData,
             }),
@@ -45,14 +45,14 @@ export const workoutApiSlice = apiSlice.injectEndpoints({
         }),
         deleteWorkout: builder.mutation({
             query: (id) => ({
-                url: `${BASE_URL}/workouts/${id}`,
+                url: `${BASE_URL}/${id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['Workout'],
         }),
         getWorkoutStats: builder.query({
             query: () => ({
-                url: `${BASE_URL}/workouts/stats`,
+                url: `${BASE_URL}/stats`,
                 method: 'GET',
                 credentials: 'include',
             }),
