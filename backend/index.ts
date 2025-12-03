@@ -63,6 +63,7 @@ app.use(
     })
 );
 
+// Update the Content Security Policy (CSP) for a Socket.IO server
 app.use((req, res, next) => {
   res.setHeader(
     'Content-Security-Policy',
