@@ -1,34 +1,40 @@
 import { apiSlice } from '@/slices/apiSlice';
 
-const WORKOUTS_URL = '/api/workouts';
+const BASE_URL =
+    import.meta.env.VITE_MODE === 'development'
+        ? 'http://localhost:5004/api'
+        : 'https://api.fitverse.codewithxjohn.com/api/workouts';
 
 export const workoutApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         createWorkout: builder.mutation({
             query: (workoutData) => ({
-                url: WORKOUTS_URL,
+                url: `${BASE_URL}/workouts`,
                 method: 'POST',
+                credentials: 'include',
                 body: workoutData,
             }),
             invalidatesTags: ['Workout'],
         }),
         getWorkouts: builder.query({
             query: () => ({
-                url: WORKOUTS_URL,
+                url: `${BASE_URL}/workouts`,
                 method: 'GET',
+                credentials: 'include',
             }),
             providesTags: ['Workout'],
         }),
         getWorkoutById: builder.query({
             query: (id) => ({
-                url: `${WORKOUTS_URL}/${id}`,
+                url: `${BASE_URL}/workouts/${id}`,
                 method: 'GET',
+                credentials: 'include',
             }),
             providesTags: (_result, _error, id) => [{ type: 'Workout', id }],
         }),
         updateWorkout: builder.mutation({
             query: ({ id, ...workoutData }) => ({
-                url: `${WORKOUTS_URL}/${id}`,
+                url: `${BASE_URL}/workouts/${id}`,
                 method: 'PUT',
                 body: workoutData,
             }),
@@ -39,15 +45,16 @@ export const workoutApiSlice = apiSlice.injectEndpoints({
         }),
         deleteWorkout: builder.mutation({
             query: (id) => ({
-                url: `${WORKOUTS_URL}/${id}`,
+                url: `${BASE_URL}/workouts/${id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['Workout'],
         }),
         getWorkoutStats: builder.query({
             query: () => ({
-                url: `${WORKOUTS_URL}/stats`,
+                url: `${BASE_URL}/workouts/stats`,
                 method: 'GET',
+                credentials: 'include',
             }),
             providesTags: ['Workout'],
         }),

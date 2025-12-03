@@ -4,22 +4,11 @@ import path from 'path';
 import tailwindcss from '@tailwindcss/vite';
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(() => ({
     plugins: [react(), tailwindcss()],
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),
-        },
-    },
-    server: {
-        proxy: {
-            '/api': {
-                target:
-                    mode === 'production'
-                        ? 'https://api.fitverse.codewithxjohn.com'
-                        : 'http://localhost:5004',
-                changeOrigin: true,
-            },
         },
     },
 }));
