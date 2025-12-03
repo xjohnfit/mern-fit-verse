@@ -5,16 +5,16 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 
-// Socket.io, app, and server imports
-import { app, server } from './config/socket.io';
-
-// Load environment variables FIRST before any config imports
+// Load environment variables FIRST before ANY imports that use them
 dotenv.config({
     path:
         process.env.NODE_ENV === 'production'
             ? '.env.production'
             : '.env.development',
 });
+
+// Socket.io, app, and server imports (must come after dotenv.config)
+import { app, server } from './config/socket.io';
 
 // Config imports
 import './config/cloudinary';
@@ -40,10 +40,16 @@ import workoutTemplateFolderRoutes from './routes/workoutTemplateFolderRoutes';
 
 const PORT: number = parseInt(process.env.PORT || '5004', 10);
 
+// Define allowed origins for CORS (used by both Express and Socket.IO)
+const allowedOrigins = [
+    process.env.FRONTEND_URL || 'http://localhost:5173',
+    'https://fitverse.codewithxjohn.com',
+].filter(Boolean);
+
 // Middlewares
 app.use(
     cors({
-        origin: [process.env.FRONTEND_URL || 'http://localhost:5173'],
+        origin: allowedOrigins,
         credentials: true,
         exposedHeaders: ['Set-Cookie'],
         maxAge: 86400, // 24 hours

@@ -6,9 +6,13 @@ const app: Application = express();
 
 const server = http.createServer(app);
 
+// Socket.IO CORS will be configured after origins are defined in index.ts
 const io = new Server(server, {
     cors: {
-        origin: [process.env.FRONTEND_URL || 'http://localhost:5173'],
+        origin: [
+            process.env.FRONTEND_URL || 'http://localhost:5173',
+            'https://fitverse.codewithxjohn.com',
+        ].filter(Boolean),
         credentials: true,
     },
 });
