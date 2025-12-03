@@ -38,6 +38,9 @@ import workoutRoutes from './routes/workoutRoutes';
 import workoutTemplateRoutes from './routes/workoutTemplateRoutes';
 import workoutTemplateFolderRoutes from './routes/workoutTemplateFolderRoutes';
 
+// API Landing Screen
+import apiLandingScreen from './apiLandingScreen';
+
 const PORT: number = parseInt(process.env.PORT || '5004', 10);
 
 // Define allowed origins for CORS (used by both Express and Socket.IO)
@@ -80,9 +83,7 @@ app.use(cookieParser());
 
 // Routes
 
-app.get('/', (req, res) => {
-    res.send('API is running...');
-});
+app.get('/', apiLandingScreen);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
