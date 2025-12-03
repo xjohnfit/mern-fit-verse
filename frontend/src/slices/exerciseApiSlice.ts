@@ -1,6 +1,6 @@
 import { apiSlice } from '@/slices/apiSlice';
 
-const BASE_URL = '/api/exercises';
+const EXERCISES_URL = '/exercises';
 
 interface Exercise {
     id: string;
@@ -41,14 +41,14 @@ export const exerciseApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         // Get all exercises
         getExercises: builder.query<Exercise[], void>({
-            query: () => `${BASE_URL}`,
+            query: () => `${EXERCISES_URL}`,
             transformResponse: (response: ExerciseResponse[]) =>
                 response.map(transformExercise),
         }),
 
         // Get exercise by ID
         getExerciseById: builder.query<Exercise, string>({
-            query: (id) => `${BASE_URL}/${id}`,
+            query: (id) => `${EXERCISES_URL}/${id}`,
             transformResponse: (response: ExerciseResponse) =>
                 transformExercise(response),
         }),
@@ -56,7 +56,7 @@ export const exerciseApiSlice = apiSlice.injectEndpoints({
         // Create a new exercise
         createExercise: builder.mutation<Exercise, Partial<Exercise>>({
             query: (exercise) => ({
-                url: `${BASE_URL}`,
+                url: `${EXERCISES_URL}`,
                 method: 'POST',
                 body: exercise,
             }),
@@ -68,7 +68,7 @@ export const exerciseApiSlice = apiSlice.injectEndpoints({
             { id: string; data: Partial<Exercise> }
         >({
             query: ({ id, data }) => ({
-                url: `${BASE_URL}/${id}`,
+                url: `${EXERCISES_URL}/${id}`,
                 method: 'PUT',
                 body: data,
             }),
@@ -77,7 +77,7 @@ export const exerciseApiSlice = apiSlice.injectEndpoints({
         // Delete an exercise
         deleteExercise: builder.mutation<{ message: string }, string>({
             query: (id) => ({
-                url: `${BASE_URL}/${id}`,
+                url: `${EXERCISES_URL}/${id}`,
                 method: 'DELETE',
             }),
         }),
@@ -85,7 +85,7 @@ export const exerciseApiSlice = apiSlice.injectEndpoints({
         // Get exercises grouped by category
         getExercisesByCategory: builder.query<Record<string, Exercise[]>, void>(
             {
-                query: () => `${BASE_URL}/by-category`,
+                query: () => `${EXERCISES_URL}/by-category`,
                 transformResponse: (
                     response: Record<string, ExerciseResponse[]>
                 ) => {
