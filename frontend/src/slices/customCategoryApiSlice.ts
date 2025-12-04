@@ -1,9 +1,6 @@
 import { apiSlice } from '@/slices/apiSlice';
 
-const BASE_URL =
-    import.meta.env.VITE_MODE === 'development'
-        ? 'http://localhost:5004/api'
-        : 'https://api.fitverse.codewithxjohn.com/api';
+const BASE_URL = '/custom-categories';
 
 export interface CustomCategory {
     _id: string;
@@ -41,7 +38,7 @@ export const customCategoryApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getCustomCategories: builder.query<GetCustomCategoriesResponse, void>({
             query: () => ({
-                url: `${BASE_URL}/custom-categories`,
+                url: BASE_URL,
                 method: 'GET',
                 credentials: 'include',
             }),
@@ -52,7 +49,7 @@ export const customCategoryApiSlice = apiSlice.injectEndpoints({
             AddCustomCategoryRequest
         >({
             query: (data) => ({
-                url: `${BASE_URL}/custom-categories/add`,
+                url: `${BASE_URL}/add`,
                 method: 'POST',
                 credentials: 'include',
                 body: data,
@@ -64,7 +61,7 @@ export const customCategoryApiSlice = apiSlice.injectEndpoints({
             string
         >({
             query: (categoryId) => ({
-                url: `${BASE_URL}/custom-categories/delete/${categoryId}`,
+                url: `${BASE_URL}/delete/${categoryId}`,
                 method: 'DELETE',
                 credentials: 'include',
             }),

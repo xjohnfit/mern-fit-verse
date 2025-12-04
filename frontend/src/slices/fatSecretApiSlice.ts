@@ -1,10 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 // Backend proxy configuration
-const BASE_URL =
-    import.meta.env.VITE_MODE === 'development'
-        ? 'http://localhost:5004/api/fatsecret'
-        : 'https://api.fitverse.codewithxjohn.com/api/fatsecret';
+const BASE_URL = '/fatsecret';
 
 // Types for API responses
 export interface FoodSuggestion {

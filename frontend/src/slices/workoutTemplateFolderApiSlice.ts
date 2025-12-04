@@ -1,9 +1,6 @@
 import { apiSlice } from '@/slices/apiSlice';
 
-const BASE_URL =
-    import.meta.env.VITE_MODE === 'development'
-        ? 'http://localhost:5004/api'
-        : 'https://api.fitverse.codewithxjohn.com/api';
+const BASE_URL = '/workout-template-folders';
 
 export interface WorkoutTemplateFolder {
     _id: string;
@@ -63,9 +60,8 @@ export const workoutTemplateFolderApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getTemplateFolders: builder.query<GetTemplateFoldersResponse, void>({
             query: () => ({
-                url: `${BASE_URL}/workout-template-folders`,
+                url: BASE_URL,
                 method: 'GET',
-                credentials: 'include',
             }),
             providesTags: ['WorkoutTemplateFolder'],
         }),
@@ -74,10 +70,9 @@ export const workoutTemplateFolderApiSlice = apiSlice.injectEndpoints({
             CreateTemplateFolderRequest
         >({
             query: (data) => ({
-                url: `${BASE_URL}/workout-template-folders`,
+                url: BASE_URL,
                 method: 'POST',
                 body: data,
-                credentials: 'include',
             }),
             invalidatesTags: ['WorkoutTemplateFolder'],
         }),
@@ -86,10 +81,9 @@ export const workoutTemplateFolderApiSlice = apiSlice.injectEndpoints({
             UpdateTemplateFolderRequest
         >({
             query: ({ id, ...data }) => ({
-                url: `${BASE_URL}/workout-template-folders/${id}`,
+                url: `${BASE_URL}/${id}`,
                 method: 'PUT',
                 body: data,
-                credentials: 'include',
             }),
             invalidatesTags: ['WorkoutTemplateFolder'],
         }),
@@ -98,9 +92,8 @@ export const workoutTemplateFolderApiSlice = apiSlice.injectEndpoints({
             string
         >({
             query: (id) => ({
-                url: `${BASE_URL}/workout-template-folders/${id}`,
+                url: `${BASE_URL}/${id}`,
                 method: 'DELETE',
-                credentials: 'include',
             }),
             invalidatesTags: ['WorkoutTemplateFolder', 'WorkoutTemplate'],
         }),
@@ -109,10 +102,9 @@ export const workoutTemplateFolderApiSlice = apiSlice.injectEndpoints({
             ReorderTemplateFoldersRequest
         >({
             query: (data) => ({
-                url: `${BASE_URL}/workout-template-folders/reorder`,
+                url: `${BASE_URL}/reorder`,
                 method: 'PUT',
                 body: data,
-                credentials: 'include',
             }),
             invalidatesTags: ['WorkoutTemplateFolder'],
         }),

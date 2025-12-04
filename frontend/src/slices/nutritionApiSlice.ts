@@ -1,9 +1,6 @@
 import { apiSlice } from '@/slices/apiSlice';
 
-const BASE_URL =
-    import.meta.env.VITE_MODE === 'development'
-        ? 'http://localhost:5004/api'
-        : 'https://api.fitverse.codewithxjohn.com/api';
+const BASE_URL = '/nutrition';
 
 interface NutritionEntry {
     _id: string;
@@ -59,7 +56,7 @@ export const nutritionApiSlice = apiSlice.injectEndpoints({
             string | void
         >({
             query: (date) => ({
-                url: `${BASE_URL}/nutrition${date ? `?date=${date}` : ''}`,
+                url: `${BASE_URL}${date ? `?date=${date}` : ''}`,
                 method: 'GET',
                 credentials: 'include',
             }),
@@ -70,7 +67,7 @@ export const nutritionApiSlice = apiSlice.injectEndpoints({
             AddNutritionEntryRequest
         >({
             query: (data) => ({
-                url: `${BASE_URL}/nutrition/add`,
+                url: `${BASE_URL}/add`,
                 method: 'POST',
                 credentials: 'include',
                 body: data,
@@ -82,7 +79,7 @@ export const nutritionApiSlice = apiSlice.injectEndpoints({
             string
         >({
             query: (entryId) => ({
-                url: `${BASE_URL}/nutrition/delete/${entryId}`,
+                url: `${BASE_URL}/delete/${entryId}`,
                 method: 'DELETE',
                 credentials: 'include',
             }),

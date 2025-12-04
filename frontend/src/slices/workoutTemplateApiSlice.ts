@@ -1,9 +1,6 @@
 import { apiSlice } from '@/slices/apiSlice';
 
-const BASE_URL =
-    import.meta.env.VITE_MODE === 'development'
-        ? 'http://localhost:5004/api'
-        : 'https://api.fitverse.codewithxjohn.com/api';
+const BASE_URL = '/workout-templates';
 
 export interface WorkoutTemplateSet {
     setNumber: number;
@@ -92,7 +89,7 @@ export const workoutTemplateApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getTemplates: builder.query<GetTemplatesResponse, void>({
             query: () => ({
-                url: `${BASE_URL}/workout-templates`,
+                url: BASE_URL,
                 method: 'GET',
                 credentials: 'include',
             }),
@@ -100,7 +97,7 @@ export const workoutTemplateApiSlice = apiSlice.injectEndpoints({
         }),
         getTemplateById: builder.query<GetTemplateResponse, string>({
             query: (id) => ({
-                url: `${BASE_URL}/workout-templates/${id}`,
+                url: `${BASE_URL}/${id}`,
                 method: 'GET',
                 credentials: 'include',
             }),
@@ -113,7 +110,7 @@ export const workoutTemplateApiSlice = apiSlice.injectEndpoints({
             CreateTemplateRequest
         >({
             query: (data) => ({
-                url: `${BASE_URL}/workout-templates`,
+                url: BASE_URL,
                 method: 'POST',
                 body: data,
                 credentials: 'include',
@@ -125,7 +122,7 @@ export const workoutTemplateApiSlice = apiSlice.injectEndpoints({
             UpdateTemplateRequest
         >({
             query: ({ id, ...data }) => ({
-                url: `${BASE_URL}/workout-templates/${id}`,
+                url: `${BASE_URL}/${id}`,
                 method: 'PUT',
                 body: data,
                 credentials: 'include',
@@ -137,7 +134,7 @@ export const workoutTemplateApiSlice = apiSlice.injectEndpoints({
         }),
         deleteTemplate: builder.mutation<DeleteTemplateResponse, string>({
             query: (id) => ({
-                url: `${BASE_URL}/workout-templates/${id}`,
+                url: `${BASE_URL}/${id}`,
                 method: 'DELETE',
                 credentials: 'include',
             }),
@@ -148,7 +145,7 @@ export const workoutTemplateApiSlice = apiSlice.injectEndpoints({
             MoveTemplateRequest
         >({
             query: ({ id, folderId }) => ({
-                url: `${BASE_URL}/workout-templates/${id}/move`,
+                url: `${BASE_URL}/${id}/move`,
                 method: 'PATCH',
                 body: { folderId },
                 credentials: 'include',
