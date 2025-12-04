@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -8,14 +8,22 @@ import {
     KeyboardAvoidingView,
     Platform,
     ScrollView,
+    StatusBar,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 import { useRegisterMutation } from '../slices/usersApiSlice';
 import { setCredentials } from '../slices/authSlice';
+import { useDispatch } from 'react-redux';
 import { apiSlice } from '../slices/apiSlice';
-import { useAppDispatch } from '../hooks/useRedux';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getPasswordStrength } from '../lib/getPasswordStrength';
 
-export default function RegisterScreen() {
+export default function Register() {
+    const dispatch = useDispatch();
+    const insets = useSafeAreaInsets();
+    const [register, { isLoading }] = useRegisterMutation();
+
     const [formData, setFormData] = useState({
         name: '',
         username: '',
@@ -25,48 +33,29 @@ export default function RegisterScreen() {
         dob: '',
         gender: '',
     });
+
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [agreeToTerms, setAgreeToTerms] = useState(false);
 
-    const router = useRouter();
-    const dispatch = useAppDispatch();
-
-    const [register, { isLoading }] = useRegisterMutation();
-
-    const handleInputChange = (field: string, value: string) => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
-    };
-
-    const getPasswordStrength = (password: string) => {
-        let strength = 0;
-        if (password.length >= 8) strength++;
-        if (/[a-z]/.test(password)) strength++;
-        if (/[A-Z]/.test(password)) strength++;
-        if (/\d/.test(password)) strength++;
-        if (/[@$!%*?&]/.test(password)) strength++;
-
-        if (strength === 0) return { text: '', color: '' };
-        if (strength <= 2) return { text: 'Weak', color: 'text-red-500' };
-        if (strength <= 3) return { text: 'Fair', color: 'text-yellow-500' };
-        if (strength <= 4) return { text: 'Good', color: 'text-blue-500' };
-        return { text: 'Strong', color: 'text-green-500' };
-    };
-
     const passwordStrength = getPasswordStrength(formData.password);
 
+    const handleInputChange = (field: string, value: string) => {
+        setFormData((prev) => ({
+            ...prev,
+            [field]: value,
+        }));
+    };
+
     const handleSubmit = async () => {
-        // Basic validation
         if (
             !formData.name ||
             !formData.username ||
             !formData.email ||
             !formData.password ||
-            !formData.confirmPassword ||
-            !formData.dob ||
-            !formData.gender
+            !formData.confirmPassword
         ) {
-            alert('Please fill in all fields');
+            alert('Please fill in all required fields');
             return;
         }
 
@@ -85,7 +74,6 @@ export default function RegisterScreen() {
             const res = await register(registerData).unwrap();
             dispatch(apiSlice.util.resetApiState());
             dispatch(setCredentials({ ...res }));
-            // Navigate to main app
             router.replace('/(tabs)/home' as any);
         } catch (err: any) {
             alert(err?.data?.message || 'Registration failed. Please try again.');
@@ -93,228 +81,246 @@ export default function RegisterScreen() {
     };
 
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            className="flex-1 bg-white dark:bg-gray-900"
+        <LinearGradient
+            colors={['#1e3a8a', '#3b82f6', '#60a5fa']}
+            className="flex-1"
         >
-            <ScrollView
-                contentContainerStyle={{ flexGrow: 1 }}
-                keyboardShouldPersistTaps="handled"
+            <StatusBar barStyle="light-content" backgroundColor="#1e3a8a" />
+            <View style={{ height: insets.top }} />
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={{ flex: 1 }}
             >
-                <View className="flex-1 px-6 py-12">
-                    {/* Header */}
-                    <View className="mb-8">
-                        <Text className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                            Create Account
-                        </Text>
-                        <Text className="text-lg text-gray-600 dark:text-gray-400">
-                            Start your fitness journey today
-                        </Text>
-                    </View>
-
-                    {/* Form */}
-                    <View className="space-y-4">
-                        {/* Name Field */}
-                        <View>
-                            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                Full Name
+                <ScrollView
+                    contentContainerStyle={{
+                        flexGrow: 1,
+                        paddingBottom: insets.bottom,
+                    }}
+                >
+                    <View className="flex-1 px-6 py-12">
+                        {/* Header */}
+                        <View className="items-center mb-8">
+                            <Text className="text-4xl font-bold text-white mb-2">
+                                Create Account
                             </Text>
-                            <TextInput
-                                value={formData.name}
-                                onChangeText={(value) => handleInputChange('name', value)}
-                                placeholder="Enter your full name"
-                                placeholderTextColor="#9CA3AF"
-                                autoCapitalize="words"
-                                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white"
-                            />
+                            <Text className="text-lg text-blue-100">
+                                Join FitVerse today
+                            </Text>
                         </View>
 
-                        {/* Username Field */}
-                        <View>
-                            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                Username
-                            </Text>
-                            <TextInput
-                                value={formData.username}
-                                onChangeText={(value) => handleInputChange('username', value)}
-                                placeholder="Choose a username"
-                                placeholderTextColor="#9CA3AF"
-                                autoCapitalize="none"
-                                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white"
-                            />
-                        </View>
-
-                        {/* Email Field */}
-                        <View>
-                            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                Email Address
-                            </Text>
-                            <TextInput
-                                value={formData.email}
-                                onChangeText={(value) => handleInputChange('email', value)}
-                                placeholder="Enter your email"
-                                placeholderTextColor="#9CA3AF"
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                                autoComplete="email"
-                                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white"
-                            />
-                        </View>
-
-                        {/* Password Field */}
-                        <View>
-                            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                Password
-                            </Text>
-                            <View className="relative">
-                                <TextInput
-                                    value={formData.password}
-                                    onChangeText={(value) => handleInputChange('password', value)}
-                                    placeholder="Create a password"
-                                    placeholderTextColor="#9CA3AF"
-                                    secureTextEntry={!showPassword}
-                                    autoCapitalize="none"
-                                    className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white"
-                                />
-                                <TouchableOpacity
-                                    onPress={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-3"
-                                >
-                                    <Text className="text-gray-400">
-                                        {showPassword ? '👁️' : '👁️‍🗨️'}
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                            {formData.password && (
-                                <Text className={`text-xs mt-1 ${passwordStrength.color}`}>
-                                    Password strength: {passwordStrength.text}
+                        {/* Form */}
+                        <View className="gap-4">
+                            {/* Name Field */}
+                            <View className="mb-4">
+                                <Text className="text-sm font-semibold text-white mb-2">
+                                    Full Name
                                 </Text>
-                            )}
-                        </View>
-
-                        {/* Confirm Password Field */}
-                        <View>
-                            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                Confirm Password
-                            </Text>
-                            <View className="relative">
                                 <TextInput
-                                    value={formData.confirmPassword}
-                                    onChangeText={(value) =>
-                                        handleInputChange('confirmPassword', value)
-                                    }
-                                    placeholder="Confirm your password"
+                                    value={formData.name}
+                                    onChangeText={(value) => handleInputChange('name', value)}
+                                    placeholder="Enter your full name"
                                     placeholderTextColor="#9CA3AF"
-                                    secureTextEntry={!showConfirmPassword}
-                                    autoCapitalize="none"
-                                    className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white"
+                                    autoCapitalize="words"
+                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white text-base"
                                 />
-                                <TouchableOpacity
-                                    onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    className="absolute right-4 top-3"
-                                >
-                                    <Text className="text-gray-400">
-                                        {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
-                                    </Text>
-                                </TouchableOpacity>
                             </View>
-                        </View>
 
-                        {/* Date of Birth Field */}
-                        <View>
-                            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                Date of Birth
-                            </Text>
-                            <TextInput
-                                value={formData.dob}
-                                onChangeText={(value) => handleInputChange('dob', value)}
-                                placeholder="YYYY-MM-DD"
-                                placeholderTextColor="#9CA3AF"
-                                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white"
-                            />
-                        </View>
+                            {/* Username Field */}
+                            <View className="mb-4">
+                                <Text className="text-sm font-semibold text-white mb-2">
+                                    Username
+                                </Text>
+                                <TextInput
+                                    value={formData.username}
+                                    onChangeText={(value) => handleInputChange('username', value)}
+                                    placeholder="Choose a username"
+                                    placeholderTextColor="#9CA3AF"
+                                    autoCapitalize="none"
+                                    autoComplete="username"
+                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white text-base"
+                                />
+                            </View>
 
-                        {/* Gender Field */}
-                        <View>
-                            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                Gender
-                            </Text>
-                            <View className="flex-row space-x-2">
-                                {['male', 'female', 'other'].map((gender) => (
+                            {/* Email Field */}
+                            <View className="mb-4">
+                                <Text className="text-sm font-semibold text-white mb-2">
+                                    Email Address
+                                </Text>
+                                <TextInput
+                                    value={formData.email}
+                                    onChangeText={(value) => handleInputChange('email', value)}
+                                    placeholder="Enter your email"
+                                    placeholderTextColor="#9CA3AF"
+                                    keyboardType="email-address"
+                                    autoCapitalize="none"
+                                    autoComplete="email"
+                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white text-base"
+                                />
+                            </View>
+
+                            {/* Password Field */}
+                            <View className="mb-4">
+                                <Text className="text-sm font-semibold text-white mb-2">
+                                    Password
+                                </Text>
+                                <View className="relative">
+                                    <TextInput
+                                        value={formData.password}
+                                        onChangeText={(value) => handleInputChange('password', value)}
+                                        placeholder="Create a password"
+                                        placeholderTextColor="#9CA3AF"
+                                        secureTextEntry={!showPassword}
+                                        autoCapitalize="none"
+                                        className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white text-base"
+                                    />
                                     <TouchableOpacity
-                                        key={gender}
-                                        onPress={() => handleInputChange('gender', gender)}
-                                        className={`flex-1 py-3 rounded-xl border ${formData.gender === gender
-                                                ? 'bg-blue-600 border-blue-600'
-                                                : 'border-gray-200 dark:border-gray-700'
-                                            }`}
+                                        onPress={() => setShowPassword(!showPassword)}
+                                        className="absolute right-4 top-3"
                                     >
-                                        <Text
-                                            className={`text-center capitalize ${formData.gender === gender
-                                                    ? 'text-white'
-                                                    : 'text-gray-700 dark:text-gray-300'
-                                                }`}
-                                        >
-                                            {gender}
+                                        <Text className="text-white text-lg">
+                                            {showPassword ? '👁️' : '👁️‍🗨️'}
                                         </Text>
                                     </TouchableOpacity>
-                                ))}
-                            </View>
-                        </View>
-
-                        {/* Terms and Conditions */}
-                        <TouchableOpacity
-                            onPress={() => setAgreeToTerms(!agreeToTerms)}
-                            className="flex-row items-center mt-4"
-                        >
-                            <View
-                                className={`w-5 h-5 border-2 rounded ${agreeToTerms
-                                        ? 'bg-blue-600 border-blue-600'
-                                        : 'border-gray-300 dark:border-gray-600'
-                                    } mr-2`}
-                            >
-                                {agreeToTerms && (
-                                    <Text className="text-white text-xs text-center">✓</Text>
+                                </View>
+                                {formData.password && (
+                                    <Text
+                                        className="text-xs mt-1"
+                                        style={{
+                                            color: passwordStrength.color === 'text-red-500' ? '#EF4444' :
+                                                passwordStrength.color === 'text-yellow-500' ? '#EAB308' :
+                                                    passwordStrength.color === 'text-blue-500' ? '#3B82F6' : '#10B981'
+                                        }}
+                                    >
+                                        Password strength: {passwordStrength.text}
+                                    </Text>
                                 )}
                             </View>
-                            <Text className="text-sm text-gray-700 dark:text-gray-300">
-                                I agree to the{' '}
-                                <Text className="text-blue-600 dark:text-blue-400">
-                                    Terms and Conditions
-                                </Text>
-                            </Text>
-                        </TouchableOpacity>
 
-                        {/* Submit Button */}
-                        <TouchableOpacity
-                            onPress={handleSubmit}
-                            disabled={isLoading}
-                            className={`w-full py-4 rounded-xl mt-6 ${isLoading ? 'bg-gray-400' : 'bg-blue-600'
-                                } shadow-lg`}
-                        >
-                            {isLoading ? (
-                                <ActivityIndicator color="white" />
-                            ) : (
-                                <Text className="text-white text-center font-semibold text-lg">
-                                    Create Account
+                            {/* Confirm Password Field */}
+                            <View className="mb-4">
+                                <Text className="text-sm font-semibold text-white mb-2">
+                                    Confirm Password
                                 </Text>
-                            )}
-                        </TouchableOpacity>
-                    </View>
+                                <View className="relative">
+                                    <TextInput
+                                        value={formData.confirmPassword}
+                                        onChangeText={(value) =>
+                                            handleInputChange('confirmPassword', value)
+                                        }
+                                        placeholder="Confirm your password"
+                                        placeholderTextColor="#9CA3AF"
+                                        secureTextEntry={!showConfirmPassword}
+                                        autoCapitalize="none"
+                                        className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white text-base"
+                                    />
+                                    <TouchableOpacity
+                                        onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                                        className="absolute right-4 top-3"
+                                    >
+                                        <Text className="text-white text-lg">
+                                            {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
 
-                    {/* Login Link */}
-                    <View className="flex-row justify-center mt-8">
-                        <Text className="text-gray-600 dark:text-gray-400">
-                            Already have an account?{' '}
-                        </Text>
-                        <TouchableOpacity onPress={() => router.push('/login')}>
-                            <Text className="text-blue-600 dark:text-blue-400 font-semibold">
-                                Sign In
+                            {/* Date of Birth Field */}
+                            <View className="mb-4">
+                                <Text className="text-sm font-semibold text-white mb-2">
+                                    Date of Birth
+                                </Text>
+                                <TextInput
+                                    value={formData.dob}
+                                    onChangeText={(value) => handleInputChange('dob', value)}
+                                    placeholder="YYYY-MM-DD"
+                                    placeholderTextColor="#9CA3AF"
+                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white text-base"
+                                />
+                            </View>
+
+                            {/* Gender Field */}
+                            <View className="mb-4">
+                                <Text className="text-sm font-semibold text-white mb-2">
+                                    Gender
+                                </Text>
+                                <View className="flex-row gap-2">
+                                    {['male', 'female', 'other'].map((gender) => (
+                                        <TouchableOpacity
+                                            key={gender}
+                                            onPress={() => handleInputChange('gender', gender)}
+                                            className="flex-1 py-3 rounded-xl border"
+                                            style={{
+                                                backgroundColor: formData.gender === gender ? 'white' : 'transparent',
+                                                borderColor: formData.gender === gender ? 'white' : 'rgba(255,255,255,0.5)'
+                                            }}
+                                        >
+                                            <Text
+                                                className="text-center capitalize text-base"
+                                                style={{
+                                                    color: formData.gender === gender ? '#2563EB' : 'white',
+                                                    fontWeight: formData.gender === gender ? '600' : 'normal'
+                                                }}
+                                            >
+                                                {gender.charAt(0).toUpperCase() + gender.slice(1)}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            </View>
+
+                            {/* Terms and Conditions */}
+                            <TouchableOpacity
+                                onPress={() => setAgreeToTerms(!agreeToTerms)}
+                                className="flex-row items-center mt-4"
+                            >
+                                <View
+                                    className="w-5 h-5 border-2 rounded items-center justify-center mr-2"
+                                    style={{
+                                        backgroundColor: agreeToTerms ? 'white' : 'transparent',
+                                        borderColor: agreeToTerms ? 'white' : 'rgba(255,255,255,0.5)'
+                                    }}
+                                >
+                                    {agreeToTerms && (
+                                        <Text className="text-blue-600 text-sm font-bold">✓</Text>
+                                    )}
+                                </View>
+                                <Text className="text-sm text-white">
+                                    I agree to the{' '}
+                                    <Text className="font-semibold">Terms and Conditions</Text>
+                                </Text>
+                            </TouchableOpacity>
+
+                            {/* Submit Button */}
+                            <TouchableOpacity
+                                onPress={handleSubmit}
+                                disabled={isLoading}
+                                className="w-full py-4 rounded-xl mt-6 items-center"
+                                style={{ backgroundColor: isLoading ? '#9CA3AF' : 'white' }}
+                            >
+                                {isLoading ? (
+                                    <ActivityIndicator color="#2563EB" />
+                                ) : (
+                                    <Text className="text-blue-600 text-center font-semibold text-lg">
+                                        Create Account
+                                    </Text>
+                                )}
+                            </TouchableOpacity>
+                        </View>
+
+                        {/* Login Link */}
+                        <View className="flex-row justify-center mt-8">
+                            <Text className="text-blue-100 text-base">
+                                Already have an account?{' '}
                             </Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity onPress={() => router.push('/login')}>
+                                <Text className="text-white font-semibold text-base">
+                                    Sign In
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </LinearGradient>
     );
 }

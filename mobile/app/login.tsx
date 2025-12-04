@@ -8,8 +8,11 @@ import {
     KeyboardAvoidingView,
     Platform,
     ScrollView,
+    StatusBar,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLoginMutation } from '../slices/usersApiSlice';
 import { setCredentials } from '../slices/authSlice';
 import { apiSlice } from '../slices/apiSlice';
@@ -23,6 +26,7 @@ export default function LoginScreen() {
 
     const router = useRouter();
     const dispatch = useAppDispatch();
+    const insets = useSafeAreaInsets();
 
     const [login, { isLoading }] = useLoginMutation();
 
@@ -49,152 +53,158 @@ export default function LoginScreen() {
     };
 
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            className="flex-1 bg-white dark:bg-gray-900"
+        <LinearGradient
+            colors={["#1e3a8a", "#3b82f6", "#60a5fa"]}
+            className="flex-1"
         >
-            <ScrollView
-                contentContainerStyle={{ flexGrow: 1 }}
-                keyboardShouldPersistTaps="handled"
+            <StatusBar barStyle="light-content" backgroundColor="#1e3a8a" />
+            <View style={{ height: insets.top }} />
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                className="flex-1"
             >
-                <View className="flex-1 justify-center px-6 py-12">
-                    {/* Header */}
-                    <View className="mb-8">
-                        <Text className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                            Welcome Back
-                        </Text>
-                        <Text className="text-lg text-gray-600 dark:text-gray-400">
-                            Sign in to continue your fitness journey
-                        </Text>
-                    </View>
-
-                    {/* Form */}
-                    <View className="space-y-6">
-                        {/* Email Field */}
-                        <View>
-                            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                Email Address
+                <ScrollView
+                    contentContainerStyle={{
+                        flexGrow: 1,
+                        paddingBottom: insets.bottom,
+                    }}
+                    keyboardShouldPersistTaps="handled"
+                >
+                    <View className="flex-1 justify-center px-8 py-16">
+                        {/* Header */}
+                        <View className="mb-12">
+                            <Text className="text-4xl font-bold text-white mb-3">
+                                Welcome Back
                             </Text>
-                            <TextInput
-                                value={email}
-                                onChangeText={setEmail}
-                                placeholder="Enter your email address"
-                                placeholderTextColor="#9CA3AF"
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                                autoComplete="email"
-                                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white"
-                            />
+                            <Text className="text-lg text-blue-100">
+                                Sign in to continue your fitness journey
+                            </Text>
                         </View>
 
-                        {/* Password Field */}
+                        {/* Form */}
                         <View>
-                            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                Password
-                            </Text>
-                            <View className="relative">
+                            {/* Email Field */}
+                            <View className="mb-6">
+                                <Text className="text-sm font-semibold text-white mb-3">
+                                    Email Address
+                                </Text>
                                 <TextInput
-                                    value={password}
-                                    onChangeText={setPassword}
-                                    placeholder="Enter your password"
+                                    value={email}
+                                    onChangeText={setEmail}
+                                    placeholder="Enter your email address"
                                     placeholderTextColor="#9CA3AF"
-                                    secureTextEntry={!showPassword}
+                                    keyboardType="email-address"
                                     autoCapitalize="none"
-                                    autoComplete="password"
-                                    className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white"
+                                    autoComplete="email"
+                                    className="w-full px-5 py-4 bg-white/20 border border-white/30 rounded-xl text-white text-base"
                                 />
+                            </View>
+
+                            {/* Password Field */}
+                            <View className="mb-6">
+                                <Text className="text-sm font-semibold text-white mb-3">
+                                    Password
+                                </Text>
+                                <View className="relative">
+                                    <TextInput
+                                        value={password}
+                                        onChangeText={setPassword}
+                                        placeholder="Enter your password"
+                                        placeholderTextColor="#9CA3AF"
+                                        secureTextEntry={!showPassword}
+                                        autoCapitalize="none"
+                                        autoComplete="password"
+                                        className="w-full px-5 py-4 bg-white/20 border border-white/30 rounded-xl text-white text-base pr-12"
+                                    />
+                                    <TouchableOpacity
+                                        onPress={() => setShowPassword(!showPassword)}
+                                        className="absolute right-4 top-4"
+                                    >
+                                        <Text className="text-white text-xl">
+                                            {showPassword ? '👁️' : '👁️‍🗨️'}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+
+                            {/* Remember Me & Forgot Password */}
+                            <View className="flex-row justify-between items-center mb-8">
                                 <TouchableOpacity
-                                    onPress={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-3"
+                                    onPress={() => setRememberMe(!rememberMe)}
+                                    className="flex-row items-center py-2"
                                 >
-                                    <Text className="text-gray-400">
-                                        {showPassword ? '👁️' : '👁️‍🗨️'}
+                                    <View
+                                        className={`w-5 h-5 border-2 rounded ${rememberMe ? 'bg-white border-white' : 'border-white/50'} mr-3`}
+                                    >
+                                        {rememberMe && (
+                                            <Text className="text-blue-600 text-xs text-center">✓</Text>
+                                        )}
+                                    </View>
+                                    <Text className="text-sm text-white">
+                                        Remember me
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity className="py-2">
+                                    <Text className="text-sm text-white font-medium">
+                                        Forgot password?
                                     </Text>
                                 </TouchableOpacity>
                             </View>
-                        </View>
 
-                        {/* Remember Me & Forgot Password */}
-                        <View className="flex-row justify-between items-center">
+                            {/* Submit Button */}
                             <TouchableOpacity
-                                onPress={() => setRememberMe(!rememberMe)}
-                                className="flex-row items-center"
+                                onPress={handleSubmit}
+                                disabled={isLoading}
+                                className={`w-full py-4 rounded-xl ${isLoading ? 'bg-gray-400' : 'bg-white'} shadow-lg mb-8`}
                             >
-                                <View
-                                    className={`w-5 h-5 border-2 rounded ${rememberMe
-                                        ? 'bg-blue-600 border-blue-600'
-                                        : 'border-gray-300 dark:border-gray-600'
-                                        } mr-2`}
-                                >
-                                    {rememberMe && (
-                                        <Text className="text-white text-xs text-center">✓</Text>
-                                    )}
-                                </View>
-                                <Text className="text-sm text-gray-700 dark:text-gray-300">
-                                    Remember me
+                                {isLoading ? (
+                                    <ActivityIndicator color="white" />
+                                ) : (
+                                    <Text className="text-blue-600 text-center font-semibold text-lg">
+                                        Sign In
+                                    </Text>
+                                )}
+                            </TouchableOpacity>
+                        </View>
+
+                        {/* Divider */}
+                        <View className="my-10 flex-row items-center">
+                            <View className="flex-1 h-px bg-white/30" />
+                            <Text className="mx-5 text-white text-sm">
+                                Or continue with
+                            </Text>
+                            <View className="flex-1 h-px bg-white/30" />
+                        </View>
+
+                        {/* Social Login Buttons */}
+                        <View className="flex-row justify-center mb-10">
+                            <TouchableOpacity className="flex-1 py-4 border border-white/50 rounded-xl mr-3">
+                                <Text className="text-center text-white font-medium">
+                                    Google
                                 </Text>
                             </TouchableOpacity>
-
-                            <TouchableOpacity>
-                                <Text className="text-sm text-blue-600 dark:text-blue-400 font-medium">
-                                    Forgot password?
+                            <TouchableOpacity className="flex-1 py-4 border border-white/50 rounded-xl ml-3">
+                                <Text className="text-center text-white font-medium">
+                                    Facebook
                                 </Text>
                             </TouchableOpacity>
                         </View>
 
-                        {/* Submit Button */}
-                        <TouchableOpacity
-                            onPress={handleSubmit}
-                            disabled={isLoading}
-                            className={`w-full py-4 rounded-xl ${isLoading ? 'bg-gray-400' : 'bg-blue-600'
-                                } shadow-lg`}
-                        >
-                            {isLoading ? (
-                                <ActivityIndicator color="white" />
-                            ) : (
-                                <Text className="text-white text-center font-semibold text-lg">
-                                    Sign In
+                        {/* Register Link */}
+                        <View className="flex-row justify-center pt-4">
+                            <Text className="text-blue-100 text-base">
+                                Don't have an account?{' '}
+                            </Text>
+                            <TouchableOpacity onPress={() => router.push('/register')}>
+                                <Text className="text-white font-semibold text-base">
+                                    Sign Up
                                 </Text>
-                            )}
-                        </TouchableOpacity>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-
-                    {/* Divider */}
-                    <View className="my-8 flex-row items-center">
-                        <View className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-                        <Text className="mx-4 text-gray-500 dark:text-gray-400 text-sm">
-                            Or continue with
-                        </Text>
-                        <View className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-                    </View>
-
-                    {/* Social Login Buttons */}
-                    <View className="flex-row justify-center space-x-4 mb-8">
-                        <TouchableOpacity className="flex-1 py-3 border border-gray-200 dark:border-gray-700 rounded-xl mr-2">
-                            <Text className="text-center text-gray-700 dark:text-gray-300">
-                                Google
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity className="flex-1 py-3 border border-gray-200 dark:border-gray-700 rounded-xl ml-2">
-                            <Text className="text-center text-gray-700 dark:text-gray-300">
-                                Facebook
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    {/* Register Link */}
-                    <View className="flex-row justify-center">
-                        <Text className="text-gray-600 dark:text-gray-400">
-                            Don't have an account?{' '}
-                        </Text>
-                        <TouchableOpacity onPress={() => router.push('/register')}>
-                            <Text className="text-blue-600 dark:text-blue-400 font-semibold">
-                                Sign Up
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </LinearGradient>
     );
 }
