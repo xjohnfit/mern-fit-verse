@@ -49,15 +49,47 @@ const allowedOrigins = [
     'https://fitverse.codewithxjohn.com',
 ].filter(Boolean);
 
+// CORS configuration
+const corsOptions = {
+    origin: (
+        origin: string | undefined,
+        callback: (err: Error | null, allow?: boolean) => void
+    ) => {
+        // Allow requests with no origin (like mobile apps, Postman, etc.)
+        if (!origin) {
+            return callback(null, true);
+        }
+
+        // In development, allow all localhost and local network IPs
+        if (process.env.NODE_ENV !== 'production') {
+            const isLocalhost =
+                origin.includes('localhost') || origin.includes('127.0.0.1');
+            const isLocalNetwork =
+                /^http:\/\/192\.168\.\d{1,3}\.\d{1,3}/.test(origin) ||
+                /^http:\/\/10\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(origin) ||
+                /^http:\/\/172\.(1[6-9]|2[0-9]|3[0-1])\.\d{1,3}\.\d{1,3}/.test(
+                    origin
+                );
+
+            if (isLocalhost || isLocalNetwork) {
+                return callback(null, true);
+            }
+        }
+
+        // Check against allowed origins
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    exposedHeaders: ['Set-Cookie'],
+    maxAge: 86400, // 24 hours
+};
+
 // Middlewares
-app.use(
-    cors({
-        origin: allowedOrigins,
-        credentials: true,
-        exposedHeaders: ['Set-Cookie'],
-        maxAge: 86400, // 24 hours
-    })
-);
+app.use(cors(corsOptions));
 
 // Body parsers with increased limit for base64 images
 app.use(
