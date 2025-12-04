@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
-import { useRouter } from "expo-router";
+import { Redirect } from "expo-router";
 import { useAppSelector } from "../hooks/useRedux";
 
 export default function Index() {
-  const router = useRouter();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const [isReady, setIsReady] = useState(false);
 
@@ -17,16 +16,14 @@ export default function Index() {
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    if (!isReady) return;
-
+  if (isReady) {
     // Check authentication and navigate accordingly
     if (isAuthenticated) {
-      router.replace("/(tabs)/home" as any);
+      return <Redirect href="/(tabs)/home" />;
     } else {
-      router.replace("/login");
+      return <Redirect href="/login" />;
     }
-  }, [isAuthenticated, isReady]);
+  }
 
   return (
     <View className="flex-1 items-center justify-center bg-white dark:bg-gray-900">
