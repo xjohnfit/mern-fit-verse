@@ -1,5 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+
+// TODO: fix fat secret api calls
 // Backend proxy configuration
 const BASE_URL = '/fatsecret';
 
@@ -32,7 +34,6 @@ export const fatSecretApiSlice = createApi({
     reducerPath: 'fatSecretApi',
     baseQuery: fetchBaseQuery({
         baseUrl: BASE_URL,
-        credentials: 'include', // Include cookies for authentication
         prepareHeaders: (headers) => {
             headers.set('content-type', 'application/json');
             return headers;
