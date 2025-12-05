@@ -8,7 +8,6 @@ import { useGetUserPostsQuery, useLikeUnlikePostMutation, useAddCommentMutation,
 import { ProfileHeader } from '../../components/profile/ProfileHeader';
 import { FollowersModal } from '../../components/profile/FollowersModal';
 import { CreatePostModal } from '../../components/profile/CreatePostModal';
-import { User } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
 import { formatRelativeTime } from '../../lib/formatDate';
 
@@ -244,7 +243,7 @@ export default function ProfileScreen() {
     if (error) {
         return (
             <View className="flex-1 bg-gray-50 dark:bg-gray-900 items-center justify-center px-6">
-                <User color="#9ca3af" size={64} />
+                <Ionicons name="person-circle-outline" size={64} color="#9ca3af" />
                 <Text className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-4 mb-2">
                     Profile Not Found
                 </Text>

@@ -8,7 +8,7 @@ import {
     Image,
     Pressable,
 } from 'react-native';
-import { X } from 'lucide-react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { getInitials } from '../../lib/getInitials';
 
 interface UserItem {
@@ -89,7 +89,7 @@ export const FollowersModal: React.FC<FollowersModalProps> = ({
                             {title}
                         </Text>
                         <TouchableOpacity onPress={onClose} className="p-2">
-                            <X color="#6b7280" size={24} />
+                            <Ionicons name="close" size={24} color="#6b7280" />
                         </TouchableOpacity>
                     </View>
 

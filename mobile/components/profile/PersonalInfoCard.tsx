@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Calendar, User, Cake } from 'lucide-react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { formatDateToMMDDYYYY } from '../../lib/formatDate';
 import { calculateAge } from '../../lib/calculateAge';
 import { UserProfile } from '../../types/profile.types';
@@ -18,7 +18,7 @@ export const PersonalInfoCard: React.FC<PersonalInfoCardProps> = ({ user }) => {
             <View className="flex-row flex-wrap">
                 {/* Age */}
                 <View className="flex-row items-center bg-blue-50 dark:bg-blue-900/20 rounded-full px-4 py-2 mr-2 mb-2">
-                    <Cake color="#3b82f6" size={16} />
+                    <Ionicons name="gift" size={16} color="#3b82f6" />
                     <Text className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
                         {calculateAge(user.dob)} years
                     </Text>
@@ -26,7 +26,7 @@ export const PersonalInfoCard: React.FC<PersonalInfoCardProps> = ({ user }) => {
 
                 {/* Gender */}
                 <View className="flex-row items-center bg-purple-50 dark:bg-purple-900/20 rounded-full px-4 py-2 mr-2 mb-2">
-                    <User color="#8b5cf6" size={16} />
+                    <Ionicons name="person" size={16} color="#8b5cf6" />
                     <Text className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100 capitalize">
                         {user.gender}
                     </Text>
@@ -34,7 +34,7 @@ export const PersonalInfoCard: React.FC<PersonalInfoCardProps> = ({ user }) => {
 
                 {/* Joined Date */}
                 <View className="flex-row items-center bg-pink-50 dark:bg-pink-900/20 rounded-full px-4 py-2 mb-2">
-                    <Calendar color="#ec4899" size={16} />
+                    <Ionicons name="calendar" size={16} color="#ec4899" />
                     <Text className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
                         {formatDateToMMDDYYYY(user.createdAt)}
                     </Text>

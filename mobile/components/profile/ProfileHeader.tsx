@@ -9,18 +9,6 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {
-    Users,
-    UserCheck,
-    MessageCircle,
-    MoreHorizontal,
-    Cake,
-    User as UserIcon,
-    Calendar,
-    Ruler,
-    Weight,
-    Target,
-} from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { getInitials } from '../../lib/getInitials';
 import { calculateAge } from '../../lib/calculateAge';
@@ -100,7 +88,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                         {/* More Options Button */}
                         {!isOwnProfile && (
                             <TouchableOpacity className='w-10 h-10 rounded-full bg-white/20 items-center justify-center'>
-                                <MoreHorizontal
+                                <Ionicons
+                                    name='ellipsis-horizontal'
                                     color='#fff'
                                     size={20}
                                 />
@@ -123,7 +112,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                 <View className='flex-row flex-wrap justify-center mb-4'>
                     {/* Age */}
                     <View className='flex-row items-center bg-white/20 rounded-full px-3 py-1.5 mr-2 mb-2'>
-                        <Cake
+                        <Ionicons
+                            name='gift'
                             color='#fff'
                             size={14}
                         />
@@ -134,7 +124,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
                     {/* Gender */}
                     <View className='flex-row items-center bg-white/20 rounded-full px-3 py-1.5 mr-2 mb-2'>
-                        <UserIcon
+                        <Ionicons
+                            name='person'
                             color='#fff'
                             size={14}
                         />
@@ -145,7 +136,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
                     {/* Joined Date */}
                     <View className='flex-row items-center bg-white/20 rounded-full px-3 py-1.5 mb-2'>
-                        <Calendar
+                        <Ionicons
+                            name='calendar'
                             color='#fff'
                             size={14}
                         />
@@ -160,7 +152,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                     {/* Height */}
                     {user.height && (
                         <View className='flex-row items-center bg-white/20 rounded-full px-3 py-1.5 mr-2 mb-2'>
-                            <Ruler
+                            <Ionicons
+                                name='resize'
                                 color='#fff'
                                 size={14}
                             />
@@ -173,7 +166,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                     {/* Weight */}
                     {user.weight && (
                         <View className='flex-row items-center bg-white/20 rounded-full px-3 py-1.5 mb-2'>
-                            <Weight
+                            <Ionicons
+                                name='barbell'
                                 color='#fff'
                                 size={14}
                             />
@@ -188,7 +182,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                 {user.goal && (
                     <View className='bg-white/20 rounded-2xl p-3 mb-4'>
                         <View className='flex-row items-center mb-1.5'>
-                            <Target
+                            <Ionicons
+                                name='flag'
                                 color='#fff'
                                 size={16}
                             />
@@ -275,12 +270,14 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                                 ) : (
                                     <View className='flex-row items-center'>
                                         {isFollowing ? (
-                                            <UserCheck
+                                            <Ionicons
+                                                name='checkmark-circle'
                                                 color='#6b7280'
                                                 size={18}
                                             />
                                         ) : (
-                                            <Users
+                                            <Ionicons
+                                                name='people'
                                                 color='#fff'
                                                 size={18}
                                             />
@@ -298,7 +295,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                                 onPress={handleMessageClick}
                                 className='flex-1 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 items-center justify-center'>
                                 <View className='flex-row items-center'>
-                                    <MessageCircle
+                                    <Ionicons
+                                        name='chatbubble'
                                         color='#6b7280'
                                         size={18}
                                     />
