@@ -97,8 +97,20 @@ export default function LoginScreen() {
                                     placeholderTextColor="#FFFFFF"
                                     keyboardType="email-address"
                                     autoCapitalize="none"
-                                    autoComplete="email"
-                                    className="w-full px-5 py-4 bg-white/20 border border-white/30 rounded-xl text-white text-base"
+                                    autoComplete="off"
+                                    multiline={false}
+                                    textAlignVertical="center"
+                                    style={{
+                                        height: 56,
+                                        width: '100%',
+                                        paddingHorizontal: 20,
+                                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                        borderWidth: 1,
+                                        borderColor: 'rgba(255, 255, 255, 0.3)',
+                                        borderRadius: 12,
+                                        color: '#FFFFFF',
+                                        fontSize: 16,
+                                    }}
                                 />
                             </View>
 
@@ -115,12 +127,26 @@ export default function LoginScreen() {
                                         placeholderTextColor="#FFFFFF"
                                         secureTextEntry={!showPassword}
                                         autoCapitalize="none"
-                                        autoComplete="password"
-                                        className="w-full px-5 py-4 bg-white/20 border border-white/30 rounded-xl text-white text-base pr-12"
+                                        autoComplete="off"
+                                        textContentType="oneTimeCode"
+                                        multiline={false}
+                                        textAlignVertical="center"
+                                        style={{
+                                            height: 56,
+                                            width: '100%',
+                                            paddingHorizontal: 20,
+                                            paddingRight: 48,
+                                            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                            borderWidth: 1,
+                                            borderColor: 'rgba(255, 255, 255, 0.3)',
+                                            borderRadius: 12,
+                                            color: '#FFFFFF',
+                                            fontSize: 16,
+                                        }}
                                     />
                                     <TouchableOpacity
                                         onPress={() => setShowPassword(!showPassword)}
-                                        className="absolute right-4 top-4"
+                                        style={{ position: 'absolute', right: 16, top: 16 }}
                                     >
                                         <Text className="text-white text-xl">
                                             {showPassword ? <Ionicons name="eye" size={24} color="white" /> : <Ionicons name="eye-off" size={24} color="white" />}

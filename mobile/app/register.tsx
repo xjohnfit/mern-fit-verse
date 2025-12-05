@@ -147,7 +147,17 @@ export default function Register() {
                                     placeholder="Enter your full name"
                                     placeholderTextColor="#FFFFFF"
                                     autoCapitalize="words"
-                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white text-base"
+                                    style={{
+                                        width: '100%',
+                                        paddingHorizontal: 16,
+                                        paddingVertical: 12,
+                                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                        borderWidth: 1,
+                                        borderColor: 'rgba(255, 255, 255, 0.3)',
+                                        borderRadius: 12,
+                                        color: '#FFFFFF',
+                                        fontSize: 16,
+                                    }}
                                 />
                             </View>
 
@@ -162,8 +172,18 @@ export default function Register() {
                                     placeholder="Choose a username"
                                     placeholderTextColor="#FFFFFF"
                                     autoCapitalize="none"
-                                    autoComplete="username"
-                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white text-base"
+                                    autoComplete="off"
+                                    style={{
+                                        width: '100%',
+                                        paddingHorizontal: 16,
+                                        paddingVertical: 12,
+                                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                        borderWidth: 1,
+                                        borderColor: 'rgba(255, 255, 255, 0.3)',
+                                        borderRadius: 12,
+                                        color: '#FFFFFF',
+                                        fontSize: 16,
+                                    }}
                                 />
                             </View>
 
@@ -179,8 +199,18 @@ export default function Register() {
                                     placeholderTextColor="#FFFFFF"
                                     keyboardType="email-address"
                                     autoCapitalize="none"
-                                    autoComplete="email"
-                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white text-base"
+                                    autoComplete="off"
+                                    style={{
+                                        width: '100%',
+                                        paddingHorizontal: 16,
+                                        paddingVertical: 12,
+                                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                        borderWidth: 1,
+                                        borderColor: 'rgba(255, 255, 255, 0.3)',
+                                        borderRadius: 12,
+                                        color: '#FFFFFF',
+                                        fontSize: 16,
+                                    }}
                                 />
                             </View>
 
@@ -197,7 +227,19 @@ export default function Register() {
                                         placeholderTextColor="#FFFFFF"
                                         secureTextEntry={!showPassword}
                                         autoCapitalize="none"
-                                        className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white text-base"
+                                        textContentType="oneTimeCode"
+                                        style={{
+                                            width: '100%',
+                                            paddingHorizontal: 16,
+                                            paddingVertical: 12,
+                                            paddingRight: 48,
+                                            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                            borderWidth: 1,
+                                            borderColor: 'rgba(255, 255, 255, 0.3)',
+                                            borderRadius: 12,
+                                            color: '#FFFFFF',
+                                            fontSize: 16,
+                                        }}
                                     />
                                     <TouchableOpacity
                                         onPress={() => setShowPassword(!showPassword)}
@@ -212,9 +254,7 @@ export default function Register() {
                                     <Text
                                         className="text-xs mt-1"
                                         style={{
-                                            color: passwordStrength.color === 'text-red-500' ? '#EF4444' :
-                                                passwordStrength.color === 'text-yellow-500' ? '#EAB308' :
-                                                    passwordStrength.color === 'text-blue-500' ? '#3B82F6' : '#10B981'
+                                            color: '#FFFFFF'
                                         }}
                                     >
                                         Password strength: {passwordStrength.text}
@@ -237,7 +277,19 @@ export default function Register() {
                                         placeholderTextColor="#FFFFFF"
                                         secureTextEntry={!showConfirmPassword}
                                         autoCapitalize="none"
-                                        className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white text-base"
+                                        textContentType="oneTimeCode"
+                                        style={{
+                                            width: '100%',
+                                            paddingHorizontal: 16,
+                                            paddingVertical: 12,
+                                            paddingRight: 48,
+                                            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                            borderWidth: 1,
+                                            borderColor: 'rgba(255, 255, 255, 0.3)',
+                                            borderRadius: 12,
+                                            color: '#FFFFFF',
+                                            fontSize: 16,
+                                        }}
                                     />
                                     <TouchableOpacity
                                         onPress={() => setShowConfirmPassword(!showConfirmPassword)}

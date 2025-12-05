@@ -9,7 +9,7 @@
         "userInterfaceStyle": "automatic",
         "newArchEnabled": true,
         "extra": {
-            "mode": "development",
+            "mode": "production",
             "router": {},
             "eas": {
                 "projectId": "c75ee23b-09fd-49b9-9de4-7686ee4be445"

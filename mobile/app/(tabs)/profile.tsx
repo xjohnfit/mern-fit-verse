@@ -34,6 +34,9 @@ export default function ProfileScreen() {
         refetch,
     } = useViewUserProfileQuery(profileUsername, {
         skip: !profileUsername,
+        refetchOnMountOrArgChange: false,
+        refetchOnFocus: false,
+        refetchOnReconnect: false,
     });
 
     // Use currentData if available, otherwise fall back to data
@@ -51,12 +54,12 @@ export default function ProfileScreen() {
     const [deletePost] = useDeletePostMutation();
     const [createPost, { isLoading: isCreatingPost }] = useCreatePostMutation();
 
-    // Refetch when username changes
+    // Only refetch when viewing a different user's profile
     useEffect(() => {
-        if (profileUsername) {
+        if (viewingUsername && profileUsername) {
             refetch();
         }
-    }, [profileUsername, refetch]);
+    }, [viewingUsername]);
 
     // Fetch user posts
     const {
@@ -289,7 +292,7 @@ export default function ProfileScreen() {
                         />
 
                         {/* Posts Section - Full Width */}
-                        <View className="py-4">
+                        <View className="py-4 px-2">
 
                             {isPostsLoading ? (
                                 <View className="py-8 items-center">

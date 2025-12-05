@@ -8,7 +8,10 @@ const isDevelopment = Constants.expoConfig?.extra?.mode === 'development';
 // For iOS simulator, localhost works fine
 // For physical devices or Expo Go, use your computer's IP address
 const getBaseUrl = () => {
-    if (!isDevelopment) {
+    // Use production URL if explicitly set or if not in __DEV__ mode
+    const isProduction = !__DEV__ || Constants.expoConfig?.extra?.mode === 'production';
+    
+    if (isProduction) {
         return 'https://api.fitverse.codewithxjohn.com/api';
     }
 

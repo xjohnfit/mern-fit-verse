@@ -72,7 +72,7 @@ export default function HomeScreen() {
     return (
         <SafeScreen>
             <ScrollView
-                className="flex-1 py-6"
+                className="flex-1 py-6 px-2"
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
