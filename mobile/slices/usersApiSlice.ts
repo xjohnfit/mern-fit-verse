@@ -42,13 +42,18 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                 url: `/users/profile/view/${username}`,
                 method: 'GET',
             }),
+            providesTags: (result, error, username) => [
+                { type: 'User', id: username },
+            ],
         }),
         followUnfollowUser: builder.mutation({
             query: (username) => ({
                 url: `/users/profile/follow/${username}`,
                 method: 'POST',
             }),
-            invalidatesTags: ['User'],
+            invalidatesTags: (result, error, username) => [
+                { type: 'User', id: username },
+            ],
         }),
         getSuggestedUsers: builder.query({
             query: () => ({

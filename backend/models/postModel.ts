@@ -8,7 +8,6 @@ export interface IComment {
 
 export interface IPost {
     _id: string;
-    title?: string;
     content: string;
     author: mongoose.Types.ObjectId;
     image?: string;
@@ -18,18 +17,26 @@ export interface IPost {
     updatedAt: Date;
 }
 
-const postSchema = new Schema<IPost>({
-    title: { type: String, required: false },
-    content: { type: String, required: false },
-    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    image: { type: String, required: false },
-    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    comments: [{
-        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-        comment: { type: String, required: true },
-        createdAt: { type: Date, default: Date.now }
-    }],
-}, { timestamps: true });
+const postSchema = new Schema<IPost>(
+    {
+        content: { type: String, required: false },
+        author: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
+        image: { type: String, required: false },
+        likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+        comments: [
+            {
+                user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+                comment: { type: String, required: true },
+                createdAt: { type: Date, default: Date.now },
+            },
+        ],
+    },
+    { timestamps: true }
+);
 
 export const PostModel = model<IPost>('Post', postSchema);
 

@@ -17,6 +17,7 @@ import { useLoginMutation } from '../slices/usersApiSlice';
 import { setCredentials } from '../slices/authSlice';
 import { apiSlice } from '../slices/apiSlice';
 import { useAppDispatch } from '../hooks/useRedux';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
@@ -55,13 +56,13 @@ export default function LoginScreen() {
     return (
         <LinearGradient
             colors={["#1e3a8a", "#3b82f6", "#60a5fa"]}
-            className="flex-1"
+            style={{ flex: 1 }}
         >
             <StatusBar barStyle="light-content" backgroundColor="#1e3a8a" />
             <View style={{ height: insets.top }} />
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                className="flex-1"
+                style={{ flex: 1 }}
             >
                 <ScrollView
                     contentContainerStyle={{
@@ -69,8 +70,9 @@ export default function LoginScreen() {
                         paddingBottom: insets.bottom,
                     }}
                     keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
                 >
-                    <View className="flex-1 justify-center px-8 py-16">
+                    <View style={{ flex: 1, justifyContent: 'center', paddingHorizontal: 32, paddingVertical: 64 }}>
                         {/* Header */}
                         <View className="mb-12">
                             <Text className="text-4xl font-bold text-white mb-3">
@@ -92,7 +94,7 @@ export default function LoginScreen() {
                                     value={email}
                                     onChangeText={setEmail}
                                     placeholder="Enter your email address"
-                                    placeholderTextColor="#9CA3AF"
+                                    placeholderTextColor="#FFFFFF"
                                     keyboardType="email-address"
                                     autoCapitalize="none"
                                     autoComplete="email"
@@ -110,7 +112,7 @@ export default function LoginScreen() {
                                         value={password}
                                         onChangeText={setPassword}
                                         placeholder="Enter your password"
-                                        placeholderTextColor="#9CA3AF"
+                                        placeholderTextColor="#FFFFFF"
                                         secureTextEntry={!showPassword}
                                         autoCapitalize="none"
                                         autoComplete="password"
@@ -121,7 +123,7 @@ export default function LoginScreen() {
                                         className="absolute right-4 top-4"
                                     >
                                         <Text className="text-white text-xl">
-                                            {showPassword ? '👁️' : '👁️‍🗨️'}
+                                            {showPassword ? <Ionicons name="eye" size={24} color="white" /> : <Ionicons name="eye-off" size={24} color="white" />}
                                         </Text>
                                     </TouchableOpacity>
                                 </View>
@@ -137,7 +139,7 @@ export default function LoginScreen() {
                                         className={`w-5 h-5 border-2 rounded ${rememberMe ? 'bg-white border-white' : 'border-white/50'} mr-3`}
                                     >
                                         {rememberMe && (
-                                            <Text className="text-blue-600 text-xs text-center">✓</Text>
+                                            <Ionicons name="checkmark" size={14} color="#3b82f6" />
                                         )}
                                     </View>
                                     <Text className="text-sm text-white">

@@ -9,6 +9,7 @@ import { Stack } from 'expo-router';
 import { Provider } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 // Local imports
 import store from '../store';
@@ -31,7 +32,12 @@ function RootLayoutContent() {
     restoreUser();
   }, []);
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <>
+      <Stack screenOptions={{ headerShown: false }} />
+      <Toast />
+    </>
+  );
 }
 
 export default function RootLayout() {

@@ -1,20 +1,29 @@
 {
     "expo": {
-        "name": "mobile",
-        "slug": "mobile",
+        "name": "FitVerse",
+        "slug": "fitverse",
         "version": "1.0.0",
         "orientation": "portrait",
-        "icon": "",
-        "scheme": "mobile",
+        "icon": "./assets/fit-verse-logo.png",
+        "scheme": "fitverse",
         "userInterfaceStyle": "automatic",
         "newArchEnabled": true,
         "extra": {
-            "mode": "development"
+            "mode": "development",
+            "router": {},
+            "eas": {
+                "projectId": "e29b4486-b154-4a4f-85f4-07fa9df94587"
+            }
         },
         "ios": {
-            "supportsTablet": true
+            "supportsTablet": true,
+            "bundleIdentifier": "com.xjohnfitcodes.fitverse",
+            "infoPlist": {
+                "ITSAppUsesNonExemptEncryption": false
+            }
         },
         "android": {
+            "package": "com.xjohnfitcodes.fitverse",
             "adaptiveIcon": {
                 "backgroundColor": "#E6F4FE",
                 "foregroundImage": "",
@@ -26,7 +35,7 @@
         },
         "web": {
             "output": "static",
-            "favicon": "./assets/images/favicon.png",
+            "favicon": "./assets/fit-verse-logo-no-bg.png",
             "bundler": "metro"
         },
         "plugins": [
@@ -34,7 +43,7 @@
             [
                 "expo-splash-screen",
                 {
-                    "image": "./assets/images/splash-icon.png",
+                    "image": "./assets/fit-verse-logo-no-bg.png",
                     "imageWidth": 200,
                     "resizeMode": "contain",
                     "backgroundColor": "#ffffff",

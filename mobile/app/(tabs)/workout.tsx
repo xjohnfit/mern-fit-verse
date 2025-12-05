@@ -1,9 +1,10 @@
-import { View, Text } from 'react-native'
+import SafeScreen from '@/components/layout/SafeScreen';
+import { View, Text } from 'react-native';
 const workout = () => {
   return (
-    <View>
+    <SafeScreen>
       <Text>workout</Text>
-    </View>
-  )
-}
-export default workout
+    </SafeScreen>
+  );
+};
+export default workout;

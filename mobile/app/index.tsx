@@ -10,7 +10,7 @@ import { Redirect, useRouter } from "expo-router";
 import { useAppSelector } from "../hooks/useRedux";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import FeatureCard from "@/components/FeatureCard";
+import FeatureCard from "@/components/dashboard/FeatureCard";
 
 export default function LandingPage() {
   const { isAuthenticated } = useAppSelector((state) => state.auth);

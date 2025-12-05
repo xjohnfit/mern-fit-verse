@@ -1,9 +1,10 @@
-import { View, Text } from 'react-native'
+import SafeScreen from '@/components/layout/SafeScreen';
+import { View, Text } from 'react-native';
 const nutrition = () => {
   return (
-    <View>
+    <SafeScreen>
       <Text>nutrition</Text>
-    </View>
-  )
-}
-export default nutrition
+    </SafeScreen>
+  );
+};
+export default nutrition;

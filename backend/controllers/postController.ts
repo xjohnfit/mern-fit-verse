@@ -11,7 +11,7 @@ import { v2 as cloudinary } from 'cloudinary';
 
 // Create a new post
 export const createPost = asyncHandler(async (req: Request, res: Response) => {
-    const { title, content } = req.body;
+    const { content } = req.body;
     let { image } = req.body;
     const userId = req.user?._id;
 
@@ -36,7 +36,6 @@ export const createPost = asyncHandler(async (req: Request, res: Response) => {
 
     const newPost = new PostModel({
         author: userId,
-        title,
         content,
         image,
     });
@@ -242,6 +241,43 @@ export const addComment = asyncHandler(async (req: Request, res: Response) => {
 
 export const deleteComment = asyncHandler(
     async (req: Request, res: Response) => {
-        res.json({ message: 'Delete Comment' });
+        const { postId, commentId } = req.params;
+        const userId = req.user?._id;
+
+        if (!userId) {
+            res.status(401);
+            throw new Error('User not authenticated');
+        }
+
+        const post = await PostModel.findById(postId);
+        if (!post) {
+            res.status(404);
+            throw new Error('Post not found');
+        }
+
+        // Find the comment
+        const comment = post.comments.find(
+            (c: any) => c._id.toString() === commentId
+        );
+
+        if (!comment) {
+            res.status(404);
+            throw new Error('Comment not found');
+        }
+
+        // Check if the user is the comment author
+        if (comment.user.toString() !== userId.toString()) {
+            res.status(403);
+            throw new Error('User not authorized to delete this comment');
+        }
+
+        // Remove the comment from the array
+        post.comments = post.comments.filter(
+            (c: any) => c._id.toString() !== commentId
+        );
+
+        await post.save();
+
+        res.json({ message: 'Comment deleted successfully' });
     }
 );

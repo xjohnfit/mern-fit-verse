@@ -1,9 +1,10 @@
-import { View, Text } from 'react-native'
+import SafeScreen from '@/components/layout/SafeScreen';
+import { View, Text } from 'react-native';
 const messages = () => {
   return (
-    <View>
+    <SafeScreen>
       <Text>messages</Text>
-    </View>
-  )
-}
-export default messages
+    </SafeScreen>
+  );
+};
+export default messages;

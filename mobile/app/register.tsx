@@ -18,6 +18,10 @@ import { apiSlice } from '../slices/apiSlice';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getPasswordStrength } from '../lib/getPasswordStrength';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+import { Ionicons } from '@expo/vector-icons';
+
 
 export default function Register() {
     const dispatch = useDispatch();
@@ -37,6 +41,8 @@ export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [agreeToTerms, setAgreeToTerms] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(undefined);
 
     const passwordStrength = getPasswordStrength(formData.password);
 
@@ -45,6 +51,25 @@ export default function Register() {
             ...prev,
             [field]: value,
         }));
+    };
+
+    const handleDateChange = (event: any, selectedDate?: Date) => {
+        setShowDatePicker(Platform.OS === 'ios');
+        if (selectedDate) {
+            setDateOfBirth(selectedDate);
+            const formattedDate = selectedDate.toISOString().split('T')[0];
+            handleInputChange('dob', formattedDate);
+        }
+    };
+
+    const formatDisplayDate = (dateString: string) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
     };
 
     const handleSubmit = async () => {
@@ -83,7 +108,7 @@ export default function Register() {
     return (
         <LinearGradient
             colors={['#1e3a8a', '#3b82f6', '#60a5fa']}
-            className="flex-1"
+            style={{ flex: 1 }}
         >
             <StatusBar barStyle="light-content" backgroundColor="#1e3a8a" />
             <View style={{ height: insets.top }} />
@@ -96,8 +121,9 @@ export default function Register() {
                         flexGrow: 1,
                         paddingBottom: insets.bottom,
                     }}
+                    showsVerticalScrollIndicator={false}
                 >
-                    <View className="flex-1 px-6 py-12">
+                    <View style={{ flex: 1, paddingHorizontal: 24, paddingVertical: 48 }}>
                         {/* Header */}
                         <View className="items-center mb-8">
                             <Text className="text-4xl font-bold text-white mb-2">
@@ -119,7 +145,7 @@ export default function Register() {
                                     value={formData.name}
                                     onChangeText={(value) => handleInputChange('name', value)}
                                     placeholder="Enter your full name"
-                                    placeholderTextColor="#9CA3AF"
+                                    placeholderTextColor="#FFFFFF"
                                     autoCapitalize="words"
                                     className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white text-base"
                                 />
@@ -134,7 +160,7 @@ export default function Register() {
                                     value={formData.username}
                                     onChangeText={(value) => handleInputChange('username', value)}
                                     placeholder="Choose a username"
-                                    placeholderTextColor="#9CA3AF"
+                                    placeholderTextColor="#FFFFFF"
                                     autoCapitalize="none"
                                     autoComplete="username"
                                     className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white text-base"
@@ -150,7 +176,7 @@ export default function Register() {
                                     value={formData.email}
                                     onChangeText={(value) => handleInputChange('email', value)}
                                     placeholder="Enter your email"
-                                    placeholderTextColor="#9CA3AF"
+                                    placeholderTextColor="#FFFFFF"
                                     keyboardType="email-address"
                                     autoCapitalize="none"
                                     autoComplete="email"
@@ -168,7 +194,7 @@ export default function Register() {
                                         value={formData.password}
                                         onChangeText={(value) => handleInputChange('password', value)}
                                         placeholder="Create a password"
-                                        placeholderTextColor="#9CA3AF"
+                                        placeholderTextColor="#FFFFFF"
                                         secureTextEntry={!showPassword}
                                         autoCapitalize="none"
                                         className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white text-base"
@@ -178,7 +204,7 @@ export default function Register() {
                                         className="absolute right-4 top-3"
                                     >
                                         <Text className="text-white text-lg">
-                                            {showPassword ? '👁️' : '👁️‍🗨️'}
+                                            {showPassword ? <Ionicons name="eye" size={24} color="white" /> : <Ionicons name="eye-off" size={24} color="white" />}
                                         </Text>
                                     </TouchableOpacity>
                                 </View>
@@ -208,7 +234,7 @@ export default function Register() {
                                             handleInputChange('confirmPassword', value)
                                         }
                                         placeholder="Confirm your password"
-                                        placeholderTextColor="#9CA3AF"
+                                        placeholderTextColor="#FFFFFF"
                                         secureTextEntry={!showConfirmPassword}
                                         autoCapitalize="none"
                                         className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white text-base"
@@ -218,7 +244,7 @@ export default function Register() {
                                         className="absolute right-4 top-3"
                                     >
                                         <Text className="text-white text-lg">
-                                            {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                                            {showPassword ? <Ionicons name="eye" size={24} color="white" /> : <Ionicons name="eye-off" size={24} color="white" />}
                                         </Text>
                                     </TouchableOpacity>
                                 </View>
@@ -229,13 +255,27 @@ export default function Register() {
                                 <Text className="text-sm font-semibold text-white mb-2">
                                     Date of Birth
                                 </Text>
-                                <TextInput
-                                    value={formData.dob}
-                                    onChangeText={(value) => handleInputChange('dob', value)}
-                                    placeholder="YYYY-MM-DD"
-                                    placeholderTextColor="#9CA3AF"
-                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white text-base"
-                                />
+                                <TouchableOpacity
+                                    onPress={() => setShowDatePicker(true)}
+                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl"
+                                >
+                                    <Text
+                                        className="text-base"
+                                        style={{ color: formData.dob ? 'white' : '#FFFFFF' }}
+                                    >
+                                        {formData.dob ? formatDisplayDate(formData.dob) : 'Select your date of birth'}
+                                    </Text>
+                                </TouchableOpacity>
+                                {showDatePicker && (
+                                    <DateTimePicker
+                                        value={dateOfBirth || new Date()}
+                                        mode="date"
+                                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                        onChange={handleDateChange}
+                                        maximumDate={new Date()}
+                                        minimumDate={new Date(1900, 0, 1)}
+                                    />
+                                )}
                             </View>
 
                             {/* Gender Field */}
@@ -281,7 +321,7 @@ export default function Register() {
                                     }}
                                 >
                                     {agreeToTerms && (
-                                        <Text className="text-blue-600 text-sm font-bold">✓</Text>
+                                        <Ionicons name="checkmark" size={14} color="#3b82f6" />
                                     )}
                                 </View>
                                 <Text className="text-sm text-white">
@@ -295,7 +335,7 @@ export default function Register() {
                                 onPress={handleSubmit}
                                 disabled={isLoading}
                                 className="w-full py-4 rounded-xl mt-6 items-center"
-                                style={{ backgroundColor: isLoading ? '#9CA3AF' : 'white' }}
+                                style={{ backgroundColor: isLoading ? '#FFFFFF' : 'white' }}
                             >
                                 {isLoading ? (
                                     <ActivityIndicator color="#2563EB" />
