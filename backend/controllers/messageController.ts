@@ -43,7 +43,7 @@ export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
         if (sender) {
             await sendPushNotification(
                 receiver.expoPushToken,
-                `New message from ${sender.name}`,
+                sender.name || 'New Message',
                 text,
                 { senderId, receiverId, text, image: imageUrl }
             );
