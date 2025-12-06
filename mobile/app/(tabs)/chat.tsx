@@ -308,8 +308,8 @@ const ChatScreen = () => {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colorScheme === 'dark' ? '#111827' : '#fff' }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={insets.top}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
     >
       {/* Header */}
       <View style={{ paddingTop: insets.top, paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colorScheme === 'dark' ? '#374151' : '#e5e7eb', flexDirection: 'row', alignItems: 'center' }}>
