@@ -10,7 +10,7 @@ export async function sendPushNotification(
 ) {
     if (!Expo.isExpoPushToken(pushToken)) {
         console.error(`Push token ${pushToken} is not a valid Expo push token`);
-        return;
+        return null;
     }
 
     const message: ExpoPushMessage = {
@@ -29,5 +29,6 @@ export async function sendPushNotification(
         return ticket;
     } catch (error) {
         console.error('Error sending push notification:', error);
+        return null;
     }
 }
