@@ -11,6 +11,7 @@ import {
   Switch,
   useColorScheme,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,6 +22,7 @@ import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const SettingsScreen = () => {
   const router = useRouter();
@@ -35,8 +37,10 @@ const SettingsScreen = () => {
   const [name, setName] = useState(userInfo?.name || '');
   const [username, setUsername] = useState(userInfo?.username || '');
   const [email, setEmail] = useState(userInfo?.email || '');
-  const [height, setHeight] = useState(userInfo?.height || '');
-  const [weight, setWeight] = useState(userInfo?.weight || '');
+  const [dob, setDob] = useState(userInfo?.dob ? new Date(userInfo.dob).toISOString().split('T')[0] : '');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [height, setHeight] = useState(userInfo?.height ? String(userInfo.height) : '');
+  const [weight, setWeight] = useState(userInfo?.weight ? String(userInfo.weight) : '');
   const [gender, setGender] = useState(userInfo?.gender || '');
   const [goal, setGoal] = useState(userInfo?.goal || '');
   const [photoUri, setPhotoUri] = useState<string | null>(userInfo?.photo || null);
@@ -50,6 +54,21 @@ const SettingsScreen = () => {
   useEffect(() => {
     loadPreferences();
   }, []);
+
+  // Sync state with userInfo when it changes
+  useEffect(() => {
+    if (userInfo) {
+      setName(userInfo.name || '');
+      setUsername(userInfo.username || '');
+      setEmail(userInfo.email || '');
+      setDob(userInfo.dob ? new Date(userInfo.dob).toISOString().split('T')[0] : '');
+      setHeight(userInfo.height ? String(userInfo.height) : '');
+      setWeight(userInfo.weight ? String(userInfo.weight) : '');
+      setGender(userInfo.gender || '');
+      setGoal(userInfo.goal || '');
+      setPhotoUri(userInfo.photo || null);
+    }
+  }, [userInfo]);
 
   const loadPreferences = async () => {
     try {
@@ -69,6 +88,30 @@ const SettingsScreen = () => {
     } catch (error) {
       console.error('Error saving preference:', error);
     }
+  };
+
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(Platform.OS === 'ios');
+    if (selectedDate) {
+      // Format date in local timezone to avoid timezone offset issues
+      const year = selectedDate.getFullYear();
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+      const day = String(selectedDate.getDate()).padStart(2, '0');
+      setDob(`${year}-${month}-${day}`);
+    }
+  };
+
+  const formatDateForDisplay = (dateString: string) => {
+    if (!dateString) return '';
+    const [year, month, day] = dateString.split('-');
+    return `${month}/${day}/${year}`;
+  };
+
+  const parseDateForPicker = (dateString: string) => {
+    if (!dateString) return new Date();
+    const [year, month, day] = dateString.split('-');
+    // Create date in local timezone
+    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
   };
 
   const handlePickImage = async () => {
@@ -111,15 +154,17 @@ const SettingsScreen = () => {
         return;
       }
 
-      const updateData: any = {
-        name,
-        username,
-        email,
-        height,
-        weight,
-        gender,
-        goal,
-      };
+      const updateData: any = {};
+
+      // Only include fields that have changed
+      if (name !== userInfo?.name) updateData.name = name;
+      if (username !== userInfo?.username) updateData.username = username;
+      if (email !== userInfo?.email) updateData.email = email;
+      if (dob !== (userInfo?.dob ? new Date(userInfo.dob).toISOString().split('T')[0] : '')) updateData.dob = dob;
+      if (height !== String(userInfo?.height || '')) updateData.height = height;
+      if (weight !== String(userInfo?.weight || '')) updateData.weight = weight;
+      if (gender !== userInfo?.gender) updateData.gender = gender;
+      if (goal !== userInfo?.goal) updateData.goal = goal;
 
       if (photoUri && photoUri !== userInfo?.photo) {
         updateData.photo = photoUri;
@@ -362,7 +407,7 @@ const SettingsScreen = () => {
                   />
                 </View>
 
-                <View>
+                <View className="mb-5">
                   <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
                     Email
                   </Text>
@@ -383,6 +428,59 @@ const SettingsScreen = () => {
                       borderColor: colorScheme === 'dark' ? '#374151' : '#E5E7EB',
                     }}
                   />
+                </View>
+
+                <View>
+                  <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
+                    Date of Birth
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => setShowDatePicker(true)}
+                    activeOpacity={0.7}
+                  >
+                    <View
+                      style={{
+                        paddingHorizontal: 20,
+                        paddingVertical: 16,
+                        backgroundColor: colorScheme === 'dark' ? '#1F2937' : '#FFFFFF',
+                        borderRadius: 16,
+                        borderWidth: 2,
+                        borderColor: colorScheme === 'dark' ? '#374151' : '#E5E7EB',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          color: dob
+                            ? colorScheme === 'dark'
+                              ? '#FFFFFF'
+                              : '#111827'
+                            : colorScheme === 'dark'
+                              ? '#6B7280'
+                              : '#9CA3AF',
+                        }}
+                      >
+                        {dob ? formatDateForDisplay(dob) : 'Select date of birth'}
+                      </Text>
+                      <Ionicons
+                        name="calendar-outline"
+                        size={20}
+                        color={colorScheme === 'dark' ? '#9CA3AF' : '#6B7280'}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                  {showDatePicker && (
+                    <DateTimePicker
+                      value={dob ? parseDateForPicker(dob) : new Date()}
+                      mode="date"
+                      display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                      onChange={handleDateChange}
+                      maximumDate={new Date()}
+                    />
+                  )}
                 </View>
               </View>
 

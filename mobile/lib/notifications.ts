@@ -2,16 +2,7 @@ import * as Notifications from 'expo-notifications';
 import { Platform, Alert, Linking } from 'react-native';
 import Constants from 'expo-constants';
 
-// Configure notification behavior
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
-        shouldShowBanner: true,
-        shouldShowList: true,
-    }),
-});
+// Note: Notification handler is now set in app/_layout.tsx for global coverage
 
 /**
  * Request notification permissions from the user
@@ -27,6 +18,9 @@ export async function registerForPushNotificationsAsync(): Promise<
             importance: Notifications.AndroidImportance.MAX,
             vibrationPattern: [0, 250, 250, 250],
             lightColor: '#FF231F7C',
+            lockscreenVisibility:
+                Notifications.AndroidNotificationVisibility.PUBLIC,
+            bypassDnd: true,
         });
     }
 
@@ -45,6 +39,8 @@ export async function registerForPushNotificationsAsync(): Promise<
                     allowAlert: true,
                     allowBadge: true,
                     allowSound: true,
+                    allowDisplayInCarPlay: true,
+                    allowCriticalAlerts: true,
                 },
             });
             finalStatus = status;
@@ -105,6 +101,8 @@ export async function showMessageNotification(
             body: message,
             data: { senderId, type: 'message' },
             sound: true,
+            priority: Notifications.AndroidNotificationPriority.HIGH,
+            categoryIdentifier: 'message',
         },
         trigger: null, // Show immediately
     });
@@ -147,4 +145,25 @@ export function addNotificationResponseReceivedListener(
     callback: (response: Notifications.NotificationResponse) => void
 ) {
     return Notifications.addNotificationResponseReceivedListener(callback);
+}
+
+/**
+ * Save push token to backend
+ */
+export async function savePushTokenToBackend(token: string, userId: string) {
+    try {
+        // You'll need to implement this endpoint on your backend
+        // For now, just log it
+        console.log('Push token to save:', token, 'for user:', userId);
+
+        // TODO: Uncomment when backend endpoint is ready
+        // const response = await fetch(`${API_URL}/users/push-token`, {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify({ pushToken: token, userId }),
+        // });
+        // return await response.json();
+    } catch (error) {
+        console.error('Error saving push token:', error);
+    }
 }
