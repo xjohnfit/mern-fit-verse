@@ -1,12 +1,6 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import Constants from 'expo-constants';
+import { apiSlice } from './apiSlice';
 
-const isDevelopment = Constants.expoConfig?.extra?.mode === 'development';
-
-// Backend proxy configuration
-const BASE_URL = isDevelopment
-    ? 'http://localhost:5004/api/fatsecret'
-    : 'https://api.fitverse.codewithxjohn.com/api/fatsecret';
+const BASE_URL = '/fatsecret';
 
 // Types for API responses
 export interface FoodSuggestion {
@@ -32,17 +26,8 @@ export interface ApiResponse<T> {
     error?: string;
 }
 
-// Create API slice using backend proxy (no direct FatSecret API calls)
-export const fatSecretApiSlice = createApi({
-    reducerPath: 'fatSecretApi',
-    baseQuery: fetchBaseQuery({
-        baseUrl: BASE_URL,
-        credentials: 'include', // Include cookies for authentication
-        prepareHeaders: (headers) => {
-            headers.set('content-type', 'application/json');
-            return headers;
-        },
-    }),
+// Inject endpoints into the main apiSlice (avoids duplicate middleware)
+export const fatSecretApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         searchFoods: builder.query({
             query: ({
@@ -50,31 +35,36 @@ export const fatSecretApiSlice = createApi({
                 max_results = 50,
                 page_number = 0,
             }) => ({
-                url: '/foods/search',
+                url: `${BASE_URL}/search`,
                 params: {
                     search_expression,
                     max_results,
                     page_number,
                 },
             }),
+            providesTags: ['Food'],
         }),
         getFood: builder.query({
             query: (food_id) => ({
-                url: `/foods/${food_id}`,
+                url: `${BASE_URL}/food/${food_id}`,
             }),
+            providesTags: (_result, _error, food_id) => [
+                { type: 'Food', id: food_id },
+            ],
         }),
         autocomplete: builder.query<
             ApiResponse<AutocompleteResponse>,
             AutocompleteParams
         >({
             query: ({ expression, max_results = 4, region = 'US' }) => ({
-                url: '/foods/autocomplete',
+                url: `${BASE_URL}/autocomplete`,
                 params: {
                     expression,
                     max_results,
                     region,
                 },
             }),
+            providesTags: ['FoodSuggestions'],
         }),
     }),
 });
