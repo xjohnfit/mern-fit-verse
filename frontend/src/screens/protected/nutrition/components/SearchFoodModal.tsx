@@ -223,11 +223,11 @@ export const SearchFoodModal = ({
                             onChange={handleInputChange}
                             onFocus={() => searchTerm.length >= 2 && setShowSuggestions(true)}
                             placeholder="Search for foods..."
-                            className="w-full pl-10 pr-4 py-2.5 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                            className="w-full pl-10 pr-4 py-2.5 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
                         />
                         {(isAutoCompleteLoading || isFetching) && (
                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                <Loader2 className="w-4 h-4 text-green-500 animate-spin" />
+                                <Loader2 className="w-4 h-4 text-amber-500 animate-spin" />
                             </div>
                         )}
                     </div>
@@ -264,7 +264,7 @@ export const SearchFoodModal = ({
                     {/* Loading State */}
                     {isLoading && selectedFood ? (
                         <div className="flex flex-col items-center justify-center py-6 space-y-2">
-                            <Loader2 className="w-6 h-6 text-green-500 animate-spin" />
+                            <Loader2 className="w-6 h-6 text-amber-500 animate-spin" />
                             <p className="text-gray-500 dark:text-gray-400 text-xs">Loading nutrition info...</p>
                         </div>
                     ) : (
@@ -272,13 +272,13 @@ export const SearchFoodModal = ({
                             {/* Meal Type Dropdown */}
                             <div className="space-y-1.5">
                                 <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300">
-                                    <UtensilsCrossed className="w-3.5 h-3.5 text-green-500" />
+                                    <UtensilsCrossed className="w-3.5 h-3.5 text-amber-500" />
                                     Meal Type
                                 </label>
                                 <select
                                     value={mealType}
                                     onChange={(e) => setMealType(e.target.value)}
-                                    className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all cursor-pointer"
+                                    className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all cursor-pointer"
                                 >
                                     <option value="breakfast">Breakfast</option>
                                     <option value="lunch">Lunch</option>
@@ -299,7 +299,7 @@ export const SearchFoodModal = ({
                             {/* Amount Input */}
                             <div className="space-y-1.5">
                                 <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300">
-                                    <Scale className="w-3.5 h-3.5 text-green-500" />
+                                    <Scale className="w-3.5 h-3.5 text-amber-500" />
                                     Amount {servingUnit && `(${servingUnit})`}
                                 </label>
                                 <div className="relative">
@@ -308,7 +308,7 @@ export const SearchFoodModal = ({
                                         value={amount}
                                         onChange={handleAmountChange}
                                         placeholder="1"
-                                        className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                                        className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
                                     />
                                     {servingUnit && (
                                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xs font-medium">{servingUnit}</span>
@@ -367,7 +367,7 @@ export const SearchFoodModal = ({
                             Cancel
                         </button>
                         <button
-                            className="flex-1 px-3 py-2 text-sm bg-linear-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-semibold shadow-lg shadow-green-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 px-3 py-2 text-sm bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-lg font-semibold shadow-lg shadow-amber-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             onClick={handleAddClick}
                             disabled={!selectedFood || isLoading || !foodDetails?.success || !amount || parseFloat(amount) <= 0}
                         >

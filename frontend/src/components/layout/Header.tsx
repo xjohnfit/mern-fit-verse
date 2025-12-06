@@ -144,31 +144,33 @@ function Header() {
 
                                     <Link
                                         to={`/profile/view/${userInfo?.username}`}
-                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200 font-medium group'>
+                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-pink-500 dark:hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-all duration-200 font-medium group'>
                                         <User className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
                                         <span>Profile</span>
                                     </Link>
 
                                     <Link
+                                        to='/messages'
+                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-green-500 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200 font-medium group'>
+                                        <MessageCircle className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
+                                        <span>Messages</span>
+                                    </Link>
+
+                                    <Link
                                         to='/nutrition'
-                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200 font-medium group'>
+                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-amber-500 dark:hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all duration-200 font-medium group'>
                                         <UtensilsCrossed className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
                                         <span>Nutrition</span>
                                     </Link>
 
                                     <Link
                                         to='/workout'
-                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all duration-200 font-medium group'>
+                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200 font-medium group'>
                                         <Dumbbell className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
                                         <span>Workout</span>
                                     </Link>
 
-                                    <Link
-                                        to='/messages'
-                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 font-medium group'>
-                                        <MessageCircle className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
-                                        <span>Messages</span>
-                                    </Link>
+                                    
 
                                     {/* User Menu */}
                                     <NavigationMenu>

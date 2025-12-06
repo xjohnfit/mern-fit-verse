@@ -4,9 +4,9 @@ export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({
         baseUrl:
-        import.meta.env.VITE_MODE === 'development'
-            ? 'http://localhost:5004/api'
-            : 'https://api.fitverse.codewithxjohn.com/api',
+            import.meta.env.VITE_MODE === 'development'
+                ? 'http://localhost:5004/api'
+                : 'https://api.fitverse.codewithxjohn.com/api',
         credentials: 'include', // Add this globally to all requests
         prepareHeaders: (headers, _api) => {
             return headers;
@@ -23,6 +23,8 @@ export const apiSlice = createApi({
         'WorkoutTemplateFolder',
         'Notification',
         'Message',
+        'Food',
+        'FoodSuggestions',
     ],
     endpoints: (_builder) => ({}),
 });

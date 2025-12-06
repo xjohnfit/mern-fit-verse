@@ -1,8 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { apiSlice } from '@/slices/apiSlice';
 
-
-// TODO: fix fat secret api calls
-// Backend proxy configuration
 const BASE_URL = '/fatsecret';
 
 // Types for API responses
@@ -29,17 +26,8 @@ export interface ApiResponse<T> {
     error?: string;
 }
 
-// Create API slice using backend proxy (no direct FatSecret API calls)
-export const fatSecretApiSlice = createApi({
-    reducerPath: 'fatSecretApi',
-    baseQuery: fetchBaseQuery({
-        baseUrl: BASE_URL,
-        prepareHeaders: (headers) => {
-            headers.set('content-type', 'application/json');
-            return headers;
-        },
-    }),
-    tagTypes: ['FoodSuggestions', 'Food', 'Recipe'],
+// Inject endpoints into the base apiSlice
+export const fatSecretApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         // Foods Autocomplete - Uses backend proxy to FatSecret API
         getFoodAutocomplete: builder.query<
@@ -47,7 +35,7 @@ export const fatSecretApiSlice = createApi({
             AutocompleteParams
         >({
             query: ({ expression, max_results = 4, region = 'US' }) => ({
-                url: '/autocomplete',
+                url: `${BASE_URL}/autocomplete`,
                 method: 'GET',
                 params: {
                     expression,
@@ -78,7 +66,7 @@ export const fatSecretApiSlice = createApi({
                 page_number = 0,
                 max_results = 20,
             }) => ({
-                url: '/search',
+                url: `${BASE_URL}/search`,
                 method: 'GET',
                 params: {
                     search_expression,
@@ -92,7 +80,7 @@ export const fatSecretApiSlice = createApi({
         // Get Food Details by ID - Uses backend proxy
         getFoodById: builder.query<ApiResponse<any>, string>({
             query: (foodId) => ({
-                url: `/food/${foodId}`,
+                url: `${BASE_URL}/food/${foodId}`,
                 method: 'GET',
             }),
             providesTags: (_result, _error, foodId) => [
@@ -106,7 +94,7 @@ export const fatSecretApiSlice = createApi({
             void
         >({
             query: () => ({
-                url: '/health',
+                url: `${BASE_URL}/health`,
                 method: 'GET',
             }),
         }),
