@@ -484,16 +484,23 @@ export const updateUserRole = asyncHandler(
 export const updatePushToken = asyncHandler(
     async (req: AuthenticatedRequest, res: Response): Promise<void> => {
         const { pushToken } = req.body;
-        
+        console.log('[updatePushToken] Received pushToken:', pushToken);
+        console.log('[updatePushToken] Authenticated user:', req.user);
+
         const user = await User.findById(req.user!._id);
         if (!user) {
+            console.error(
+                '[updatePushToken] User not found for _id:',
+                req.user?._id
+            );
             res.status(404);
             throw new Error('User not found');
         }
-        
+
         user.expoPushToken = pushToken;
         await user.save();
-        
+        console.log('[updatePushToken] Saved expoPushToken to user:', user._id);
+
         res.status(200).json({ message: 'Push token updated' });
     }
 );

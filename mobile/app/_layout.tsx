@@ -17,6 +17,7 @@ import { restoreCredentials } from '../slices/authSlice';
 import { useSocket } from '../hooks/useSocket';
 import { registerForPushNotificationsAsync } from '../lib/notifications';
 import * as Notifications from 'expo-notifications';
+import { useAppSelector } from '../hooks/useRedux';
 
 import { useUpdatePushTokenMutation } from '../slices/notificationApiSlice';
 
@@ -70,17 +71,23 @@ function RootLayoutContent() {
     }, []);
 
     const [updatePushToken] = useUpdatePushTokenMutation();
+    const { userInfo } = useAppSelector((state) => state.auth);
 
-    const { userInfo } = store.getState().auth;
     useEffect(() => {
         const registerToken = async () => {
             const token = await registerForPushNotificationsAsync();
+            console.log('[PushToken] userInfo:', userInfo);
+            console.log('[PushToken] token:', token);
             if (token && userInfo?._id) {
-                await updatePushToken(token);
+                console.log('[PushToken] Sending token to backend...');
+                const result = await updatePushToken(token);
+                console.log('[PushToken] Backend response:', result);
+            } else {
+                console.log('[PushToken] Not sending token: missing token or userInfo._id');
             }
         };
         registerToken();
-    }, [userInfo]);
+    }, [userInfo, updatePushToken]);
 
     return (
         <>
