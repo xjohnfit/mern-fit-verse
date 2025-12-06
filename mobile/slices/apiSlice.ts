@@ -57,6 +57,8 @@ export const apiSlice = createApi({
         'WorkoutTemplateFolder',
         'Notification',
         'Message',
+        'Food',
+        'FoodSuggestions',
     ],
     endpoints: (_builder) => ({}),
 });
