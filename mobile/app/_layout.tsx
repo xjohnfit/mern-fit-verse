@@ -14,8 +14,12 @@ import Toast from 'react-native-toast-message';
 // Local imports
 import store from '../store';
 import { restoreCredentials } from '../slices/authSlice';
+import { useSocket } from '../hooks/useSocket';
 
 function RootLayoutContent() {
+  // Initialize socket connection
+  useSocket();
+
   useEffect(() => {
     // Restore user credentials from AsyncStorage on app start
     const restoreUser = async () => {
