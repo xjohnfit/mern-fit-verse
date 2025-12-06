@@ -1,5 +1,5 @@
 import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
+import { Platform, Alert, Linking } from 'react-native';
 import Constants from 'expo-constants';
 
 // Configure notification behavior
@@ -36,11 +36,34 @@ export async function registerForPushNotificationsAsync(): Promise<
         let finalStatus = existingStatus;
 
         if (existingStatus !== 'granted') {
-            const { status } = await Notifications.requestPermissionsAsync();
+            const { status } = await Notifications.requestPermissionsAsync({
+                ios: {
+                    allowAlert: true,
+                    allowBadge: true,
+                    allowSound: true,
+                },
+            });
             finalStatus = status;
         }
 
         if (finalStatus !== 'granted') {
+            Alert.alert(
+                'Enable Notifications',
+                'To receive message notifications, please enable notifications in your device settings.',
+                [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                        text: 'Open Settings',
+                        onPress: () => {
+                            if (Platform.OS === 'ios') {
+                                Linking.openURL('app-settings:');
+                            } else {
+                                Linking.openSettings();
+                            }
+                        },
+                    },
+                ]
+            );
             console.log('Failed to get push token for push notification!');
             return;
         }

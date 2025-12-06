@@ -15,6 +15,7 @@ import Toast from 'react-native-toast-message';
 import store from '../store';
 import { restoreCredentials } from '../slices/authSlice';
 import { useSocket } from '../hooks/useSocket';
+import { registerForPushNotificationsAsync } from '../lib/notifications';
 
 function RootLayoutContent() {
   // Initialize socket connection
@@ -34,6 +35,18 @@ function RootLayoutContent() {
     };
 
     restoreUser();
+  }, []);
+
+  // Request notification permissions on app startup
+  useEffect(() => {
+    const requestPermissions = async () => {
+      const token = await registerForPushNotificationsAsync();
+      if (token) {
+        console.log('Notification token registered:', token);
+      }
+    };
+
+    requestPermissions();
   }, []);
 
   return (

@@ -18,6 +18,8 @@ import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { useGetUserProfileQuery } from '@/slices/usersApiSlice';
 import { useGetMessagesQuery, useSendMessageMutation } from '@/slices/messageApiSlice';
+import { useDispatch } from 'react-redux';
+import { apiSlice } from '@/slices/apiSlice';
 import { getSocket } from '@/hooks/useSocket';
 import {
   registerForPushNotificationsAsync,
@@ -45,6 +47,7 @@ interface Message {
 
 const ChatScreen = () => {
   const insets = useSafeAreaInsets();
+  const dispatch = useDispatch();
   const { userInfo } = useSelector((state: any) => state.auth);
   const { data: currentUserProfile, isLoading: isLoadingProfile } = useGetUserProfileQuery({});
 
@@ -70,10 +73,8 @@ const ChatScreen = () => {
 
   const [sendMessage, { isLoading: isSending }] = useSendMessageMutation();
 
-  // Initialize push notifications
+  // Initialize push notification listeners
   useEffect(() => {
-    registerForPushNotificationsAsync();
-
     const notificationListener = addNotificationReceivedListener((notification) => {
       console.log('Notification received:', notification);
     });
@@ -108,7 +109,12 @@ const ChatScreen = () => {
     if (!socket) return;
 
     const handleNewMessage = async (message: Message) => {
-      // Only add message if it's part of the current conversation
+      // If message is for current user, invalidate messages cache to refetch all conversations
+      if (message.receiverId === userInfo?._id || message.senderId === userInfo?._id) {
+        dispatch(apiSlice.util.invalidateTags(['Message']));
+      }
+
+      // Only add message to UI if it's part of the current conversation
       if (
         (message.senderId === selectedUser?._id && message.receiverId === userInfo?._id) ||
         (message.senderId === userInfo?._id && message.receiverId === selectedUser?._id)
@@ -121,11 +127,11 @@ const ChatScreen = () => {
         });
       }
 
-      // Show push notification if message is from another user and app is in background
+      // Show push notification if message is from another user and not viewing that conversation
       if (
         message.senderId !== userInfo?._id &&
         message.receiverId === userInfo?._id &&
-        appState.current !== 'active'
+        message.senderId !== selectedUser?._id
       ) {
         const sender = currentUserProfile?.following?.find(
           (u: User) => u._id === message.senderId
@@ -141,7 +147,7 @@ const ChatScreen = () => {
     return () => {
       socket.off('new-message', handleNewMessage);
     };
-  }, [selectedUser?._id, userInfo?._id]); // Only depend on IDs, not full objects
+  }, [selectedUser?._id, userInfo?._id, dispatch]); // Only depend on IDs, not full objects
 
   // Track app state for notifications
   useEffect(() => {

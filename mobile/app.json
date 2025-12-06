@@ -45,6 +45,14 @@
         "plugins": [
             "expo-router",
             [
+                "expo-notifications",
+                {
+                    "icon": "./assets/fit-verse-logo.png",
+                    "color": "#667eea",
+                    "sounds": []
+                }
+            ],
+            [
                 "expo-splash-screen",
                 {
                     "image": "./assets/fit-verse-logo-no-bg.png",
