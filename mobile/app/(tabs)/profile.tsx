@@ -56,10 +56,10 @@ export default function ProfileScreen() {
 
     // Only refetch when viewing a different user's profile
     useEffect(() => {
-        if (viewingUsername && profileUsername) {
+        if (viewingUsername && profileUsername && !isOwnProfile) {
             refetch();
         }
-    }, [viewingUsername]);
+    }, [viewingUsername, isOwnProfile, profileUsername]);
 
     // Fetch user posts
     const {
@@ -81,7 +81,9 @@ export default function ProfileScreen() {
                 type: 'success',
                 text1: result.message || 'Success',
             });
-            refetch();
+            if (!isOwnProfile) {
+                refetch();
+            }
         } catch (error: any) {
             Toast.show({
                 type: 'error',
@@ -227,8 +229,11 @@ export default function ProfileScreen() {
     };
 
     const onRefresh = React.useCallback(() => {
-        refetch();
-    }, [refetch]);
+        if (!isOwnProfile) {
+            refetch();
+        }
+        refetchPosts();
+    }, [refetch, refetchPosts, isOwnProfile]);
 
     // Loading state - show loading screen when initially loading OR when we have no data
     if (isLoading || !displayProfile) {
