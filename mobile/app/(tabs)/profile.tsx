@@ -23,8 +23,9 @@ export default function ProfileScreen() {
 
     // Use viewing username or fall back to own username
     const profileUsername = viewingUsername || userInfo?.username;
+    const isOwnProfile = !viewingUsername || viewingUsername === userInfo?.username;
 
-    // Fetch the profile (could be own or other user)
+    // Fetch the profile ONLY if viewing another user's profile
     const {
         data: userProfile,
         currentData,
@@ -33,15 +34,14 @@ export default function ProfileScreen() {
         error,
         refetch,
     } = useViewUserProfileQuery(profileUsername, {
-        skip: !profileUsername,
+        skip: !profileUsername || isOwnProfile, // Skip API call for own profile
         refetchOnMountOrArgChange: false,
         refetchOnFocus: false,
         refetchOnReconnect: false,
     });
 
-    // Use currentData if available, otherwise fall back to data
-    // This keeps the previous data visible during refetches
-    const displayProfile = currentData || userProfile;
+    // Use Redux data for own profile, otherwise use API data
+    const displayProfile = isOwnProfile ? userInfo : (currentData || userProfile);
 
 
 
@@ -257,7 +257,6 @@ export default function ProfileScreen() {
         );
     }
 
-    const isOwnProfile = userInfo?._id === displayProfile._id;
     const isFollowing = displayProfile.followers.some(
         (follower: { _id: string; }) => follower._id === userInfo?._id
     );
