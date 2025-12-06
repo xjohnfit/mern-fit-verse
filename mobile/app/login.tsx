@@ -38,9 +38,7 @@ export default function LoginScreen() {
         }
 
         try {
-            console.log('Attempting login with:', { email });
             const res = await login({ email, password }).unwrap();
-            console.log('Login successful:', res);
             // Reset API cache to ensure fresh data for the new user
             dispatch(apiSlice.util.resetApiState());
             dispatch(setCredentials({ ...res }));

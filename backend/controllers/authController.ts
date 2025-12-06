@@ -86,7 +86,9 @@ export const registerUser = asyncHandler(
 
             if (user) {
                 generateToken(res, user._id.toString());
-                const newUser = await User.findById(user._id).select('-password');
+                const newUser = await User.findById(user._id).select(
+                    '-password'
+                );
                 res.status(201).json(newUser);
             } else {
                 res.status(400);

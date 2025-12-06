@@ -30,12 +30,16 @@ export async function registerForPushNotificationsAsync(): Promise<
         });
     }
 
-    if (Constants.isDevice) {
+    if (Constants.isDevice || Platform.OS === 'ios') {
         const { status: existingStatus } =
             await Notifications.getPermissionsAsync();
+
+        console.log('Current permission status:', existingStatus);
+
         let finalStatus = existingStatus;
 
         if (existingStatus !== 'granted') {
+            console.log('Requesting permissions...');
             const { status } = await Notifications.requestPermissionsAsync({
                 ios: {
                     allowAlert: true,
@@ -44,6 +48,7 @@ export async function registerForPushNotificationsAsync(): Promise<
                 },
             });
             finalStatus = status;
+            console.log('Permission request result:', finalStatus);
         }
 
         if (finalStatus !== 'granted') {
@@ -64,12 +69,15 @@ export async function registerForPushNotificationsAsync(): Promise<
                     },
                 ]
             );
-            console.log('Failed to get push token for push notification!');
             return;
         }
 
         try {
             const projectId = Constants.expoConfig?.extra?.eas?.projectId;
+            if (!projectId) {
+                console.error('No project ID found');
+                return;
+            }
             token = (await Notifications.getExpoPushTokenAsync({ projectId }))
                 .data;
             console.log('Push notification token:', token);
