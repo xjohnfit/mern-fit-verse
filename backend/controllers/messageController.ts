@@ -5,7 +5,7 @@ import { Message } from '../models/messageModel';
 import { io, getReceiverSocketId } from '../config/socket.io';
 
 import { sendPushNotification } from '../utils/pushNotifications';
-import User from 'models/userModel';
+import User from '../models/userModel';
 
 export const getMessages = asyncHandler(async (req: Request, res: Response) => {
     const { senderId, receiverId } = req.params;
