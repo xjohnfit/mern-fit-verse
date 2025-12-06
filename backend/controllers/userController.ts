@@ -479,3 +479,21 @@ export const updateUserRole = asyncHandler(
         });
     }
 );
+
+// Update Expo push notification token
+export const updatePushToken = asyncHandler(
+    async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        const { pushToken } = req.body;
+        
+        const user = await User.findById(req.user!._id);
+        if (!user) {
+            res.status(404);
+            throw new Error('User not found');
+        }
+        
+        user.expoPushToken = pushToken;
+        await user.save();
+        
+        res.status(200).json({ message: 'Push token updated' });
+    }
+);

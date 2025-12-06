@@ -1,7 +1,9 @@
-export const getInitials = (name: string) => {
+export const getInitials = (name: string | undefined | null) => {
+    if (!name) return '??';
     return name
         .split(' ')
         .map((n) => n[0])
         .join('')
-        .toUpperCase();
+        .toUpperCase()
+        .slice(0, 2);
 };

@@ -3,7 +3,7 @@ import { View, Text, ScrollView, ActivityIndicator, RefreshControl, Image, Touch
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppSelector } from '../../hooks/useRedux';
-import { useViewUserProfileQuery, useFollowUnfollowUserMutation } from '../../slices/usersApiSlice';
+import { useViewUserProfileQuery, useFollowUnfollowUserMutation, useGetUserProfileQuery } from '../../slices/usersApiSlice';
 import { useGetUserPostsQuery, useLikeUnlikePostMutation, useAddCommentMutation, useDeleteCommentMutation, useDeletePostMutation, useCreatePostMutation } from '../../slices/postsApiSlice';
 import { ProfileHeader } from '../../components/profile/ProfileHeader';
 import { FollowersModal } from '../../components/profile/FollowersModal';
@@ -25,6 +25,15 @@ export default function ProfileScreen() {
     const profileUsername = viewingUsername || userInfo?.username;
     const isOwnProfile = !viewingUsername || viewingUsername === userInfo?.username;
 
+    // Fetch own profile to get populated followers/following
+    const {
+        data: ownProfile,
+        isLoading: isLoadingOwn,
+        refetch: refetchOwn,
+    } = useGetUserProfileQuery(undefined, {
+        skip: !isOwnProfile,
+    });
+
     // Fetch the profile ONLY if viewing another user's profile
     const {
         data: userProfile,
@@ -40,8 +49,8 @@ export default function ProfileScreen() {
         refetchOnReconnect: false,
     });
 
-    // Use Redux data for own profile, otherwise use API data
-    const displayProfile = isOwnProfile ? userInfo : (currentData || userProfile);
+    // Use populated own profile for own profile, otherwise use API data for other users
+    const displayProfile = isOwnProfile ? ownProfile : (currentData || userProfile);
 
 
 
@@ -229,14 +238,16 @@ export default function ProfileScreen() {
     };
 
     const onRefresh = React.useCallback(() => {
-        if (!isOwnProfile) {
+        if (isOwnProfile) {
+            refetchOwn();
+        } else {
             refetch();
         }
         refetchPosts();
-    }, [refetch, refetchPosts, isOwnProfile]);
+    }, [refetch, refetchPosts, refetchOwn, isOwnProfile]);
 
     // Loading state - show loading screen when initially loading OR when we have no data
-    if (isLoading || !displayProfile) {
+    if ((isOwnProfile ? isLoadingOwn : isLoading) || !displayProfile) {
         return (
             <View className="flex-1 bg-gray-50 dark:bg-gray-900 items-center justify-center">
                 <ActivityIndicator size="large" color="#2563eb" />
@@ -459,7 +470,7 @@ export default function ProfileScreen() {
                         isOpen={showFollowersModal}
                         onClose={() => setShowFollowersModal(false)}
                         type="followers"
-                        users={displayProfile.followers}
+                        users={displayProfile?.followers || []}
                         title="Followers"
                         onUserPress={handleUserPress}
                     />
@@ -469,7 +480,7 @@ export default function ProfileScreen() {
                         isOpen={showFollowingModal}
                         onClose={() => setShowFollowingModal(false)}
                         type="following"
-                        users={displayProfile.following}
+                        users={displayProfile?.following || []}
                         title="Following"
                         onUserPress={handleUserPress}
                     />

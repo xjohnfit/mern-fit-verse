@@ -30,6 +30,9 @@ export interface IUser {
         fats?: number;
     };
 
+    // Expo push notification token
+    expoPushToken?: string | null;
+
     // timestamps
     createdAt: Date;
     updatedAt: Date;
@@ -68,6 +71,9 @@ const userSchema = new Schema<IUser>(
             carbs: { type: Number, default: null },
             fats: { type: Number, default: null },
         },
+
+        // Expo push notification token
+        expoPushToken: { type: String, default: null },
     },
     { timestamps: true }
 );

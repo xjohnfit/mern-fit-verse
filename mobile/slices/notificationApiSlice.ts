@@ -35,8 +35,17 @@ export const notificationApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ['Notification'],
         }),
+
+        // Update push token
+        updatePushToken: builder.mutation({
+            query: (pushToken) => ({
+                url: '/users/push-token',
+                method: 'POST',
+                body: { pushToken },
+            }),
+        }),
     }),
 });
 
-export const { useGetNotificationsQuery, useDeleteNotificationsMutation } =
+export const { useGetNotificationsQuery, useDeleteNotificationsMutation, useUpdatePushTokenMutation } =
     notificationApiSlice;

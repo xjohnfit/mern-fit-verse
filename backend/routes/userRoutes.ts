@@ -11,6 +11,7 @@ import {
     updateNutritionGoals,
     getAllUsers,
     updateUserRole,
+    updatePushToken,
 } from '../controllers/userController';
 
 const router = express.Router();
@@ -26,4 +27,6 @@ router.post('/profile/follow/:username', protect, followUnfollowUser); // Follow
 router.get('/admin/users', protect, admin, getAllUsers); // Admin: Get all users
 router.put('/admin/users/:userId/role', protect, admin, updateUserRole); // Admin: Update user role
 
+// Save/Update push notification token
+router.post('/push-token', protect, updatePushToken);
 export default router;

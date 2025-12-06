@@ -4,6 +4,9 @@ import { Request, Response } from 'express';
 import { Message } from '../models/messageModel';
 import { io, getReceiverSocketId } from '../config/socket.io';
 
+import { sendPushNotification } from '../utils/pushNotifications';
+import User from 'models/userModel';
+
 export const getMessages = asyncHandler(async (req: Request, res: Response) => {
     const { senderId, receiverId } = req.params;
 
@@ -32,6 +35,20 @@ export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
         image: imageUrl,
     });
     const savedMessage = await newMessage.save();
+    
+    // Send push notification to receiver if they have a push token
+    const receiver = await User.findById(receiverId);
+    if (receiver?.expoPushToken) {
+        const sender = await User.findById(senderId);
+        if (sender) {
+            await sendPushNotification(
+                receiver.expoPushToken,
+                `New message from ${sender.name}`,
+                text,
+                { senderId, receiverId, text, image: imageUrl }
+            );
+        }
+    }
 
     // Emit the message to the receiver via Socket.IO
     const receiverSocketId = getReceiverSocketId(receiverId);

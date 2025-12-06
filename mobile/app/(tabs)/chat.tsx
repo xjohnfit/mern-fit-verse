@@ -9,6 +9,7 @@ import {
   Image,
   ActivityIndicator,
   AppState,
+  useColorScheme,
 } from 'react-native';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Ionicons } from '@expo/vector-icons';
@@ -46,6 +47,7 @@ interface Message {
 }
 
 const ChatScreen = () => {
+  const colorScheme = useColorScheme();
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const { userInfo } = useSelector((state: any) => state.auth);
@@ -226,21 +228,21 @@ const ChatScreen = () => {
   // User List View
   if (!selectedUser) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#fff', paddingTop: insets.top }}>
+      <View style={{ flex: 1, backgroundColor: colorScheme === 'dark' ? '#111827' : '#fff', paddingTop: insets.top }}>
         {/* Header */}
-        <View style={{ paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' }}>
-          <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#1f2937', marginBottom: 12 }}>
+        <View style={{ paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colorScheme === 'dark' ? '#374151' : '#e5e7eb' }}>
+          <Text style={{ fontSize: 24, fontWeight: 'bold', color: colorScheme === 'dark' ? '#f9fafb' : '#1f2937', marginBottom: 12 }}>
             Messages
           </Text>
 
           {/* Search */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#f3f4f6', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colorScheme === 'dark' ? '#1f2937' : '#f3f4f6', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 }}>
             <Ionicons name="search" size={20} color="#9ca3af" />
             <TextInput
               placeholder="Search messages..."
               value={searchQuery}
               onChangeText={setSearchQuery}
-              style={{ flex: 1, marginLeft: 8, fontSize: 16, color: '#1f2937' }}
+              style={{ flex: 1, marginLeft: 8, fontSize: 16, color: colorScheme === 'dark' ? '#f9fafb' : '#1f2937' }}
               placeholderTextColor="#9ca3af"
             />
           </View>
@@ -259,7 +261,7 @@ const ChatScreen = () => {
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => setSelectedUser(item)}
-                style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }}
+                style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colorScheme === 'dark' ? '#1f2937' : '#f3f4f6' }}
               >
                 {item.photo ? (
                   <Image
@@ -274,7 +276,7 @@ const ChatScreen = () => {
                   </View>
                 )}
                 <View style={{ flex: 1, marginLeft: 12 }}>
-                  <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937' }}>
+                  <Text style={{ fontSize: 16, fontWeight: '600', color: colorScheme === 'dark' ? '#f9fafb' : '#1f2937' }}>
                     {item.name}
                   </Text>
                   <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 2 }}>
@@ -305,14 +307,14 @@ const ChatScreen = () => {
   // Conversation View
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: '#fff' }}
+      style={{ flex: 1, backgroundColor: colorScheme === 'dark' ? '#111827' : '#fff' }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={insets.top}
     >
       {/* Header */}
-      <View style={{ paddingTop: insets.top, paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#e5e7eb', flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ paddingTop: insets.top, paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colorScheme === 'dark' ? '#374151' : '#e5e7eb', flexDirection: 'row', alignItems: 'center' }}>
         <TouchableOpacity onPress={() => setSelectedUser(null)} style={{ marginRight: 12 }}>
-          <Ionicons name="arrow-back" size={24} color="#1f2937" />
+          <Ionicons name="arrow-back" size={24} color={colorScheme === 'dark' ? '#f9fafb' : '#1f2937'} />
         </TouchableOpacity>
         {selectedUser.photo ? (
           <Image
@@ -327,7 +329,7 @@ const ChatScreen = () => {
           </View>
         )}
         <View style={{ flex: 1, marginLeft: 12 }}>
-          <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937' }}>
+          <Text style={{ fontSize: 16, fontWeight: '600', color: colorScheme === 'dark' ? '#f9fafb' : '#1f2937' }}>
             {selectedUser.name}
           </Text>
           <Text style={{ fontSize: 12, color: '#6b7280' }}>
@@ -344,10 +346,10 @@ const ChatScreen = () => {
         </View>
       ) : allMessages.length === 0 ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24 }}>
-          <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: '#ede9fe', justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
+          <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: colorScheme === 'dark' ? '#374151' : '#ede9fe', justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
             <Ionicons name="chatbubble-ellipses" size={40} color="#667eea" />
           </View>
-          <Text style={{ fontSize: 18, fontWeight: '600', color: '#1f2937', marginBottom: 8 }}>
+          <Text style={{ fontSize: 18, fontWeight: '600', color: colorScheme === 'dark' ? '#f9fafb' : '#1f2937', marginBottom: 8 }}>
             Start a conversation
           </Text>
           <Text style={{ fontSize: 14, color: '#6b7280', textAlign: 'center' }}>
@@ -388,7 +390,7 @@ const ChatScreen = () => {
                     borderRadius: 16,
                     paddingHorizontal: 14,
                     paddingVertical: 10,
-                    backgroundColor: isMyMessage ? '#667eea' : '#f3f4f6',
+                    backgroundColor: isMyMessage ? '#667eea' : (colorScheme === 'dark' ? '#1f2937' : '#f3f4f6'),
                   }}
                 >
                   {item.image && (
@@ -401,7 +403,7 @@ const ChatScreen = () => {
                   <Text
                     style={{
                       fontSize: 15,
-                      color: isMyMessage ? '#fff' : '#1f2937',
+                      color: isMyMessage ? '#fff' : (colorScheme === 'dark' ? '#f9fafb' : '#1f2937'),
                       lineHeight: 20,
                     }}
                   >
@@ -430,7 +432,7 @@ const ChatScreen = () => {
 
       {/* Image Preview */}
       {image && (
-        <View style={{ paddingHorizontal: 16, paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#e5e7eb' }}>
+        <View style={{ paddingHorizontal: 16, paddingVertical: 8, borderTopWidth: 1, borderTopColor: colorScheme === 'dark' ? '#374151' : '#e5e7eb' }}>
           <View style={{ position: 'relative' }}>
             <Image
               source={{ uri: image }}
@@ -447,14 +449,14 @@ const ChatScreen = () => {
       )}
 
       {/* Message Input */}
-      <View style={{ paddingHorizontal: 16, paddingVertical: 12, borderTopWidth: 1, borderTopColor: '#e5e7eb' }}>
+      <View style={{ paddingHorizontal: 16, paddingVertical: 12, borderTopWidth: 1, borderTopColor: colorScheme === 'dark' ? '#374151' : '#e5e7eb' }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <View
             style={{
               flex: 1,
               flexDirection: 'row',
               alignItems: 'center',
-              backgroundColor: '#f3f4f6',
+              backgroundColor: colorScheme === 'dark' ? '#1f2937' : '#f3f4f6',
               borderRadius: 24,
               paddingHorizontal: 16,
               paddingVertical: 8,
@@ -470,7 +472,7 @@ const ChatScreen = () => {
               style={{
                 flex: 1,
                 fontSize: 16,
-                color: '#1f2937',
+                color: colorScheme === 'dark' ? '#f9fafb' : '#1f2937',
                 maxHeight: 100,
                 paddingVertical: 4,
               }}
@@ -482,7 +484,7 @@ const ChatScreen = () => {
           <TouchableOpacity
             onPress={handlePickImage}
             disabled={isSending}
-            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#f3f4f6', justifyContent: 'center', alignItems: 'center', marginRight: 8 }}
+            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colorScheme === 'dark' ? '#1f2937' : '#f3f4f6', justifyContent: 'center', alignItems: 'center', marginRight: 8 }}
           >
             <Ionicons name="image" size={20} color="#667eea" />
           </TouchableOpacity>

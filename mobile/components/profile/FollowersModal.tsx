@@ -35,44 +35,50 @@ export const FollowersModal: React.FC<FollowersModalProps> = ({
     title,
     onUserPress,
 }) => {
-    const renderUserItem = ({ item }: { item: UserItem; }) => (
-        <Pressable
-            onPress={() => {
-                if (onUserPress) {
-                    onUserPress(item.username);
-                }
-                onClose();
-            }}
-            className="flex-row items-center p-4 border-b border-gray-200 dark:border-gray-700"
-        >
-            {/* User Photo */}
-            <View className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden mr-3">
-                {item.photo ? (
-                    <Image
-                        source={{ uri: item.photo }}
-                        className="w-full h-full"
-                        resizeMode="cover"
-                    />
-                ) : (
-                    <View className="w-full h-full flex items-center justify-center bg-blue-600">
-                        <Text className="text-white text-sm font-bold">
-                            {getInitials(item.name)}
-                        </Text>
-                    </View>
-                )}
-            </View>
+    // Debug logging removed
 
-            {/* User Info */}
-            <View className="flex-1">
-                <Text className="font-semibold text-gray-900 dark:text-gray-100">
-                    {item.name}
-                </Text>
-                <Text className="text-sm text-gray-500 dark:text-gray-400">
-                    @{item.username}
-                </Text>
-            </View>
-        </Pressable>
-    );
+    const renderUserItem = ({ item, index }: { item: UserItem; index: number; }) => {
+        if (!item || !item._id) return null;
+
+        return (
+            <Pressable
+                onPress={() => {
+                    if (onUserPress && item.username) {
+                        onUserPress(item.username);
+                    }
+                    onClose();
+                }}
+                className="flex-row items-center p-4 border-b border-gray-200 dark:border-gray-700"
+            >
+                {/* User Photo */}
+                <View className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden mr-3">
+                    {item.photo ? (
+                        <Image
+                            source={{ uri: item.photo }}
+                            className="w-full h-full"
+                            resizeMode="cover"
+                        />
+                    ) : (
+                        <View className="w-full h-full flex items-center justify-center bg-blue-600">
+                            <Text className="text-white text-sm font-bold">
+                                {getInitials(item.name)}
+                            </Text>
+                        </View>
+                    )}
+                </View>
+
+                {/* User Info */}
+                <View className="flex-1">
+                    <Text className="font-semibold text-gray-900 dark:text-gray-100">
+                        {item.name || 'Unknown User'}
+                    </Text>
+                    <Text className="text-sm text-gray-500 dark:text-gray-400">
+                        @{item.username || 'unknown'}
+                    </Text>
+                </View>
+            </Pressable>
+        );
+    };
 
     return (
         <Modal
@@ -94,11 +100,11 @@ export const FollowersModal: React.FC<FollowersModalProps> = ({
                     </View>
 
                     {/* Users List */}
-                    {users.length > 0 ? (
+                    {users && users.length > 0 ? (
                         <FlatList
-                            data={users}
+                            data={users.filter(user => user && user._id)}
                             renderItem={renderUserItem}
-                            keyExtractor={(item) => item._id}
+                            keyExtractor={(item, index) => item._id || `user-${index}`}
                             className="flex-1"
                         />
                     ) : (

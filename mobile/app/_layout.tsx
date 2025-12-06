@@ -18,67 +18,84 @@ import { useSocket } from '../hooks/useSocket';
 import { registerForPushNotificationsAsync } from '../lib/notifications';
 import * as Notifications from 'expo-notifications';
 
+import { useUpdatePushTokenMutation } from '../slices/notificationApiSlice';
+
 // Configure notification handler at app level for background notifications
 Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+        shouldShowBanner: true,
+        shouldShowList: true,
+    }),
 });
 
 function RootLayoutContent() {
-  // Initialize socket connection
-  useSocket();
+    // Initialize socket connection
+    useSocket();
 
-  useEffect(() => {
-    // Restore user credentials from AsyncStorage on app start
-    const restoreUser = async () => {
-      try {
-        const userInfo = await AsyncStorage.getItem('userInfo');
-        if (userInfo) {
-          store.dispatch(restoreCredentials(JSON.parse(userInfo)));
-        }
-      } catch (error) {
-        console.error('Failed to restore user credentials:', error);
-      }
-    };
+    useEffect(() => {
+        // Restore user credentials from AsyncStorage on app start
+        const restoreUser = async () => {
+            try {
+                const userInfo = await AsyncStorage.getItem('userInfo');
+                if (userInfo) {
+                    store.dispatch(restoreCredentials(JSON.parse(userInfo)));
+                }
+            } catch (error) {
+                console.error('Failed to restore user credentials:', error);
+            }
+        };
 
-    restoreUser();
-  }, []);
+        restoreUser();
+    }, []);
 
-  // Request notification permissions on app startup
-  useEffect(() => {
-    const requestPermissions = async () => {
-      const token = await registerForPushNotificationsAsync();
-      if (token) {
-        console.log('Notification token registered:', token);
-        // Save token to AsyncStorage for later use
-        try {
-          await AsyncStorage.setItem('pushToken', token);
-        } catch (error) {
-          console.error('Failed to save push token:', error);
-        }
-      }
-    };
+    // Request notification permissions on app startup
+    useEffect(() => {
+        const requestPermissions = async () => {
+            const token = await registerForPushNotificationsAsync();
+            if (token) {
+                console.log('Notification token registered:', token);
+                // Save token to AsyncStorage for later use
+                try {
+                    await AsyncStorage.setItem('pushToken', token);
+                } catch (error) {
+                    console.error('Failed to save push token:', error);
+                }
+            }
+        };
 
-    requestPermissions();
-  }, []);
+        requestPermissions();
+    }, []);
 
-  return (
-    <>
-      <Stack screenOptions={{ headerShown: false }} />
-      <Toast />
-    </>
-  );
+    const [updatePushToken] = useUpdatePushTokenMutation();
+
+    const { userInfo } = store.getState().auth;
+    useEffect(() => {
+        const registerToken = async () => {
+            const token = await registerForPushNotificationsAsync();
+            if (token && userInfo?._id) {
+                await updatePushToken(token);
+            }
+        };
+        registerToken();
+    }, [userInfo]);
+
+    return (
+        <>
+            <Stack screenOptions={{ headerShown: false }} />
+            <Toast />
+        </>
+    );
 }
 
 export default function RootLayout() {
-  return (
-    <SafeAreaProvider>
-      <Provider store={store}>
-        <RootLayoutContent />
-      </Provider>
-    </SafeAreaProvider>
-  );
+    return (
+        <SafeAreaProvider>
+            <Provider store={store}>
+                <RootLayoutContent />
+            </Provider>
+        </SafeAreaProvider>
+    );
 }
