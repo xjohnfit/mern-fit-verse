@@ -59,10 +59,8 @@ export const FollowersModal: React.FC<FollowersModalProps> = ({
                             resizeMode="cover"
                         />
                     ) : (
-                        <View className="w-full h-full flex items-center justify-center bg-blue-600">
-                            <Text className="text-white text-sm font-bold">
-                                {getInitials(item.name)}
-                            </Text>
+                        <View className="w-full h-full flex items-center justify-center bg-gray-300 dark:bg-gray-600">
+                            <Ionicons name="person" size={24} color="#9ca3af" />
                         </View>
                     )}
                 </View>

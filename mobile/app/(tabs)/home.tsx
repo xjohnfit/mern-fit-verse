@@ -93,30 +93,6 @@ export default function HomeScreen() {
                     </Text>
                 </View>
 
-                {/* Quick Actions */}
-                <View className="mb-6">
-                    <View className="flex-row items-center mb-4">
-                        <Ionicons name="flash" size={22} color="#F59E0B" style={{ marginRight: 8 }} />
-                        <Text className="text-xl font-bold text-gray-900 dark:text-white">
-                            Quick Actions
-                        </Text>
-                    </View>
-                    <QuickActionCard
-                        icon="barbell"
-                        title="Log Workout"
-                        description="Track your exercises and progress"
-                        colors={["#10B981", "#059669"]}
-                        onPress={() => router.push("/workout")}
-                    />
-                    <QuickActionCard
-                        icon="nutrition"
-                        title="Track Nutrition"
-                        description="Log your meals and calories"
-                        colors={["#8B5CF6", "#7C3AED"]}
-                        onPress={() => router.push("/nutrition")}
-                    />
-                </View>
-
                 {/* Workout Stats */}
                 <View className="mb-6">
                     <View className="flex-row items-center mb-3">

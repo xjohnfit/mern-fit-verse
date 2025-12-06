@@ -1,5 +1,7 @@
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
+import WorkoutDetailModal from './WorkoutDetailModal';
 
 interface Exercise {
     name: string;
@@ -11,10 +13,20 @@ interface Exercise {
 interface Workout {
     _id: string;
     name: string;
-    exercises: Exercise[];
+    exercises: {
+        name: string;
+        sets: {
+            setNumber: number;
+            weight: number;
+            reps: number;
+            completed: boolean;
+        }[];
+    }[];
     date: string;
     duration?: number;
     createdAt: string;
+    workoutType?: 'freestyle' | 'template';
+    templateName?: string;
 }
 
 interface RecentWorkoutsProps {
@@ -23,9 +35,39 @@ interface RecentWorkoutsProps {
 }
 
 export default function RecentWorkouts({ workouts, isLoading }: RecentWorkoutsProps) {
+    const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
+
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    };
+
+    const formatDuration = (seconds: number) => {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+
+        if (hours > 0) {
+            return `${hours}h ${minutes}m`;
+        }
+        return `${minutes}m`;
+    };
+
+    const calculateStats = (workout: Workout) => {
+        let totalSets = 0;
+        let completedSets = 0;
+        let totalVolume = 0;
+
+        workout.exercises?.forEach(exercise => {
+            exercise.sets?.forEach(set => {
+                totalSets++;
+                if (set.completed) {
+                    completedSets++;
+                    totalVolume += (set.weight || 0) * (set.reps || 0);
+                }
+            });
+        });
+
+        return { totalSets, completedSets, totalVolume };
     };
 
     if (isLoading) {
@@ -87,83 +129,117 @@ export default function RecentWorkouts({ workouts, isLoading }: RecentWorkoutsPr
                 </Text>
             </View>
             <View className="gap-4">
-                {recentWorkouts.map((workout, index) => (
-                    <View
-                        key={workout._id}
-                        className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm"
-                        style={{
-                            shadowColor: '#000',
-                            shadowOffset: { width: 0, height: 2 },
-                            shadowOpacity: 0.1,
-                            shadowRadius: 8,
-                            elevation: 3,
-                        }}
-                    >
-                        <View className="flex-row items-start justify-between mb-3">
-                            <View className="flex-1 mr-3">
-                                <Text className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                                    {workout.name}
-                                </Text>
-                                <View className="flex-row items-center">
-                                    <View className="bg-green-100 dark:bg-green-900/30 rounded-full px-3 py-1">
-                                        <Text className="text-xs font-semibold text-green-700 dark:text-green-400">
-                                            {workout.exercises?.length || 0} exercises
+                {recentWorkouts.map((workout) => {
+                    const isTemplate = workout.workoutType === 'template' && workout.templateName;
+                    const stats = calculateStats(workout);
+
+                    return (
+                        <TouchableOpacity
+                            key={workout._id}
+                            activeOpacity={0.7}
+                            onPress={() => setSelectedWorkout(workout)}
+                            className="bg-white dark:bg-gray-800 rounded-2xl shadow-md"
+                        >
+                            {/* Header */}
+                            <View className="p-4 border-b border-gray-200 dark:border-gray-700">
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                    <View>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            <Ionicons name={isTemplate ? "albums" : "flash"} size={14} color={isTemplate ? "#a855f7" : "#3b82f6"} />
+                                            <Text className="text-xl text-gray-600 dark:text-gray-400 ml-1 font-medium">
+                                                {isTemplate ? workout.templateName : 'Freestyle Workout'}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    <View className="bg-gray-100 dark:bg-gray-700 px-2.5 py-1.5 rounded-lg">
+                                        <Text className="text-xs text-gray-600 dark:text-gray-400 font-semibold">
+                                            {formatDate(workout.createdAt)}
                                         </Text>
                                     </View>
-                                    {workout.duration && (
-                                        <View className="bg-blue-100 dark:bg-blue-900/30 rounded-full px-3 py-1 ml-2">
-                                            <Text className="text-xs font-semibold text-blue-700 dark:text-blue-400">
-                                                {workout.duration} min
-                                            </Text>
-                                        </View>
-                                    )}
                                 </View>
                             </View>
-                            <View className="items-end">
-                                <View className="bg-gray-100 dark:bg-gray-700 rounded-xl px-3 py-2">
-                                    <Text className="text-xs font-bold text-gray-900 dark:text-white">
-                                        {formatDate(workout.createdAt).split(' ')[0]}
-                                    </Text>
-                                    <Text className="text-lg font-bold text-gray-900 dark:text-white text-center">
-                                        {formatDate(workout.createdAt).split(' ')[1]}
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
 
-                        {/* Exercise Preview */}
-                        {workout.exercises && workout.exercises.length > 0 && (
-                            <View className="border-t border-gray-200 dark:border-gray-700 pt-3">
-                                <View className="flex-row items-center mb-2">
-                                    <Ionicons name="list" size={14} color="#6B7280" />
-                                    <Text className="text-xs text-gray-500 dark:text-gray-400 ml-1 font-semibold">
-                                        Top Exercises
-                                    </Text>
-                                </View>
-                                <View className="flex-row flex-wrap gap-2">
-                                    {workout.exercises.slice(0, 3).map((exercise, idx) => (
-                                        <View
-                                            key={idx}
-                                            className="bg-gray-50 dark:bg-gray-700/50 rounded-lg px-2 py-1"
-                                        >
-                                            <Text className="text-xs text-gray-600 dark:text-gray-300">
-                                                {exercise.name}
+                            {/* Stats Grid */}
+                            <View className="p-4">
+                                <View style={{ flexDirection: 'row', marginBottom: 12 }}>
+                                    {/* Duration */}
+                                    <View style={{ flex: 1, marginRight: 8 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                                            <Ionicons name="time-outline" size={16} color="#3b82f6" />
+                                            <Text className="text-xs text-gray-600 dark:text-gray-400 ml-1 font-semibold">
+                                                DURATION
                                             </Text>
                                         </View>
-                                    ))}
-                                    {workout.exercises.length > 3 && (
-                                        <View className="bg-gray-50 dark:bg-gray-700/50 rounded-lg px-2 py-1">
-                                            <Text className="text-xs text-gray-500 dark:text-gray-400">
-                                                +{workout.exercises.length - 3} more
+                                        <Text className="text-2xl font-bold text-gray-900 dark:text-white">
+                                            {workout.duration ? formatDuration(workout.duration) : 'N/A'}
+                                        </Text>
+                                    </View>
+
+                                    {/* Exercises */}
+                                    <View style={{ flex: 1, marginLeft: 8 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                                            <Ionicons name="barbell-outline" size={16} color="#10b981" />
+                                            <Text className="text-xs text-gray-600 dark:text-gray-400 ml-1 font-semibold">
+                                                EXERCISES
                                             </Text>
                                         </View>
-                                    )}
+                                        <Text className="text-2xl font-bold text-gray-900 dark:text-white">
+                                            {workout.exercises?.length || 0}
+                                        </Text>
+                                    </View>
                                 </View>
+
+                                <View style={{ flexDirection: 'row', marginBottom: 12 }}>
+                                    {/* Sets */}
+                                    <View style={{ flex: 1, marginRight: 8 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                                            <Ionicons name="checkmark-circle-outline" size={16} color="#f59e0b" />
+                                            <Text className="text-xs text-gray-600 dark:text-gray-400 ml-1 font-semibold">
+                                                SETS
+                                            </Text>
+                                        </View>
+                                        <Text className="text-2xl font-bold text-gray-900 dark:text-white">
+                                            {stats.completedSets}/{stats.totalSets}
+                                        </Text>
+                                    </View>
+
+                                    {/* Volume */}
+                                    <View style={{ flex: 1, marginLeft: 8 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                                            <Ionicons name="analytics-outline" size={16} color="#8b5cf6" />
+                                            <Text className="text-xs text-gray-600 dark:text-gray-400 ml-1 font-semibold">
+                                                VOLUME
+                                            </Text>
+                                        </View>
+                                        <Text className="text-2xl font-bold text-gray-900 dark:text-white">
+                                            {stats.totalVolume.toLocaleString()} lbs
+                                        </Text>
+                                    </View>
+                                </View>
+
+                                {/* Progress Bar */}
+                                <View className="bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
+                                    <View
+                                        style={{
+                                            backgroundColor: '#10b981',
+                                            height: '100%',
+                                            width: `${stats.totalSets > 0 ? (stats.completedSets / stats.totalSets) * 100 : 0}%`
+                                        }}
+                                    />
+                                </View>
+                                <Text className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center">
+                                    {stats.totalSets > 0 ? Math.round((stats.completedSets / stats.totalSets) * 100) : 0}% Complete
+                                </Text>
                             </View>
-                        )}
-                    </View>
-                ))}
+                        </TouchableOpacity>
+                    );
+                })}
             </View>
+            <WorkoutDetailModal
+                visible={selectedWorkout !== null}
+                workout={selectedWorkout}
+                onClose={() => setSelectedWorkout(null)}
+            />
         </View>
     );
 }

@@ -15,6 +15,16 @@ import { calculateAge } from '../../lib/calculateAge';
 import { formatDateToMMDDYYYY } from '../../lib/formatDate';
 import { UserProfile } from '../../types/profile.types';
 
+// Helper function to format goal values to display labels
+const formatGoalLabel = (goalValue: string): string => {
+    const goalMap: Record<string, string> = {
+        'lose-weight': 'Lose Weight',
+        'build-muscle': 'Build Muscle',
+        'maintain': 'Maintain Health',
+    };
+    return goalMap[goalValue] || goalValue;
+};
+
 interface ProfileHeaderProps {
     user: UserProfile;
     isOwnProfile: boolean;
@@ -40,7 +50,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     const insets = useSafeAreaInsets();
 
     const handleMessageClick = () => {
-        console.log('Navigate to messages with user:', user.username);
+        router.push(`/chat?userId=${user._id}`);
     };
 
     // Safety check for user data
@@ -62,9 +72,9 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                 }}>
                 {/* Name and Username centered */}
                 <View className='items-center mb-4'>
-                    <View className='flex-row items-center justify-center mb-1 gap-2'>
+                    <View className='flex-row items-center justify-between mb-1 w-full px-2'>
                         {/* Back Button - Only show when not own profile */}
-                        {!isOwnProfile && onBackPress && (
+                        {!isOwnProfile && onBackPress ? (
                             <TouchableOpacity
                                 onPress={onBackPress}
                                 className='w-10 h-10 rounded-full bg-white/20 items-center justify-center'
@@ -75,18 +85,24 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                                     size={24}
                                 />
                             </TouchableOpacity>
+                        ) : (
+                            <View className='w-10' />
                         )}
-                        <Text
-                            style={{
-                                color: '#ffffff',
-                                fontSize: 30,
-                                fontWeight: 'bold',
-                            }}
-                            numberOfLines={1}>
-                            {user.name}
-                        </Text>
+                        <View className='flex-1 mx-2'>
+                            <Text
+                                style={{
+                                    color: '#ffffff',
+                                    fontSize: 24,
+                                    fontWeight: 'bold',
+                                    textAlign: 'center',
+                                }}
+                                numberOfLines={1}
+                                ellipsizeMode='tail'>
+                                {user.name}
+                            </Text>
+                        </View>
                         {/* More Options Button */}
-                        {!isOwnProfile && (
+                        {!isOwnProfile ? (
                             <TouchableOpacity className='w-10 h-10 rounded-full bg-white/20 items-center justify-center'>
                                 <Ionicons
                                     name='ellipsis-horizontal'
@@ -94,6 +110,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                                     size={20}
                                 />
                             </TouchableOpacity>
+                        ) : (
+                            <View className='w-10' />
                         )}
                     </View>
 
@@ -180,20 +198,20 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
                 {/* Fitness Goal */}
                 {user.goal && (
-                    <View className='bg-white/20 rounded-2xl p-3 mb-4'>
-                        <View className='flex-row items-center mb-1.5'>
+                    <View className='bg-white/20 rounded-full px-4 py-2.5 mb-4 self-center'>
+                        <View className='flex-row items-center'>
                             <Ionicons
                                 name='flag'
                                 color='#fff'
-                                size={16}
+                                size={14}
                             />
-                            <Text className='ml-2 text-xs font-bold text-white'>
-                                Fitness Goal
+                            <Text className='ml-2 text-xs font-semibold text-white'>
+                                Goal:
+                            </Text>
+                            <Text className='ml-1.5 text-xs text-white/95' numberOfLines={1}>
+                                {formatGoalLabel(user.goal)}
                             </Text>
                         </View>
-                        <Text className='text-xs text-white/95 leading-relaxed'>
-                            {user.goal}
-                        </Text>
                     </View>
                 )}
 
@@ -235,13 +253,13 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                                     resizeMode='cover'
                                 />
                             ) : (
-                                <LinearGradient
-                                    colors={['#3b82f6', '#8b5cf6']}
-                                    className='w-full h-full items-center justify-center'>
-                                    <Text className='text-white text-4xl font-bold'>
-                                        {getInitials(user.name)}
-                                    </Text>
-                                </LinearGradient>
+                                <View className='w-full h-full items-center justify-center bg-gray-300 dark:bg-gray-600'>
+                                    <Ionicons
+                                        name='person'
+                                        size={64}
+                                        color='#9ca3af'
+                                    />
+                                </View>
                             )}
                         </View>
                     </View>

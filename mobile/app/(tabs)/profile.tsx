@@ -326,6 +326,7 @@ export default function ProfileScreen() {
                                 <View>
                                     {userPosts.map((post: any) => {
                                         const isLiked = post.likes?.some((like: any) => like._id === userInfo?._id || like === userInfo?._id);
+                                        const isPostOwner = post.user?._id === userInfo?._id || post.user === userInfo?._id;
                                         return (
                                             <View key={post._id} className="bg-white dark:bg-gray-800 shadow-sm mb-3 rounded-2xl">
                                                 {/* Post Header with User Info and Delete */}
@@ -338,12 +339,14 @@ export default function ProfileScreen() {
                                                             • {formatRelativeTime(post.createdAt)}
                                                         </Text>
                                                     </View>
-                                                    <TouchableOpacity
-                                                        onPress={() => handleDeletePost(post._id)}
-                                                        className="ml-2"
-                                                    >
-                                                        <Ionicons name="trash-outline" size={20} color="#ef4444" />
-                                                    </TouchableOpacity>
+                                                    {isPostOwner && (
+                                                        <TouchableOpacity
+                                                            onPress={() => handleDeletePost(post._id)}
+                                                            className="ml-2"
+                                                        >
+                                                            <Ionicons name="trash-outline" size={20} color="#ef4444" />
+                                                        </TouchableOpacity>
+                                                    )}
                                                 </View>
                                                 {/* Post Content - Only show if there's text */}
                                                 {post.content && (

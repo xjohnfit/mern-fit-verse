@@ -15,7 +15,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { useGetUserProfileQuery } from '@/slices/usersApiSlice';
 import { useGetMessagesQuery, useSendMessageMutation } from '@/slices/messageApiSlice';
@@ -52,18 +52,38 @@ const ChatScreen = () => {
   const dispatch = useDispatch();
   const { userInfo } = useSelector((state: any) => state.auth);
   const { data: currentUserProfile, isLoading: isLoadingProfile } = useGetUserProfileQuery({});
+  const { userId } = useLocalSearchParams<{ userId?: string; }>();
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [messageText, setMessageText] = useState('');
   const [image, setImage] = useState<string | null>(null);
-  const [allMessages, setAllMessages] = useState<Message[]>([]);
+  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
 
   const flatListRef = useRef<FlatList>(null);
   const appState = useRef(AppState.currentState);
 
+  // Handle userId from navigation params
+  useEffect(() => {
+    if (userId && currentUserProfile?.following) {
+      const user = currentUserProfile.following.find((u: User) => u._id === userId);
+      if (user) {
+        setSelectedUser(user);
+      }
+    }
+  }, [userId, currentUserProfile]);
+
+  // Update conversation ID when user changes
+  useEffect(() => {
+    if (selectedUser) {
+      setCurrentConversationId(selectedUser._id);
+    } else {
+      setCurrentConversationId(null);
+    }
+  }, [selectedUser?._id]);
+
   // Fetch messages for selected user
-  const { data: messages = [], isLoading: isLoadingMessages } = useGetMessagesQuery(
+  const { data: messages = [], isLoading: isLoadingMessages, isFetching } = useGetMessagesQuery(
     {
       senderId: userInfo?._id || '',
       receiverId: selectedUser?._id || '',
@@ -72,6 +92,9 @@ const ChatScreen = () => {
       skip: !userInfo || !selectedUser,
     }
   );
+
+  // Only show messages if they match the current conversation
+  const displayMessages = (selectedUser && currentConversationId === selectedUser._id && !isFetching) ? messages : [];
 
   const [sendMessage, { isLoading: isSending }] = useSendMessageMutation();
 
@@ -98,35 +121,15 @@ const ChatScreen = () => {
     };
   }, []); // Run only once on mount
 
-  // Update local messages when query data changes - use useMemo to prevent unnecessary updates
-  useMemo(() => {
-    if (messages.length > 0) {
-      setAllMessages(messages);
-    }
-  }, [messages.length, selectedUser?._id]);
-
   // Listen for real-time messages via socket.io
   useEffect(() => {
     const socket = getSocket();
     if (!socket) return;
 
     const handleNewMessage = async (message: Message) => {
-      // If message is for current user, invalidate messages cache to refetch all conversations
+      // If message is for current user, invalidate messages cache to refetch
       if (message.receiverId === userInfo?._id || message.senderId === userInfo?._id) {
         dispatch(apiSlice.util.invalidateTags(['Message']));
-      }
-
-      // Only add message to UI if it's part of the current conversation
-      if (
-        (message.senderId === selectedUser?._id && message.receiverId === userInfo?._id) ||
-        (message.senderId === userInfo?._id && message.receiverId === selectedUser?._id)
-      ) {
-        setAllMessages((prev) => {
-          if (prev.some((m) => m._id === message._id)) {
-            return prev;
-          }
-          return [...prev, message];
-        });
       }
 
       // Show push notification if message is from another user and not viewing that conversation
@@ -175,10 +178,10 @@ const ChatScreen = () => {
   }, []);
 
   useEffect(() => {
-    if (allMessages.length > 0) {
+    if (displayMessages.length > 0) {
       scrollToBottom();
     }
-  }, [allMessages.length, scrollToBottom]);
+  }, [displayMessages.length, scrollToBottom]);
 
   const handleSendMessage = async () => {
     if ((!messageText.trim() && !image) || !userInfo || !selectedUser) return;
@@ -344,7 +347,7 @@ const ChatScreen = () => {
           <ActivityIndicator size="large" color="#667eea" />
           <Text style={{ marginTop: 12, color: '#6b7280' }}>Loading messages...</Text>
         </View>
-      ) : allMessages.length === 0 ? (
+      ) : displayMessages.length === 0 ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24 }}>
           <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: colorScheme === 'dark' ? '#374151' : '#ede9fe', justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
             <Ionicons name="chatbubble-ellipses" size={40} color="#667eea" />
@@ -358,18 +361,19 @@ const ChatScreen = () => {
         </View>
       ) : (
         <FlatList
+          key={selectedUser._id}
           ref={flatListRef}
-          data={allMessages}
+          data={displayMessages}
           keyExtractor={(item) => item._id}
           contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 12, flexGrow: 1 }}
           inverted={false}
           onContentSizeChange={() => {
-            if (flatListRef.current && allMessages.length > 0) {
+            if (flatListRef.current && displayMessages.length > 0) {
               flatListRef.current.scrollToEnd({ animated: false });
             }
           }}
           onLayout={() => {
-            if (flatListRef.current && allMessages.length > 0) {
+            if (flatListRef.current && displayMessages.length > 0) {
               setTimeout(() => {
                 flatListRef.current?.scrollToEnd({ animated: false });
               }, 100);
@@ -471,7 +475,7 @@ const ChatScreen = () => {
               maxLength={500}
               style={{
                 flex: 1,
-                fontSize: 16,
+                fontSize: 14,
                 color: colorScheme === 'dark' ? '#f9fafb' : '#1f2937',
                 maxHeight: 100,
                 paddingVertical: 4,
