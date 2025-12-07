@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import User from '../models/userModel';
+import Notification from '../models/notificationModel';
 import generateToken from '../utils/generateToken';
 
 interface AuthUserBody {
@@ -85,6 +86,35 @@ export const registerUser = asyncHandler(
             });
 
             if (user) {
+                // Auto-follow xjohnfit profile
+                try {
+                    const ownerProfile = await User.findOne({
+                        username: 'xjohnfit',
+                    });
+                    if (ownerProfile) {
+                        // Add xjohnfit to the new user's following list
+                        await User.findByIdAndUpdate(user._id, {
+                            $push: { following: ownerProfile._id },
+                        });
+                        // Add new user to xjohnfit's followers list
+                        await User.findByIdAndUpdate(ownerProfile._id, {
+                            $push: { followers: user._id },
+                        });
+
+                        // Create notification for xjohnfit
+                        const notification = new Notification({
+                            type: 'follow',
+                            from: user._id,
+                            to: ownerProfile._id,
+                            message: `${user.username} started following you.`,
+                        });
+                        await notification.save({ validateBeforeSave: false });
+                    }
+                } catch (followError) {
+                    // Log error but don't fail registration if auto-follow fails
+                    console.error('Auto-follow failed:', followError);
+                }
+
                 generateToken(res, user._id.toString());
                 const newUser = await User.findById(user._id).select(
                     '-password'
