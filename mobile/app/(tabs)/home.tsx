@@ -1,4 +1,5 @@
 import { ScrollView, Text, View, RefreshControl } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useAppSelector } from "../../hooks/useRedux";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -62,6 +63,17 @@ export default function HomeScreen() {
         fats: nutritionData?.data?.totals?.fats || 0,
     };
 
+    const nutritionGoals = currentUserProfile?.nutritionGoals || {
+        calories: 2000,
+        protein: 150,
+        carbs: 200,
+        fats: 65,
+    };
+
+    const calorieProgress = nutritionGoals.calories > 0
+        ? Math.min((nutritionTotals.calories / nutritionGoals.calories) * 100, 100)
+        : 0;
+
     const totalPosts = feedPosts?.length || 0;
     const totalLikes = feedPosts?.reduce((sum: number, post: any) => sum + (post.likes?.length || 0), 0) || 0;
     const followers = currentUserProfile?.followers?.length || 0;
@@ -91,6 +103,68 @@ export default function HomeScreen() {
                     <Text className="text-base text-gray-600 dark:text-gray-400">
                         Here's your fitness journey at a glance
                     </Text>
+                </View>
+
+                {/* Nutrition Overview */}
+                <View className="mb-6">
+                    <View className="flex-row items-center mb-3">
+                        <Ionicons name="nutrition" size={20} color="#8B5CF6" style={{ marginRight: 8 }} />
+                        <Text className="text-xl font-bold text-gray-900 dark:text-white">
+                            Today's Nutrition
+                        </Text>
+                    </View>
+                    <LinearGradient
+                        colors={['#3B82F6', '#8B5CF6']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={{ borderRadius: 16, padding: 20 }}
+                    >
+                        {/* Calorie Goal and Progress */}
+                        <View style={{ marginBottom: 20 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Ionicons name="flame" size={18} color="#FFFFFF" style={{ marginRight: 6 }} />
+                                    <Text style={{ fontSize: 14, fontWeight: '700', color: 'rgba(255,255,255,0.9)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                                        Calories
+                                    </Text>
+                                </View>
+                                <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#FFFFFF' }}>
+                                    {nutritionTotals.calories.toFixed(0)} <Text style={{ fontSize: 14, fontWeight: '600', color: 'rgba(255,255,255,0.8)' }}>/ {nutritionGoals.calories || 2000}</Text>
+                                </Text>
+                            </View>
+                            <View style={{ height: 8, backgroundColor: 'rgba(255,255,255,0.25)', borderRadius: 4, overflow: 'hidden' }}>
+                                <View style={{ height: '100%', width: `${calorieProgress}%`, backgroundColor: '#FFFFFF', borderRadius: 4 }} />
+                            </View>
+                        </View>
+
+                        {/* Macros */}
+                        <View className="flex-row justify-around items-center">
+                            <View className="items-center">
+                                <Ionicons name="fitness" size={16} color="rgba(255,255,255,0.9)" style={{ marginBottom: 4 }} />
+                                <Text className="text-2xl font-bold text-white">
+                                    {nutritionTotals.protein.toFixed(0)}g
+                                </Text>
+                                <Text className="text-white/80 text-xs mt-1">Protein</Text>
+                                <Text className="text-white/60 text-xs">/ {nutritionGoals.protein || 150}g</Text>
+                            </View>
+                            <View className="items-center">
+                                <Ionicons name="flash" size={16} color="rgba(255,255,255,0.9)" style={{ marginBottom: 4 }} />
+                                <Text className="text-2xl font-bold text-white">
+                                    {nutritionTotals.carbs.toFixed(0)}g
+                                </Text>
+                                <Text className="text-white/80 text-xs mt-1">Carbs</Text>
+                                <Text className="text-white/60 text-xs">/ {nutritionGoals.carbs || 200}g</Text>
+                            </View>
+                            <View className="items-center">
+                                <Ionicons name="water" size={16} color="rgba(255,255,255,0.9)" style={{ marginBottom: 4 }} />
+                                <Text className="text-2xl font-bold text-white">
+                                    {nutritionTotals.fats.toFixed(0)}g
+                                </Text>
+                                <Text className="text-white/80 text-xs mt-1">Fats</Text>
+                                <Text className="text-white/60 text-xs">/ {nutritionGoals.fats || 65}g</Text>
+                            </View>
+                        </View>
+                    </LinearGradient>
                 </View>
 
                 {/* Workout Stats */}
@@ -129,44 +203,6 @@ export default function HomeScreen() {
                         value={daysActive > 0 ? ((workoutStats?.totalWorkouts || 0) / (daysActive / 7)).toFixed(1) : 0}
                         subtitle="Consistency score"
                     />
-                </View>
-
-                {/* Nutrition Overview */}
-                <View className="mb-6">
-                    <View className="flex-row items-center mb-3">
-                        <Ionicons name="nutrition" size={20} color="#8B5CF6" style={{ marginRight: 8 }} />
-                        <Text className="text-xl font-bold text-gray-900 dark:text-white">
-                            Today's Nutrition
-                        </Text>
-                    </View>
-                    <View className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl p-4">
-                        <View className="flex-row justify-around">
-                            <View className="items-center">
-                                <Text className="text-2xl font-bold text-white">
-                                    {nutritionTotals.calories.toFixed(0)}
-                                </Text>
-                                <Text className="text-white/70 text-xs mt-1">Calories</Text>
-                            </View>
-                            <View className="items-center">
-                                <Text className="text-2xl font-bold text-white">
-                                    {nutritionTotals.protein.toFixed(0)}g
-                                </Text>
-                                <Text className="text-white/70 text-xs mt-1">Protein</Text>
-                            </View>
-                            <View className="items-center">
-                                <Text className="text-2xl font-bold text-white">
-                                    {nutritionTotals.carbs.toFixed(0)}g
-                                </Text>
-                                <Text className="text-white/70 text-xs mt-1">Carbs</Text>
-                            </View>
-                            <View className="items-center">
-                                <Text className="text-2xl font-bold text-white">
-                                    {nutritionTotals.fats.toFixed(0)}g
-                                </Text>
-                                <Text className="text-white/70 text-xs mt-1">Fats</Text>
-                            </View>
-                        </View>
-                    </View>
                 </View>
 
                 {/* Social Stats */}

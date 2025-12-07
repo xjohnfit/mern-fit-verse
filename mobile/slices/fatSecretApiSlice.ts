@@ -29,51 +29,78 @@ export interface ApiResponse<T> {
 // Inject endpoints into the main apiSlice (avoids duplicate middleware)
 export const fatSecretApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        searchFoods: builder.query({
+        // Food Search - Uses backend proxy for advanced search
+        searchFoods: builder.query<
+            ApiResponse<any>,
+            {
+                search_expression: string;
+                page_number?: number;
+                max_results?: number;
+            }
+        >({
             query: ({
                 search_expression,
-                max_results = 50,
                 page_number = 0,
+                max_results = 20,
             }) => ({
                 url: `${BASE_URL}/search`,
+                method: 'GET',
                 params: {
                     search_expression,
-                    max_results,
                     page_number,
+                    max_results: Math.min(max_results, 50),
                 },
             }),
             providesTags: ['Food'],
         }),
-        getFood: builder.query({
-            query: (food_id) => ({
-                url: `${BASE_URL}/food/${food_id}`,
+
+        // Get Food Details by ID - Uses backend proxy
+        getFoodById: builder.query<ApiResponse<any>, string>({
+            query: (foodId) => ({
+                url: `${BASE_URL}/food/${foodId}`,
+                method: 'GET',
             }),
-            providesTags: (_result, _error, food_id) => [
-                { type: 'Food', id: food_id },
+            providesTags: (_result, _error, foodId) => [
+                { type: 'Food', id: foodId },
             ],
         }),
-        autocomplete: builder.query<
+
+        // Foods Autocomplete - Uses backend proxy to FatSecret API
+        getFoodAutocomplete: builder.query<
             ApiResponse<AutocompleteResponse>,
             AutocompleteParams
         >({
             query: ({ expression, max_results = 4, region = 'US' }) => ({
                 url: `${BASE_URL}/autocomplete`,
+                method: 'GET',
                 params: {
                     expression,
-                    max_results,
+                    max_results: Math.min(max_results, 10),
                     region,
                 },
             }),
             providesTags: ['FoodSuggestions'],
+        }),
+
+        // Health check for FatSecret integration
+        checkNutritionHealth: builder.query<
+            ApiResponse<{ message: string; timestamp: string }>,
+            void
+        >({
+            query: () => ({
+                url: `${BASE_URL}/health`,
+                method: 'GET',
+            }),
         }),
     }),
 });
 
 export const {
     useSearchFoodsQuery,
-    useGetFoodQuery,
-    useAutocompleteQuery,
+    useGetFoodByIdQuery,
+    useGetFoodAutocompleteQuery,
+    useCheckNutritionHealthQuery,
     useLazySearchFoodsQuery,
-    useLazyGetFoodQuery,
-    useLazyAutocompleteQuery,
+    useLazyGetFoodByIdQuery,
+    useLazyGetFoodAutocompleteQuery,
 } = fatSecretApiSlice;

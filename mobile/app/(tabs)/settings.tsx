@@ -74,9 +74,11 @@ const SettingsScreen = () => {
     try {
       const notifications = await AsyncStorage.getItem('notifications_enabled');
       const motion = await AsyncStorage.getItem('reduced_motion');
+      const darkMode = await AsyncStorage.getItem('dark_mode_enabled');
 
       if (notifications !== null) setNotificationsEnabled(JSON.parse(notifications));
       if (motion !== null) setReducedMotion(JSON.parse(motion));
+      if (darkMode !== null) setDarkModeEnabled(JSON.parse(darkMode));
     } catch (error) {
       console.error('Error loading preferences:', error);
     }
@@ -389,10 +391,7 @@ const SettingsScreen = () => {
                   </Text>
                   <TextInput
                     value={username}
-                    onChangeText={(text) => {
-                      setUsername(text);
-                    }}
-                    placeholder="Enter your username"
+                    onChangeText={setUsername}
                     placeholderTextColor={colorScheme === 'dark' ? '#6B7280' : '#9CA3AF'}
                     style={{
                       paddingHorizontal: 20,
@@ -672,26 +671,6 @@ const SettingsScreen = () => {
                 </Text>
 
                 <SettingItem
-                  icon="moon"
-                  title="Dark Mode"
-                  subtitle={`Currently ${darkModeEnabled ? 'enabled' : 'disabled'}`}
-                  showArrow={false}
-                  rightComponent={
-                    <Switch
-                      value={darkModeEnabled}
-                      onValueChange={(value) => {
-                        setDarkModeEnabled(value);
-                        Toast.show({
-                          type: 'info',
-                          text1: 'Theme Change',
-                          text2: 'Restart the app to apply changes',
-                        });
-                      }}
-                    />
-                  }
-                />
-
-                <SettingItem
                   icon="eye-off"
                   title="Reduced Motion"
                   subtitle="Minimize animations"
@@ -704,7 +683,7 @@ const SettingsScreen = () => {
                         savePreference('reduced_motion', value);
                         Toast.show({
                           type: 'success',
-                          text1: reducedMotion ? 'Animations enabled' : 'Animations disabled',
+                          text1: value ? 'Animations disabled' : 'Animations enabled',
                         });
                       }}
                     />
