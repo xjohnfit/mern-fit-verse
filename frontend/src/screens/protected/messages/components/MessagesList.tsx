@@ -25,7 +25,7 @@ interface MessagesListProps {
 }
 
 export const MessagesList = ({ selectedUser, currentUserId }: MessagesListProps) => {
-    const { data: messages = [], isLoading, error } = useGetMessagesQuery(
+    const { data: messagesData, isLoading, error } = useGetMessagesQuery(
         {
             senderId: currentUserId || '',
             receiverId: selectedUser._id,
@@ -41,8 +41,10 @@ export const MessagesList = ({ selectedUser, currentUserId }: MessagesListProps)
 
     // Update local messages when query data changes
     useEffect(() => {
-        setAllMessages(messages);
-    }, [messages]);
+        if (messagesData?.messages) {
+            setAllMessages(messagesData.messages);
+        }
+    }, [messagesData]);
 
     // Listen for real-time messages
     useEffect(() => {

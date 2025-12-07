@@ -11,6 +11,7 @@ import {
   AppState,
   useColorScheme,
   StatusBar,
+  Keyboard,
 } from 'react-native';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,9 +21,15 @@ import { useSelector } from 'react-redux';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { useGetUserProfileQuery } from '@/slices/usersApiSlice';
-import { useGetMessagesQuery, useSendMessageMutation } from '@/slices/messageApiSlice';
+import { useGetMessagesQuery, useSendMessageMutation, useLazyGetMessagesQuery } from '@/slices/messageApiSlice';
 import { useDispatch } from 'react-redux';
 import { apiSlice } from '@/slices/apiSlice';
+import {
+  getCachedMessages,
+  cacheMessages,
+  appendMessageToCache,
+} from '@/lib/messageCache';
+import type { Message as CachedMessage } from '@/lib/messageCache';
 import { getSocket } from '@/hooks/useSocket';
 import {
   registerForPushNotificationsAsync,
@@ -46,6 +53,7 @@ interface Message {
   text: string;
   image?: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 const ChatScreen = () => {
@@ -61,10 +69,16 @@ const ChatScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [messageText, setMessageText] = useState('');
   const [image, setImage] = useState<string | null>(null);
-  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  const [allMessages, setAllMessages] = useState<Message[]>([]);
+  const [cachedMessages, setCachedMessages] = useState<Message[]>([]);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const flatListRef = useRef<FlatList>(null);
   const appState = useRef(AppState.currentState);
+  const isLoadingOlderMessages = useRef(false);
+  const scrollTimeoutRef = useRef<any>(null);
 
   // Handle userId from navigation params
   useEffect(() => {
@@ -76,28 +90,60 @@ const ChatScreen = () => {
     }
   }, [userId, currentUserProfile]);
 
-  // Update conversation ID when user changes
+  // Use lazy query for manual message fetching
+  const [fetchMessages, { data: messagesData, isLoading: isLoadingMessages, isFetching }] = useLazyGetMessagesQuery();
+
+  // Load cached messages and fetch latest when user is selected
   useEffect(() => {
-    if (selectedUser) {
-      setCurrentConversationId(selectedUser._id);
-    } else {
-      setCurrentConversationId(null);
-    }
-  }, [selectedUser?._id]);
+    const loadMessagesForUser = async () => {
+      if (!selectedUser || !userInfo) return;
 
-  // Fetch messages for selected user
-  const { data: messages = [], isLoading: isLoadingMessages, isFetching } = useGetMessagesQuery(
-    {
-      senderId: userInfo?._id || '',
-      receiverId: selectedUser?._id || '',
-    },
-    {
-      skip: !userInfo || !selectedUser,
-    }
-  );
+      setIsInitialLoad(true);
+      setHasMoreMessages(true);
 
-  // Only show messages if they match the current conversation
-  const displayMessages = (selectedUser && currentConversationId === selectedUser._id && !isFetching) ? messages : [];
+      // Load cached messages immediately for instant display
+      const cached = await getCachedMessages(userInfo._id, selectedUser._id);
+      console.log('📦 Loaded from cache:', cached?.length || 0, 'messages');
+
+      if (cached && Array.isArray(cached) && cached.length > 0) {
+        setCachedMessages(cached);
+        setAllMessages(cached);
+        setIsInitialLoad(false); // Show cached messages immediately without loading state
+      } else {
+        setCachedMessages([]);
+        setAllMessages([]);
+
+        // Only fetch from API if no cache exists
+        try {
+          const result = await fetchMessages({
+            senderId: userInfo._id,
+            receiverId: selectedUser._id,
+            limit: 50,
+          }).unwrap();
+
+          console.log('🌐 Fetched from API (no cache):', result?.messages?.length || 0, 'messages');
+
+          if (result && result.messages && Array.isArray(result.messages)) {
+            setAllMessages(result.messages);
+            setHasMoreMessages(result.hasMore || false);
+
+            // Update cache with fetched messages
+            await cacheMessages(userInfo._id, selectedUser._id, result.messages);
+            console.log('💾 Saved to cache:', result.messages.length, 'messages');
+          }
+        } catch (error) {
+          console.error('Failed to fetch messages:', error);
+        } finally {
+          setIsInitialLoad(false);
+        }
+      }
+    };
+
+    loadMessagesForUser();
+  }, [selectedUser?._id, userInfo?._id]);
+
+  // Display messages - simply show allMessages for the selected user
+  const displayMessages = selectedUser ? allMessages : [];
 
   const [sendMessage, { isLoading: isSending }] = useSendMessageMutation();
 
@@ -130,9 +176,22 @@ const ChatScreen = () => {
     if (!socket) return;
 
     const handleNewMessage = async (message: Message) => {
-      // If message is for current user, invalidate messages cache to refetch
+      // If message is for current user
       if (message.receiverId === userInfo?._id || message.senderId === userInfo?._id) {
-        dispatch(apiSlice.util.invalidateTags(['Message']));
+        const otherUserId = message.senderId === userInfo._id ? message.receiverId : message.senderId;
+
+        // Update cache with new message
+        await appendMessageToCache(userInfo._id, otherUserId, message);
+
+        // If viewing this conversation, add to displayed messages (avoiding duplicates)
+        if (selectedUser?._id === otherUserId) {
+          setAllMessages(prev => {
+            // Avoid duplicates by checking if message ID already exists
+            const exists = prev.some(m => m._id === message._id);
+            if (exists) return prev;
+            return [...prev, message];
+          });
+        }
       }
 
       // Show push notification if message is from another user and not viewing that conversation
@@ -171,34 +230,79 @@ const ChatScreen = () => {
     };
   }, []);
 
+  // Scroll to bottom when keyboard shows
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setTimeout(() => {
+          flatListRef.current?.scrollToEnd({ animated: true });
+        }, 100);
+      }
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+    };
+  }, []);
+
   // Auto-scroll to bottom when new messages arrive
   const scrollToBottom = useCallback(() => {
-    if (flatListRef.current) {
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
+    // Clear any pending scroll timeouts
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
     }
-  }, []);
+
+    // Schedule scroll with a slight delay to ensure content is rendered
+    scrollTimeoutRef.current = setTimeout(() => {
+      if (flatListRef.current && displayMessages.length > 0) {
+        flatListRef.current.scrollToEnd({ animated: true });
+      }
+    }, 150);
+  }, [displayMessages.length]);
 
   useEffect(() => {
     if (displayMessages.length > 0) {
       scrollToBottom();
     }
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
   }, [displayMessages.length, scrollToBottom]);
 
   const handleSendMessage = async () => {
     if ((!messageText.trim() && !image) || !userInfo || !selectedUser) return;
 
     try {
-      await sendMessage({
+      const sentMessage = await sendMessage({
         senderId: userInfo._id,
         receiverId: selectedUser._id,
         text: messageText.trim(),
         ...(image && { image }),
       }).unwrap();
 
+      // Add sent message to local state immediately
+      setAllMessages(prev => {
+        // Check if message already exists (shouldn't, but just in case)
+        const exists = prev.some(m => m._id === sentMessage._id);
+        if (exists) return prev;
+        return [...prev, sentMessage];
+      });
+
+      // Update cache
+      await appendMessageToCache(userInfo._id, selectedUser._id, sentMessage);
+
       setMessageText('');
       setImage(null);
+
+      // Scroll to bottom after sending with longer delay to ensure render is complete
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 200);
     } catch (error: any) {
       console.error('Failed to send message:', error);
     }
@@ -214,6 +318,44 @@ const ChatScreen = () => {
 
     if (!result.canceled && result.assets[0].base64) {
       setImage(`data:image/jpeg;base64,${result.assets[0].base64}`);
+    }
+  };
+
+  // Load older messages when scrolling to top
+  const loadOlderMessages = async () => {
+    if (!selectedUser || !userInfo || !hasMoreMessages || isLoadingOlderMessages.current || allMessages.length === 0) {
+      return;
+    }
+
+    isLoadingOlderMessages.current = true;
+    setIsLoadingMore(true);
+
+    try {
+      // Get the oldest message timestamp
+      const oldestMessage = allMessages[0];
+      const result = await fetchMessages({
+        senderId: userInfo._id,
+        receiverId: selectedUser._id,
+        limit: 50,
+        before: oldestMessage.createdAt,
+      }).unwrap();
+
+      if (result && result.messages && Array.isArray(result.messages) && result.messages.length > 0) {
+        // Prepend older messages to the list, removing any duplicates
+        setAllMessages(prev => {
+          const existingIds = new Set(prev.map(m => m._id));
+          const newMessages = result.messages.filter(m => !existingIds.has(m._id));
+          return [...newMessages, ...prev];
+        });
+        setHasMoreMessages(result.hasMore || false);
+      } else {
+        setHasMoreMessages(false);
+      }
+    } catch (error) {
+      console.error('Failed to load older messages:', error);
+    } finally {
+      setIsLoadingMore(false);
+      isLoadingOlderMessages.current = false;
     }
   };
 
@@ -401,7 +543,7 @@ const ChatScreen = () => {
         </LinearGradient>
 
         {/* Messages List */}
-        {isLoadingMessages ? (
+        {isInitialLoad && cachedMessages.length === 0 ? (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <ActivityIndicator size="large" color="#10b981" />
             <Text style={{ marginTop: 12, color: '#6b7280' }}>Loading messages...</Text>
@@ -424,20 +566,31 @@ const ChatScreen = () => {
             ref={flatListRef}
             data={displayMessages}
             keyExtractor={(item) => item._id}
-            contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 12, flexGrow: 1 }}
+            contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 12, flexGrow: 1, justifyContent: 'flex-end' }}
             inverted={false}
-            onContentSizeChange={() => {
-              if (flatListRef.current && displayMessages.length > 0) {
-                flatListRef.current.scrollToEnd({ animated: false });
+            maintainVisibleContentPosition={{
+              minIndexForVisible: 0,
+            }}
+            onScroll={(event) => {
+              const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+              // Check if scrolled near the top (within 100 pixels)
+              if (contentOffset.y < 100 && !isLoadingMore && hasMoreMessages) {
+                loadOlderMessages();
               }
             }}
-            onLayout={() => {
-              if (flatListRef.current && displayMessages.length > 0) {
-                setTimeout(() => {
-                  flatListRef.current?.scrollToEnd({ animated: false });
-                }, 100);
-              }
-            }}
+            scrollEventThrottle={400}
+            ListHeaderComponent={
+              isLoadingMore ? (
+                <View style={{ paddingVertical: 16, alignItems: 'center' }}>
+                  <ActivityIndicator size="small" color="#10b981" />
+                  <Text style={{ marginTop: 8, color: '#6b7280', fontSize: 12 }}>Loading older messages...</Text>
+                </View>
+              ) : !hasMoreMessages && displayMessages.length > 0 ? (
+                <View style={{ paddingVertical: 12, alignItems: 'center' }}>
+                  <Text style={{ color: '#9ca3af', fontSize: 12 }}>No more messages</Text>
+                </View>
+              ) : null
+            }
             renderItem={({ item }) => {
               const isMyMessage = item.senderId === userInfo?._id;
               return (

@@ -14,6 +14,7 @@ import { getInitials } from '../../lib/getInitials';
 import { calculateAge } from '../../lib/calculateAge';
 import { formatDateToMMDDYYYY } from '../../lib/formatDate';
 import { UserProfile } from '../../types/profile.types';
+import { NotificationBell } from '../common/NotificationBell';
 
 // Helper function to format goal values to display labels
 const formatGoalLabel = (goalValue: string): string => {
@@ -101,7 +102,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                                 {user.name}
                             </Text>
                         </View>
-                        {/* More Options Button */}
+                        {/* More Options Button or Notification Bell */}
                         {!isOwnProfile ? (
                             <TouchableOpacity className='w-10 h-10 rounded-full bg-white/20 items-center justify-center'>
                                 <Ionicons
@@ -111,7 +112,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                                 />
                             </TouchableOpacity>
                         ) : (
-                            <View className='w-10' />
+                            <NotificationBell color="#fff" />
                         )}
                     </View>
 
