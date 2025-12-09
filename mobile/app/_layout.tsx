@@ -57,7 +57,6 @@ function RootLayoutContent() {
         const requestPermissions = async () => {
             const token = await registerForPushNotificationsAsync();
             if (token) {
-                console.log('Notification token registered:', token);
                 // Save token to AsyncStorage for later use
                 try {
                     await AsyncStorage.setItem('pushToken', token);
@@ -76,14 +75,8 @@ function RootLayoutContent() {
     useEffect(() => {
         const registerToken = async () => {
             const token = await registerForPushNotificationsAsync();
-            console.log('[PushToken] userInfo:', userInfo);
-            console.log('[PushToken] token:', token);
             if (token && userInfo?._id) {
-                console.log('[PushToken] Sending token to backend...');
-                const result = await updatePushToken(token);
-                console.log('[PushToken] Backend response:', result);
-            } else {
-                console.log('[PushToken] Not sending token: missing token or userInfo._id');
+                await updatePushToken(token);
             }
         };
         registerToken();

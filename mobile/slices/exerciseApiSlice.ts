@@ -2,7 +2,7 @@ import { apiSlice } from './apiSlice';
 
 const EXERCISES_URL = '/exercises';
 
-interface Exercise {
+export interface Exercise {
     id: string;
     name: string;
     description: string;

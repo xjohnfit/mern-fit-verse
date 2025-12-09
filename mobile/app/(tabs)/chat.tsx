@@ -103,7 +103,6 @@ const ChatScreen = () => {
 
       // Load cached messages immediately for instant display
       const cached = await getCachedMessages(userInfo._id, selectedUser._id);
-      console.log('📦 Loaded from cache:', cached?.length || 0, 'messages');
 
       if (cached && Array.isArray(cached) && cached.length > 0) {
         setCachedMessages(cached);
@@ -121,15 +120,12 @@ const ChatScreen = () => {
             limit: 50,
           }).unwrap();
 
-          console.log('🌐 Fetched from API (no cache):', result?.messages?.length || 0, 'messages');
-
           if (result && result.messages && Array.isArray(result.messages)) {
             setAllMessages(result.messages);
             setHasMoreMessages(result.hasMore || false);
 
             // Update cache with fetched messages
             await cacheMessages(userInfo._id, selectedUser._id, result.messages);
-            console.log('💾 Saved to cache:', result.messages.length, 'messages');
           }
         } catch (error) {
           console.error('Failed to fetch messages:', error);
@@ -150,7 +146,7 @@ const ChatScreen = () => {
   // Initialize push notification listeners
   useEffect(() => {
     const notificationListener = addNotificationReceivedListener((notification) => {
-      console.log('Notification received:', notification);
+      // Notification received
     });
 
     const responseListener = addNotificationResponseReceivedListener((response) => {

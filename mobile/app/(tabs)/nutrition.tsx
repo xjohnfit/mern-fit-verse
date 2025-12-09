@@ -249,7 +249,7 @@ const nutrition = () => {
       <View style={{ flex: 1, backgroundColor: isDark ? '#111827' : '#F9FAFB' }}>
         <ScrollView
           style={{ flex: 1 }}
-          refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} />}
+          refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch}  />}
         >
           {/* Header with Gradient */}
           <LinearGradient
@@ -322,27 +322,27 @@ const nutrition = () => {
                 <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12, backgroundColor: isDark ? '#111827' : '#F9FAFB', borderRadius: 8, padding: 12, borderWidth: 1, borderColor: isDark ? '#374151' : '#E5E7EB' }}>
                   <View>
                     <Text style={{ fontSize: 14, fontWeight: '600', color: isDark ? '#D1D5DB' : '#6B7280', marginBottom: 4 }}>
-                    Calories Goal
-                  </Text>
-                  <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#3B82F6' }}>
-                    {(() => {
-                      const protein = Number(goalValues.protein) || 0;
-                      const carbs = Number(goalValues.carbs) || 0;
-                      const fats = Number(goalValues.fats) || 0;
-                      return (protein * 4) + (carbs * 4) + (fats * 9);
-                    })()} cal
-                  </Text>
+                      Calories Goal
+                    </Text>
+                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#3B82F6' }}>
+                      {(() => {
+                        const protein = Number(goalValues.protein) || 0;
+                        const carbs = Number(goalValues.carbs) || 0;
+                        const fats = Number(goalValues.fats) || 0;
+                        return (protein * 4) + (carbs * 4) + (fats * 9);
+                      })()} cal
+                    </Text>
                   </View>
                   <View>
                     <Text style={{ fontSize: 11, color: isDark ? '#6B7280' : '#9CA3AF', marginTop: 2 }}>
-                    Protein = 4 cal/g
-                  </Text>
-                  <Text style={{ fontSize: 11, color: isDark ? '#6B7280' : '#9CA3AF', marginTop: 2 }}>
-                    Carbs = 4 cal/g
-                  </Text>
-                  <Text style={{ fontSize: 11, color: isDark ? '#6B7280' : '#9CA3AF', marginTop: 2 }}>
-                    Fats = 9 cal/g
-                  </Text>
+                      Protein = 4 cal/g
+                    </Text>
+                    <Text style={{ fontSize: 11, color: isDark ? '#6B7280' : '#9CA3AF', marginTop: 2 }}>
+                      Carbs = 4 cal/g
+                    </Text>
+                    <Text style={{ fontSize: 11, color: isDark ? '#6B7280' : '#9CA3AF', marginTop: 2 }}>
+                      Fats = 9 cal/g
+                    </Text>
                   </View>
                 </View>
 
@@ -406,28 +406,41 @@ const nutrition = () => {
                   </View>
                 </View>
 
-                {/* Macros Grid */}
-                <View style={{ flexDirection: 'row', gap: 10 }}>
+                {/* Macros */}
+                <View style={{ gap: 8 }}>
                   {[
                     { key: 'protein', label: 'Protein', color: '#10B981', icon: 'fitness' as const, goal: goals.protein || 150 },
                     { key: 'carbs', label: 'Carbs', color: '#EF4444', icon: 'flash' as const, goal: goals.carbs || 200 },
                     { key: 'fats', label: 'Fats', color: '#F59E0B', icon: 'water' as const, goal: goals.fats || 65 },
-                  ].map((macro) => (
-                    <View key={macro.key} style={{ flex: 1, backgroundColor: isDark ? '#111827' : '#F9FAFB', borderRadius: 14, padding: 14, borderWidth: 2, borderColor: `${macro.color}30` }}>
-                      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                        <Ionicons name={macro.icon} size={16} color={macro.color} />
-                        <Text style={{ fontSize: 11, color: isDark ? '#9CA3AF' : '#6B7280', marginLeft: 4, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.3 }}>
-                          {macro.label}
-                        </Text>
+                  ].map((macro) => {
+                    const currentValue = Number(totals[macro.key as keyof typeof totals]);
+                    const percentage = Math.min((currentValue / macro.goal) * 100, 100);
+
+                    return (
+                      <View key={macro.key} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                        <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: `${macro.color}20`, alignItems: 'center', justifyContent: 'center' }}>
+                          <Ionicons name={macro.icon} size={18} color={macro.color} />
+                        </View>
+                        <View style={{ flex: 1, height: 36, borderRadius: 10, overflow: 'hidden', borderWidth: 1.5, borderColor: `${macro.color}30` }}>
+                          <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: isDark ? '#111827' : '#F9FAFB' }} />
+                          <LinearGradient
+                            colors={[`${macro.color}30`, `${macro.color}20`]}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
+                            style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: `${percentage}%` }}
+                          />
+                          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, height: '100%', position: 'relative' }}>
+                            <Text style={{ fontSize: 13, color: isDark ? '#D1D5DB' : '#6B7280', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.3 }}>
+                              {macro.label}
+                            </Text>
+                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: macro.color }}>
+                              {currentValue.toFixed(1).replace(/\.0$/, '')}g <Text style={{ fontSize: 12, fontWeight: '600', color: isDark ? '#6B7280' : '#9CA3AF' }}>/ {macro.goal}g</Text>
+                            </Text>
+                          </View>
+                        </View>
                       </View>
-                      <Text style={{ fontSize: 22, fontWeight: 'bold', color: macro.color, marginBottom: 4 }}>
-                        {Number(totals[macro.key as keyof typeof totals]).toFixed(1).replace(/\.0$/, '')}g
-                      </Text>
-                      <Text style={{ fontSize: 12, color: isDark ? '#6B7280' : '#9CA3AF', fontWeight: '600' }}>
-                        / {macro.goal}g
-                      </Text>
-                    </View>
-                  ))}
+                    );
+                  })}
                 </View>
               </View>
             )}
@@ -599,9 +612,9 @@ const nutrition = () => {
           </View>
 
           {/* Add Category Modal */}
-          <Modal visible={showAddCategoryModal} animationType="slide" transparent>
-            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', paddingHorizontal: 20 }}>
-              <View style={{ backgroundColor: isDark ? '#1F2937' : '#FFFFFF', borderRadius: 16, padding: 24 }}>
+          <Modal visible={showAddCategoryModal} animationType="fade" transparent>
+            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }}>
+              <View style={{ backgroundColor: isDark ? '#1F2937' : '#FFFFFF', borderRadius: 20, padding: 24, width: '100%', maxWidth: 400 }}>
                 <Text style={{ fontSize: 20, fontWeight: 'bold', color: isDark ? '#FFFFFF' : '#111827', marginBottom: 16 }}>
                   Add Custom Category
                 </Text>

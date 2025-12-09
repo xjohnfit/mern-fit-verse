@@ -154,7 +154,7 @@ const EditTemplateScreen = () => {
             await updateTemplate({
                 id: id!,
                 name: templateName.trim(),
-                description: templateDescription.trim() || undefined,
+                description: templateDescription.trim(),
                 exercises: templateExercises,
                 folderId: selectedFolderId || undefined,
             }).unwrap();

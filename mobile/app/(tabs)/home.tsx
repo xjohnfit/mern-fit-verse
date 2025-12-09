@@ -52,7 +52,6 @@ export default function HomeScreen() {
 
     const handleUserPress = (username: string) => {
         // Navigate to user profile when implemented
-        console.log('Navigate to user profile:', username);
     };
 
     // Calculate metrics

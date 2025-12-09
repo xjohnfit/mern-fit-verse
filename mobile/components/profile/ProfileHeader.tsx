@@ -14,7 +14,7 @@ import { getInitials } from '../../lib/getInitials';
 import { calculateAge } from '../../lib/calculateAge';
 import { formatDateToMMDDYYYY } from '../../lib/formatDate';
 import { UserProfile } from '../../types/profile.types';
-import { NotificationBell } from '../common/NotificationBell';
+import { NotificationBell } from './NotificationBell';
 
 // Helper function to format goal values to display labels
 const formatGoalLabel = (goalValue: string): string => {
@@ -274,16 +274,16 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                                 className='flex-1 py-3 rounded-xl items-center justify-center mr-2'
                                 style={{
                                     backgroundColor: isFollowing
-                                        ? '#f3f4f6'
+                                        ? '#dbeafe'
                                         : '#3b82f6',
                                     borderWidth: isFollowing ? 1 : 0,
                                     borderColor: isFollowing
-                                        ? '#d1d5db'
+                                        ? '#93c5fd'
                                         : undefined,
                                 }}>
                                 {isFollowLoading ? (
                                     <ActivityIndicator
-                                        color={isFollowing ? '#6b7280' : '#fff'}
+                                        color={isFollowing ? '#2563eb' : '#fff'}
                                         size='small'
                                     />
                                 ) : (
@@ -291,7 +291,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                                         {isFollowing ? (
                                             <Ionicons
                                                 name='checkmark-circle'
-                                                color='#6b7280'
+                                                color='#2563eb'
                                                 size={18}
                                             />
                                         ) : (
@@ -302,7 +302,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                                             />
                                         )}
                                         <Text
-                                            className={`ml-2 font-semibold ${isFollowing ? 'text-gray-700' : 'text-white'}`}>
+                                            style={{ color: isFollowing ? '#1e40af' : '#fff' }}
+                                            className='ml-2 font-semibold'>
                                             {isFollowing
                                                 ? 'Following'
                                                 : 'Follow'}
@@ -312,14 +313,19 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={handleMessageClick}
-                                className='flex-1 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 items-center justify-center'>
+                                className='flex-1 py-3 rounded-xl items-center justify-center'
+                                style={{
+                                    backgroundColor: '#dbeafe',
+                                    borderWidth: 1,
+                                    borderColor: '#93c5fd',
+                                }}>
                                 <View className='flex-row items-center'>
                                     <Ionicons
                                         name='chatbubble'
-                                        color='#6b7280'
+                                        color='#2563eb'
                                         size={18}
                                     />
-                                    <Text className='ml-2 font-semibold text-gray-700 dark:text-gray-300'>
+                                    <Text className='ml-2 font-semibold' style={{ color: '#1e40af' }}>
                                         Message
                                     </Text>
                                 </View>

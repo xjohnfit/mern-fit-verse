@@ -1,17 +1,22 @@
 /** @type {import('jest').Config} */
-module.exports = {
-    preset: 'ts-jest',
-    testEnvironment: 'node',
-    roots: ['<rootDir>'],
-    testMatch: ['**/__tests__/**/*.test.ts'],
-    transform: {
-        '^.+\\.ts$': 'ts-jest',
-    },
-    collectCoverageFrom: ['**/*.ts', '!**/*.d.ts', '!index.ts'],
-    coverageDirectory: 'coverage',
-    coverageReporters: ['text', 'lcov', 'html'],
-    setupFilesAfterEnv: [],
-    moduleFileExtensions: ['ts', 'js', 'json'],
-    clearMocks: true,
-    restoreMocks: true,
+export const preset = 'ts-jest';
+export const testEnvironment = 'node';
+export const roots = ['<rootDir>'];
+export const testMatch = ['**/__tests__/**/*.test.ts'];
+export const transform = {
+    '^.+\\.ts$': [
+        'ts-jest',
+        {
+            tsconfig: {
+                types: ['jest', 'node'],
+            },
+        },
+    ],
 };
+export const collectCoverageFrom = ['**/*.ts', '!**/*.d.ts', '!index.ts'];
+export const coverageDirectory = 'coverage';
+export const coverageReporters = ['text', 'lcov', 'html'];
+export const setupFilesAfterEnv = [];
+export const moduleFileExtensions = ['ts', 'js', 'json'];
+export const clearMocks = true;
+export const restoreMocks = true;

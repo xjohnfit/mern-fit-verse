@@ -47,7 +47,6 @@ export const useSocket = () => {
             });
 
             socket.on('connect', () => {
-                console.log('Socket connected:', socket?.id);
                 dispatch(setConnected());
 
                 // Notify server that user is online
@@ -57,12 +56,10 @@ export const useSocket = () => {
             });
 
             socket.on('disconnect', () => {
-                console.log('Socket disconnected');
                 dispatch(setDisconnected());
             });
 
             socket.on('online-users', (users: string[]) => {
-                console.log('Online users updated:', users);
                 dispatch(setOnlineUsers(users));
             });
 

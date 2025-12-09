@@ -9,7 +9,6 @@ export const formatDateToMMDDYYYY = (dateString: string | Date): string => {
 
         // Check if the date is valid
         if (isNaN(date.getTime())) {
-            console.warn('Invalid date provided:', dateString);
             return '';
         }
 

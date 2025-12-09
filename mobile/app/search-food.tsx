@@ -89,8 +89,6 @@ const SearchFood = () => {
                 max_results: 1,
             }).unwrap();
 
-            console.log('Search result:', searchResult);
-
             // Handle the foods_search.results.food structure
             if (searchResult?.success && searchResult?.data?.foods_search?.results) {
                 const results = searchResult.data.foods_search.results;
@@ -102,7 +100,6 @@ const SearchFood = () => {
 
                 if (firstFood?.food_id) {
                     const foodId = String(firstFood.food_id);
-                    console.log('Fetching food details for ID:', foodId);
                     await triggerGetFoodById(foodId).unwrap();
                 } else {
                     console.error('No food_id found in result:', firstFood);

@@ -36,7 +36,6 @@ const getBaseUrl = () => {
 };
 
 const baseUrl = getBaseUrl();
-console.log('API Base URL:', baseUrl);
 
 export const apiSlice = createApi({
     reducerPath: 'api',

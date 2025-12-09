@@ -85,11 +85,7 @@ export default function ProfileScreen() {
         if (!userProfile) return;
 
         try {
-            const result = await followUnfollowUser(userProfile.username).unwrap();
-            Toast.show({
-                type: 'success',
-                text1: result.message || 'Success',
-            });
+            await followUnfollowUser(userProfile.username).unwrap();
             if (!isOwnProfile) {
                 refetch();
             }

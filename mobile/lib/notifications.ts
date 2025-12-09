@@ -28,12 +28,9 @@ export async function registerForPushNotificationsAsync(): Promise<
         const { status: existingStatus } =
             await Notifications.getPermissionsAsync();
 
-        console.log('Current permission status:', existingStatus);
-
         let finalStatus = existingStatus;
 
         if (existingStatus !== 'granted') {
-            console.log('Requesting permissions...');
             const { status } = await Notifications.requestPermissionsAsync({
                 ios: {
                     allowAlert: true,
@@ -44,7 +41,6 @@ export async function registerForPushNotificationsAsync(): Promise<
                 },
             });
             finalStatus = status;
-            console.log('Permission request result:', finalStatus);
         }
 
         if (finalStatus !== 'granted') {
@@ -76,12 +72,9 @@ export async function registerForPushNotificationsAsync(): Promise<
             }
             token = (await Notifications.getExpoPushTokenAsync({ projectId }))
                 .data;
-            console.log('Push notification token:', token);
         } catch (error) {
             console.error('Error getting push token:', error);
         }
-    } else {
-        console.log('Must use physical device for Push Notifications');
     }
 
     return token;
@@ -153,9 +146,6 @@ export function addNotificationResponseReceivedListener(
 export async function savePushTokenToBackend(token: string, userId: string) {
     try {
         // You'll need to implement this endpoint on your backend
-        // For now, just log it
-        console.log('Push token to save:', token, 'for user:', userId);
-
         // TODO: Uncomment when backend endpoint is ready
         // const response = await fetch(`${API_URL}/users/push-token`, {
         //     method: 'POST',
