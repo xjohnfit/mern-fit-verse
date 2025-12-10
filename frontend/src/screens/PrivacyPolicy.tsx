@@ -84,7 +84,6 @@ const PrivacyPolicy = () => {
                                         <li>Login activity and session data</li>
                                         <li>Feature usage and interaction patterns</li>
                                         <li>Browser type and device information</li>
-                                        <li>IP address and location data</li>
                                     </ul>
                                 </div>
                             </div>

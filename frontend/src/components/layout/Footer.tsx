@@ -6,11 +6,9 @@ import {
     LayoutDashboard,
     UtensilsCrossed,
     Settings,
-    Github,
-    Twitter,
-    Linkedin,
-    Mail,
     Heart,
+    Sparkles,
+    BookOpen,
 } from 'lucide-react';
 
 const Footer = () => {
@@ -34,38 +32,6 @@ const Footer = () => {
                         <p className='text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4 max-w-xs leading-relaxed mx-auto lg:mx-0'>
                             A modern social fitness platform where your journey meets community. Track, share, and achieve your fitness goals together.
                         </p>
-                        <div className='flex space-x-3 sm:space-x-4 justify-center lg:justify-start'>
-                            <a
-                                href='https://github.com/xjohnfit/mern-fit-verse'
-                                target='_blank'
-                                rel='noopener noreferrer'
-                                className='text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200'
-                                aria-label='GitHub'
-                            >
-                                <Github className='w-4 h-4 sm:w-5 sm:h-5' />
-                            </a>
-                            <a
-                                href='#'
-                                className='text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200'
-                                aria-label='Twitter'
-                            >
-                                <Twitter className='w-4 h-4 sm:w-5 sm:h-5' />
-                            </a>
-                            <a
-                                href='#'
-                                className='text-gray-600 dark:text-gray-400 hover:text-blue-700 dark:hover:text-blue-400 transition-colors duration-200'
-                                aria-label='LinkedIn'
-                            >
-                                <Linkedin className='w-4 h-4 sm:w-5 sm:h-5' />
-                            </a>
-                            <a
-                                href='#'
-                                className='text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200'
-                                aria-label='Email'
-                            >
-                                <Mail className='w-4 h-4 sm:w-5 sm:h-5' />
-                            </a>
-                        </div>
                     </div>
 
                     {/* Categories Container - Platform, Features, Resources in a row on mobile */}
@@ -151,6 +117,7 @@ const Footer = () => {
                         {/* Features */}
                         <div>
                             <h3 className='text-sm sm:text-base lg:text-lg font-semibold mb-3 sm:mb-4 text-gray-900 dark:text-white flex items-center gap-2 justify-center lg:justify-start'>
+                                <Sparkles className='w-3.5 h-3.5 sm:w-4 sm:h-4' />
                                 Features
                             </h3>
                             <ul className='space-y-1.5 sm:space-y-2 flex flex-col items-center lg:items-start'>
@@ -185,6 +152,7 @@ const Footer = () => {
                         {/* Resources & Legal */}
                         <div>
                             <h3 className='text-sm sm:text-base lg:text-lg font-semibold mb-3 sm:mb-4 text-gray-900 dark:text-white flex items-center gap-2 justify-center lg:justify-start'>
+                                <BookOpen className='w-3.5 h-3.5 sm:w-4 sm:h-4' />
                                 Resources
                             </h3>
                             <ul className='space-y-1.5 sm:space-y-2 flex flex-col items-center lg:items-start'>
@@ -237,12 +205,12 @@ const Footer = () => {
                             <Heart className='inline w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-500 fill-current' />{' '}
                             by{' '}
                             <a
-                                href='https://github.com/xjohnfit'
+                                href='https://codewithxjohn.com'
                                 target='_blank'
                                 rel='noopener noreferrer'
                                 className='text-blue-600 dark:text-blue-400 hover:underline font-medium'
                             >
-                                xjohnfit
+                                John
                             </a>
                         </p>
                         <div className='flex items-center gap-2 sm:gap-4 text-[10px] xs:text-xs text-gray-500 dark:text-gray-500'>

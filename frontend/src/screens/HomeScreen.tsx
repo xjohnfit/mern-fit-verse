@@ -1,42 +1,41 @@
 import { Button } from '@/components/ui/button';
 import AlertModal from '@/components/modals/AlertModal';
-import { AnimatedTestimonials } from '@/components/ui/animated-testimonials';
-import { TypewriterEffectSmooth } from '@/components/ui/typewriter-effect';
-import { useEffect, useState } from 'react';
+import { motion, useScroll, useTransform } from 'motion/react';
+import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router';
 import { useSelector } from 'react-redux';
 import {
     Dumbbell,
-    Target,
-    TrendingUp,
-    Users,
-    ArrowRight,
-    Play,
     Apple,
-    Bell,
-    Heart,
-    MessageCircle,
+    Users,
     BarChart3,
-    Utensils,
-    Calendar,
-    Shield,
+    Target,
     Zap,
-    Image,
-    Cloud,
-    Activity
+    TrendingUp,
+    Award,
+    Sparkles,
+    ArrowRight,
+    Check,
+    Play
 } from 'lucide-react';
 
 const HomeScreen = () => {
     const [alertVisible, setAlertVisible] = useState(false);
-    const { isAuthenticated, userInfo } = useSelector((state: any) => state.auth);
+    const { isAuthenticated } = useSelector((state: any) => state.auth);
+    const heroRef = useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: heroRef,
+        offset: ["start start", "end start"]
+    });
+
+    const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+    const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.5, 0]);
 
     useEffect(() => {
         const hasSeenAlert = sessionStorage.getItem('hasSeenExperimentalWarning');
 
         if (!hasSeenAlert) {
-            // Show the modal for the first time visiting the home route
             setAlertVisible(true);
-            // Mark that the user has now seen the alert (cleared when tab/browser closes)
             sessionStorage.setItem('hasSeenExperimentalWarning', 'true');
         }
     }, []);
@@ -44,65 +43,56 @@ const HomeScreen = () => {
     const features = [
         {
             icon: Dumbbell,
-            title: "Workout Tracking",
-            description: "Log workouts with comprehensive exercise library, track sets, reps, and weights with detailed history."
+            title: "Smart Workout Tracking",
+            description: "Log exercises with precision. Track sets, reps, weight, and progress over time.",
+            gradient: "from-blue-500 to-cyan-500"
         },
         {
             icon: Apple,
-            title: "Nutrition Tracking",
-            description: "Access 500,000+ foods via FatSecret API with custom meal categories and daily calorie tracking."
+            title: "Nutrition Database",
+            description: "Access 500,000+ foods. Track macros, calories, and hit your nutrition goals.",
+            gradient: "from-green-500 to-emerald-500"
+        },
+        {
+            icon: BarChart3,
+            title: "Progress Analytics",
+            description: "Visualize your transformation with beautiful charts and insights.",
+            gradient: "from-purple-500 to-pink-500"
         },
         {
             icon: Users,
             title: "Social Community",
-            description: "Connect with fitness enthusiasts, share posts with images, follow friends, and stay motivated together."
-        },
-        {
-            icon: TrendingUp,
-            title: "Progress Analytics",
-            description: "Visualize your fitness journey with interactive charts, workout stats, and nutrition insights."
-        },
-        {
-            icon: Bell,
-            title: "Real-time Notifications",
-            description: "Stay updated with likes, comments, follows, and community interactions instantly."
+            description: "Connect with friends, share progress, and stay motivated together.",
+            gradient: "from-orange-500 to-red-500"
         },
         {
             icon: Target,
-            title: "Personalized Goals",
-            description: "Set custom fitness objectives, track weight progress, and achieve milestones at your own pace."
+            title: "Goal Setting",
+            description: "Set personalized goals and track your journey to success.",
+            gradient: "from-indigo-500 to-blue-500"
         },
         {
-            icon: Image,
-            title: "Media Sharing",
-            description: "Upload and share progress photos with Cloudinary integration for optimized image delivery."
-        },
-        {
-            icon: Shield,
-            title: "Secure Platform",
-            description: "Enterprise-grade JWT authentication, encrypted passwords, and HTTP-only cookies for safety."
+            icon: Zap,
+            title: "Real-time Sync",
+            description: "All your data synced instantly across all devices.",
+            gradient: "from-yellow-500 to-orange-500"
         }
     ];
 
-    const testimonials = [
-        {
-            quote: "FitVerse combines social networking with fitness tracking perfectly. The nutrition feature with 500k+ foods is incredible! I've lost 20 pounds and gained so much confidence.",
-            name: "Sarah Johnson",
-            designation: "Fitness Enthusiast • Lost 20 lbs",
-            src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop"
-        },
-        {
-            quote: "The workout logging is so detailed and the social feed keeps me motivated. Love seeing everyone's progress! The community here is incredibly supportive and inspiring.",
-            name: "Mike Chen",
-            designation: "CrossFit Athlete • 2 Years Active",
-            src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2070&auto=format&fit=crop"
-        },
-        {
-            quote: "Custom meal categories and real-time notifications make this the best fitness app I've used. Highly recommended! The analytics help me track my macros perfectly.",
-            name: "Emily Davis",
-            designation: "Nutritionist • Marathon Runner",
-            src: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=2070&auto=format&fit=crop"
-        }
+    const stats = [
+        { value: "10K+", label: "Active Users", icon: Users },
+        { value: "500K+", label: "Foods Tracked", icon: Apple },
+        { value: "100K+", label: "Workouts Logged", icon: Dumbbell },
+        { value: "95%", label: "Satisfaction", icon: Award }
+    ];
+
+    const benefits = [
+        "500,000+ food database",
+        "Custom workout templates",
+        "Progress photos & tracking",
+        "Social community features",
+        "Real-time notifications",
+        "Cross-device sync"
     ];
 
     return (
@@ -116,317 +106,368 @@ const HomeScreen = () => {
                 showCancel={false}
             />
 
-            {/* Spotlight Background Container */}
-            <div className="min-h-screen relative overflow-hidden bg-linear-to-br from-slate-50 via-slate-100 to-indigo-50 dark:bg-linear-to-br dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
-                {/* Animated Spotlight Effects */}
-                <div className="absolute inset-0 bg-linear-to-br from-blue-100/30 via-purple-100/30 to-slate-100/50 dark:bg-linear-to-br dark:from-blue-900/20 dark:via-purple-900/20 dark:to-slate-900/40"></div>
+            <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 text-white overflow-hidden">
+                {/* Animated Background */}
+                <div className="fixed inset-0 overflow-hidden pointer-events-none">
+                    <motion.div
+                        className="absolute -top-1/2 -left-1/2 w-full h-full bg-linear-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl"
+                        animate={{
+                            scale: [1, 1.2, 1],
+                            rotate: [0, 90, 0],
+                        }}
+                        transition={{
+                            duration: 20,
+                            repeat: Infinity,
+                            ease: "linear"
+                        }}
+                    />
+                    <motion.div
+                        className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-linear-to-l from-pink-500/10 to-purple-500/10 rounded-full blur-3xl"
+                        animate={{
+                            scale: [1.2, 1, 1.2],
+                            rotate: [0, -90, 0],
+                        }}
+                        transition={{
+                            duration: 25,
+                            repeat: Infinity,
+                            ease: "linear"
+                        }}
+                    />
+                </div>
 
-                {/* Main Spotlight */}
-                {/* Main Spotlight */}
-                <div className="absolute top-[-50%] left-[50%] w-[800px] h-[800px] -translate-x-1/2 bg-[radial-gradient(circle,rgba(59,130,246,0.2)_0%,rgba(37,99,235,0.15)_40%,rgba(59,130,246,0.03)_70%,transparent_100%)] dark:bg-[radial-gradient(circle,rgba(59,130,246,0.5)_0%,rgba(129,140,248,0.3)_40%,rgba(59,130,246,0.08)_70%,transparent_100%)] rounded-full blur-3xl spotlight-glow"></div>
+                {/* Hero Section */}
+                <section ref={heroRef} className="relative min-h-screen flex items-center justify-center px-4 py-20">
+                    <div className="max-w-7xl mx-auto w-full">
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8 }}
+                            className="text-center"
+                        >
+                            {/* Badge */}
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.5, delay: 0.2 }}
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-8"
+                            >
+                                <Sparkles className="w-4 h-4 text-yellow-400" />
+                                <span className="text-sm font-medium">Your Complete Fitness Platform</span>
+                            </motion.div>
 
-                {/* Secondary Spotlights */}
-                <div className="absolute top-[20%] right-[20%] w-[400px] h-[400px] bg-[radial-gradient(circle,rgba(147,51,234,0.15)_0%,rgba(126,34,206,0.08)_50%,transparent_100%)] dark:bg-[radial-gradient(circle,rgba(147,51,234,0.35)_0%,rgba(168,85,247,0.2)_50%,transparent_100%)] rounded-full blur-2xl spotlight-secondary"></div>
-                <div className="absolute bottom-[10%] left-[10%] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(6,182,212,0.12)_0%,rgba(8,145,178,0.05)_50%,transparent_100%)] dark:bg-[radial-gradient(circle,rgba(6,182,212,0.25)_0%,rgba(34,211,238,0.12)_50%,transparent_100%)] rounded-full blur-2xl spotlight-tertiary"></div>
+                            {/* Main Heading */}
+                            <motion.h1
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, delay: 0.3 }}
+                                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6"
+                            >
+                                <span className="bg-linear-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                                    Transform Your
+                                </span>
+                                <br />
+                                <span className="text-white">Fitness Journey</span>
+                            </motion.h1>
 
-                {/* Secondary Spotlights */}
-                <div className="absolute top-[20%] right-[20%] w-[400px] h-[400px] bg-[radial-gradient(circle,rgba(147,51,234,0.15)_0%,rgba(126,34,206,0.08)_50%,transparent_100%)] dark:bg-[radial-gradient(circle,rgba(147,51,234,0.25)_0%,rgba(126,34,206,0.1)_50%,transparent_100%)] rounded-full blur-2xl spotlight-secondary"></div>
-                <div className="absolute bottom-[10%] left-[10%] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(6,182,212,0.12)_0%,rgba(8,145,178,0.05)_50%,transparent_100%)] dark:bg-[radial-gradient(circle,rgba(6,182,212,0.2)_0%,rgba(8,145,178,0.08)_50%,transparent_100%)] rounded-full blur-2xl spotlight-tertiary"></div>
-
-                {/* Additional floating particles */}
-                <div className="absolute top-[30%] left-[80%] w-[200px] h-[200px] bg-[radial-gradient(circle,rgba(168,85,247,0.08)_0%,transparent_70%)] dark:bg-[radial-gradient(circle,rgba(192,132,252,0.25)_0%,transparent_70%)] rounded-full blur-xl animate-bounce" style={{ animationDuration: '3s', animationDelay: '0.5s' }}></div>
-                <div className="absolute bottom-[40%] right-[85%] w-[150px] h-[150px] bg-[radial-gradient(circle,rgba(34,197,94,0.06)_0%,transparent_70%)] dark:bg-[radial-gradient(circle,rgba(52,211,153,0.2)_0%,transparent_70%)] rounded-full blur-lg animate-bounce" style={{ animationDuration: '4s', animationDelay: '1.5s' }}></div>
-
-                {/* Grid Pattern Overlay */}
-                <div
-                    className="absolute inset-0 opacity-60 dark:opacity-100"
-                    style={{
-                        backgroundImage: 'linear-gradient(rgba(59,130,246,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.1) 1px, transparent 1px)',
-                        backgroundSize: '50px 50px',
-                        maskImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 110%)'
-                    }}
-                ></div>
-
-                {/* Content Container */}
-                <div className="relative z-10 min-h-screen">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24">
-                        {/* Hero Section */}
-                        <div className="text-center mb-16">
-                            {isAuthenticated ? (
-                                <div className="flex justify-center items-center mb-6">
-                                    <TypewriterEffectSmooth
-                                        words={[
-                                            { text: "Welcome" },
-                                            { text: "back," },
-                                            { text: `${userInfo?.name?.split(' ')[0]}!`, className: "text-blue-500 dark:text-blue-400" }
-                                        ]}
-                                        className="text-3xl md:text-5xl lg:text-7xl"
-                                    />
-                                </div>
-                            ) : (
-                                <h1 className='text-3xl md:text-5xl lg:text-7xl text-gray-900 dark:text-white font-bold inter-var mb-6 max-w-4xl mx-auto'>
-                                    Welcome to FitVerse
-                                </h1>
-                            )}
-                            <p className='text-lg md:text-xl mt-4 text-gray-700 dark:text-white/90 font-normal inter-var max-w-3xl mx-auto mb-8'>
-                                {isAuthenticated
-                                    ? "Track workouts, log nutrition, share your journey, and connect with a supportive fitness community—all in one place."
-                                    : "Your complete social fitness platform for tracking workouts, monitoring nutrition, sharing progress, and connecting with a motivated community."
-                                }
-                            </p>
+                            {/* Subtitle */}
+                            <motion.p
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, delay: 0.4 }}
+                                className="text-xl sm:text-2xl text-gray-400 max-w-3xl mx-auto mb-12"
+                            >
+                                Track workouts, monitor nutrition, connect with friends, and achieve your goals with the most comprehensive fitness platform.
+                            </motion.p>
 
                             {/* CTA Buttons */}
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                                {isAuthenticated ? (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, delay: 0.5 }}
+                                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                            >
+                                {!isAuthenticated ? (
                                     <>
-                                        <Button asChild size="lg" className="bg-linear-to-r from-[#38bdf8] to-[#818cf8] hover:from-[#818cf8] hover:to-[#c084fc] text-white border-none text-lg px-8 py-4 h-auto">
-                                            <Link to="/dashboard" className="flex items-center gap-2">
-                                                <Dumbbell className="w-5 h-5" />
-                                                Go to Dashboard
-                                                <ArrowRight className="w-5 h-5" />
-                                            </Link>
-                                        </Button>
-                                        <Button asChild variant="outline" size="lg" className="border-gray-300 dark:border-white/30 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white bg-transparent text-lg px-8 py-4 h-auto">
-                                            <Link to={`/profile/view/${userInfo?.username}`} className="flex items-center gap-2">
-                                                <Target className="w-5 h-5" />
-                                                View Profile
-                                            </Link>
-                                        </Button>
+                                        <Link to="/register">
+                                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                                <Button size="lg" className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-7 text-lg font-semibold rounded-full shadow-lg shadow-purple-500/50 hover:shadow-xl hover:shadow-purple-500/60 transition-all duration-300">
+                                                    Start Free Today
+                                                    <ArrowRight className="ml-2 w-5 h-5" />
+                                                </Button>
+                                            </motion.div>
+                                        </Link>
+                                        <Link to="/login">
+                                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                                <Button size="lg" variant="outline" className="border-2 border-white/20 text-white hover:bg-white/10 backdrop-blur-sm px-10 py-7 text-lg font-semibold rounded-full">
+                                                    Sign In
+                                                </Button>
+                                            </motion.div>
+                                        </Link>
                                     </>
                                 ) : (
                                     <>
-                                        <Button asChild size="lg" className="bg-linear-to-r from-[#38bdf8] to-[#818cf8] hover:from-[#818cf8] hover:to-[#c084fc] text-white border-none text-lg px-8 py-4 h-auto">
-                                            <Link to="/register" className="flex items-center gap-2">
-                                                <Play className="w-5 h-5" />
-                                                Start Your Journey
-                                                <ArrowRight className="w-5 h-5" />
-                                            </Link>
-                                        </Button>
-                                        <Button asChild variant="outline" size="lg" className="border-gray-300 dark:border-white/30 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white bg-transparent text-lg px-8 py-4 h-auto">
-                                            <Link to="/login" className="flex items-center gap-2">
-                                                Already have an account? Sign In
-                                            </Link>
-                                        </Button>
+                                        <Link to="/dashboard">
+                                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                                <Button size="lg" className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-7 text-lg font-semibold rounded-full shadow-lg shadow-purple-500/50">
+                                                    Go to Dashboard
+                                                    <ArrowRight className="ml-2 w-5 h-5" />
+                                                </Button>
+                                            </motion.div>
+                                        </Link>
+                                        <Link to="/workout">
+                                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                                <Button size="lg" variant="outline" className="border-2 border-white/20 text-white hover:bg-white/10 px-10 py-7 text-lg font-semibold rounded-full">
+                                                    Start Workout
+                                                    <Play className="ml-2 w-5 h-5" />
+                                                </Button>
+                                            </motion.div>
+                                        </Link>
                                     </>
                                 )}
-                            </div>
-                        </div>
+                            </motion.div>
 
-                        {/* Features Section */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-                            {features.map((feature, index) => {
-                                const IconComponent = feature.icon;
-                                return (
-                                    <div key={index} className="feature-card rounded-xl p-6 hover:scale-105 transition-all duration-300 group">
-                                        <div className="flex items-center justify-center w-12 h-12 bg-linear-to-r from-[#38bdf8] to-[#818cf8] rounded-lg mb-4 group-hover:shadow-lg group-hover:shadow-blue-500/25 transition-all duration-300">
-                                            <IconComponent className="w-6 h-6 text-white" />
+                            {/* Trust Badges */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.8, delay: 0.6 }}
+                                className="mt-12 flex flex-wrap justify-center items-center gap-8 text-gray-400 text-sm"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <Check className="w-5 h-5 text-green-400" />
+                                    <span>First year free</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Check className="w-5 h-5 text-green-400" />
+                                    <span>No Credit Card</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Check className="w-5 h-5 text-green-400" />
+                                    <span>10K+ Active Users</span>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+
+                        {/* Floating Cards and Mobile App Section */}
+                        <motion.div
+                            style={{ y, opacity }}
+                            className="mt-20 grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch"
+                        >
+                            {/* Left Column - Stacked Feature Cards */}
+                            <div className="flex flex-col gap-6">
+                                {[
+                                    { icon: Dumbbell, label: "Track Workouts", color: "from-blue-500 to-cyan-500" },
+                                    { icon: Apple, label: "Monitor Nutrition", color: "from-green-500 to-emerald-500" },
+                                    { icon: TrendingUp, label: "See Progress", color: "from-purple-500 to-pink-500" }
+                                ].map((item, index) => (
+                                    <motion.div
+                                        key={index}
+                                        initial={{ opacity: 0, y: 50 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.8, delay: 0.7 + index * 0.1 }}
+                                        whileHover={{ y: -10, transition: { duration: 0.2 } }}
+                                        className="p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300"
+                                    >
+                                        <div className={`w-12 h-12 rounded-xl bg-linear-to-br ${item.color} flex items-center justify-center mb-4`}>
+                                            <item.icon className="w-6 h-6 text-white" />
                                         </div>
-                                        <h3 className="text-gray-800 dark:text-white font-semibold text-lg mb-2">{feature.title}</h3>
-                                        <p className="text-gray-600 dark:text-white/80 text-sm leading-relaxed">{feature.description}</p>
+                                        <h3 className="text-lg font-semibold">{item.label}</h3>
+                                    </motion.div>
+                                ))}
+                            </div>
+
+                            {/* Right Column - Mobile App Section */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 50 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, delay: 0.8 }}
+                                className="h-full p-10 rounded-2xl bg-linear-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 backdrop-blur-sm border border-white/20 flex flex-col justify-center items-center text-center"
+                            >
+                                <div className="mb-8">
+                                    <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                                        <Sparkles className="w-10 h-10 text-white" />
                                     </div>
+                                    <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+                                        <span className="bg-linear-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                                            Take FitVerse Everywhere
+                                        </span>
+                                    </h2>
+                                    <p className="text-lg text-gray-300 max-w-md mx-auto">
+                                        Download our mobile app and track your fitness journey on the go
+                                    </p>
+                                </div>
+                                <div className="space-y-4 w-full max-w-xs">
+                                    <motion.a
+                                        href="#"
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={(e) => e.preventDefault()}
+                                        className="block"
+                                    >
+                                        <img src="/app-store.png" alt="Download on App Store" className="h-16 w-full object-contain rounded-lg shadow-lg hover:shadow-xl transition-shadow" />
+                                    </motion.a>
+                                    <motion.a
+                                        href="#"
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={(e) => e.preventDefault()}
+                                        className="block"
+                                    >
+                                        <img src="/google-play.png" alt="Get it on Google Play" className="h-16 w-full object-contain rounded-lg shadow-lg hover:shadow-xl transition-shadow" />
+                                    </motion.a>
+                                </div>
+                                <p className="text-sm text-gray-400 mt-8 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+                                    Coming Soon • Beta Testing
+                                </p>
+                            </motion.div>
+                        </motion.div>
+                    </div>
+                </section>
+
+                {/* Stats Section */}
+                <section className="relative py-20 px-4">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                            {stats.map((stat, index) => (
+                                <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, scale: 0.5 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                                    className="text-center"
+                                >
+                                    <stat.icon className="w-8 h-8 mx-auto mb-4 text-purple-400" />
+                                    <div className="text-4xl sm:text-5xl font-bold mb-2 bg-linear-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                                        {stat.value}
+                                    </div>
+                                    <div className="text-gray-400">{stat.label}</div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* Features Section */}
+                <section className="relative py-20 px-4">
+                    <div className="max-w-7xl mx-auto">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8 }}
+                            className="text-center mb-16"
+                        >
+                            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
+                                <span className="bg-linear-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                                    Everything You Need
+                                </span>
+                            </h2>
+                            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+                                Powerful features designed to help you reach your fitness goals faster
+                            </p>
+                        </motion.div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {features.map((feature, index) => {
+                                const Icon = feature.icon;
+                                return (
+                                    <motion.div
+                                        key={index}
+                                        initial={{ opacity: 0, y: 50 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                                        whileHover={{ y: -10, transition: { duration: 0.2 } }}
+                                        className="group relative p-8 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300"
+                                    >
+                                        <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/10 group-hover:to-purple-500/10 transition-all duration-300" />
+                                        <div className="relative">
+                                            <div className={`w-14 h-14 rounded-xl bg-linear-to-br ${feature.gradient} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                                                <Icon className="w-7 h-7 text-white" />
+                                            </div>
+                                            <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
+                                            <p className="text-gray-400">{feature.description}</p>
+                                        </div>
+                                    </motion.div>
                                 );
                             })}
                         </div>
-
-                        {/* Platform Highlights Section - New */}
-                        <div className="section-card rounded-xl p-8 mb-16">
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">
-                                🌟 Platform Highlights
-                            </h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                <div className="flex items-start gap-3">
-                                    <div className="shrink-0 w-10 h-10 bg-linear-to-r from-[#38bdf8] to-[#818cf8] rounded-lg flex items-center justify-center">
-                                        <Utensils className="w-5 h-5 text-white" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-gray-900 dark:text-white font-semibold mb-1">FatSecret API Integration</h4>
-                                        <p className="text-gray-600 dark:text-white/70 text-sm">Access to 500,000+ verified food items with detailed nutritional information</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-3">
-                                    <div className="shrink-0 w-10 h-10 bg-linear-to-r from-[#818cf8] to-[#c084fc] rounded-lg flex items-center justify-center">
-                                        <Calendar className="w-5 h-5 text-white" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-gray-900 dark:text-white font-semibold mb-1">Custom Meal Categories</h4>
-                                        <p className="text-gray-600 dark:text-white/70 text-sm">Create up to 3 personalized meal categories beyond standard meals</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-3">
-                                    <div className="shrink-0 w-10 h-10 bg-linear-to-r from-[#c084fc] to-[#e879f9] rounded-lg flex items-center justify-center">
-                                        <Heart className="w-5 h-5 text-white" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-gray-900 dark:text-white font-semibold mb-1">Social Feed</h4>
-                                        <p className="text-gray-600 dark:text-white/70 text-sm">Share posts with images, like, comment, and engage with your community</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-3">
-                                    <div className="shrink-0 w-10 h-10 bg-linear-to-r from-[#38bdf8] to-[#818cf8] rounded-lg flex items-center justify-center">
-                                        <Activity className="w-5 h-5 text-white" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-gray-900 dark:text-white font-semibold mb-1">Workout Library</h4>
-                                        <p className="text-gray-600 dark:text-white/70 text-sm">Complete exercise database with detailed logging and history tracking</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-3">
-                                    <div className="shrink-0 w-10 h-10 bg-linear-to-r from-[#818cf8] to-[#c084fc] rounded-lg flex items-center justify-center">
-                                        <Cloud className="w-5 h-5 text-white" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-gray-900 dark:text-white font-semibold mb-1">Cloudinary Integration</h4>
-                                        <p className="text-gray-600 dark:text-white/70 text-sm">Optimized image storage and delivery for profile photos and posts</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-3">
-                                    <div className="shrink-0 w-10 h-10 bg-linear-to-r from-[#c084fc] to-[#e879f9] rounded-lg flex items-center justify-center">
-                                        <BarChart3 className="w-5 h-5 text-white" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-gray-900 dark:text-white font-semibold mb-1">Visual Analytics</h4>
-                                        <p className="text-gray-600 dark:text-white/70 text-sm">Interactive charts with Recharts for tracking progress and trends</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Stats Section */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-16">
-                            <div className="stat-card text-center">
-                                <div className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2">10K+</div>
-                                <div className="text-gray-600 dark:text-white/70">Active Users</div>
-                            </div>
-                            <div className="stat-card text-center">
-                                <div className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2">50K+</div>
-                                <div className="text-gray-600 dark:text-white/70">Workouts Completed</div>
-                            </div>
-                            <div className="stat-card text-center">
-                                <div className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2">95%</div>
-                                <div className="text-gray-600 dark:text-white/70">User Satisfaction</div>
-                            </div>
-                        </div>
-
-                        {/* Testimonials Section */}
-                        <div className="mb-16">
-                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white text-center mb-4">
-                                What Our Users Say
-                            </h2>
-                            <p className="text-center text-gray-600 dark:text-white/70 mb-8 max-w-2xl mx-auto">
-                                Real stories from real members who transformed their fitness journey with FitVerse
-                            </p>
-                            <AnimatedTestimonials testimonials={testimonials} autoplay={true} />
-                        </div>
-
-                        {/* Quick Start Guide for New Users */}
-                        {!isAuthenticated && (
-                            <div className="section-card rounded-xl p-8 mb-16">
-                                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">
-                                    Get Started in 3 Easy Steps
-                                </h2>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                    <div className="text-center">
-                                        <div className="flex items-center justify-center w-16 h-16 bg-linear-to-r from-[#38bdf8] to-[#818cf8] rounded-full text-white font-bold text-2xl mb-4 mx-auto shadow-lg shadow-blue-500/30">
-                                            1
-                                        </div>
-                                        <h3 className="text-gray-900 dark:text-white font-semibold text-lg mb-2">Create Account</h3>
-                                        <p className="text-gray-600 dark:text-white/70">Sign up with your email, set your profile, and join the FitVerse community</p>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="flex items-center justify-center w-16 h-16 bg-linear-to-r from-[#818cf8] to-[#c084fc] rounded-full text-white font-bold text-2xl mb-4 mx-auto shadow-lg shadow-purple-500/30">
-                                            2
-                                        </div>
-                                        <h3 className="text-gray-900 dark:text-white font-semibold text-lg mb-2">Track Progress</h3>
-                                        <p className="text-gray-600 dark:text-white/70">Log workouts, track nutrition from 500k+ foods, and monitor your daily progress</p>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="flex items-center justify-center w-16 h-16 bg-linear-to-r from-[#c084fc] to-[#e879f9] rounded-full text-white font-bold text-2xl mb-4 mx-auto shadow-lg shadow-pink-500/30">
-                                            3
-                                        </div>
-                                        <h3 className="text-gray-900 dark:text-white font-semibold text-lg mb-2">Connect & Share</h3>
-                                        <p className="text-gray-600 dark:text-white/70">Follow friends, share your journey with photos, and stay motivated together</p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Features List for Authenticated Users */}
-                        {isAuthenticated && (
-                            <div className="section-card rounded-xl p-8">
-                                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">
-                                    Your Complete Fitness Hub
-                                </h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
-                                        <Dumbbell className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
-                                        <div>
-                                            <p className="font-semibold">Workout Tracking</p>
-                                            <p className="text-sm text-gray-600 dark:text-white/70">Log exercises, sets, reps, and weight</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
-                                        <Apple className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
-                                        <div>
-                                            <p className="font-semibold">Nutrition Database</p>
-                                            <p className="text-sm text-gray-600 dark:text-white/70">500,000+ foods with FatSecret API</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
-                                        <Calendar className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
-                                        <div>
-                                            <p className="font-semibold">Custom Meal Categories</p>
-                                            <p className="text-sm text-gray-600 dark:text-white/70">Create up to 3 personalized categories</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
-                                        <Users className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
-                                        <div>
-                                            <p className="font-semibold">Follow System</p>
-                                            <p className="text-sm text-gray-600 dark:text-white/70">Connect with friends and community</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
-                                        <MessageCircle className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
-                                        <div>
-                                            <p className="font-semibold">Social Feed</p>
-                                            <p className="text-sm text-gray-600 dark:text-white/70">Share posts, photos, likes, and comments</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
-                                        <Bell className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
-                                        <div>
-                                            <p className="font-semibold">Real-time Notifications</p>
-                                            <p className="text-sm text-gray-600 dark:text-white/70">Stay updated on all interactions</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
-                                        <BarChart3 className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
-                                        <div>
-                                            <p className="font-semibold">Progress Analytics</p>
-                                            <p className="text-sm text-gray-600 dark:text-white/70">Interactive charts and visualizations</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
-                                        <Image className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
-                                        <div>
-                                            <p className="font-semibold">Media Sharing</p>
-                                            <p className="text-sm text-gray-600 dark:text-white/70">Upload photos via Cloudinary</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-3 text-gray-900 dark:text-white">
-                                        <Zap className="w-5 h-5 text-[#38bdf8] mt-0.5 shrink-0" />
-                                        <div>
-                                            <p className="font-semibold">Dark Mode Support</p>
-                                            <p className="text-sm text-gray-600 dark:text-white/70">Seamless theme switching</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
                     </div>
-                </div>
+                </section>
+
+                {/* Benefits Section */}
+                <section className="relative py-20 px-4">
+                    <div className="max-w-5xl mx-auto">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8 }}
+                            className="p-12 rounded-3xl bg-linear-to-br from-blue-600 to-purple-600 relative overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-grid-white/10" />
+                            <div className="relative z-10">
+                                <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center">
+                                    Why Choose FitVerse?
+                                </h2>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {benefits.map((benefit, index) => (
+                                        <motion.div
+                                            key={index}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            whileInView={{ opacity: 1, x: 0 }}
+                                            viewport={{ once: true }}
+                                            transition={{ duration: 0.5, delay: index * 0.1 }}
+                                            className="flex items-center gap-3"
+                                        >
+                                            <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                                                <Check className="w-4 h-4" />
+                                            </div>
+                                            <span className="text-lg">{benefit}</span>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                </section>
+
+                {/* Final CTA */}
+                {!isAuthenticated && (
+                    <section className="relative py-32 px-4">
+                        <div className="max-w-4xl mx-auto text-center">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.8 }}
+                            >
+                                <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
+                                    Ready to <span className="bg-linear-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Transform?</span>
+                                </h2>
+                                <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+                                    Join thousands of fitness enthusiasts achieving their goals with FitVerse
+                                </p>
+                                <Link to="/register">
+                                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                        <Button size="lg" className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-12 py-8 text-xl font-semibold rounded-full shadow-2xl shadow-purple-500/50 hover:shadow-purple-500/60">
+                                            Start Your Journey Free
+                                            <ArrowRight className="ml-2 w-6 h-6" />
+                                        </Button>
+                                    </motion.div>
+                                </Link>
+                                <p className="text-gray-500 mt-6 text-sm">
+                                    No credit card required • Free forever
+                                </p>
+                            </motion.div>
+                        </div>
+                    </section>
+                )}
             </div>
         </>
     );
 };
+
 export default HomeScreen;
