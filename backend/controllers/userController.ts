@@ -367,10 +367,6 @@ export const followUnfollowUser = asyncHandler(
                     message: `${currentUser.username} started following you.`,
                 });
                 await notification.save({ validateBeforeSave: false });
-
-                // TODO: Integrate real-time notification via WebSocket
-                // TODO: Integrate email notification if needed
-                // TODO: Return the id/username of the user being followed/unfollowed
                 res.status(200).json({ message: `Followed ${targetUsername}` });
             }
         } catch (error) {

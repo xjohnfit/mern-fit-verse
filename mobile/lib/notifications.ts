@@ -1,5 +1,5 @@
 import * as Notifications from 'expo-notifications';
-import { Platform, Alert, Linking } from 'react-native';
+import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 
 // Note: Notification handler is now set in app/_layout.tsx for global coverage
@@ -42,28 +42,7 @@ export async function registerForPushNotificationsAsync(): Promise<
             });
             finalStatus = status;
         }
-
-        if (finalStatus !== 'granted') {
-            Alert.alert(
-                'Enable Notifications',
-                'To receive message notifications, please enable notifications in your device settings.',
-                [
-                    { text: 'Cancel', style: 'cancel' },
-                    {
-                        text: 'Open Settings',
-                        onPress: () => {
-                            if (Platform.OS === 'ios') {
-                                Linking.openURL('app-settings:');
-                            } else {
-                                Linking.openSettings();
-                            }
-                        },
-                    },
-                ]
-            );
-            return;
-        }
-
+        
         try {
             const projectId = Constants.expoConfig?.extra?.eas?.projectId;
             if (!projectId) {
@@ -116,7 +95,7 @@ export async function getBadgeCount(): Promise<number> {
 }
 
 /**
- * Set notification badge count
+ * Set the notification badge count
  */
 export async function setBadgeCount(count: number) {
     await Notifications.setBadgeCountAsync(count);
