@@ -33,6 +33,7 @@ const ProfileSettingsTab = ({ userInfo, isLoading, onUpdate }: ProfileSettingsTa
         weight: '',
         weightUnit: 'lbs',
         goal: '',
+        restTimer: 120,
     });
 
     const [showPassword, setShowPassword] = useState(false);
