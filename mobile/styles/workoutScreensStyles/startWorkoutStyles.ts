@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-export const createStyles = (isDark: boolean) =>
+const createStyles = (isDark: boolean) =>
     StyleSheet.create({
         container: {
             flex: 1,
@@ -439,3 +439,5 @@ export const createStyles = (isDark: boolean) =>
             marginTop: 12,
         },
     });
+
+export default createStyles;

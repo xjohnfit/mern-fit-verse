@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,9 +10,9 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
-import { setCredentials } from '../../slices/authSlice';
-import { useUpdateUserProfileMutation } from '../../slices/usersApiSlice';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { setCredentials } from '@/slices/authSlice';
+import { useUpdateUserProfileMutation } from '@/slices/usersApiSlice';
 import Slider from '@react-native-community/slider';
 
 interface SettingsPreferencesTabProps {
@@ -31,9 +31,29 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
   const [weightUnit, setWeightUnit] = useState<'lbs' | 'kg'>('lbs');
   const [restTimer, setRestTimer] = useState<number>(2); // in minutes
 
+  // Ref to track when we're updating to prevent useEffect from overwriting
+  const isUpdatingRestTimer = useRef(false);
+
   useEffect(() => {
     loadPreferences();
   }, []);
+
+  // Update preferences when userInfo changes
+  useEffect(() => {
+    if (userInfo) {
+      setWeightUnit(userInfo.weightUnit || 'lbs');
+      // Convert seconds to minutes for display (default 120 seconds = 2 minutes)
+      const restTimerInMinutes = userInfo.restTimer ? Math.round(userInfo.restTimer / 60) : 2;
+
+      // Only update if the value is different from the current state
+      setRestTimer(prev => {
+        if (prev !== restTimerInMinutes && !isUpdatingRestTimer.current) {
+          return restTimerInMinutes;
+        }
+        return prev;
+      });
+    }
+  }, [userInfo]);
 
   const loadPreferences = async () => {
     try {
@@ -89,13 +109,42 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
 
   const handleRestTimerComplete = async (minutes: number) => {
     try {
+      // Set flag to prevent useEffect from overwriting
+      isUpdatingRestTimer.current = true;
+
       // Convert minutes to seconds for backend storage
-      const seconds = minutes * 60;
-      const res = await updateUserProfile({ restTimer: seconds }).unwrap();
+      const seconds = Math.round(minutes * 60);
+
+      // Validate the value
+      if (seconds < 60 || seconds > 600) {
+        console.error('Invalid rest timer value:', seconds);
+        isUpdatingRestTimer.current = false;
+        return;
+      }
+
+      const payload = { restTimer: seconds };
+      const res = await updateUserProfile(payload).unwrap();
       dispatch(setCredentials(res));
+
+      // Show success toast
+      Toast.show({
+        type: 'success',
+        text1: 'Rest Timer Updated',
+        text2: `Set to ${minutes} minute${minutes !== 1 ? 's' : ''}`,
+      });
+
+      // Reset flag after a delay to ensure all useEffects have run
+      setTimeout(() => {
+        isUpdatingRestTimer.current = false;
+      }, 100);
     } catch (error: any) {
-      // Silently fail or log error
+      isUpdatingRestTimer.current = false;
       console.error('Failed to update rest timer:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Update Failed',
+        text2: error?.data?.message || 'Failed to update rest timer',
+      });
     }
   };
 
@@ -142,6 +191,7 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
 
   return (
     <View className="pb-6">
+
       {/* Workout Preferences */}
       <View className="mb-6">
         <Text className="text-lg font-bold text-gray-900 dark:text-white mb-4 px-1">

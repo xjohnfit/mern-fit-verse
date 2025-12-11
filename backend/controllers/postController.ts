@@ -2,7 +2,7 @@ import asyncHandler from 'express-async-handler';
 import { Request, Response } from 'express';
 
 // Models imports
-import { PostModel } from '../models/postModel';
+import Post from '../models/postModel';
 import Notification from '../models/notificationModel';
 import User from '../models/userModel';
 
@@ -34,7 +34,7 @@ export const createPost = asyncHandler(async (req: Request, res: Response) => {
         image = uploadedImage.secure_url;
     }
 
-    const newPost = new PostModel({
+    const newPost = new Post({
         author: userId,
         content,
         image,
@@ -46,7 +46,7 @@ export const createPost = asyncHandler(async (req: Request, res: Response) => {
 
 // Delete a post
 export const deletePost = asyncHandler(async (req: Request, res: Response) => {
-    const post = await PostModel.findById(req.params.postId);
+    const post = await Post.findById(req.params.postId);
     if (!post) {
         res.status(404);
         throw new Error('Post not found');
@@ -66,7 +66,7 @@ export const deletePost = asyncHandler(async (req: Request, res: Response) => {
         }
     }
 
-    await PostModel.findByIdAndDelete(req.params.postId);
+    await Post.findByIdAndDelete(req.params.postId);
     res.json({ message: 'Post deleted successfully' });
 });
 
@@ -79,7 +79,7 @@ export const getUserPosts = asyncHandler(
             res.status(404);
             throw new Error('User not found');
         }
-        const posts = await PostModel.find({ author: user._id })
+        const posts = await Post.find({ author: user._id })
             .populate('author', 'name username photo')
             .populate('comments.user', 'name username photo')
             .sort({ createdAt: -1 });
@@ -115,7 +115,7 @@ export const getFeedPosts = asyncHandler(
         const feedUserIds = [userId, ...followedUsers];
 
         // Get posts from current user and followed users
-        const posts = await PostModel.find({ author: { $in: feedUserIds } })
+        const posts = await Post.find({ author: { $in: feedUserIds } })
             .populate('author', 'name username photo')
             .populate('comments.user', 'name username photo')
             .sort({ createdAt: -1 });
@@ -141,7 +141,7 @@ export const getFollowedUsersPosts = asyncHandler(
         }
 
         const followedUsers = user.following;
-        const posts = await PostModel.find({ author: { $in: followedUsers } })
+        const posts = await Post.find({ author: { $in: followedUsers } })
             .populate('author', 'name username photo')
             .populate('comments.user', 'name username photo')
             .sort({ createdAt: -1 });
@@ -168,7 +168,7 @@ export const likeUnlikePost = asyncHandler(
             throw new Error('User not found');
         }
 
-        const post = await PostModel.findById(postId);
+        const post = await Post.findById(postId);
         if (!post) {
             res.status(404);
             throw new Error('Post not found');
@@ -218,7 +218,7 @@ export const addComment = asyncHandler(async (req: Request, res: Response) => {
         throw new Error('Comment text is required');
     }
 
-    const post = await PostModel.findById(postId);
+    const post = await Post.findById(postId);
     if (!post) {
         res.status(404);
         throw new Error('Post not found');
@@ -249,7 +249,7 @@ export const deleteComment = asyncHandler(
             throw new Error('User not authenticated');
         }
 
-        const post = await PostModel.findById(postId);
+        const post = await Post.findById(postId);
         if (!post) {
             res.status(404);
             throw new Error('Post not found');

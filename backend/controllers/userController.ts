@@ -58,14 +58,14 @@ export const updateUserProfile = asyncHandler(
             throw new Error('User not found');
         }
 
-        // Check if email is valid
+        // Check if the email is valid
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(req.user!.email)) {
             res.status(400);
             throw new Error('Invalid email format');
         }
 
-        // Check if username or email is being updated to an existing one
+        // Check if a username or email is being updated to an existing one
         if (req.body.username && req.body.username !== user.username) {
             const usernameExists = await User.findOne({
                 username: req.body.username,
@@ -76,18 +76,33 @@ export const updateUserProfile = asyncHandler(
             }
         }
 
-        user.name = req.body.name || user.name;
-        user.username = req.body.username || user.username;
-        user.email = req.body.email || user.email;
-        user.dob = req.body.dob || user.dob;
-        user.gender = req.body.gender || user.gender;
-        user.goal = req.body.goal || user.goal;
-        user.height = req.body.height || user.height;
-        user.weight = req.body.weight || user.weight;
-        user.weightUnit = req.body.weightUnit || user.weightUnit;
-        user.restTimer = req.body.restTimer !== undefined ? req.body.restTimer : user.restTimer;
 
-        // Handle photo upload if base64 image is provided
+
+        // Build update object
+        const updateFields: any = {};
+
+        if (req.body.name) updateFields.name = req.body.name;
+        if (req.body.username) updateFields.username = req.body.username;
+        if (req.body.email) updateFields.email = req.body.email;
+        if (req.body.dob) updateFields.dob = req.body.dob;
+        if (req.body.gender) updateFields.gender = req.body.gender;
+        if (req.body.goal) updateFields.goal = req.body.goal;
+        if (req.body.height) updateFields.height = req.body.height;
+        if (req.body.weight) updateFields.weight = req.body.weight;
+        if (req.body.weightUnit) updateFields.weightUnit = req.body.weightUnit;
+
+        // Handle restTimer
+        if (req.body.restTimer !== undefined && req.body.restTimer !== null) {
+            const restTimerValue = Number(req.body.restTimer);
+            if (!isNaN(restTimerValue) && restTimerValue >= 60 && restTimerValue <= 600) {
+                updateFields.restTimer = restTimerValue;
+            }
+        }
+
+        // Apply non-photo, non-password updates to the user object
+        Object.assign(user, updateFields);
+
+        // Handle photo upload if a base64 image is provided
         if (req.body.photo) {
             try {
                 // Validate and sanitize the photo data
@@ -247,10 +262,19 @@ export const updateUserProfile = asyncHandler(
             user.password = req.body.password;
         }
 
-        const updateUser = await user.save();
-        const updatedUser = await User.findById(updateUser._id).select(
-            '-password'
-        );
+        const savedUser = await user.save();
+
+        // If restTimer was in the update, force a direct database update to ensure it persists
+        if (updateFields.restTimer !== undefined) {
+            await User.updateOne(
+                { _id: savedUser._id },
+                { $set: { restTimer: updateFields.restTimer } }
+            );
+        }
+
+        // Fetch fresh from database without password
+        const updatedUser = await User.findById(savedUser._id).select('-password');
+
         res.status(200).json(updatedUser);
     }
 );
@@ -414,7 +438,7 @@ export const updateNutritionGoals = asyncHandler(
 // Admin: Get all users
 export const getAllUsers = asyncHandler(
     async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-        // Check if user is admin
+        // Check if the user is admin
         if (!req.user!.admin) {
             res.status(403);
             throw new Error('Not authorized as admin');
@@ -435,7 +459,7 @@ export const getAllUsers = asyncHandler(
 // Admin: Update user role
 export const updateUserRole = asyncHandler(
     async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-        // Check if user is admin
+        // Check if the user is admin
         if (!req.user!.admin) {
             res.status(403);
             throw new Error('Not authorized as admin');

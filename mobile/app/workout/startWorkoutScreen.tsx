@@ -24,7 +24,7 @@ import type { Exercise as ApiExercise } from '@/slices/exerciseApiSlice';
 import { useGetTemplateByIdQuery } from '@/slices/workoutTemplateApiSlice';
 import { useCreateWorkoutMutation } from '@/slices/workoutApiSlice';
 import type { WorkoutExercise, WorkoutSet } from '@/types/workout.types';
-import { createStyles } from './styles/start.styles';
+import createStyles from '@/styles/workoutScreensStyles/startWorkoutStyles';
 
 type Exercise = Omit<ApiExercise, 'instructions'> & { instructions: string | string[]; };
 
@@ -53,7 +53,6 @@ const StartWorkoutScreen = () => {
     const [createWorkout, { isLoading: isSaving }] = useCreateWorkoutMutation();
 
     // Refs
-    const toastShownRef = useRef<Set<string>>(new Set());
     const isFinishingRef = useRef(false);
     const templateLoadedRef = useRef(false);
 
@@ -93,7 +92,7 @@ const StartWorkoutScreen = () => {
                     setTemplateId(savedTemplateId);
                 }
 
-                // Set start time
+                // Set the start time
                 if (savedStartTime) {
                     setWorkoutStartTime(parseInt(savedStartTime));
                 } else {
@@ -131,9 +130,9 @@ const StartWorkoutScreen = () => {
                 } else if (templateIdFromUrl) {
                     // Clear saved exercises when loading a new template
                     await AsyncStorage.removeItem('workout_exercises');
-                    // Keep loading true until template loads
+                    // Keep loading true until the template loads
                 } else {
-                    // No saved exercises and no template - freestyle workout
+                    // No saved exercises and no template-freestyle workout
                     setIsLoading(false);
                 }
             } catch (error) {
@@ -183,7 +182,7 @@ const StartWorkoutScreen = () => {
         };
 
         saveTimerState();
-    }, [isTimerRunning]);
+    }, [isTimerRunning, pauseStartTime, pausedTime]);
 
     // Save selected exercises
     useEffect(() => {
@@ -249,7 +248,7 @@ const StartWorkoutScreen = () => {
 
         const interval = setInterval(() => {
             const elapsed = Date.now() - activeRestTimer.startTime;
-            const restDuration = 120000; // 2 minutes in milliseconds
+            const restDuration: number = defaultRestTimer; // Use user's rest timer setting from database
             const remaining = restDuration - elapsed;
 
             if (remaining <= 0) {
@@ -281,7 +280,7 @@ const StartWorkoutScreen = () => {
         }, 16); // ~60fps
 
         return () => clearInterval(interval);
-    }, [activeRestTimer]);
+    }, [activeRestTimer, defaultRestTimer]);
 
     const formatTime = (seconds: number) => {
         const hrs = Math.floor(seconds / 3600);
@@ -413,7 +412,6 @@ const StartWorkoutScreen = () => {
                     startTime: Date.now(),
                 });
             } else {
-                let foundNextSet = false;
                 for (let i = currentExerciseIndex + 1; i < selectedExercises.length; i++) {
                     const nextExercise = selectedExercises[i];
                     const firstIncompleteSet = nextExercise.sets.find((s) => !s.completed);
@@ -423,7 +421,6 @@ const StartWorkoutScreen = () => {
                             setId: firstIncompleteSet.id,
                             startTime: Date.now(),
                         });
-                        foundNextSet = true;
                         break;
                     }
                 }
@@ -775,7 +772,7 @@ const StartWorkoutScreen = () => {
                     <View style={styles.emptyState}>
                         <Ionicons name="barbell-outline" size={64} color={isDark ? '#475569' : '#9ca3af'} />
                         <Text style={styles.emptyStateTitle}>No Exercises Yet</Text>
-                        <Text style={styles.emptyStateText}>Click "Add Exercise" to start building your workout</Text>
+                        <Text style={styles.emptyStateText}>Click &quot;Add Exercise&quot; to start building your workout</Text>
                     </View>
                 )}
             </ScrollView>

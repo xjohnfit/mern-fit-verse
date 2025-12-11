@@ -33,7 +33,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template, hasActiveW
             );
             return;
         }
-        router.push(`/workout/start?templateId=${template._id}` as any);
+        router.push(`/workout/startWorkoutScreen?templateId=${template._id}` as any);
     };
 
     const handleEditTemplate = () => {

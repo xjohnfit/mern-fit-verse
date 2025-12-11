@@ -2,15 +2,13 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
-const isDevelopment = Constants.expoConfig?.extra?.mode === 'development';
-
 // For Android emulator, use 10.0.2.2 instead of localhost
 // For iOS simulator, localhost works fine
 // For physical devices or Expo Go, use your computer's IP address
 const getBaseUrl = () => {
-    // Use production URL if explicitly set or if not in __DEV__ mode
-    const isProduction =
-        !__DEV__ || Constants.expoConfig?.extra?.mode === 'production';
+    // Use mode from app.json as the source of truth
+    const mode = Constants.expoConfig?.extra?.mode;
+    const isProduction = mode === 'production';
 
     if (isProduction) {
         return 'https://api.fitverse.codewithxjohn.com/api';
@@ -36,6 +34,9 @@ const getBaseUrl = () => {
 };
 
 const baseUrl = getBaseUrl();
+
+// Export baseUrl for other slices that need direct fetch
+export { baseUrl };
 
 export const apiSlice = createApi({
     reducerPath: 'api',

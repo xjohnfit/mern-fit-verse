@@ -8,9 +8,9 @@ import {
   Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAppDispatch } from '../../hooks/useRedux';
-import { clearCredentials } from '../../slices/authSlice';
-import { useLogoutMutation } from '../../slices/usersApiSlice';
+import { useAppDispatch } from '@/hooks/useRedux';
+import { clearCredentials } from '@/slices/authSlice';
+import { useLogoutMutation } from '@/slices/usersApiSlice';
 import SettingsProfileTab from '../../components/settings/SettingsProfileTab';
 import SettingsPreferencesTab from '../../components/settings/SettingsPreferencesTab';
 import Toast from 'react-native-toast-message';
@@ -125,4 +125,5 @@ const SettingsScreen = () => {
   );
 };
 
+// noinspection JSUnusedGlobalSymbols
 export default SettingsScreen;

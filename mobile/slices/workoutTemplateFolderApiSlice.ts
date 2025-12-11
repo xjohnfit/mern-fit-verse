@@ -1,11 +1,4 @@
-import { apiSlice } from './apiSlice';
-import Constants from 'expo-constants';
-
-const isDevelopment = Constants.expoConfig?.extra?.mode === 'development';
-
-const BASE_URL = isDevelopment
-    ? 'http://localhost:5004/api'
-    : 'https://api.fitverse.codewithxjohn.com/api';
+import { apiSlice, baseUrl as BASE_URL } from './apiSlice';
 
 export interface WorkoutTemplateFolder {
     _id: string;

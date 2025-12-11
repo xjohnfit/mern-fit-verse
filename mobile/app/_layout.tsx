@@ -13,13 +13,14 @@ import Toast from 'react-native-toast-message';
 
 // Local imports
 import store from '../store';
-import { restoreCredentials } from '../slices/authSlice';
+import { restoreCredentials, setCredentials } from '../slices/authSlice';
 import { useSocket } from '../hooks/useSocket';
 import { registerForPushNotificationsAsync } from '../lib/notifications';
 import * as Notifications from 'expo-notifications';
-import { useAppSelector } from '../hooks/useRedux';
+import { useAppSelector, useAppDispatch } from '../hooks/useRedux';
 
 import { useUpdatePushTokenMutation } from '../slices/notificationApiSlice';
+import { useGetUserProfileQuery } from '../slices/usersApiSlice';
 
 // Configure notification handler at app level for background notifications
 Notifications.setNotificationHandler({
@@ -35,6 +36,21 @@ Notifications.setNotificationHandler({
 function RootLayoutContent() {
     // Initialize socket connection
     useSocket();
+
+    const dispatch = useAppDispatch();
+    const { userInfo } = useAppSelector((state) => state.auth);
+
+    // Fetch fresh user profile from server when user is authenticated
+    const { data: freshUserProfile } = useGetUserProfileQuery(undefined, {
+        skip: !userInfo?._id, // Only fetch if user is logged in
+    });
+
+    // Update Redux with fresh data from server
+    useEffect(() => {
+        if (freshUserProfile) {
+            dispatch(setCredentials(freshUserProfile));
+        }
+    }, [freshUserProfile, dispatch]);
 
     useEffect(() => {
         // Restore user credentials from AsyncStorage on app start
@@ -70,7 +86,6 @@ function RootLayoutContent() {
     }, []);
 
     const [updatePushToken] = useUpdatePushTokenMutation();
-    const { userInfo } = useAppSelector((state) => state.auth);
 
     useEffect(() => {
         const registerToken = async () => {

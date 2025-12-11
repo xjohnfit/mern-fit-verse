@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAppSelector } from '@/hooks/useRedux';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+// noinspection JSUnusedGlobalSymbols
 export default function TabsLayout() {
     const { userInfo } = useAppSelector((state) => state.auth);
 
@@ -41,7 +42,7 @@ export default function TabsLayout() {
                 name='home'
                 options={{
                     title: 'Home',
-                    tabBarIcon: ({ focused }) => (
+                    tabBarIcon: () => (
                         <Ionicons
                             name='grid'
                             size={24}
@@ -55,7 +56,7 @@ export default function TabsLayout() {
                 name='profile'
                 options={{
                     title: 'Profile',
-                    tabBarIcon: ({ focused }) => (
+                    tabBarIcon: () => (
                         <Ionicons
                             name='person'
                             size={24}
@@ -69,7 +70,7 @@ export default function TabsLayout() {
                 name='chat'
                 options={{
                     title: 'Chat',
-                    tabBarIcon: ({ focused }) => (
+                    tabBarIcon: () => (
                         <Ionicons
                             name='chatbubble'
                             size={24}
@@ -83,7 +84,7 @@ export default function TabsLayout() {
                 name='nutrition'
                 options={{
                     title: 'Nutrition',
-                    tabBarIcon: ({ focused }) => (
+                    tabBarIcon: () => (
                         <Ionicons
                             name='nutrition'
                             size={24}
@@ -97,7 +98,7 @@ export default function TabsLayout() {
                 name='workout'
                 options={{
                     title: 'Workout',
-                    tabBarIcon: ({ focused }) => (
+                    tabBarIcon: () => (
                         <Ionicons
                             name='barbell'
                             size={24}
@@ -111,7 +112,7 @@ export default function TabsLayout() {
                 name='settings'
                 options={{
                     title: 'Settings',
-                    tabBarIcon: ({ focused }) => (
+                    tabBarIcon: () => (
                         <Ionicons
                             name='settings'
                             size={24}

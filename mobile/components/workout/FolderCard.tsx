@@ -166,8 +166,8 @@ export const FolderCard: React.FC<FolderCardProps> = ({ folder, templates, onEdi
                             <Text style={styles.deleteModalTitle}>Delete Folder</Text>
                         </View>
                         <Text style={styles.deleteModalMessage}>
-                            Are you sure you want to delete the "{folder.name}" folder? Templates
-                            will be moved to "Unsorted".
+                            Are you sure you want to delete the &quot;{folder.name}&quot; folder? Templates
+                            will be moved to &quot;Unsorted&quot;.
                         </Text>
                         <View style={styles.deleteModalActions}>
                             <TouchableOpacity
