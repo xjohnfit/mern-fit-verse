@@ -23,6 +23,7 @@ interface UpdateUserBody {
     height: number;
     weight: number;
     weightUnit: string;
+    restTimer: number;
     goal: string;
     photo: string;
 }
@@ -84,6 +85,7 @@ export const updateUserProfile = asyncHandler(
         user.height = req.body.height || user.height;
         user.weight = req.body.weight || user.weight;
         user.weightUnit = req.body.weightUnit || user.weightUnit;
+        user.restTimer = req.body.restTimer !== undefined ? req.body.restTimer : user.restTimer;
 
         // Handle photo upload if base64 image is provided
         if (req.body.photo) {

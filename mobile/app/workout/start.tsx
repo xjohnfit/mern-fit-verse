@@ -36,9 +36,10 @@ const StartWorkoutScreen = () => {
     const params = useLocalSearchParams();
     const templateIdFromUrl = params.templateId as string | undefined;
 
-    // User info for weight unit
+    // User info for weight unit and rest timer
     const { userInfo } = useSelector((state: any) => state.auth);
     const weightUnit = userInfo?.weightUnit || 'lbs';
+    const defaultRestTimer = (userInfo?.restTimer || 120) * 1000; // Convert seconds to milliseconds
 
     // Initialize templateId from URL or AsyncStorage
     const [templateId, setTemplateId] = useState<string | null>(null);
@@ -220,7 +221,7 @@ const StartWorkoutScreen = () => {
                     completed: false,
                     weight: templateSet.targetWeight || 0,
                     reps: templateSet.targetReps || 0,
-                    restTimeRemaining: 120000,
+                    restTimeRemaining: defaultRestTimer,
                 }));
 
                 templateExercises.push({
@@ -240,7 +241,7 @@ const StartWorkoutScreen = () => {
             }
             setIsLoading(false);
         }
-    }, [templateData, exercisesData, templateIdFromUrl]);
+    }, [templateData, exercisesData, templateIdFromUrl, defaultRestTimer]);
 
     // Rest timer effect
     useEffect(() => {
@@ -312,7 +313,7 @@ const StartWorkoutScreen = () => {
                     id: `${exercise.id}-set-1`,
                     setNumber: 1,
                     completed: false,
-                    restTimeRemaining: 120,
+                    restTimeRemaining: userInfo?.restTimer || 120,
                     weight: 0,
                     reps: 0,
                 },
@@ -320,7 +321,7 @@ const StartWorkoutScreen = () => {
                     id: `${exercise.id}-set-2`,
                     setNumber: 2,
                     completed: false,
-                    restTimeRemaining: 120,
+                    restTimeRemaining: userInfo?.restTimer || 120,
                     weight: 0,
                     reps: 0,
                 },
@@ -328,7 +329,7 @@ const StartWorkoutScreen = () => {
                     id: `${exercise.id}-set-3`,
                     setNumber: 3,
                     completed: false,
-                    restTimeRemaining: 120,
+                    restTimeRemaining: userInfo?.restTimer || 120,
                     weight: 0,
                     reps: 0,
                 },
@@ -336,7 +337,7 @@ const StartWorkoutScreen = () => {
                     id: `${exercise.id}-set-4`,
                     setNumber: 4,
                     completed: false,
-                    restTimeRemaining: 120,
+                    restTimeRemaining: userInfo?.restTimer || 120,
                     weight: 0,
                     reps: 0,
                 },
@@ -361,7 +362,7 @@ const StartWorkoutScreen = () => {
                             id: `${exerciseId}-set-${newSetNumber}`,
                             setNumber: newSetNumber,
                             completed: false,
-                            restTimeRemaining: 120,
+                            restTimeRemaining: userInfo?.restTimer || 120,
                             weight: 0,
                             reps: 0,
                         },
@@ -682,7 +683,7 @@ const StartWorkoutScreen = () => {
                                         <View
                                             style={[
                                                 styles.restProgressBar,
-                                                { width: `${(set.restTimeRemaining / 120000) * 100}%` },
+                                                { width: `${(set.restTimeRemaining / defaultRestTimer) * 100}%` },
                                             ]}
                                         />
                                     )}

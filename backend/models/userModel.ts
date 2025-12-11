@@ -17,6 +17,7 @@ export interface IUser {
     height?: number;
     weight?: number;
     weightUnit?: string; // 'kg' or 'lbs'
+    restTimer?: number; // Rest timer in seconds (default 120 = 2 minutes)
     goal?: string;
     photo?: string;
     likedPosts?: string[];
@@ -59,6 +60,7 @@ const userSchema = new Schema<IUser>(
         height: { type: Number, default: null },
         weight: { type: Number, default: null },
         weightUnit: { type: String, default: 'lbs', enum: ['kg', 'lbs'] },
+        restTimer: { type: Number, default: 120 }, // 3 minutes in seconds
         likedPosts: [{ type: Schema.Types.ObjectId, ref: 'Post', default: [] }],
         workouts: [
             { type: Schema.Types.ObjectId, ref: 'Workout', default: [] },

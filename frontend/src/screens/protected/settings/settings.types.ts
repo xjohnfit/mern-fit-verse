@@ -11,6 +11,7 @@ export interface ProfileData {
     height: string;
     weight: string;
     weightUnit: string;
+    restTimer: number;
     goal: string;
 }
 

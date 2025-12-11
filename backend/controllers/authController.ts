@@ -2,7 +2,15 @@ import type { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import User from '../models/userModel';
 import Notification from '../models/notificationModel';
+import Post from '../models/postModel';
+import Workout from '../models/workoutModel';
+import Nutrition from '../models/nutritionModel';
+import Message from '../models/messageModel';
+import CustomCategory from '../models/customCategoryModel';
+import WorkoutTemplate from '../models/workoutTemplateModel';
+import WorkoutTemplateFolder from '../models/workoutTemplateFolderModel';
 import generateToken from '../utils/generateToken';
+import { v2 as cloudinary } from 'cloudinary';
 
 interface AuthUserBody {
     email: string;
@@ -141,3 +149,128 @@ export const logoutUser = asyncHandler(
         res.status(200).json({ message: 'User logged out successfully' });
     }
 );
+
+// Delete User and all associated data
+export const deleteUser = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+        const userId = req.user._id;
+
+        try {
+            // Find the user
+            const user = await User.findById(userId);
+            if (!user) {
+                res.status(404);
+                throw new Error('User not found');
+            }
+
+            // 1. Delete profile photo from Cloudinary if exists
+            if (user.photo) {
+                try {
+                    // Extract public_id from the Cloudinary URL
+                    const urlParts = user.photo.split('/');
+                    const publicIdWithExtension = urlParts[urlParts.length - 1];
+                    const publicId = publicIdWithExtension.split('.')[0];
+
+                    // Delete from cloudinary (try common folders)
+                    await cloudinary.uploader.destroy(`profile_photos/${publicId}`).catch(() => {
+                        // If not in profile_photos folder, try root
+                        return cloudinary.uploader.destroy(publicId);
+                    });
+                } catch (cloudinaryError) {
+                    console.error('Error deleting photo from Cloudinary:', cloudinaryError);
+                    // Continue with deletion even if cloudinary fails
+                }
+            }
+
+            // 2. Delete all posts by the user and their images from Cloudinary
+            const userPosts = await Post.find({ author: userId });
+            for (const post of userPosts) {
+                if (post.image) {
+                    try {
+                        const urlParts = post.image.split('/');
+                        const publicIdWithExtension = urlParts[urlParts.length - 1];
+                        const publicId = publicIdWithExtension.split('.')[0];
+                        await cloudinary.uploader.destroy(`posts/${publicId}`).catch(() => {
+                            return cloudinary.uploader.destroy(publicId);
+                        });
+                    } catch (error) {
+                        console.error('Error deleting post image from Cloudinary:', error);
+                    }
+                }
+            }
+            await Post.deleteMany({ author: userId });
+
+            // 3. Remove user from all posts' likes arrays
+            await Post.updateMany(
+                { likes: userId },
+                { $pull: { likes: userId } }
+            );
+
+            // 4. Remove user from all posts' comments
+            await Post.updateMany(
+                { 'comments.user': userId },
+                { $pull: { comments: { user: userId } } }
+            );
+
+            // 5. Remove user from followers/following lists
+            await User.updateMany(
+                { following: userId },
+                { $pull: { following: userId } }
+            );
+            await User.updateMany(
+                { followers: userId },
+                { $pull: { followers: userId } }
+            );
+
+            // 6. Remove user from other users' likedPosts arrays
+            await User.updateMany(
+                { likedPosts: userId },
+                { $pull: { likedPosts: userId } }
+            );
+
+            // 7. Delete all workouts
+            await Workout.deleteMany({ user: userId });
+
+            // 8. Delete all nutrition data
+            await Nutrition.deleteMany({ user: userId });
+
+            // 9. Delete all messages (sent and received)
+            await Message.deleteMany({
+                $or: [{ senderId: userId }, { receiverId: userId }]
+            });
+
+            // 10. Delete all notifications (sent and received)
+            await Notification.deleteMany({
+                $or: [{ from: userId }, { to: userId }]
+            });
+
+            // 11. Delete all custom categories
+            await CustomCategory.deleteMany({ user: userId });
+
+            // 12. Delete all workout templates
+            await WorkoutTemplate.deleteMany({ userId: userId });
+
+            // 13. Delete all workout template folders
+            await WorkoutTemplateFolder.deleteMany({ userId: userId });
+
+            // 14. Finally, delete the user account
+            await User.findByIdAndDelete(userId);
+
+            // Clear the authentication cookie
+            res.cookie('fit-verse-token', '', {
+                httpOnly: true,
+                expires: new Date(0),
+            });
+
+            res.status(200).json({
+                message: 'User and all associated data deleted successfully'
+            });
+        } catch (error: any) {
+            console.error('Error deleting user:', error);
+            res.status(500);
+            throw new Error(error.message || 'Failed to delete user');
+        }
+    }
+);
+
+

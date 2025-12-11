@@ -6,7 +6,6 @@ import { apiSlice } from '@/slices/apiSlice';
 import { useState, useEffect } from 'react';
 import { getPhotoUrl } from '@/lib/cacheBuster';
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
     User,
     LogOut,
@@ -77,16 +76,7 @@ function Header() {
     const closeMobileMenu = () => {
         setIsMobileMenuOpen(false);
     };
-
-    const getInitials = (name: string) => {
-        return name
-            .split(' ')
-            .map((n) => n[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2);
-    };
-
+    
     const avatar = userInfo ? (
         userInfo.photo ? (
             <img
@@ -95,11 +85,9 @@ function Header() {
                 className='w-8 h-8 rounded-full object-cover ring-2 ring-blue-500/20 dark:ring-blue-400/30 transition-all duration-300 hover:ring-blue-500/40 dark:hover:ring-blue-400/50'
             />
         ) : (
-            <Avatar className='w-8 h-8 ring-2 ring-blue-500/20 dark:ring-blue-400/30 transition-all duration-300 hover:ring-blue-500/40 dark:hover:ring-blue-400/50'>
-                <AvatarFallback className='bg-linear-to-br from-blue-500 to-purple-600 text-white font-semibold text-sm'>
-                    {getInitials(userInfo.name)}
-                </AvatarFallback>
-            </Avatar>
+            <div className='w-8 h-8 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center ring-2 ring-blue-500/20 dark:ring-blue-400/30 transition-all duration-300 hover:ring-blue-500/40 dark:hover:ring-blue-400/50'>
+                <User className='w-5 h-5 text-white' />
+            </div>
         )
     ) : null;
 
@@ -350,11 +338,9 @@ function Header() {
                                                         className='w-12 h-12 rounded-full object-cover ring-2 ring-blue-500/20 dark:ring-blue-400/30 transition-all duration-300'
                                                     />
                                                 ) : (
-                                                    <Avatar className='w-12 h-12 ring-2 ring-blue-500/20 dark:ring-blue-400/30 transition-all duration-300'>
-                                                        <AvatarFallback className='bg-linear-to-br from-blue-500 to-purple-600 text-white font-semibold text-base'>
-                                                            {getInitials(userInfo?.name || '')}
-                                                        </AvatarFallback>
-                                                    </Avatar>
+                                                    <div className='w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center ring-2 ring-blue-500/20 dark:ring-blue-400/30 transition-all duration-300'>
+                                                        <User className='w-6 h-6 text-white' />
+                                                    </div>
                                                 )}
                                                 <div className='flex-1 min-w-0'>
                                                     <p className='font-semibold text-gray-900 dark:text-gray-100 truncate'>

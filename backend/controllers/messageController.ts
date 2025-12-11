@@ -1,7 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import { v2 as cloudinary } from 'cloudinary';
 import { Request, Response } from 'express';
-import { Message } from '../models/messageModel';
+import Message from '../models/messageModel';
 import { io, getReceiverSocketId } from '../config/socket.io';
 
 import { sendPushNotification } from '../utils/pushNotifications';

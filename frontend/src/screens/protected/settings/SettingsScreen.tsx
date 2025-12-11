@@ -10,6 +10,7 @@ import { kgToLbs } from '@/lib/weightConversion';
 import { Tabs } from '@/components/ui/tabs';
 import ProfileSettingsTab from '@/screens/protected/settings/components/ProfileSettingsTab';
 import AppearanceSettingsTab from '@/screens/protected/settings/components/AppearanceSettingsTab';
+import PreferencesSettingsTab from '@/screens/protected/settings/components/PreferencesSettingsTab';
 
 const SettingsScreen = () => {
     const dispatch = useDispatch();
@@ -135,6 +136,11 @@ const SettingsScreen = () => {
             title: 'Appearance',
             value: 'appearance',
             content: <AppearanceSettingsTab />,
+        },
+        {
+            title: 'Preferences',
+            value: 'preferences',
+            content: <PreferencesSettingsTab />,
         },
     ];
 

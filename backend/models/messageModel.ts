@@ -27,4 +27,6 @@ const messageSchema = new Schema(
     { timestamps: true }
 );
 
-export const Message: Model<IMessage> = model<IMessage>('Message', messageSchema);
+const Message: Model<IMessage> = model<IMessage>('Message', messageSchema);
+
+export default Message;

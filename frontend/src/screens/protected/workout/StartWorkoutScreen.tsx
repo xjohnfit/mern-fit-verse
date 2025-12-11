@@ -49,6 +49,7 @@ const StartWorkoutScreen = () => {
     const templateLoadedRef = useRef(false);
     const { userInfo } = useSelector((state: any) => state.auth);
     const weightUnit = userInfo?.weightUnit || 'lbs';
+    const defaultRestTimer = userInfo?.restTimer || 120; // Default 120 seconds = 2 minutes
 
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedExercises, setSelectedExercises] = useState<WorkoutExercise[]>(() => {
@@ -64,7 +65,7 @@ const StartWorkoutScreen = () => {
                     id: `${ex.id}-set-1`,
                     setNumber: 1,
                     completed: false,
-                    restTimeRemaining: 120
+                    restTimeRemaining: userInfo?.restTimer || 120
                 }]
             }));
         } catch {
@@ -221,8 +222,7 @@ const StartWorkoutScreen = () => {
 
         const interval = window.setInterval(() => {
             const elapsed = Math.floor((Date.now() - activeRestTimer.startTime) / 1000);
-            const restDuration = 120; // 2 minutes in seconds
-            const remaining = restDuration - elapsed;
+            const remaining = defaultRestTimer - elapsed;
 
             if (remaining <= 0) {
                 setActiveRestTimer(null);
@@ -261,7 +261,7 @@ const StartWorkoutScreen = () => {
         }, 100); // Update more frequently for accuracy
 
         return () => clearInterval(interval);
-    }, [activeRestTimer]);
+    }, [activeRestTimer, defaultRestTimer]);
 
     // Format time as HH:MM:SS
     const formatTime = (seconds: number) => {
@@ -295,7 +295,7 @@ const StartWorkoutScreen = () => {
                     id: `${exercise.id}-set-1`,
                     setNumber: 1,
                     completed: false,
-                    restTimeRemaining: 120,
+                    restTimeRemaining: defaultRestTimer,
                     weight: 0,
                     reps: 0
                 },
@@ -303,7 +303,7 @@ const StartWorkoutScreen = () => {
                     id: `${exercise.id}-set-2`,
                     setNumber: 2,
                     completed: false,
-                    restTimeRemaining: 120,
+                    restTimeRemaining: defaultRestTimer,
                     weight: 0,
                     reps: 0
                 },
@@ -311,7 +311,7 @@ const StartWorkoutScreen = () => {
                     id: `${exercise.id}-set-3`,
                     setNumber: 3,
                     completed: false,
-                    restTimeRemaining: 120,
+                    restTimeRemaining: defaultRestTimer,
                     weight: 0,
                     reps: 0
                 },
@@ -319,7 +319,7 @@ const StartWorkoutScreen = () => {
                     id: `${exercise.id}-set-4`,
                     setNumber: 4,
                     completed: false,
-                    restTimeRemaining: 120,
+                    restTimeRemaining: defaultRestTimer,
                     weight: 0,
                     reps: 0
                 }
@@ -346,7 +346,7 @@ const StartWorkoutScreen = () => {
                     id: `${exerciseId}-set-${newSetNumber}`,
                     setNumber: newSetNumber,
                     completed: false,
-                    restTimeRemaining: 120,
+                    restTimeRemaining: defaultRestTimer,
                     weight: 0,
                     reps: 0
                 }]
@@ -385,48 +385,27 @@ const StartWorkoutScreen = () => {
                 // Look for next incomplete set in current exercise
                 const nextIncompleteSetInExercise = currentExercise.sets.find((s, idx) => idx > setIndex && !s.completed);
 
-                const toastKey = `complete-${setId}`;
-                if (!toastShownRef.current.has(toastKey)) {
-                    toastShownRef.current.add(toastKey);
-
-                    if (nextIncompleteSetInExercise) {
-                        // Found next set in same exercise
-                        setActiveRestTimer({
-                            exerciseId,
-                            setId: nextIncompleteSetInExercise.id,
-                            startTime: Date.now()
-                        });
-                        toast.success(`Set ${setIndex + 1} complete! Rest timer started.`);
-                    } else {
-                        // No more sets in current exercise, look for next exercise with incomplete sets
-                        let foundNextSet = false;
-                        for (let i = currentExerciseIndex + 1; i < updatedExercises.length; i++) {
-                            const nextExercise = updatedExercises[i];
-                            const firstIncompleteSet = nextExercise.sets.find(s => !s.completed);
-                            if (firstIncompleteSet) {
-                                setActiveRestTimer({
-                                    exerciseId: nextExercise.id,
-                                    setId: firstIncompleteSet.id,
-                                    startTime: Date.now()
-                                });
-                                toast.success(`Set ${setIndex + 1} complete! Moving to next exercise. Rest timer started.`);
-                                foundNextSet = true;
-                                break;
-                            }
-                        }
-                        if (!foundNextSet) {
-                            toast.success(`Set ${setIndex + 1} complete! All sets done!`);
+                if (nextIncompleteSetInExercise) {
+                    // Found next set in same exercise
+                    setActiveRestTimer({
+                        exerciseId,
+                        setId: nextIncompleteSetInExercise.id,
+                        startTime: Date.now()
+                    });
+                } else {
+                    // No more sets in current exercise, look for next exercise with incomplete sets
+                    for (let i = currentExerciseIndex + 1; i < updatedExercises.length; i++) {
+                        const nextExercise = updatedExercises[i];
+                        const firstIncompleteSet = nextExercise.sets.find(s => !s.completed);
+                        if (firstIncompleteSet) {
+                            setActiveRestTimer({
+                                exerciseId: nextExercise.id,
+                                setId: firstIncompleteSet.id,
+                                startTime: Date.now()
+                            });
+                            break;
                         }
                     }
-                    setTimeout(() => toastShownRef.current.delete(toastKey), 3000);
-                }
-            } else {
-                // Uncompleting a set
-                const toastKey = `uncomplete-${setId}`;
-                if (!toastShownRef.current.has(toastKey)) {
-                    toastShownRef.current.add(toastKey);
-                    toast.info(`Set ${setIndex + 1} marked as incomplete`);
-                    setTimeout(() => toastShownRef.current.delete(toastKey), 3000);
                 }
             }
 
@@ -792,7 +771,7 @@ const StartWorkoutScreen = () => {
                                                         <div
                                                             className="absolute inset-0 bg-blue-100 dark:bg-blue-900/30 transition-all"
                                                             style={{
-                                                                width: `${(set.restTimeRemaining / 120) * 100}%`,
+                                                                width: `${(set.restTimeRemaining / defaultRestTimer) * 100}%`,
                                                                 transition: 'width 1s linear'
                                                             }}
                                                         />
