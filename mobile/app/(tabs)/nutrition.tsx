@@ -5,7 +5,6 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
-  Modal,
   ActivityIndicator,
   Alert,
   useColorScheme,
@@ -18,6 +17,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import { useAppSelector } from '@/hooks/useRedux';
+import { AddCustomCategoryModal } from '@/components/nutrition/AddCustomCategoryModal';
+import DateNavigator from '@/components/nutrition/DateNavigator';
+import NutritionHeader from '@/components/nutrition/NutritionHeader';
+import MealsSectionHeader from '@/components/nutrition/MealsSectionHeader';
+import MealCategoryCard from '@/components/nutrition/MealCategoryCard';
+import CustomCategoryCard from '@/components/nutrition/CustomCategoryCard';
+import AddCustomCategoryButton from '@/components/nutrition/AddCustomCategoryButton';
 import {
   useGetDailyNutritionQuery,
   useAddNutritionEntryMutation,
@@ -57,7 +63,7 @@ const formatDateForAPI = (date: Date): string => {
   return `${year}-${month}-${day}`;
 };
 
-// Check if date is today and return appropriate label
+// Check if the date is today and return the appropriate label
 const getDateLabel = (date: Date): string => {
   const today = new Date();
   const isToday =
@@ -251,51 +257,9 @@ const nutrition = () => {
           style={{ flex: 1 }}
           refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch}  />}
         >
-          {/* Header with Gradient */}
-          <LinearGradient
-            colors={['#10b981', '#059669', '#047857']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={{ paddingHorizontal: 20, paddingTop: insets.top + 20, paddingBottom: 28 }}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-              <View style={{ width: 56, height: 56, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center', marginRight: 16 }}>
-                <Ionicons name="nutrition" size={32} color="#FFFFFF" />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#FFFFFF', marginBottom: 4 }}>
-                  Nutrition
-                </Text>
-                <Text style={{ fontSize: 15, color: 'rgba(255,255,255,0.95)', fontWeight: '500' }}>
-                  Track your daily intake
-                </Text>
-              </View>
-            </View>
-          </LinearGradient>
+          <NutritionHeader topPadding={insets.top} />
 
-          {/* Date Navigator */}
-          <View style={{ paddingHorizontal: 20, paddingVertical: 12, backgroundColor: isDark ? '#1F2937' : '#FFFFFF', borderBottomWidth: 1, borderBottomColor: isDark ? '#374151' : '#E5E7EB' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <TouchableOpacity
-                onPress={() => handleDateChange(-1)}
-                style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: isDark ? '#374151' : '#F3F4F6', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <Ionicons name="chevron-back" size={20} color={isDark ? '#FFFFFF' : '#111827'} />
-              </TouchableOpacity>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons name="calendar" size={18} color="#10b981" style={{ marginRight: 8 }} />
-                <Text style={{ fontSize: 17, fontWeight: '700', color: isDark ? '#FFFFFF' : '#111827' }}>
-                  {selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                </Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => handleDateChange(1)}
-                style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: isDark ? '#374151' : '#F3F4F6', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <Ionicons name="chevron-forward" size={20} color={isDark ? '#FFFFFF' : '#111827'} />
-              </TouchableOpacity>
-            </View>
-          </View>
+          <DateNavigator selectedDate={selectedDate} onDateChange={handleDateChange} />
 
           {/* Nutrition Goals Card */}
           <View style={{ margin: 20, backgroundColor: isDark ? '#1F2937' : '#FFFFFF', borderRadius: 20, padding: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 12, elevation: 5, borderWidth: 1, borderColor: isDark ? '#374151' : '#F3F4F6' }}>
@@ -427,7 +391,7 @@ const nutrition = () => {
                             colors={[`${macro.color}30`, `${macro.color}20`]}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 0 }}
-                            style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: `${percentage}%` }}
+                            style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: `${percentage}%`, overflow: 'hidden' }}
                           />
                           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, height: '100%', position: 'relative' }}>
                             <Text style={{ fontSize: 13, color: isDark ? '#D1D5DB' : '#6B7280', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.3 }}>
@@ -448,208 +412,43 @@ const nutrition = () => {
 
           {/* Meal Categories */}
           <View style={{ paddingHorizontal: 20, paddingBottom: 20 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-              <View style={{ width: 4, height: 28, backgroundColor: '#10b981', borderRadius: 2, marginRight: 12 }} />
-              <Text style={{ fontSize: 24, fontWeight: 'bold', color: isDark ? '#FFFFFF' : '#111827' }}>
-                {getDateLabel(selectedDate)} Meals
-              </Text>
-            </View>
+            <MealsSectionHeader dateLabel={getDateLabel(selectedDate)} />
 
             {/* Standard Meal Categories */}
             {mealCategories.map((category) => (
-              <View key={category.key} style={{ backgroundColor: isDark ? '#1F2937' : '#FFFFFF', borderRadius: 18, padding: 18, marginBottom: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3, borderWidth: 1, borderColor: isDark ? '#374151' : '#F3F4F6' }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: category.foods.length > 0 ? 14 : 0 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                    <View style={{ width: 48, height: 48, borderRadius: 14, backgroundColor: `${category.color}20`, alignItems: 'center', justifyContent: 'center', marginRight: 14 }}>
-                      <Ionicons name={category.icon} size={24} color={category.color} />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={{ fontSize: 18, fontWeight: '700', color: isDark ? '#FFFFFF' : '#111827', marginBottom: 2 }}>
-                        {category.name}
-                      </Text>
-                      <Text style={{ fontSize: 13, color: isDark ? '#9CA3AF' : '#6B7280', fontWeight: '500' }}>
-                        {category.foods.length} {category.foods.length === 1 ? 'item' : 'items'}
-                      </Text>
-                    </View>
-                  </View>
-                  <TouchableOpacity
-                    onPress={() => handleOpenAddFood(category.key)}
-                    style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#10B98120', alignItems: 'center', justifyContent: 'center' }}
-                  >
-                    <Ionicons name="add" size={26} color="#10B981" />
-                  </TouchableOpacity>
-                </View>
-
-                {category.foods.length > 0 && (
-                  <View style={{ marginTop: 4 }}>
-                    {category.foods.map((food: any, index: number) => (
-                      <View key={food._id} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 14, backgroundColor: isDark ? '#111827' : '#F9FAFB', borderRadius: 12, marginBottom: index < category.foods.length - 1 ? 8 : 0 }}>
-                        <View style={{ flex: 1 }}>
-                          <Text style={{ fontSize: 16, fontWeight: '600', color: isDark ? '#FFFFFF' : '#111827', marginBottom: 4 }}>
-                            {food.foodItem}
-                          </Text>
-                          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                              <Ionicons name="flame" size={12} color="#F59E0B" />
-                              <Text style={{ fontSize: 12, color: isDark ? '#9CA3AF' : '#6B7280', marginLeft: 3, fontWeight: '600' }}>{food.calories}</Text>
-                            </View>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                              <Ionicons name="fitness" size={12} color="#3B82F6" />
-                              <Text style={{ fontSize: 12, color: isDark ? '#9CA3AF' : '#6B7280', marginLeft: 3, fontWeight: '600' }}>P:{food.protein}g</Text>
-                            </View>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                              <Ionicons name="flash" size={12} color="#F59E0B" />
-                              <Text style={{ fontSize: 12, color: isDark ? '#9CA3AF' : '#6B7280', marginLeft: 3, fontWeight: '600' }}>C:{food.carbs}g</Text>
-                            </View>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                              <Ionicons name="water" size={12} color="#EF4444" />
-                              <Text style={{ fontSize: 12, color: isDark ? '#9CA3AF' : '#6B7280', marginLeft: 3, fontWeight: '600' }}>F:{food.fats}g</Text>
-                            </View>
-                          </View>
-                        </View>
-                        <TouchableOpacity
-                          onPress={() => handleDeleteFood(food._id)}
-                          style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#EF444420', alignItems: 'center', justifyContent: 'center', marginLeft: 12 }}
-                        >
-                          <Ionicons name="trash-outline" size={18} color="#EF4444" />
-                        </TouchableOpacity>
-                      </View>
-                    ))}
-                  </View>
-                )}
-              </View>
+              <MealCategoryCard
+                key={category.key}
+                category={category}
+                onAddFood={() => handleOpenAddFood(category.key)}
+                onDeleteFood={handleDeleteFood}
+              />
             ))}
 
             {/* Custom Categories */}
             {customCategories.map((category) => (
-              <View key={category.id} style={{ backgroundColor: isDark ? '#1F2937' : '#FFFFFF', borderRadius: 18, padding: 18, marginBottom: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3, borderWidth: 1, borderColor: isDark ? '#374151' : '#F3F4F6' }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: category.foods.length > 0 ? 14 : 0 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                    <View style={{ width: 48, height: 48, borderRadius: 14, backgroundColor: `${category.color}20`, alignItems: 'center', justifyContent: 'center', marginRight: 14 }}>
-                      <Ionicons name="nutrition" size={24} color={category.color} />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={{ fontSize: 18, fontWeight: '700', color: isDark ? '#FFFFFF' : '#111827', marginBottom: 2 }}>
-                        {category.name}
-                      </Text>
-                      <Text style={{ fontSize: 13, color: isDark ? '#9CA3AF' : '#6B7280', fontWeight: '500' }}>
-                        {category.foods.length} {category.foods.length === 1 ? 'item' : 'items'}
-                      </Text>
-                    </View>
-                  </View>
-                  <View style={{ flexDirection: 'row', gap: 8 }}>
-                    <TouchableOpacity
-                      onPress={() => handleOpenAddFood('custom', category.id)}
-                      style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#10B98120', alignItems: 'center', justifyContent: 'center' }}
-                    >
-                      <Ionicons name="add" size={24} color="#10B981" />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => handleDeleteCategory(category.id)}
-                      style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#EF444420', alignItems: 'center', justifyContent: 'center' }}
-                    >
-                      <Ionicons name="close" size={20} color="#EF4444" />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-
-                {category.foods.length > 0 && (
-                  <View style={{ marginTop: 4 }}>
-                    {category.foods.map((food: any, index: number) => (
-                      <View key={food._id} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 14, backgroundColor: isDark ? '#111827' : '#F9FAFB', borderRadius: 12, marginBottom: index < category.foods.length - 1 ? 8 : 0 }}>
-                        <View style={{ flex: 1 }}>
-                          <Text style={{ fontSize: 16, fontWeight: '600', color: isDark ? '#FFFFFF' : '#111827', marginBottom: 4 }}>
-                            {food.foodItem}
-                          </Text>
-                          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                              <Ionicons name="flame" size={12} color="#F59E0B" />
-                              <Text style={{ fontSize: 12, color: isDark ? '#9CA3AF' : '#6B7280', marginLeft: 3, fontWeight: '600' }}>{food.calories}</Text>
-                            </View>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                              <Ionicons name="fitness" size={12} color="#3B82F6" />
-                              <Text style={{ fontSize: 12, color: isDark ? '#9CA3AF' : '#6B7280', marginLeft: 3, fontWeight: '600' }}>P:{food.protein}g</Text>
-                            </View>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                              <Ionicons name="flash" size={12} color="#F59E0B" />
-                              <Text style={{ fontSize: 12, color: isDark ? '#9CA3AF' : '#6B7280', marginLeft: 3, fontWeight: '600' }}>C:{food.carbs}g</Text>
-                            </View>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                              <Ionicons name="water" size={12} color="#EF4444" />
-                              <Text style={{ fontSize: 12, color: isDark ? '#9CA3AF' : '#6B7280', marginLeft: 3, fontWeight: '600' }}>F:{food.fats}g</Text>
-                            </View>
-                          </View>
-                        </View>
-                        <TouchableOpacity
-                          onPress={() => handleDeleteFood(food._id)}
-                          style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#EF444420', alignItems: 'center', justifyContent: 'center', marginLeft: 12 }}
-                        >
-                          <Ionicons name="trash-outline" size={18} color="#EF4444" />
-                        </TouchableOpacity>
-                      </View>
-                    ))}
-                  </View>
-                )}
-              </View>
+              <CustomCategoryCard
+                key={category.id}
+                category={category}
+                onAddFood={() => handleOpenAddFood('custom', category.id)}
+                onDeleteCategory={() => handleDeleteCategory(category.id)}
+                onDeleteFood={handleDeleteFood}
+              />
             ))}
 
             {/* Add Custom Category Button */}
             {customCategories.length < 3 && (
-              <TouchableOpacity
-                onPress={() => setShowAddCategoryModal(true)}
-                style={{ backgroundColor: isDark ? '#1F2937' : '#FFFFFF', borderRadius: 18, padding: 20, borderWidth: 2, borderColor: '#10b981', borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#10b98120', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
-                    <Ionicons name="add" size={24} color="#10b981" />
-                  </View>
-                  <Text style={{ fontSize: 17, fontWeight: '700', color: '#10b981' }}>
-                    Add Custom Category
-                  </Text>
-                </View>
-              </TouchableOpacity>
+              <AddCustomCategoryButton onPress={() => setShowAddCategoryModal(true)} />
             )}
           </View>
 
           {/* Add Category Modal */}
-          <Modal visible={showAddCategoryModal} animationType="fade" transparent>
-            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }}>
-              <View style={{ backgroundColor: isDark ? '#1F2937' : '#FFFFFF', borderRadius: 20, padding: 24, width: '100%', maxWidth: 400 }}>
-                <Text style={{ fontSize: 20, fontWeight: 'bold', color: isDark ? '#FFFFFF' : '#111827', marginBottom: 16 }}>
-                  Add Custom Category
-                </Text>
-                <TextInput
-                  value={newCategoryName}
-                  onChangeText={setNewCategoryName}
-                  placeholder="Category name"
-                  placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
-                  style={{
-                    backgroundColor: isDark ? '#374151' : '#F3F4F6',
-                    borderRadius: 12,
-                    paddingHorizontal: 16,
-                    paddingVertical: 14,
-                    fontSize: 16,
-                    color: isDark ? '#FFFFFF' : '#111827',
-                    marginBottom: 16,
-                  }}
-                />
-                <View style={{ flexDirection: 'row', gap: 12 }}>
-                  <TouchableOpacity
-                    onPress={() => setShowAddCategoryModal(false)}
-                    style={{ flex: 1, backgroundColor: isDark ? '#374151' : '#E5E7EB', borderRadius: 12, paddingVertical: 14, alignItems: 'center' }}
-                  >
-                    <Text style={{ color: isDark ? '#FFFFFF' : '#111827', fontSize: 16, fontWeight: '600' }}>Cancel</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={handleAddCustomCategory}
-                    style={{ flex: 1, backgroundColor: '#10B981', borderRadius: 12, paddingVertical: 14, alignItems: 'center' }}
-                  >
-                    <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: '600' }}>Add</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </Modal>
+          <AddCustomCategoryModal
+            visible={showAddCategoryModal}
+            newCategoryName={newCategoryName}
+            onChangeText={setNewCategoryName}
+            onCancel={() => setShowAddCategoryModal(false)}
+            onAdd={handleAddCustomCategory}
+          />
         </ScrollView>
       </View>
     </>

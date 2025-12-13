@@ -82,6 +82,7 @@ export const fatSecretApiSlice = apiSlice.injectEndpoints({
             providesTags: ['FoodSuggestions'],
         }),
 
+
         // Health check for FatSecret integration
         checkNutritionHealth: builder.query<
             ApiResponse<{ message: string; timestamp: string }>,

@@ -17,11 +17,11 @@ export const getDailyNutrition = async (
             return;
         }
 
-        // If date is provided, get entries for that specific date
+        // If the date is provided, get entries for that specific date
         // Otherwise, get today's entries
         let targetDate: Date;
         if (date) {
-            // Parse date string in local timezone to avoid UTC conversion issues
+            // Parse date string in the local timezone to avoid UTC conversion issues
             const dateStr = date as string;
             const [year, month, day] = dateStr.split('-').map(Number);
             targetDate = new Date(year, month - 1, day);
@@ -139,10 +139,10 @@ export const addNutritionEntry = async (
             return;
         }
 
-        // Create new nutrition entry
+        // Create the new nutrition entry
         let entryDate: Date;
         if (date) {
-            // Parse date string in local timezone to avoid UTC conversion issues
+            // Parse date string in the local timezone to avoid UTC conversion issues
             const dateStr = date as string;
             const [year, month, day] = dateStr.split('-').map(Number);
             entryDate = new Date(year, month - 1, day);

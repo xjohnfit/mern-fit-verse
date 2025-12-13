@@ -59,7 +59,7 @@ const generateOAuthSignature = (
         encodeURIComponent(paramString),
     ].join('&');
 
-    // Create signing key
+    // Create the signing key
     const signingKey = `${encodeURIComponent(CONSUMER_SECRET)}&`;
 
     // Generate signature
