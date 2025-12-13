@@ -18,13 +18,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-
+import { Audio } from 'expo-av';
 import { useGetExercisesQuery } from '@/slices/exerciseApiSlice';
 import type { Exercise as ApiExercise } from '@/slices/exerciseApiSlice';
 import { useGetTemplateByIdQuery } from '@/slices/workoutTemplateApiSlice';
 import { useCreateWorkoutMutation } from '@/slices/workoutApiSlice';
 import type { WorkoutExercise, WorkoutSet } from '@/types/workout.types';
-import createStyles from '@/styles/workoutScreensStyles/startWorkoutStyles';
+import createStyles from '@/styles/workout/startWorkoutStyles';
 
 type Exercise = Omit<ApiExercise, 'instructions'> & { instructions: string | string[]; };
 
@@ -55,6 +55,7 @@ const StartWorkoutScreen = () => {
     // Refs
     const isFinishingRef = useRef(false);
     const templateLoadedRef = useRef(false);
+    const bellSoundRef = useRef<Audio.Sound | null>(null);
 
     // State
     const [searchTerm, setSearchTerm] = useState('');
@@ -146,6 +147,25 @@ const StartWorkoutScreen = () => {
 
     // Workout timer effect
     useEffect(() => {
+        const loadSound = async () => {
+            try {
+                await Audio.setAudioModeAsync({
+                    playsInSilentModeIOS: true,
+                    staysActiveInBackground: false,
+                });
+
+                const { sound } = await Audio.Sound.createAsync(
+                    require('../../assets/sounds/bell.wav'),
+                    { shouldPlay: false }
+                );
+                bellSoundRef.current = sound;
+            } catch (error) {
+                console.error('Failed to load bell sound:', error);
+            }
+        };
+
+        loadSound();
+
         let interval: ReturnType<typeof setInterval>;
         if (isTimerRunning) {
             interval = setInterval(() => {
@@ -153,7 +173,10 @@ const StartWorkoutScreen = () => {
                 setWorkoutTime(elapsed);
             }, 100);
         }
-        return () => clearInterval(interval);
+        return () => {
+            clearInterval(interval);
+            bellSoundRef.current?.unloadAsync();
+        }
     }, [isTimerRunning, workoutStartTime, pausedTime]);
 
     // Save timer state
@@ -252,6 +275,7 @@ const StartWorkoutScreen = () => {
             const remaining = restDuration - elapsed;
 
             if (remaining <= 0) {
+                playBellSound();
                 setActiveRestTimer(null);
                 setSelectedExercises((prev) =>
                     prev.map((ex) => {
@@ -287,6 +311,16 @@ const StartWorkoutScreen = () => {
         const mins = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
         return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const playBellSound = async () => {
+        try {
+            if (bellSoundRef.current) {
+                await bellSoundRef.current.replayAsync();
+            }
+        } catch (error) {
+            console.error('Error playing bell sound:', error);
+        }
     };
 
     const filteredExercises = exercisesData?.filter(
@@ -516,7 +550,17 @@ const StartWorkoutScreen = () => {
             await createWorkout(workoutData).unwrap();
 
             await clearWorkoutData();
-            router.replace('/workout');
+
+            // Navigate to workout summary with data
+            router.replace({
+                pathname: '/workout/workoutSummary',
+                params: {
+                    workoutData: JSON.stringify(workoutData),
+                    duration: workoutTime.toString(),
+                    templateName: finalTemplateName,
+                    workoutType: workoutData.workoutType,
+                },
+            });
         } catch (error: any) {
             console.error('Failed to save workout:', error);
             Toast.show({

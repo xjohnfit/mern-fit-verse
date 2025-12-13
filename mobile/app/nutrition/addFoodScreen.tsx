@@ -22,7 +22,7 @@ import {
 } from '@/slices/fatSecretApiSlice';
 import { useAddNutritionEntryMutation } from '@/slices/nutritionApiSlice';
 
-const SearchFood = () => {
+const AddFoodScreen = () => {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
     const router = useRouter();
@@ -628,4 +628,4 @@ const SearchFood = () => {
     );
 };
 
-export default SearchFood;
+export default AddFoodScreen;

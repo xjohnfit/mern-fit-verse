@@ -12,7 +12,7 @@ export const ActiveWorkoutBanner: React.FC = () => {
     return (
         <TouchableOpacity
             style={styles.activeBanner}
-            onPress={() => router.push('/workout/start' as any)}
+            onPress={() => router.push('/workout/startWorkoutScreen' as any)}
             activeOpacity={0.85}
         >
             <LinearGradient

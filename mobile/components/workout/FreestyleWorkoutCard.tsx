@@ -22,7 +22,7 @@ export const FreestyleWorkoutCard: React.FC<FreestyleWorkoutCardProps> = ({ hasA
             );
             return;
         }
-        router.push('/workout/start' as any);
+        router.push('/workout/startWorkoutScreen' as any);
     };
 
     return (

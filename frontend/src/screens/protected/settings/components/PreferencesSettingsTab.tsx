@@ -2,17 +2,31 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Scale, Timer } from 'lucide-react';
 import { toast } from 'sonner';
-import { useUpdateUserProfileMutation } from '@/slices/usersApiSlice';
+import { useUpdateUserProfileMutation, useUpdatePasswordMutation } from '@/slices/usersApiSlice';
 import { setCredentials } from '@/slices/authSlice';
+import { getPasswordStrength } from '@/lib/getPasswordStrength';
 import DeleteAccount from '@/screens/protected/settings/components/DeleteAccount';
+import PasswordFields from '@/screens/protected/settings/components/PasswordFields';
 
 const PreferencesSettingsTab = () => {
     const dispatch = useDispatch();
     const { userInfo } = useSelector((state: any) => state.auth);
     const [updateUserProfile, { isLoading }] = useUpdateUserProfileMutation();
+    const [updatePassword, { isLoading: isPasswordLoading }] = useUpdatePasswordMutation();
 
     const [weightUnit, setWeightUnit] = useState<'lbs' | 'kg'>('lbs');
     const [restTimer, setRestTimer] = useState<number>(2);
+    const [currentPassword, setCurrentPassword] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const [showCurrentPassword, setShowCurrentPassword] = useState<boolean>(false);
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+    const [passwordErrors, setPasswordErrors] = useState<{
+        currentPassword?: string;
+        password?: string;
+        confirmPassword?: string;
+    }>({});
 
     useEffect(() => {
         if (userInfo) {
@@ -45,6 +59,86 @@ const PreferencesSettingsTab = () => {
         } catch (err: any) {
             const errorMessage = err?.data?.message || err?.message || 'Failed to update rest timer';
             toast.error(errorMessage);
+        }
+    };
+
+    const passwordStrength = getPasswordStrength(password);
+
+    const validatePassword = () => {
+        const errors: { currentPassword?: string; password?: string; confirmPassword?: string } = {};
+
+        if (!currentPassword) {
+            errors.currentPassword = 'Current password is required';
+        }
+
+        if (password) {
+            if (password.length < 8) {
+                errors.password = 'New password must be at least 8 characters';
+            }
+            if (password !== confirmPassword) {
+                errors.confirmPassword = 'Passwords do not match';
+            }
+            if (password === currentPassword) {
+                errors.password = 'New password must be different from current password';
+            }
+        }
+
+        setPasswordErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
+    const handlePasswordUpdate = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!currentPassword) {
+            toast.error('Please enter your current password');
+            return;
+        }
+
+        if (!password) {
+            toast.error('Please enter a new password');
+            return;
+        }
+
+        if (!validatePassword()) {
+            toast.error('Please fix the password errors');
+            return;
+        }
+
+        try {
+            await updatePassword({
+                currentPassword,
+                newPassword: password
+            }).unwrap();
+            setCurrentPassword('');
+            setPassword('');
+            setConfirmPassword('');
+            setPasswordErrors({});
+            toast.success('Password updated successfully');
+        } catch (err: any) {
+            const errorMessage = err?.data?.message || err?.message || 'Failed to update password';
+            toast.error(errorMessage);
+        }
+    };
+
+    const handleCurrentPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setCurrentPassword(e.target.value);
+        if (passwordErrors.currentPassword) {
+            setPasswordErrors((prev) => ({ ...prev, currentPassword: undefined }));
+        }
+    };
+
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPassword(e.target.value);
+        if (passwordErrors.password) {
+            setPasswordErrors((prev) => ({ ...prev, password: undefined }));
+        }
+    };
+
+    const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setConfirmPassword(e.target.value);
+        if (passwordErrors.confirmPassword) {
+            setPasswordErrors((prev) => ({ ...prev, confirmPassword: undefined }));
         }
     };
 
@@ -164,6 +258,150 @@ const PreferencesSettingsTab = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Change Password Section */}
+            <form onSubmit={handlePasswordUpdate} className='bg-gray-50/50 dark:bg-gray-700/30 rounded-xl border border-gray-200 dark:border-gray-600 p-6'>
+                <div className='flex items-center space-x-3 mb-6'>
+                    <div className='p-2 bg-linear-to-r from-green-500 to-teal-500 rounded-lg'>
+                        <svg
+                            className='w-5 h-5 text-white'
+                            fill='none'
+                            stroke='currentColor'
+                            viewBox='0 0 24 24'
+                        >
+                            <path
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                strokeWidth={2}
+                                d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'
+                            />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 className='text-lg font-bold text-gray-900 dark:text-gray-100'>
+                            Change Password
+                        </h3>
+                        <p className='text-sm text-gray-600 dark:text-gray-400'>
+                            Update your account password
+                        </p>
+                    </div>
+                </div>
+
+                {/* Current Password Field */}
+                <div className='space-y-2 mb-6'>
+                    <label
+                        htmlFor='currentPassword'
+                        className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                        Current Password
+                    </label>
+                    <div className='relative group'>
+                        <input
+                            id='currentPassword'
+                            name='currentPassword'
+                            autoComplete='current-password'
+                            type={showCurrentPassword ? 'text' : 'password'}
+                            value={currentPassword}
+                            onChange={handleCurrentPasswordChange}
+                            className={`w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${
+                                passwordErrors.currentPassword
+                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                    : 'border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
+                            }`}
+                            placeholder='Enter your current password'
+                        />
+                        <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+                            <svg
+                                className='h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-200'
+                                fill='none'
+                                stroke='currentColor'
+                                viewBox='0 0 24 24'>
+                                <path
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                    strokeWidth={2}
+                                    d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'
+                                />
+                            </svg>
+                        </div>
+                        <button
+                            type='button'
+                            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                            className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-blue-500 transition-colors duration-200'>
+                            {showCurrentPassword ? (
+                                <svg
+                                    className='h-5 w-5'
+                                    fill='none'
+                                    stroke='currentColor'
+                                    viewBox='0 0 24 24'>
+                                    <path
+                                        strokeLinecap='round'
+                                        strokeLinejoin='round'
+                                        strokeWidth={2}
+                                        d='M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21'
+                                    />
+                                </svg>
+                            ) : (
+                                <svg
+                                    className='h-5 w-5'
+                                    fill='none'
+                                    stroke='currentColor'
+                                    viewBox='0 0 24 24'>
+                                    <path
+                                        strokeLinecap='round'
+                                        strokeLinejoin='round'
+                                        strokeWidth={2}
+                                        d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
+                                    />
+                                    <path
+                                        strokeLinecap='round'
+                                        strokeLinejoin='round'
+                                        strokeWidth={2}
+                                        d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z'
+                                    />
+                                </svg>
+                            )}
+                        </button>
+                    </div>
+                    {passwordErrors.currentPassword && (
+                        <p className='mt-2 text-sm text-red-500 dark:text-red-400 flex items-center'>
+                            <svg
+                                className='w-4 h-4 mr-1'
+                                fill='currentColor'
+                                viewBox='0 0 20 20'>
+                                <path
+                                    fillRule='evenodd'
+                                    d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z'
+                                    clipRule='evenodd'
+                                />
+                            </svg>
+                            {passwordErrors.currentPassword}
+                        </p>
+                    )}
+                </div>
+
+                <PasswordFields
+                    password={password}
+                    confirmPassword={confirmPassword}
+                    showPassword={showPassword}
+                    showConfirmPassword={showConfirmPassword}
+                    errors={passwordErrors}
+                    passwordStrength={passwordStrength}
+                    onPasswordChange={handlePasswordChange}
+                    onConfirmPasswordChange={handleConfirmPasswordChange}
+                    onToggleShowPassword={() => setShowPassword(!showPassword)}
+                    onToggleShowConfirmPassword={() => setShowConfirmPassword(!showConfirmPassword)}
+                />
+
+                <div className='mt-6'>
+                    <button
+                        type='submit'
+                        disabled={isPasswordLoading || !currentPassword || !password}
+                        className='w-full px-6 py-3 bg-linear-to-r from-green-500 to-teal-500 text-white font-semibold rounded-xl hover:from-green-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl'
+                    >
+                        {isPasswordLoading ? 'Updating Password...' : 'Update Password'}
+                    </button>
+                </div>
+            </form>
 
             {/* Delete Account */}
             <div className='bg-gray-50/50 dark:bg-gray-700/30 rounded-xl border border-gray-200 dark:border-gray-600 p-6'>

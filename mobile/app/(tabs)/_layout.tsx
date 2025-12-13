@@ -2,6 +2,34 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppSelector } from '@/hooks/useRedux';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View } from 'react-native';
+
+type TabBarIconProps = {
+    name: keyof typeof Ionicons.glyphMap;
+    color: string;
+    focused: boolean;
+};
+
+const TabBarIcon = ({ name, color, focused }: TabBarIconProps) => {
+    return (
+        <View
+            style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 52,
+                height: 32,
+                borderRadius: 16,
+                backgroundColor: focused ? `${color}20` : 'transparent',
+            }}
+        >
+            <Ionicons
+                name={name}
+                size={24}
+                color={color}
+            />
+        </View>
+    );
+};
 
 // noinspection JSUnusedGlobalSymbols
 export default function TabsLayout() {
@@ -42,12 +70,8 @@ export default function TabsLayout() {
                 name='home'
                 options={{
                     title: 'Home',
-                    tabBarIcon: () => (
-                        <Ionicons
-                            name='grid'
-                            size={24}
-                            color='#3b82f6'
-                        />
+                    tabBarIcon: ({ focused }) => (
+                        <TabBarIcon name='grid' color='#3b82f6' focused={focused} />
                     ),
                     tabBarActiveTintColor: '#3b82f6',
                 }}
@@ -56,12 +80,8 @@ export default function TabsLayout() {
                 name='profile'
                 options={{
                     title: 'Profile',
-                    tabBarIcon: () => (
-                        <Ionicons
-                            name='person'
-                            size={24}
-                            color='#ec4899'
-                        />
+                    tabBarIcon: ({ focused }) => (
+                        <TabBarIcon name='person' color='#ec4899' focused={focused} />
                     ),
                     tabBarActiveTintColor: '#ec4899',
                 }}
@@ -70,40 +90,28 @@ export default function TabsLayout() {
                 name='chat'
                 options={{
                     title: 'Chat',
-                    tabBarIcon: () => (
-                        <Ionicons
-                            name='chatbubble'
-                            size={24}
-                            color='#10b981'
-                        />
+                    tabBarIcon: ({ focused }) => (
+                        <TabBarIcon name='chatbubble' color='#06b6d4' focused={focused} />
                     ),
-                    tabBarActiveTintColor: '#10b981',
+                    tabBarActiveTintColor: '#06b6d4',
                 }}
             />
             <Tabs.Screen
                 name='nutrition'
                 options={{
                     title: 'Nutrition',
-                    tabBarIcon: () => (
-                        <Ionicons
-                            name='nutrition'
-                            size={24}
-                            color='#f59e0b'
-                        />
+                    tabBarIcon: ({ focused }) => (
+                        <TabBarIcon name='nutrition' color='#10b981' focused={focused} />
                     ),
-                    tabBarActiveTintColor: '#f59e0b',
+                    tabBarActiveTintColor: '#10b981',
                 }}
             />
             <Tabs.Screen
                 name='workout'
                 options={{
                     title: 'Workout',
-                    tabBarIcon: () => (
-                        <Ionicons
-                            name='barbell'
-                            size={24}
-                            color='#a855f7'
-                        />
+                    tabBarIcon: ({ focused }) => (
+                        <TabBarIcon name='barbell' color='#a855f7' focused={focused} />
                     ),
                     tabBarActiveTintColor: '#a855f7',
                 }}
@@ -112,12 +120,8 @@ export default function TabsLayout() {
                 name='settings'
                 options={{
                     title: 'Settings',
-                    tabBarIcon: () => (
-                        <Ionicons
-                            name='settings'
-                            size={24}
-                            color='#6366f1'
-                        />
+                    tabBarIcon: ({ focused }) => (
+                        <TabBarIcon name='settings' color='#6366f1' focused={focused} />
                     ),
                     tabBarActiveTintColor: '#6366f1',
                 }}

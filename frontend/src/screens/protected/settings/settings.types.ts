@@ -3,8 +3,8 @@ export interface ProfileData {
     name: string;
     username: string;
     email: string;
-    password: string;
-    confirmPassword: string;
+    password?: string;
+    confirmPassword?: string;
     dob: string;
     gender: string;
     photo: string;

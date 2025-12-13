@@ -1,0 +1,273 @@
+import { StyleSheet } from 'react-native';
+
+const createStyles = (isDark: boolean) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: isDark ? '#0f172a' : '#f9fafb',
+        },
+        header: {
+            alignItems: 'center',
+            paddingHorizontal: 24,
+            paddingBottom: 32,
+        },
+        successIconContainer: {
+            marginBottom: 20,
+        },
+        successIconCircle: {
+            width: 96,
+            height: 96,
+            borderRadius: 48,
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderWidth: 3,
+            borderColor: 'rgba(255, 255, 255, 0.3)',
+        },
+        headerTitle: {
+            fontSize: 28,
+            fontWeight: 'bold',
+            color: '#fff',
+            marginBottom: 8,
+            textAlign: 'center',
+        },
+        headerSubtitle: {
+            fontSize: 16,
+            color: 'rgba(255, 255, 255, 0.9)',
+            textAlign: 'center',
+        },
+        scrollView: {
+            flex: 1,
+        },
+        content: {
+            padding: 16,
+            paddingBottom: 100,
+        },
+        templateBadgeContainer: {
+            alignItems: 'center',
+            marginBottom: 20,
+        },
+        templateBadge: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            backgroundColor: isDark ? '#1e293b' : '#fff',
+            paddingHorizontal: 16,
+            paddingVertical: 10,
+            borderRadius: 20,
+            borderWidth: 1,
+            borderColor: isDark ? '#334155' : '#e2e8f0',
+        },
+        templateBadgeText: {
+            fontSize: 14,
+            fontWeight: '600',
+            color: '#3b82f6',
+        },
+        statsContainer: {
+            marginBottom: 24,
+        },
+        statsGrid: {
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: 12,
+        },
+        statCard: {
+            width: '48%',
+            aspectRatio: 1.2,
+            borderRadius: 16,
+            overflow: 'hidden',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 3,
+        },
+        statCardGradient: {
+            flex: 1,
+            padding: 16,
+            justifyContent: 'space-between',
+            borderWidth: 1,
+            borderColor: isDark ? '#1e293b' : '#e2e8f0',
+            borderRadius: 16,
+        },
+        statIconContainer: {
+            width: 44,
+            height: 44,
+            borderRadius: 12,
+            backgroundColor: isDark ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        statValue: {
+            fontSize: 24,
+            fontWeight: 'bold',
+            color: isDark ? '#f1f5f9' : '#111827',
+            marginTop: 8,
+        },
+        statLabel: {
+            fontSize: 12,
+            color: isDark ? '#94a3b8' : '#6b7280',
+            fontWeight: '500',
+            marginTop: 4,
+        },
+        exercisesSection: {
+            marginTop: 8,
+        },
+        sectionTitle: {
+            fontSize: 20,
+            fontWeight: 'bold',
+            color: isDark ? '#f1f5f9' : '#111827',
+            marginBottom: 16,
+        },
+        exerciseCard: {
+            backgroundColor: isDark ? '#1e293b' : '#fff',
+            borderRadius: 16,
+            padding: 16,
+            marginBottom: 12,
+            borderWidth: 1,
+            borderColor: isDark ? '#334155' : '#e2e8f0',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.05,
+            shadowRadius: 8,
+            elevation: 2,
+        },
+        exerciseHeader: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 16,
+        },
+        exerciseHeaderLeft: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 12,
+            flex: 1,
+        },
+        exerciseNumber: {
+            width: 32,
+            height: 32,
+            borderRadius: 8,
+            backgroundColor: isDark ? '#334155' : '#f1f5f9',
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        exerciseNumberText: {
+            fontSize: 14,
+            fontWeight: 'bold',
+            color: isDark ? '#f1f5f9' : '#475569',
+        },
+        exerciseHeaderText: {
+            flex: 1,
+        },
+        exerciseName: {
+            fontSize: 16,
+            fontWeight: '600',
+            color: isDark ? '#f1f5f9' : '#111827',
+            marginBottom: 4,
+        },
+        exerciseStats: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6,
+        },
+        exerciseStatText: {
+            fontSize: 13,
+            color: isDark ? '#94a3b8' : '#6b7280',
+        },
+        exerciseStatDot: {
+            fontSize: 13,
+            color: isDark ? '#94a3b8' : '#6b7280',
+        },
+        setsTable: {
+            borderTopWidth: 1,
+            borderTopColor: isDark ? '#334155' : '#e2e8f0',
+            paddingTop: 12,
+        },
+        tableHeader: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingBottom: 8,
+            borderBottomWidth: 1,
+            borderBottomColor: isDark ? '#334155' : '#e2e8f0',
+            marginBottom: 4,
+        },
+        tableHeaderText: {
+            fontSize: 12,
+            fontWeight: '600',
+            color: isDark ? '#94a3b8' : '#6b7280',
+            textTransform: 'uppercase',
+        },
+        tableRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingVertical: 10,
+            borderBottomWidth: 1,
+            borderBottomColor: isDark ? 'rgba(51, 65, 85, 0.3)' : 'rgba(226, 232, 240, 0.5)',
+        },
+        tableRowIncomplete: {
+            opacity: 0.5,
+        },
+        tableCellText: {
+            fontSize: 14,
+            color: isDark ? '#f1f5f9' : '#111827',
+            fontWeight: '500',
+        },
+        setColumn: {
+            width: '15%',
+            textAlign: 'center',
+        },
+        weightColumn: {
+            width: '35%',
+            textAlign: 'center',
+        },
+        repsColumn: {
+            width: '25%',
+            textAlign: 'center',
+        },
+        statusColumn: {
+            width: '25%',
+            textAlign: 'center',
+        },
+        bottomContainer: {
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            paddingHorizontal: 16,
+            paddingTop: 16,
+            backgroundColor: isDark ? '#0f172a' : '#f9fafb',
+            borderTopWidth: 1,
+            borderTopColor: isDark ? '#1e293b' : '#e2e8f0',
+        },
+        doneButton: {
+            borderRadius: 12,
+            overflow: 'hidden',
+            shadowColor: '#3b82f6',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 12,
+            elevation: 5,
+        },
+        doneButtonGradient: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            paddingVertical: 16,
+            paddingHorizontal: 24,
+        },
+        doneButtonText: {
+            fontSize: 16,
+            fontWeight: 'bold',
+            color: '#fff',
+        },
+        errorText: {
+            fontSize: 16,
+            color: isDark ? '#94a3b8' : '#6b7280',
+            marginBottom: 20,
+        },
+    });
+
+export default createStyles;
+

@@ -114,21 +114,21 @@ const createStyles = (isDark: boolean) =>
             fontWeight: '600',
         },
         titleContainer: {
-            marginBottom: 4,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
+            marginBottom: 20,
+            paddingHorizontal: 20,
         },
         title: {
-            fontSize: 22,
-            fontWeight: 'bold',
-            color: '#fff',
+            fontSize: 28,
+            fontWeight: '700',
+            color: isDark ? '#fff' : '#1f2937', // Changed from light gray to dark gray
             marginBottom: 4,
         },
         subtitle: {
             fontSize: 14,
-            color: 'rgba(255, 255, 255, 0.8)',
+            color: isDark ? '#94a3b8' : '#6b7280', // Changed for better contrast
+            fontWeight: '500',
         },
+
         content: {
             flex: 1,
         },

@@ -81,6 +81,8 @@ const SettingsProfileTab: React.FC<SettingsProfileTabProps> = ({ onLogout }) => 
     return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
   };
 
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+
   const handlePickImage = async () => {
     try {
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -95,10 +97,46 @@ const SettingsProfileTab: React.FC<SettingsProfileTabProps> = ({ onLogout }) => 
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
+        base64: true,
       });
 
       if (!result.canceled && result.assets[0]) {
-        setPhotoUri(result.assets[0].uri);
+        const asset = result.assets[0];
+
+        // Update local UI immediately
+        setPhotoUri(asset.uri);
+
+        // Upload photo automatically
+        if (asset.base64) {
+          setIsUploadingPhoto(true);
+          try {
+            // Determine image format from URI or default to jpeg
+            let mimeType = 'image/jpeg';
+            if (asset.uri.toLowerCase().includes('.png')) {
+              mimeType = 'image/png';
+            } else if (asset.uri.toLowerCase().includes('.gif')) {
+              mimeType = 'image/gif';
+            } else if (asset.uri.toLowerCase().includes('.webp')) {
+              mimeType = 'image/webp';
+            }
+
+            const base64Image = `data:${mimeType};base64,${asset.base64}`;
+
+            const result = await updateUserProfile({ photo: base64Image }).unwrap();
+            dispatch(setCredentials(result));
+          } catch (error: any) {
+            console.error('Photo upload failed:', error);
+            // Revert UI on error
+            setPhotoUri(userInfo?.photo || null);
+            Toast.show({
+              type: 'error',
+              text1: 'Upload Failed',
+              text2: error?.data?.message || 'Failed to upload photo',
+            });
+          } finally {
+            setIsUploadingPhoto(false);
+          }
+        }
       }
     } catch (error) {
       console.error('Error picking image:', error);
@@ -133,9 +171,7 @@ const SettingsProfileTab: React.FC<SettingsProfileTabProps> = ({ onLogout }) => 
       if (gender !== userInfo?.gender) updateData.gender = gender;
       if (goal !== userInfo?.goal) updateData.goal = goal;
 
-      if (photoUri && photoUri !== userInfo?.photo) {
-        updateData.photo = photoUri;
-      }
+      // Photo is handled separately in handlePickImage, so we don't include it here
 
       const result = await updateUserProfile(updateData).unwrap();
       dispatch(setCredentials(result));
@@ -159,7 +195,7 @@ const SettingsProfileTab: React.FC<SettingsProfileTabProps> = ({ onLogout }) => 
     <View className="pb-6">
       {/* Profile Photo */}
       <View className="items-center mb-8 mt-2">
-        <TouchableOpacity onPress={handlePickImage} activeOpacity={0.8}>
+        <TouchableOpacity onPress={handlePickImage} activeOpacity={0.8} disabled={isUploadingPhoto}>
           <View className="relative">
             {photoUri ? (
               <Image
@@ -173,6 +209,11 @@ const SettingsProfileTab: React.FC<SettingsProfileTabProps> = ({ onLogout }) => 
                   size={70}
                   color={colorScheme === 'dark' ? '#9CA3AF' : '#6B7280'}
                 />
+              </View>
+            )}
+            {isUploadingPhoto && (
+              <View className="absolute inset-0 w-36 h-36 rounded-full bg-black/50 items-center justify-center">
+                <ActivityIndicator size="large" color="white" />
               </View>
             )}
             <View className="absolute bottom-0 right-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 items-center justify-center border-4 border-white dark:border-gray-900 shadow-lg">

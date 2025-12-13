@@ -8,12 +8,15 @@ import {
   useColorScheme,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { setCredentials } from '@/slices/authSlice';
-import { useUpdateUserProfileMutation } from '@/slices/usersApiSlice';
+import { useUpdateUserProfileMutation, usersApiSlice } from '@/slices/usersApiSlice';
 import Slider from '@react-native-community/slider';
+import HelpAndSupportModal from '@/components/settings/HelpAndSupportModal';
+import UpdatePasswordModal from '@/components/settings/UpdatePasswordModal';
 
 interface SettingsPreferencesTabProps {
   onDeleteAccount: () => void;
@@ -21,15 +24,19 @@ interface SettingsPreferencesTabProps {
 
 const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDeleteAccount }) => {
   const colorScheme = useColorScheme();
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const { userInfo } = useAppSelector((state) => state.auth);
   const [updateUserProfile, { isLoading: isUpdatingProfile }] = useUpdateUserProfileMutation();
+  const [viewUserProfile] = usersApiSlice.endpoints.viewUserProfile.useLazyQuery();
 
   // Preferences state
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [weightUnit, setWeightUnit] = useState<'lbs' | 'kg'>('lbs');
   const [restTimer, setRestTimer] = useState<number>(2); // in minutes
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   // Ref to track when we're updating to prevent useEffect from overwriting
   const isUpdatingRestTimer = useRef(false);
@@ -88,11 +95,6 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
       const res = await updateUserProfile({ weightUnit: newUnit }).unwrap();
       dispatch(setCredentials(res));
       setWeightUnit(newUnit);
-      Toast.show({
-        type: 'success',
-        text1: 'Weight Unit Updated',
-        text2: `Changed to ${newUnit.toUpperCase()}`,
-      });
     } catch (error: any) {
       Toast.show({
         type: 'error',
@@ -372,39 +374,21 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
           icon="lock-closed"
           title="Change Password"
           subtitle="Update your password"
-          onPress={() => {
-            Toast.show({
-              type: 'info',
-              text1: 'Coming Soon',
-              text2: 'Password change will be available soon',
-            });
-          }}
+          onPress={() => setShowPasswordModal(true)}
         />
 
         <SettingItem
           icon="shield-checkmark"
           title="Privacy Policy"
           subtitle="View our privacy policy"
-          onPress={() => {
-            Toast.show({
-              type: 'info',
-              text1: 'Privacy Policy',
-              text2: 'Opening privacy policy...',
-            });
-          }}
+          onPress={() => router.push('/settings/privacyPolicy')}
         />
 
         <SettingItem
           icon="document-text"
           title="Terms of Service"
           subtitle="View terms and conditions"
-          onPress={() => {
-            Toast.show({
-              type: 'info',
-              text1: 'Terms of Service',
-              text2: 'Opening terms...',
-            });
-          }}
+          onPress={() => router.push('/settings/TermsOfService')}
         />
       </View>
 
@@ -432,19 +416,11 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
           title="Clear Cache"
           subtitle="Free up storage space"
           onPress={() => {
-            Alert.alert('Clear Cache', 'Are you sure you want to clear the cache?', [
-              { text: 'Cancel', style: 'cancel' },
-              {
-                text: 'Clear',
-                onPress: () => {
-                  Toast.show({
-                    type: 'success',
-                    text1: 'Cache Cleared',
-                    text2: 'App cache has been cleared',
-                  });
-                },
-              },
-            ]);
+            Toast.show({
+              type: 'info',
+              text1: 'Clear Cache',
+              text2: 'This feature is coming soon',
+            });
           }}
         />
       </View>
@@ -465,14 +441,8 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
         <SettingItem
           icon="help-circle"
           title="Help & Support"
-          subtitle="Get help with the app"
-          onPress={() => {
-            Toast.show({
-              type: 'info',
-              text1: 'Help & Support',
-              text2: 'Contact support@fitverse.com',
-            });
-          }}
+          subtitle="Send us a message"
+          onPress={() => setShowHelpModal(true)}
         />
       </View>
 
@@ -498,8 +468,27 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
               Permanently delete your account
             </Text>
           </View>
+          <Ionicons
+            name="chevron-forward"
+            size={20}
+            color="#DC2626"
+          />
         </TouchableOpacity>
       </View>
+
+      {/* Help & Support Modal */}
+      <HelpAndSupportModal
+        visible={showHelpModal}
+        onClose={() => setShowHelpModal(false)}
+        userFullName={userInfo?.name || ''}
+        userEmail={userInfo?.email || ''}
+      />
+
+      {/* Update Password Modal */}
+      <UpdatePasswordModal
+        visible={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+      />
     </View>
   );
 };

@@ -1,23 +1,29 @@
 import React, { useState } from 'react';
-import SafeScreen from '@/components/layout/SafeScreen';
 import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
   Alert,
+  StatusBar,
+  useColorScheme,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useAppDispatch } from '@/hooks/useRedux';
 import { clearCredentials } from '@/slices/authSlice';
 import { useLogoutMutation } from '@/slices/usersApiSlice';
 import SettingsProfileTab from '../../components/settings/SettingsProfileTab';
 import SettingsPreferencesTab from '../../components/settings/SettingsPreferencesTab';
-import Toast from 'react-native-toast-message';
 
 const SettingsScreen = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const insets = useSafeAreaInsets();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   const [logout] = useLogoutMutation();
   const [activeTab, setActiveTab] = useState<'profile' | 'preferences'>('profile');
@@ -43,85 +49,116 @@ const SettingsScreen = () => {
   };
 
   const handleDeleteAccount = () => {
-    Alert.alert(
-      'Delete Account',
-      'This action is permanent and cannot be undone. All your data will be deleted.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            Toast.show({
-              type: 'info',
-              text1: 'Feature Coming Soon',
-              text2: 'Account deletion will be available in a future update',
-            });
-          },
-        },
-      ]
-    );
+    router.push('/settings/deleteAcount');
   };
 
 
   return (
-    <SafeScreen>
-      <View className="flex-1">
-        {/* Header */}
-        <View className="px-4 pt-2 pb-4">
-          <Text className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Settings</Text>
-          <Text className="text-base text-gray-600 dark:text-gray-400">
-            Manage your profile and preferences
-          </Text>
-        </View>
+    <View className="flex-1 bg-white dark:bg-gray-900">
+      <StatusBar barStyle="light-content" />
 
-        {/* Tabs */}
-        <View className="flex-row px-4 mb-4">
-          <TouchableOpacity
-            onPress={() => setActiveTab('profile')}
-            className={`flex-1 py-3 rounded-xl mr-2 ${activeTab === 'profile'
-              ? 'bg-blue-600'
-              : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
-              }`}
-          >
-            <Text
-              className={`text-center font-semibold ${activeTab === 'profile' ? 'text-white' : 'text-gray-900 dark:text-white'
-                }`}
-            >
-              Profile
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => setActiveTab('preferences')}
-            className={`flex-1 py-3 rounded-xl ${activeTab === 'preferences'
-              ? 'bg-blue-600'
-              : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
-              }`}
-          >
-            <Text
-              className={`text-center font-semibold ${activeTab === 'preferences' ? 'text-white' : 'text-gray-900 dark:text-white'
-                }`}
-            >
-              Preferences
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Tab Content */}
-        <ScrollView
-          className="flex-1 px-4"
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Gradient Header */}
+        <LinearGradient
+          colors={['#6366f1', '#4f46e5', '#4338ca']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ paddingHorizontal: 20, paddingBottom: 24 }}
         >
+          <View style={{ paddingTop: insets.top + 16, paddingBottom: 4 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{
+                width: 56,
+                height: 56,
+                borderRadius: 18,
+                overflow: 'hidden',
+                marginRight: 14,
+                elevation: 4,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 4,
+              }}>
+                <LinearGradient
+                  colors={['rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.15)']}
+                  style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <Ionicons name="settings" size={32} color="#fff" />
+                </LinearGradient>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{
+                  fontSize: 32,
+                  fontWeight: 'bold',
+                  color: '#fff',
+                  letterSpacing: 0.5,
+                }}>
+                  Settings
+                </Text>
+                <Text style={{
+                  fontSize: 15,
+                  color: 'rgba(255, 255, 255, 0.95)',
+                  marginTop: 4,
+                  fontWeight: '500',
+                }}>
+                  Manage your profile and preferences
+                </Text>
+              </View>
+            </View>
+          </View>
+        </LinearGradient>
+
+        {/* Content Wrapper */}
+        <View className="px-4 py-6">
+          {/* Tabs */}
+          <View className="flex-row mb-4">
+            <TouchableOpacity
+              onPress={() => setActiveTab('profile')}
+              className={`flex-1 py-3 rounded-xl mr-2 ${activeTab === 'profile'
+                ? 'bg-indigo-600'
+                : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
+                }`}
+            >
+              <Text
+                className={`text-center font-semibold ${activeTab === 'profile' ? 'text-white' : 'text-gray-900 dark:text-white'
+                  }`}
+              >
+                Profile
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setActiveTab('preferences')}
+              className={`flex-1 py-3 rounded-xl ${activeTab === 'preferences'
+                ? 'bg-indigo-600'
+                : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
+                }`}
+            >
+              <Text
+                className={`text-center font-semibold ${activeTab === 'preferences' ? 'text-white' : 'text-gray-900 dark:text-white'
+                  }`}
+              >
+                Preferences
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Tab Content */}
           {activeTab === 'profile' ? (
             <SettingsProfileTab onLogout={handleLogout} />
           ) : (
             <SettingsPreferencesTab onDeleteAccount={handleDeleteAccount} />
           )}
-        </ScrollView>
-      </View>
-    </SafeScreen>
+
+          {/* Bottom spacing for tab bar */}
+          <View className="h-8" />
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 

@@ -6,3 +6,4 @@ export { WorkoutHeader } from './WorkoutHeader';
 export { ActiveWorkoutBanner } from './ActiveWorkoutBanner';
 export { FreestyleWorkoutCard } from './FreestyleWorkoutCard';
 export { PRESET_COLORS } from './constants';
+export { default as ExerciseInfoModal } from './ExerciseInfoModal';

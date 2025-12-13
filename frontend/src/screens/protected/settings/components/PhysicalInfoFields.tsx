@@ -9,56 +9,6 @@ const PhysicalInfoFields = ({
 }: PhysicalInfoFieldsProps) => {
     return (
         <div className='space-y-6'>
-            {/* Weight Unit Preference */}
-            <div className='space-y-2'>
-                <label
-                    htmlFor='weightUnit'
-                    className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                    Weight Unit Preference
-                </label>
-                <div className='relative group'>
-                    <select
-                        id='weightUnit'
-                        name='weightUnit'
-                        value={weightUnit}
-                        onChange={onChange}
-                        className='w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all duration-300 group-hover:shadow-md appearance-none cursor-pointer'>
-                        <option value='kg'>Kilograms (kg)</option>
-                        <option value='lbs'>Pounds (lbs)</option>
-                    </select>
-                    <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                        <svg
-                            className='h-5 w-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200'
-                            fill='none'
-                            stroke='currentColor'
-                            viewBox='0 0 24 24'>
-                            <path
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                                strokeWidth={2}
-                                d='M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3'
-                            />
-                        </svg>
-                    </div>
-                    <div className='absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none'>
-                        <svg
-                            className='h-5 w-5 text-gray-400'
-                            fill='none'
-                            stroke='currentColor'
-                            viewBox='0 0 24 24'>
-                            <path
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                                strokeWidth={2}
-                                d='M19 9l-7 7-7-7'
-                            />
-                        </svg>
-                    </div>
-                </div>
-                <p className='mt-2 text-xs text-gray-500 dark:text-gray-400'>
-                    Select your preferred unit for weight measurements
-                </p>
-            </div>
 
             {/* Height and Weight Fields */}
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
@@ -202,6 +152,23 @@ const PhysicalInfoFields = ({
                                 />
                             </svg>
                             {errors.weight}
+                        </p>
+                    )}
+                    {!errors.weight && (
+                        <p className='mt-2 text-xs text-gray-500 dark:text-gray-400 flex items-center'>
+                            <svg
+                                className='w-3.5 h-3.5 mr-1'
+                                fill='none'
+                                stroke='currentColor'
+                                viewBox='0 0 24 24'>
+                                <path
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                    strokeWidth={2}
+                                    d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+                                />
+                            </svg>
+                            Change weight unit in the Preferences tab
                         </p>
                     )}
                 </div>

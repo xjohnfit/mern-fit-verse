@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, RefreshControl, Image, TouchableOpacity, TextInput, Alert, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppSelector } from '../../hooks/useRedux';
 import { useViewUserProfileQuery, useFollowUnfollowUserMutation, useGetUserProfileQuery } from '../../slices/usersApiSlice';
@@ -14,7 +14,17 @@ import { formatRelativeTime } from '../../lib/formatDate';
 export default function ProfileScreen() {
     const { userInfo } = useAppSelector((state) => state.auth);
     const router = useRouter();
+    const { username: paramUsername } = useLocalSearchParams<{ username?: string }>();
     const [viewingUsername, setViewingUsername] = useState<string | null>(null);
+
+    // Update viewingUsername when paramUsername changes
+    useEffect(() => {
+        if (paramUsername && paramUsername !== userInfo?.username) {
+            setViewingUsername(paramUsername);
+        } else if (paramUsername === userInfo?.username) {
+            setViewingUsername(null);
+        }
+    }, [paramUsername, userInfo?.username]);
     const [showFollowersModal, setShowFollowersModal] = useState(false);
     const [showFollowingModal, setShowFollowingModal] = useState(false);
     const [showCreatePostModal, setShowCreatePostModal] = useState(false);

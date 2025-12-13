@@ -22,6 +22,13 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                 method: 'POST',
             }),
         }),
+        deleteUser: builder.mutation<void, void>({
+            query: () => ({
+                url: '/auth/delete',
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['User'],
+        }),
         getUserProfile: builder.query({
             query: () => ({
                 url: '/users/profile',
@@ -86,6 +93,13 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ['User'],
         }),
+        updatePassword: builder.mutation({
+            query: (data) => ({
+                url: '/auth/update-password',
+                method: 'PUT',
+                body: data,
+            }),
+        }),
     }),
 });
 
@@ -94,6 +108,7 @@ export const {
     useLoginMutation,
     useRegisterMutation,
     useLogoutMutation,
+    useDeleteUserMutation,
     useUpdateUserProfileMutation,
     useViewUserProfileQuery,
     useFollowUnfollowUserMutation,
@@ -101,4 +116,5 @@ export const {
     useUpdateNutritionGoalsMutation,
     useGetAllUsersQuery,
     useUpdateUserRoleMutation,
+    useUpdatePasswordMutation,
 } = usersApiSlice;

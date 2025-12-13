@@ -68,9 +68,6 @@ const SettingsScreen = () => {
                 });
 
                 updateData.photo = photoData;
-            }            // Only include password if it's provided
-            if (profileData.password) {
-                updateData.password = profileData.password;
             }
 
             // Only include height and weight if they have valid values

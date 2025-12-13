@@ -1,11 +1,12 @@
-import { View, Text, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Image, useColorScheme } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import suggestedUsersStyles from '../../styles/dashboard/SuggestedUsersStyles';
 
 interface SuggestedUser {
     _id: string;
     username: string;
     name: string;
-    profilePicture?: string;
+    photo?: string;
     followers?: string[];
 }
 
@@ -22,12 +23,15 @@ export default function SuggestedUsers({
     onFollow,
     onUserPress,
 }: SuggestedUsersProps) {
+    const colorScheme = useColorScheme();
+    const isDark = colorScheme === 'dark';
+
     if (isLoading) {
         return (
-            <View className="bg-white dark:bg-gray-800 rounded-2xl p-4">
-                <View className="flex-row items-center mb-4">
+            <View style={[suggestedUsersStyles.loadingContainer, isDark && suggestedUsersStyles.loadingContainerDark]}>
+                <View style={suggestedUsersStyles.header}>
                     <Ionicons name="people-outline" size={20} color="#3B82F6" />
-                    <Text className="text-lg font-bold text-gray-900 dark:text-white ml-2">
+                    <Text style={[suggestedUsersStyles.headerTitle, isDark && suggestedUsersStyles.headerTitleDark]}>
                         Suggested Users
                     </Text>
                 </View>
@@ -43,50 +47,52 @@ export default function SuggestedUsers({
     }
 
     return (
-        <View className="bg-white dark:bg-gray-800 rounded-2xl p-4">
-            <View className="flex-row items-center mb-4">
+        <View style={[suggestedUsersStyles.container, isDark && suggestedUsersStyles.containerDark]}>
+            <View style={suggestedUsersStyles.header}>
                 <Ionicons name="people-outline" size={20} color="#3B82F6" />
-                <Text className="text-lg font-bold text-gray-900 dark:text-white ml-2">
+                <Text style={[suggestedUsersStyles.headerTitle, isDark && suggestedUsersStyles.headerTitleDark]}>
                     Suggested Users
                 </Text>
             </View>
-            <View className="space-y-3">
+            <View style={suggestedUsersStyles.cardsContainer}>
                 {suggestedUsers.map((user) => (
                     <View
                         key={user._id}
-                        className="flex-row items-center justify-between bg-gray-50 dark:bg-gray-700 rounded-xl p-3"
+                        style={[suggestedUsersStyles.userCard, isDark && suggestedUsersStyles.userCardDark]}
                     >
                         <TouchableOpacity
                             onPress={() => onUserPress(user.username)}
-                            className="flex-row items-center flex-1"
+                            style={suggestedUsersStyles.userInfoContainer}
+                            activeOpacity={0.7}
                         >
-                            {user.profilePicture ? (
+                            {user.photo ? (
                                 <Image
-                                    source={{ uri: user.profilePicture }}
-                                    className="w-12 h-12 rounded-full mr-3"
+                                    source={{ uri: user.photo }}
+                                    style={suggestedUsersStyles.avatar}
                                 />
                             ) : (
-                                <View className="w-12 h-12 rounded-full bg-blue-500 items-center justify-center mr-3">
-                                    <Text className="text-white font-bold text-lg">
+                                <View style={suggestedUsersStyles.avatarPlaceholder}>
+                                    <Text style={suggestedUsersStyles.avatarText}>
                                         {user.name?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}
                                     </Text>
                                 </View>
                             )}
-                            <View className="flex-1">
-                                <Text className="text-base font-semibold text-gray-900 dark:text-white">
+                            <View style={suggestedUsersStyles.userDetails}>
+                                <Text style={[suggestedUsersStyles.userName, isDark && suggestedUsersStyles.userNameDark]}>
                                     {user.name}
                                 </Text>
-                                <Text className="text-sm text-gray-500 dark:text-gray-400">
+                                <Text style={[suggestedUsersStyles.userUsername, isDark && suggestedUsersStyles.userUsernameDark]}>
                                     @{user.username}
                                 </Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() => onFollow(user.username)}
-                            className="bg-blue-600 px-4 py-2 rounded-lg flex-row items-center"
+                            style={suggestedUsersStyles.followButton}
+                            activeOpacity={0.8}
                         >
                             <Ionicons name="person-add" size={16} color="white" />
-                            <Text className="text-white font-semibold ml-1 text-sm">Follow</Text>
+                            <Text style={suggestedUsersStyles.followButtonText}>Follow</Text>
                         </TouchableOpacity>
                     </View>
                 ))}

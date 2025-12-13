@@ -382,11 +382,11 @@ const ChatScreen = () => {
   if (!selectedUser) {
     return (
       <>
-        <StatusBar barStyle="light-content" backgroundColor="#059669" />
+        <StatusBar barStyle="light-content" backgroundColor="#06b6d4" />
         <View style={{ flex: 1, backgroundColor: colorScheme === 'dark' ? '#111827' : '#F9FAFB' }}>
           {/* Header with Gradient */}
           <LinearGradient
-            colors={['#059669', '#10b981', '#34d399']}
+            colors={['#06b6d4', '#0891b2', '#0e7490']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{ paddingHorizontal: 20, paddingTop: insets.top + 20, paddingBottom: 28 }}
@@ -421,7 +421,7 @@ const ChatScreen = () => {
           {/* Users List */}
           {isLoadingProfile ? (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-              <ActivityIndicator size="large" color="#10b981" />
+              <ActivityIndicator size="large" color="#06b6d4" />
               <Text style={{ marginTop: 12, color: '#6b7280' }}>Loading...</Text>
             </View>
           ) : sortedUsers && sortedUsers.length > 0 ? (
@@ -442,8 +442,8 @@ const ChatScreen = () => {
                           style={{ width: 52, height: 52, borderRadius: 26 }}
                         />
                       ) : (
-                        <View style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: '#10b981', justifyContent: 'center', alignItems: 'center' }}>
-                          <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>
+                        <View style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: '#06b6d4', justifyContent: 'center', alignItems: 'center' }}>
+                          <Text style={{ color: '#FFFFFF', fontSize: 18, fontWeight: 'bold' }}>
                             {getInitials(item.name)}
                           </Text>
                         </View>
@@ -462,7 +462,7 @@ const ChatScreen = () => {
                         {isOnline ? 'Online' : 'Offline'}
                       </Text>
                     </View>
-                    <Ionicons name="chevron-forward" size={22} color="#10b981" />
+                    <Ionicons name="chevron-forward" size={22} color="#06b6d4" />
                   </TouchableOpacity>
                 );
               }}
@@ -470,8 +470,8 @@ const ChatScreen = () => {
             />
           ) : (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24 }}>
-              <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: colorScheme === 'dark' ? '#374151' : '#D1FAE5', justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
-                <Ionicons name="chatbubbles-outline" size={40} color="#10b981" />
+              <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: colorScheme === 'dark' ? '#374151' : '#CFFAFE', justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
+                <Ionicons name="chatbubbles-outline" size={40} color="#06b6d4" />
               </View>
               <Text style={{ fontSize: 18, fontWeight: '600', color: colorScheme === 'dark' ? '#f9fafb' : '#1f2937', marginTop: 8 }}>
                 {searchQuery ? 'No users found' : 'No conversations yet'}
@@ -493,15 +493,15 @@ const ChatScreen = () => {
 
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor="#059669" />
+      <StatusBar barStyle="light-content" backgroundColor="#06b6d4" />
       <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: colorScheme === 'dark' ? '#111827' : '#F9FAFB' }}
+        style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
         {/* Header with Gradient */}
         <LinearGradient
-          colors={['#059669', '#10b981', '#34d399']}
+          colors={['#06b6d4', '#0891b2', '#0e7490']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{ paddingTop: insets.top + 12, paddingHorizontal: 16, paddingBottom: 16, flexDirection: 'row', alignItems: 'center' }}
@@ -523,9 +523,9 @@ const ChatScreen = () => {
               </View>
             )}
             {isUserOnline ? (
-              <View style={{ position: 'absolute', bottom: 0, right: 0, width: 14, height: 14, borderRadius: 7, backgroundColor: '#3B82F6', borderWidth: 2, borderColor: '#10b981' }} />
+              <View style={{ position: 'absolute', bottom: 0, right: 0, width: 14, height: 14, borderRadius: 7, backgroundColor: '#3B82F6', borderWidth: 2, borderColor: '#06b6d4' }} />
             ) : (
-              <View style={{ position: 'absolute', bottom: 0, right: 0, width: 14, height: 14, borderRadius: 7, backgroundColor: '#6B7280', borderWidth: 2, borderColor: '#10b981' }} />
+              <View style={{ position: 'absolute', bottom: 0, right: 0, width: 14, height: 14, borderRadius: 7, backgroundColor: '#6B7280', borderWidth: 2, borderColor: '#06b6d4' }} />
             )}
           </View>
           <View style={{ flex: 1, marginLeft: 12 }}>
@@ -541,15 +541,13 @@ const ChatScreen = () => {
         {/* Messages List */}
         {isInitialLoad && cachedMessages.length === 0 ? (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <ActivityIndicator size="large" color="#10b981" />
+            <ActivityIndicator size="large" color="#06b6d4" />
             <Text style={{ marginTop: 12, color: '#6b7280' }}>Loading messages...</Text>
           </View>
-        ) : displayMessages.length === 0 ? (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24 }}>
-            <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: colorScheme === 'dark' ? '#374151' : '#D1FAE5', justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
-              <Ionicons name="chatbubble-ellipses" size={40} color="#10b981" />
-            </View>
-            <Text style={{ fontSize: 18, fontWeight: '600', color: colorScheme === 'dark' ? '#f9fafb' : '#1f2937', marginBottom: 8 }}>
+        ) : cachedMessages.length === 0 ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Ionicons name="chatbubble-ellipses" size={40} color="#06b6d4" />
+            <Text style={{ fontSize: 18, fontWeight: '600', color: colorScheme === 'dark' ? '#f9fafb' : '#1f2937', marginTop: 16, marginBottom: 8 }}>
               Start a conversation
             </Text>
             <Text style={{ fontSize: 14, color: '#6b7280', textAlign: 'center' }}>
@@ -578,7 +576,7 @@ const ChatScreen = () => {
             ListHeaderComponent={
               isLoadingMore ? (
                 <View style={{ paddingVertical: 16, alignItems: 'center' }}>
-                  <ActivityIndicator size="small" color="#10b981" />
+                  <ActivityIndicator size="small" color="#06b6d4" />
                   <Text style={{ marginTop: 8, color: '#6b7280', fontSize: 12 }}>Loading older messages...</Text>
                 </View>
               ) : !hasMoreMessages && displayMessages.length > 0 ? (
@@ -602,7 +600,7 @@ const ChatScreen = () => {
                       borderRadius: 16,
                       paddingHorizontal: 14,
                       paddingVertical: 10,
-                      backgroundColor: isMyMessage ? '#10b981' : (colorScheme === 'dark' ? '#1f2937' : '#FFFFFF'),
+                      backgroundColor: isMyMessage ? '#06b6d4' : (colorScheme === 'dark' ? '#1f2937' : '#FFFFFF'),
                       shadowColor: '#000',
                       shadowOffset: { width: 0, height: 1 },
                       shadowOpacity: 0.1,
@@ -701,9 +699,9 @@ const ChatScreen = () => {
             <TouchableOpacity
               onPress={handlePickImage}
               disabled={isSending}
-              style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colorScheme === 'dark' ? '#1f2937' : '#D1FAE5', justifyContent: 'center', alignItems: 'center', marginRight: 8 }}
+              style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colorScheme === 'dark' ? '#1f2937' : '#CFFAFE', justifyContent: 'center', alignItems: 'center', marginRight: 8 }}
             >
-              <Ionicons name="image" size={20} color="#10b981" />
+              <Ionicons name="image" size={20} color="#06b6d4" />
             </TouchableOpacity>
 
             {/* Send Button */}
@@ -714,7 +712,7 @@ const ChatScreen = () => {
                 width: 40,
                 height: 40,
                 borderRadius: 20,
-                backgroundColor: (!messageText.trim() && !image) || isSending ? '#d1d5db' : '#10b981',
+                backgroundColor: (!messageText.trim() && !image) || isSending ? '#d1d5db' : '#06b6d4',
                 justifyContent: 'center',
                 alignItems: 'center',
               }}

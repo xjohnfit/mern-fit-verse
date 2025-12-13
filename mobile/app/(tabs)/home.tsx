@@ -1,11 +1,11 @@
-import { ScrollView, Text, View, RefreshControl } from "react-native";
+import { ScrollView, Text, View, RefreshControl, StatusBar, useColorScheme } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAppSelector } from "../../hooks/useRedux";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import SafeScreen from "@/components/layout/SafeScreen";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 import StatsCard from "@/components/dashboard/StatsCard";
-import QuickActionCard from "@/components/dashboard/QuickActionCard";
 import RecentWorkouts from "@/components/dashboard/RecentWorkouts";
 import SuggestedUsers from "@/components/dashboard/SuggestedUsers";
 import { Ionicons } from "@expo/vector-icons";
@@ -18,6 +18,9 @@ export default function HomeScreen() {
     const { userInfo } = useAppSelector((state) => state.auth);
     const router = useRouter();
     const [refreshing, setRefreshing] = useState(false);
+    const insets = useSafeAreaInsets();
+    const colorScheme = useColorScheme();
+    const isDark = colorScheme === 'dark';
 
     // Fetch data
     const { data: workoutStats, refetch: refetchWorkoutStats } = useGetWorkoutStatsQuery({});
@@ -45,13 +48,22 @@ export default function HomeScreen() {
         try {
             const result = await followUnfollowUser(username).unwrap();
             refetchSuggested();
+            refetchProfile();
         } catch (error: any) {
             console.error('Failed to follow user:', error);
+            Toast.show({
+                type: 'error',
+                text1: 'Follow Failed',
+                text2: error?.data?.message || 'Failed to follow user',
+            });
         }
     };
 
     const handleUserPress = (username: string) => {
-        // Navigate to user profile when implemented
+        router.push({
+            pathname: '/(tabs)/profile',
+            params: { username }
+        });
     };
 
     // Calculate metrics
@@ -81,35 +93,75 @@ export default function HomeScreen() {
     const daysActive = Math.floor((new Date().getTime() - joinDate.getTime()) / (1000 * 60 * 60 * 24));
 
     return (
-        <SafeScreen>
+        <View className="flex-1 bg-white dark:bg-gray-900">
+            <StatusBar barStyle="light-content" />
+
             <ScrollView
-                className="flex-1 py-6 px-2"
+                className="flex-1"
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
                 }
             >
-                {/* Welcome Header */}
-                <View className="mb-6">
-                    <View className="flex-row items-center mb-2">
-                        <Text className="text-2xl font-bold text-gray-900 dark:text-white">
-                            Welcome back, {" "}
-                        </Text>
-                        <Text className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                            {userInfo?.name || userInfo?.username || "User"}
-                        </Text>
+                {/* Gradient Header */}
+                <LinearGradient
+                    colors={['#3b82f6', '#2563eb', '#1d4ed8']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={{ paddingHorizontal: 20, paddingBottom: 24 }}
+                >
+                    <View style={{ paddingTop: insets.top + 16, paddingBottom: 4 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <View style={{
+                                width: 56,
+                                height: 56,
+                                borderRadius: 18,
+                                overflow: 'hidden',
+                                marginRight: 14,
+                                elevation: 4,
+                                shadowColor: '#000',
+                                shadowOffset: { width: 0, height: 2 },
+                                shadowOpacity: 0.3,
+                                shadowRadius: 4,
+                            }}>
+                                <LinearGradient
+                                    colors={['rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.15)']}
+                                    style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+                                >
+                                    <Ionicons name="home" size={32} color="#fff" />
+                                </LinearGradient>
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Text style={{
+                                    fontSize: 32,
+                                    fontWeight: 'bold',
+                                    color: '#fff',
+                                    letterSpacing: 0.5,
+                                }}>
+                                    Home
+                                </Text>
+                                <Text style={{
+                                    fontSize: 15,
+                                    color: 'rgba(255, 255, 255, 0.95)',
+                                    marginTop: 4,
+                                    fontWeight: '500',
+                                }}>
+                                    Welcome back, {userInfo?.name || userInfo?.username || "User"}
+                                </Text>
+                            </View>
+                        </View>
                     </View>
-                    <Text className="text-base text-gray-600 dark:text-gray-400">
-                        Here's your fitness journey at a glance
-                    </Text>
-                </View>
+                </LinearGradient>
+
+                {/* Content Container */}
+                <View className="py-6 px-2">
 
                 {/* Nutrition Overview */}
                 <View className="mb-6">
                     <View className="flex-row items-center mb-3">
                         <Ionicons name="nutrition" size={20} color="#8B5CF6" style={{ marginRight: 8 }} />
                         <Text className="text-xl font-bold text-gray-900 dark:text-white">
-                            Today's Nutrition
+                            Today&apos;s Nutrition
                         </Text>
                     </View>
                     <LinearGradient
@@ -204,6 +256,11 @@ export default function HomeScreen() {
                     />
                 </View>
 
+                {/* Recent Workouts */}
+                <View className="mb-6">
+                    <RecentWorkouts workouts={workouts} isLoading={isLoadingWorkouts} />
+                </View>
+
                 {/* Social Stats */}
                 <View className="mb-6">
                     <View className="flex-row items-center mb-3">
@@ -250,11 +307,6 @@ export default function HomeScreen() {
                     </View>
                 </View>
 
-                {/* Recent Workouts */}
-                <View className="mb-6">
-                    <RecentWorkouts workouts={workouts} isLoading={isLoadingWorkouts} />
-                </View>
-
                 {/* Suggested Users */}
                 <View className="mb-6">
                     <SuggestedUsers
@@ -267,7 +319,8 @@ export default function HomeScreen() {
 
                 {/* Bottom spacing for tab bar */}
                 <View className="h-8" />
+                </View>
             </ScrollView>
-        </SafeScreen>
+        </View>
     );
 }

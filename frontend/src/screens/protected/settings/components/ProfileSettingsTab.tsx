@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { formatDateToInputValue } from '@/lib/formatDate';
-import { getPasswordStrength } from '@/lib/getPasswordStrength';
 import { useProfileValidation } from '@/screens/protected/settings/hooks/useProfileValidation';
 import { lbsToKg, kgToLbs } from '@/lib/weightConversion';
+import type { ProfileData } from '@/screens/protected/settings/settings.types';
 
 import ProfilePhotoSection from '@/screens/protected/settings/components/ProfilePhotoSection';
 import ProfileHeaderSection from '@/screens/protected/settings/components/ProfileHeaderSection';
 import BasicInfoFields from '@/screens/protected/settings/components/BasicInfoFields';
 import PersonalInfoFields from '@/screens/protected/settings/components/PersonalInfoFields';
 import PhysicalInfoFields from '@/screens/protected/settings/components/PhysicalInfoFields';
-import PasswordFields from '@/screens/protected/settings/components/PasswordFields';
 import { SubmitButton } from '@/screens/protected/settings/components/SubmitButton';
 
 interface ProfileSettingsTabProps {
@@ -20,12 +19,12 @@ interface ProfileSettingsTabProps {
 }
 
 const ProfileSettingsTab = ({ userInfo, isLoading, onUpdate }: ProfileSettingsTabProps) => {
-    const [profileData, setProfileData] = useState({
+    const [profileData, setProfileData] = useState<ProfileData>({
         name: '',
         username: '',
         email: '',
-        password: '',
-        confirmPassword: '',
+        password: undefined,
+        confirmPassword: undefined,
         dob: '',
         gender: '',
         photo: '',
@@ -36,12 +35,9 @@ const ProfileSettingsTab = ({ userInfo, isLoading, onUpdate }: ProfileSettingsTa
         restTimer: 120,
     });
 
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [photoFile, setPhotoFile] = useState<File | null>(null);
     const [photoPreview, setPhotoPreview] = useState<string>('');
 
-    const passwordStrength = getPasswordStrength(profileData.password);
 
     const { errors, validateForm, handleFieldValidation } =
         useProfileValidation(profileData);
@@ -87,6 +83,8 @@ const ProfileSettingsTab = ({ userInfo, isLoading, onUpdate }: ProfileSettingsTa
                 name: userInfo.name || '',
                 username: userInfo.username || '',
                 email: userInfo.email || '',
+                password: undefined,
+                confirmPassword: undefined,
                 dob: formatDateToInputValue(userInfo.dob) || '',
                 gender: userInfo.gender || '',
                 photo: userInfo.photo || '',
@@ -144,22 +142,9 @@ const ProfileSettingsTab = ({ userInfo, isLoading, onUpdate }: ProfileSettingsTa
             return;
         }
 
-        if (
-            profileData.password &&
-            profileData.password !== profileData.confirmPassword
-        ) {
-            toast.error('Passwords do not match');
-            return;
-        }
-
         await onUpdate(profileData, photoFile);
 
-        // Clear password fields and photo file state after update
-        setProfileData((prev) => ({
-            ...prev,
-            password: '',
-            confirmPassword: '',
-        }));
+        // Clear photo file state after update
         setPhotoFile(null);
 
         const fileInput = document.getElementById('photo-input') as HTMLInputElement;
@@ -206,21 +191,6 @@ const ProfileSettingsTab = ({ userInfo, isLoading, onUpdate }: ProfileSettingsTa
                 onChange={handleInputChange}
             />
 
-            {/* Password Fields */}
-            <PasswordFields
-                password={profileData.password}
-                confirmPassword={profileData.confirmPassword}
-                showPassword={showPassword}
-                showConfirmPassword={showConfirmPassword}
-                errors={errors}
-                passwordStrength={passwordStrength}
-                onPasswordChange={handleInputChange}
-                onConfirmPasswordChange={handleInputChange}
-                onToggleShowPassword={() => setShowPassword(!showPassword)}
-                onToggleShowConfirmPassword={() =>
-                    setShowConfirmPassword(!showConfirmPassword)
-                }
-            />
 
             {/* Physical Info Fields */}
             <PhysicalInfoFields

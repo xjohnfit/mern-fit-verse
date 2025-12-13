@@ -273,4 +273,66 @@ export const deleteUser = asyncHandler(
     }
 );
 
+// Update Password
+interface UpdatePasswordBody {
+    currentPassword: string;
+    newPassword: string;
+}
+
+export const updatePassword = asyncHandler(
+    async (
+        req: Request<{}, {}, UpdatePasswordBody>,
+        res: Response
+    ): Promise<void> => {
+        const userId = req.user._id;
+        const { currentPassword, newPassword } = req.body;
+
+        try {
+            // Find the user with password
+            const user = await User.findById(userId);
+            if (!user) {
+                res.status(404);
+                throw new Error('User not found');
+            }
+
+            // Verify current password
+            const isPasswordCorrect = await user.matchPassword(currentPassword);
+            if (!isPasswordCorrect) {
+                res.status(401);
+                throw new Error('Current password is incorrect');
+            }
+
+            // Validate new password
+            if (newPassword.length < 8) {
+                res.status(400);
+                throw new Error('New password must be at least 8 characters long');
+            }
+
+            // Check if new password is same as current
+            const isSamePassword = await user.matchPassword(newPassword);
+            if (isSamePassword) {
+                res.status(400);
+                throw new Error('New password must be different from current password');
+            }
+
+            // Update password
+            user.password = newPassword;
+            await user.save();
+
+            res.status(200).json({
+                message: 'Password updated successfully'
+            });
+        } catch (error: any) {
+            console.error('Error updating password:', error);
+            if (error.message === 'Current password is incorrect' ||
+                error.message === 'New password must be at least 8 characters long' ||
+                error.message === 'New password must be different from current password') {
+                throw error;
+            }
+            res.status(500);
+            throw new Error(error.message || 'Failed to update password');
+        }
+    }
+);
+
 

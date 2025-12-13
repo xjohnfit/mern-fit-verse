@@ -155,7 +155,7 @@ const nutrition = () => {
 
   const handleOpenAddFood = (category: string, categoryId?: string) => {
     router.push({
-      pathname: '/search-food',
+      pathname: '/nutrition/addFoodScreen',
       params: {
         date: dateString,
         category: category,
@@ -245,7 +245,7 @@ const nutrition = () => {
 
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor={isDark ? '#92400E' : '#F59E0B'} />
+      <StatusBar barStyle="light-content" backgroundColor="#10b981" />
       <View style={{ flex: 1, backgroundColor: isDark ? '#111827' : '#F9FAFB' }}>
         <ScrollView
           style={{ flex: 1 }}
@@ -253,7 +253,7 @@ const nutrition = () => {
         >
           {/* Header with Gradient */}
           <LinearGradient
-            colors={isDark ? ['#92400E', '#B45309', '#D97706'] : ['#F59E0B', '#F97316', '#FB923C']}
+            colors={['#10b981', '#059669', '#047857']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{ paddingHorizontal: 20, paddingTop: insets.top + 20, paddingBottom: 28 }}
@@ -283,7 +283,7 @@ const nutrition = () => {
                 <Ionicons name="chevron-back" size={20} color={isDark ? '#FFFFFF' : '#111827'} />
               </TouchableOpacity>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons name="calendar" size={18} color="#F59E0B" style={{ marginRight: 8 }} />
+                <Ionicons name="calendar" size={18} color="#10b981" style={{ marginRight: 8 }} />
                 <Text style={{ fontSize: 17, fontWeight: '700', color: isDark ? '#FFFFFF' : '#111827' }}>
                   {selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                 </Text>
@@ -301,8 +301,8 @@ const nutrition = () => {
           <View style={{ margin: 20, backgroundColor: isDark ? '#1F2937' : '#FFFFFF', borderRadius: 20, padding: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 12, elevation: 5, borderWidth: 1, borderColor: isDark ? '#374151' : '#F3F4F6' }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#F59E0B20', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
-                  <Ionicons name="stats-chart" size={24} color="#F59E0B" />
+                <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#10b98120', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                  <Ionicons name="stats-chart" size={24} color="#10b981" />
                 </View>
                 <Text style={{ fontSize: 20, fontWeight: 'bold', color: isDark ? '#FFFFFF' : '#111827' }}>
                   {getDateLabel(selectedDate)} Progress
@@ -312,7 +312,7 @@ const nutrition = () => {
                 onPress={() => setIsEditingGoals(!isEditingGoals)}
                 style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: isDark ? '#374151' : '#F3F4F6', alignItems: 'center', justifyContent: 'center' }}
               >
-                <Ionicons name={isEditingGoals ? 'close' : 'settings-outline'} size={22} color="#F59E0B" />
+                <Ionicons name={isEditingGoals ? 'close' : 'settings-outline'} size={22} color="#10b981" />
               </TouchableOpacity>
             </View>
 
@@ -449,7 +449,7 @@ const nutrition = () => {
           {/* Meal Categories */}
           <View style={{ paddingHorizontal: 20, paddingBottom: 20 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-              <View style={{ width: 4, height: 28, backgroundColor: '#F59E0B', borderRadius: 2, marginRight: 12 }} />
+              <View style={{ width: 4, height: 28, backgroundColor: '#10b981', borderRadius: 2, marginRight: 12 }} />
               <Text style={{ fontSize: 24, fontWeight: 'bold', color: isDark ? '#FFFFFF' : '#111827' }}>
                 {getDateLabel(selectedDate)} Meals
               </Text>
@@ -597,13 +597,13 @@ const nutrition = () => {
             {customCategories.length < 3 && (
               <TouchableOpacity
                 onPress={() => setShowAddCategoryModal(true)}
-                style={{ backgroundColor: isDark ? '#1F2937' : '#FFFFFF', borderRadius: 18, padding: 20, borderWidth: 2, borderColor: '#F59E0B', borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' }}
+                style={{ backgroundColor: isDark ? '#1F2937' : '#FFFFFF', borderRadius: 18, padding: 20, borderWidth: 2, borderColor: '#10b981', borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' }}
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#F59E0B20', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
-                    <Ionicons name="add" size={24} color="#F59E0B" />
+                  <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#10b98120', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                    <Ionicons name="add" size={24} color="#10b981" />
                   </View>
-                  <Text style={{ fontSize: 17, fontWeight: '700', color: '#F59E0B' }}>
+                  <Text style={{ fontSize: 17, fontWeight: '700', color: '#10b981' }}>
                     Add Custom Category
                   </Text>
                 </View>
