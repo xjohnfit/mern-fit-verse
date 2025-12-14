@@ -1,16 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+
 import { useGetUserProfileQuery } from '@/slices/usersApiSlice';
 import { useSendMessageMutation, useLazyGetMessagesQuery } from '@/slices/messageApiSlice';
-import {
-  getCachedMessages,
-  cacheMessages,
-  appendMessageToCache,
-} from '@/lib/messageCache';
 import { getSocket } from '@/hooks/useSocket';
+import { getCachedMessages, cacheMessages, appendMessageToCache } from '@/lib/messageCache';
 import {
   showMessageNotification,
   addNotificationReceivedListener,

@@ -62,11 +62,6 @@ const dashboardStyles = StyleSheet.create({
         marginBottom: 12,
         gap: 8,
     },
-    statsRowNoMargin: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        gap: 8,
-    },
     statsCard: {
         flex: 1,
     },

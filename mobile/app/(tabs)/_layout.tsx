@@ -31,7 +31,6 @@ const TabBarIcon = ({ name, color, focused }: TabBarIconProps) => {
     );
 };
 
-// noinspection JSUnusedGlobalSymbols
 export default function TabsLayout() {
     const { userInfo } = useAppSelector((state) => state.auth);
 

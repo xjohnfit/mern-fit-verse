@@ -1,19 +1,35 @@
-import { ScrollView, Text, View, RefreshControl, StatusBar, useColorScheme } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { useAppSelector } from "../../hooks/useRedux";
-import { useRouter } from "expo-router";
+// React
 import { useState } from "react";
-import dashboardStyles from "../../styles/dashboard/dashboardStyles";
+
+// React Native
+import { ScrollView, View, RefreshControl, StatusBar, useColorScheme } from "react-native";
+
+// Expo
+import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+// Third-party libraries
 import Toast from "react-native-toast-message";
-import StatsCard from "@/components/dashboard/StatsCard";
-import RecentWorkouts from "@/components/dashboard/RecentWorkouts";
-import SuggestedUsers from "@/components/dashboard/SuggestedUsers";
-import { Ionicons } from "@expo/vector-icons";
+
+// Hooks
+import { useAppSelector } from "../../hooks/useRedux";
+
+// API Slices
 import { useGetWorkoutStatsQuery, useGetWorkoutsQuery } from "../../slices/workoutApiSlice";
 import { useGetDailyNutritionQuery } from "../../slices/nutritionApiSlice";
 import { useGetUserProfileQuery, useGetSuggestedUsersQuery, useFollowUnfollowUserMutation } from "../../slices/usersApiSlice";
 import { useGetPostsQuery } from "../../slices/postsApiSlice";
+
+// Components
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import NutritionOverview from "@/components/dashboard/NutritionOverview";
+import WorkoutStats from "@/components/dashboard/WorkoutStats";
+import RecentWorkouts from "@/components/dashboard/RecentWorkouts";
+import SocialStats from "@/components/dashboard/SocialStats";
+import SuggestedUsers from "@/components/dashboard/SuggestedUsers";
+
+// Styles
+import dashboardStyles from "../../styles/dashboard/dashboardStyles";
 
 export default function HomeScreen() {
     const { userInfo } = useAppSelector((state) => state.auth);
@@ -47,7 +63,7 @@ export default function HomeScreen() {
 
     const handleFollow = async (username: string) => {
         try {
-            const result = await followUnfollowUser(username).unwrap();
+            await followUnfollowUser(username).unwrap();
             refetchSuggested();
             refetchProfile();
         } catch (error: any) {
@@ -105,159 +121,25 @@ export default function HomeScreen() {
                 }
             >
                 {/* Gradient Header */}
-                <LinearGradient
-                    colors={['#3b82f6', '#2563eb', '#1d4ed8']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={{ paddingHorizontal: 20, paddingBottom: 24 }}
-                >
-                    <View style={{ paddingTop: insets.top + 16, paddingBottom: 4 }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <View style={{
-                                width: 56,
-                                height: 56,
-                                borderRadius: 18,
-                                overflow: 'hidden',
-                                marginRight: 14,
-                                elevation: 4,
-                                shadowColor: '#000',
-                                shadowOffset: { width: 0, height: 2 },
-                                shadowOpacity: 0.3,
-                                shadowRadius: 4,
-                            }}>
-                                <LinearGradient
-                                    colors={['rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.15)']}
-                                    style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
-                                >
-                                    <Ionicons name="home" size={32} color="#fff" />
-                                </LinearGradient>
-                            </View>
-                            <View style={{ flex: 1 }}>
-                                <Text style={{
-                                    fontSize: 32,
-                                    fontWeight: 'bold',
-                                    color: '#fff',
-                                    letterSpacing: 0.5,
-                                }}>
-                                    Home
-                                </Text>
-                                <Text style={{
-                                    fontSize: 15,
-                                    color: 'rgba(255, 255, 255, 0.95)',
-                                    marginTop: 4,
-                                    fontWeight: '500',
-                                }}>
-                                    Welcome back, {userInfo?.name || userInfo?.username || "User"}
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-                </LinearGradient>
+                <DashboardHeader
+                    userName={userInfo?.name || userInfo?.username || "User"}
+                    topInset={insets.top}
+                />
 
                 {/* Content Container */}
                 <View style={dashboardStyles.contentContainer}>
 
                     {/* Nutrition Overview */}
-                    <View style={dashboardStyles.section}>
-                        <View style={dashboardStyles.sectionHeader}>
-                            <Ionicons name="nutrition" size={20} color="#8B5CF6" style={{ marginRight: 8 }} />
-                            <Text style={isDark ? dashboardStyles.sectionTitleDark : dashboardStyles.sectionTitle}>
-                                Today&apos;s Nutrition
-                            </Text>
-                        </View>
-                        <LinearGradient
-                            colors={['#3B82F6', '#8B5CF6']}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 1 }}
-                            style={{ borderRadius: 16, padding: 20 }}
-                        >
-                            {/* Calorie Goal and Progress */}
-                            <View style={{ marginBottom: 20 }}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                        <Ionicons name="flame" size={18} color="#FFFFFF" style={{ marginRight: 6 }} />
-                                        <Text style={{ fontSize: 14, fontWeight: '700', color: 'rgba(255,255,255,0.9)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                                            Calories
-                                        </Text>
-                                    </View>
-                                    <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#FFFFFF' }}>
-                                        {nutritionTotals.calories.toFixed(0)} <Text style={{ fontSize: 14, fontWeight: '600', color: 'rgba(255,255,255,0.8)' }}>/ {nutritionGoals.calories || 2000}</Text>
-                                    </Text>
-                                </View>
-                                <View style={{ height: 8, backgroundColor: 'rgba(255,255,255,0.25)', borderRadius: 4, overflow: 'hidden' }}>
-                                    <View style={{ height: '100%', width: `${calorieProgress}%`, backgroundColor: '#FFFFFF', borderRadius: 4 }} />
-                                </View>
-                            </View>
-
-                            {/* Macros */}
-                            <View style={dashboardStyles.macrosContainer}>
-                                <View style={dashboardStyles.macroItem}>
-                                    <Ionicons name="fitness" size={16} color="rgba(255,255,255,0.9)" style={{ marginBottom: 4 }} />
-                                    <Text style={dashboardStyles.macroValue}>
-                                        {nutritionTotals.protein.toFixed(0)}g
-                                    </Text>
-                                    <Text style={dashboardStyles.macroLabel}>Protein</Text>
-                                    <Text style={dashboardStyles.macroGoal}>/ {nutritionGoals.protein || 150}g</Text>
-                                </View>
-                                <View style={dashboardStyles.macroItem}>
-                                    <Ionicons name="flash" size={16} color="rgba(255,255,255,0.9)" style={{ marginBottom: 4 }} />
-                                    <Text style={dashboardStyles.macroValue}>
-                                        {nutritionTotals.carbs.toFixed(0)}g
-                                    </Text>
-                                    <Text style={dashboardStyles.macroLabel}>Carbs</Text>
-                                    <Text style={dashboardStyles.macroGoal}>/ {nutritionGoals.carbs || 200}g</Text>
-                                </View>
-                                <View style={dashboardStyles.macroItem}>
-                                    <Ionicons name="water" size={16} color="rgba(255,255,255,0.9)" style={{ marginBottom: 4 }} />
-                                    <Text style={dashboardStyles.macroValue}>
-                                        {nutritionTotals.fats.toFixed(0)}g
-                                    </Text>
-                                    <Text style={dashboardStyles.macroLabel}>Fats</Text>
-                                    <Text style={dashboardStyles.macroGoal}>/ {nutritionGoals.fats || 65}g</Text>
-                                </View>
-                            </View>
-                        </LinearGradient>
-                    </View>
+                    <NutritionOverview
+                        nutritionTotals={nutritionTotals}
+                        nutritionGoals={nutritionGoals}
+                    />
 
                     {/* Workout Stats */}
-                    <View style={dashboardStyles.section}>
-                        <View style={dashboardStyles.sectionHeader}>
-                            <Ionicons name="barbell" size={20} color="#10B981" style={{ marginRight: 8 }} />
-                            <Text style={isDark ? dashboardStyles.sectionTitleDark : dashboardStyles.sectionTitle}>
-                                Workout Stats
-                            </Text>
-                        </View>
-                        <View style={dashboardStyles.statsRow}>
-                            <View style={dashboardStyles.statsCard}>
-                                <StatsCard
-                                    icon="barbell"
-                                    iconColor="#fff"
-                                    bgColor="#06B6D4"
-                                    label="Total Workouts"
-                                    value={workoutStats?.totalWorkouts || 0}
-                                    subtitle="All time"
-                                />
-                            </View>
-                            <View style={dashboardStyles.statsCard}>
-                                <StatsCard
-                                    icon="calendar-outline"
-                                    iconColor="#fff"
-                                    bgColor="#EC4899"
-                                    label="This Week"
-                                    value={workoutStats?.workoutsThisWeek || 0}
-                                    subtitle="Keep it up! 💪"
-                                />
-                            </View>
-                        </View>
-                        <StatsCard
-                            icon="trending-up"
-                            iconColor="#fff"
-                            bgColor="#14B8A6"
-                            label="Avg. Per Week"
-                            value={daysActive > 0 ? ((workoutStats?.totalWorkouts || 0) / (daysActive / 7)).toFixed(1) : 0}
-                            subtitle="Consistency score"
-                        />
-                    </View>
+                    <WorkoutStats
+                        workoutStats={workoutStats}
+                        daysActive={daysActive}
+                    />
 
                     {/* Recent Workouts */}
                     <View style={dashboardStyles.section}>
@@ -265,54 +147,12 @@ export default function HomeScreen() {
                     </View>
 
                     {/* Social Stats */}
-                    <View style={dashboardStyles.section}>
-                        <View style={dashboardStyles.sectionHeader}>
-                            <Ionicons name="people" size={20} color="#F59E0B" style={{ marginRight: 8 }} />
-                            <Text style={isDark ? dashboardStyles.sectionTitleDark : dashboardStyles.sectionTitle}>
-                                Social
-                            </Text>
-                        </View>
-                        <View style={dashboardStyles.statsRow}>
-                            <View style={dashboardStyles.statsCard}>
-                                <StatsCard
-                                    icon="heart"
-                                    iconColor="#fff"
-                                    bgColor="#8B5CF6"
-                                    label="Total Likes"
-                                    value={totalLikes}
-                                />
-                            </View>
-                            <View style={dashboardStyles.statsCard}>
-                                <StatsCard
-                                    icon="people"
-                                    iconColor="#fff"
-                                    bgColor="#F59E0B"
-                                    label="Followers"
-                                    value={followers}
-                                />
-                            </View>
-                        </View>
-                        <View style={dashboardStyles.statsRowNoMargin}>
-                            <View style={dashboardStyles.statsCard}>
-                                <StatsCard
-                                    icon="pulse"
-                                    iconColor="#fff"
-                                    bgColor="#F43F5E"
-                                    label="Posts"
-                                    value={totalPosts}
-                                />
-                            </View>
-                            <View style={dashboardStyles.statsCard}>
-                                <StatsCard
-                                    icon="time"
-                                    iconColor="#fff"
-                                    bgColor="#0EA5E9"
-                                    label="Days Active"
-                                    value={daysActive}
-                                />
-                            </View>
-                        </View>
-                    </View>
+                    <SocialStats
+                        totalLikes={totalLikes}
+                        followers={followers}
+                        totalPosts={totalPosts}
+                        daysActive={daysActive}
+                    />
 
                     {/* Suggested Users */}
                     <View style={dashboardStyles.section}>
