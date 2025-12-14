@@ -17,6 +17,7 @@ import { clearCredentials } from '@/slices/authSlice';
 import { useLogoutMutation } from '@/slices/usersApiSlice';
 import SettingsProfileTab from '../../components/settings/SettingsProfileTab';
 import SettingsPreferencesTab from '../../components/settings/SettingsPreferencesTab';
+import settingsStyles from '../../styles/settings/settingsStyles';
 
 const SettingsScreen = () => {
   const router = useRouter();
@@ -27,6 +28,7 @@ const SettingsScreen = () => {
 
   const [logout] = useLogoutMutation();
   const [activeTab, setActiveTab] = useState<'profile' | 'preferences'>('profile');
+  const styles = settingsStyles(isDark);
 
 
   const handleLogout = () => {
@@ -54,11 +56,11 @@ const SettingsScreen = () => {
 
 
   return (
-    <View className="flex-1 bg-white dark:bg-gray-900">
+    <View style={styles.container}>
       <StatusBar barStyle="light-content" />
 
       <ScrollView
-        className="flex-1"
+        style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -67,44 +69,23 @@ const SettingsScreen = () => {
           colors={['#6366f1', '#4f46e5', '#4338ca']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={{ paddingHorizontal: 20, paddingBottom: 24 }}
+          style={styles.headerContainer}
         >
-          <View style={{ paddingTop: insets.top + 16, paddingBottom: 4 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <View style={{
-                width: 56,
-                height: 56,
-                borderRadius: 18,
-                overflow: 'hidden',
-                marginRight: 14,
-                elevation: 4,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.3,
-                shadowRadius: 4,
-              }}>
+          <View style={[styles.headerInner, { paddingTop: insets.top + 16 }]}>
+            <View style={styles.headerContent}>
+              <View style={styles.iconContainer}>
                 <LinearGradient
                   colors={['rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.15)']}
-                  style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+                  style={styles.iconGradient}
                 >
                   <Ionicons name="settings" size={32} color="#fff" />
                 </LinearGradient>
               </View>
-              <View style={{ flex: 1 }}>
-                <Text style={{
-                  fontSize: 32,
-                  fontWeight: 'bold',
-                  color: '#fff',
-                  letterSpacing: 0.5,
-                }}>
+              <View style={styles.textContainer}>
+                <Text style={styles.title}>
                   Settings
                 </Text>
-                <Text style={{
-                  fontSize: 15,
-                  color: 'rgba(255, 255, 255, 0.95)',
-                  marginTop: 4,
-                  fontWeight: '500',
-                }}>
+                <Text style={styles.subtitle}>
                   Manage your profile and preferences
                 </Text>
               </View>
@@ -113,19 +94,15 @@ const SettingsScreen = () => {
         </LinearGradient>
 
         {/* Content Wrapper */}
-        <View className="px-4 py-6">
+        <View style={styles.contentWrapper}>
           {/* Tabs */}
-          <View className="flex-row mb-4">
+          <View style={styles.tabsContainer}>
             <TouchableOpacity
               onPress={() => setActiveTab('profile')}
-              className={`flex-1 py-3 rounded-xl mr-2 ${activeTab === 'profile'
-                ? 'bg-indigo-600'
-                : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
-                }`}
+              style={activeTab === 'profile' ? styles.tabButtonActive : styles.tabButton}
             >
               <Text
-                className={`text-center font-semibold ${activeTab === 'profile' ? 'text-white' : 'text-gray-900 dark:text-white'
-                  }`}
+                style={activeTab === 'profile' ? styles.tabTextActive : styles.tabText}
               >
                 Profile
               </Text>
@@ -133,14 +110,10 @@ const SettingsScreen = () => {
 
             <TouchableOpacity
               onPress={() => setActiveTab('preferences')}
-              className={`flex-1 py-3 rounded-xl ${activeTab === 'preferences'
-                ? 'bg-indigo-600'
-                : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
-                }`}
+              style={activeTab === 'preferences' ? styles.tabButtonLastActive : styles.tabButtonLast}
             >
               <Text
-                className={`text-center font-semibold ${activeTab === 'preferences' ? 'text-white' : 'text-gray-900 dark:text-white'
-                  }`}
+                style={activeTab === 'preferences' ? styles.tabTextActive : styles.tabText}
               >
                 Preferences
               </Text>
@@ -155,7 +128,7 @@ const SettingsScreen = () => {
           )}
 
           {/* Bottom spacing for tab bar */}
-          <View className="h-8" />
+          <View style={styles.bottomSpacer} />
         </View>
       </ScrollView>
     </View>

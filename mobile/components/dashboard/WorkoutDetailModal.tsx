@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, Modal, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, Modal, ScrollView, TouchableOpacity, Dimensions, useColorScheme } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
+import WorkoutDetailModalStyles from '@/styles/dashboard/WorkoutDetailModalStyles';
 
 interface WorkoutDetailModalProps {
     visible: boolean;
@@ -11,6 +12,9 @@ interface WorkoutDetailModalProps {
 }
 
 export default function WorkoutDetailModal({ visible, workout, onClose }: WorkoutDetailModalProps) {
+    const colorScheme = useColorScheme();
+    const isDark = colorScheme === 'dark';
+    const styles = WorkoutDetailModalStyles(isDark);
     const { userInfo } = useSelector((state: RootState) => state.auth);
     const weightUnit = userInfo?.weightUnit || 'lbs';
 
@@ -69,103 +73,99 @@ export default function WorkoutDetailModal({ visible, workout, onClose }: Workou
             transparent={true}
             onRequestClose={onClose}
         >
-            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                <View className="flex-1 mt-16 bg-gray-50 dark:bg-gray-900 rounded-t-3xl">
+            <View style={styles.modalOverlay}>
+                <View style={styles.modalContainer}>
                     {/* Header */}
-                    <View className="p-5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-t-3xl">
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                            <View style={{
-                                backgroundColor: isTemplate ? '#f3e8ff' : '#dbeafe',
-                                padding: 10,
-                                borderRadius: 12,
-                            }}>
+                    <View style={styles.header}>
+                        <View style={styles.headerRow}>
+                            <View style={[styles.headerIconContainer, isTemplate ? styles.headerIconContainerTemplate : styles.headerIconContainerFreestyle]}>
                                 <Ionicons
                                     name="barbell"
                                     size={24}
                                     color={isTemplate ? '#9333ea' : '#2563eb'}
                                 />
                             </View>
-                            <View style={{ flex: 1, alignItems: 'center', marginHorizontal: 12 }}>
-                                <View className={`px-2.5 py-1 rounded-xl ${isTemplate ? 'bg-purple-100 dark:bg-purple-900/30' : 'bg-blue-100 dark:bg-blue-900/30'}`}>
-                                    <Text className={`text-xl font-semibold ${isTemplate ? 'text-purple-700 dark:text-purple-300' : 'text-blue-700 dark:text-blue-300'}`}>
+                            <View style={styles.headerCenter}>
+                                <View style={[styles.workoutTypeBadge, isTemplate ? styles.workoutTypeBadgeTemplate : styles.workoutTypeBadgeFreestyle]}>
+                                    <Text style={[styles.workoutTypeText, isTemplate ? styles.workoutTypeTextTemplate : styles.workoutTypeTextFreestyle]}>
                                         {isTemplate ? workout.templateName : 'Freestyle'}
                                     </Text>
                                 </View>
                             </View>
                             <TouchableOpacity
                                 onPress={onClose}
-                                className="bg-gray-100 dark:bg-gray-700 rounded-full w-10 h-10 justify-center items-center"
+                                style={styles.closeButton}
                             >
-                                <Ionicons name="close" size={24} className="text-gray-600 dark:text-gray-400" color="#6b7280" />
+                                <Ionicons name="close" size={24} color="#6b7280" />
                             </TouchableOpacity>
                         </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                        <View style={styles.dateRow}>
                             <Ionicons name="calendar" size={14} color="#6b7280" />
-                            <Text className="text-xs text-gray-600 dark:text-gray-400 ml-1.5">
+                            <Text style={styles.dateText}>
                                 {formatDate(workout.completedAt || workout.createdAt)}
                             </Text>
                         </View>
                     </View>
 
                     {/* Scrollable Content */}
-                    <ScrollView style={{ flex: 1 }}>
+                    <ScrollView style={styles.scrollView}>
                         {/* Summary Stats */}
-                        <View className="bg-white dark:bg-gray-800 p-4 mb-2">
-                            <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
-                                <View className="flex-1 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl">
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                                        <View style={{ backgroundColor: '#3b82f6', padding: 6, borderRadius: 8 }}>
+                        <View style={styles.statsContainer}>
+                            <View style={styles.statsRowTop}>
+                                <View style={[styles.statCard, styles.statCardBlue]}>
+                                    <View style={styles.statHeader}>
+                                        <View style={[styles.statIconContainer, styles.statIconBlue]}>
                                             <Ionicons name="time" size={16} color="white" />
                                         </View>
-                                        <Text className="text-xs text-gray-600 dark:text-gray-400 ml-2 font-semibold">
+                                        <Text style={styles.statLabel}>
                                             DURATION
                                         </Text>
                                     </View>
-                                    <Text className="text-xl font-bold text-blue-800 dark:text-blue-200">
+                                    <Text style={[styles.statValue, styles.statValueBlue]}>
                                         {formatDuration(workout.duration)}
                                     </Text>
                                 </View>
 
-                                <View className="flex-1 bg-green-50 dark:bg-green-900/20 p-4 rounded-xl">
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                                        <View style={{ backgroundColor: '#10b981', padding: 6, borderRadius: 8 }}>
+                                <View style={[styles.statCard, styles.statCardGreen]}>
+                                    <View style={styles.statHeader}>
+                                        <View style={[styles.statIconContainer, styles.statIconGreen]}>
                                             <Ionicons name="list" size={16} color="white" />
                                         </View>
-                                        <Text className="text-xs text-gray-600 dark:text-gray-400 ml-2 font-semibold">
+                                        <Text style={styles.statLabel}>
                                             EXERCISES
                                         </Text>
                                     </View>
-                                    <Text className="text-xl font-bold text-green-800 dark:text-green-200">
+                                    <Text style={[styles.statValue, styles.statValueGreen]}>
                                         {workout.exercises.length}
                                     </Text>
                                 </View>
                             </View>
 
-                            <View style={{ flexDirection: 'row', gap: 12 }}>
-                                <View className="flex-1 bg-orange-50 dark:bg-orange-900/20 p-4 rounded-xl">
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                                        <View style={{ backgroundColor: '#f59e0b', padding: 6, borderRadius: 8 }}>
+                            <View style={styles.statsRowBottom}>
+                                <View style={[styles.statCard, styles.statCardOrange]}>
+                                    <View style={styles.statHeader}>
+                                        <View style={[styles.statIconContainer, styles.statIconOrange]}>
                                             <Ionicons name="checkmark-circle" size={16} color="white" />
                                         </View>
-                                        <Text className="text-xs text-gray-600 dark:text-gray-400 ml-2 font-semibold">
+                                        <Text style={styles.statLabel}>
                                             SETS
                                         </Text>
                                     </View>
-                                    <Text className="text-xl font-bold text-orange-800 dark:text-orange-200">
+                                    <Text style={[styles.statValue, styles.statValueOrange]}>
                                         {sets.completed}/{sets.total}
                                     </Text>
                                 </View>
 
-                                <View className="flex-1 bg-purple-50 dark:bg-purple-900/20 p-4 rounded-xl">
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                                        <View style={{ backgroundColor: '#8b5cf6', padding: 6, borderRadius: 8 }}>
+                                <View style={[styles.statCard, styles.statCardPurple]}>
+                                    <View style={styles.statHeader}>
+                                        <View style={[styles.statIconContainer, styles.statIconPurple]}>
                                             <Ionicons name="trending-up" size={16} color="white" />
                                         </View>
-                                        <Text className="text-xs text-gray-600 dark:text-gray-400 ml-2 font-semibold">
+                                        <Text style={styles.statLabel}>
                                             VOLUME
                                         </Text>
                                     </View>
-                                    <Text className="text-xl font-bold text-purple-800 dark:text-purple-200">
+                                    <Text style={[styles.statValue, styles.statValuePurple]}>
                                         {volume.toLocaleString()} {weightUnit}
                                     </Text>
                                 </View>
@@ -173,49 +173,41 @@ export default function WorkoutDetailModal({ visible, workout, onClose }: Workou
                         </View>
 
                         {/* Exercises List */}
-                        <View className="p-4 pt-2">
-                            <Text className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                        <View style={styles.exercisesContainer}>
+                            <Text style={styles.exercisesTitle}>
                                 Exercises
                             </Text>
                             {workout.exercises.map((exercise: any, index: number) => (
                                 <View
                                     key={exercise.exerciseId || index}
-                                    className="bg-white dark:bg-gray-800 rounded-xl mb-4 border-l-4 border-blue-500 overflow-hidden"
+                                    style={styles.exerciseCard}
                                 >
-                                    <View style={{ padding: 16 }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-                                            <View style={{
-                                                width: 32,
-                                                height: 32,
-                                                backgroundColor: '#3b82f6',
-                                                borderRadius: 16,
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                                marginRight: 12
-                                            }}>
-                                                <Text style={{ color: 'white', fontSize: 14, fontWeight: '600' }}>
+                                    <View style={styles.exerciseHeader}>
+                                        <View style={styles.exerciseHeaderRow}>
+                                            <View style={styles.exerciseNumber}>
+                                                <Text style={styles.exerciseNumberText}>
                                                     {index + 1}
                                                 </Text>
                                             </View>
-                                            <Text className="text-base font-bold text-gray-900 dark:text-white flex-1">
+                                            <Text style={styles.exerciseName}>
                                                 {exercise.exerciseName || exercise.name}
                                             </Text>
                                         </View>
 
                                         {/* Sets Table */}
-                                        <View className="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden">
+                                        <View style={styles.setsTable}>
                                             {/* Header */}
-                                            <View className="flex-row py-2.5 px-2 border-b border-gray-200 dark:border-gray-700">
-                                                <Text className="flex-1 text-xs font-semibold text-gray-600 dark:text-gray-400">
+                                            <View style={styles.tableHeaderRow}>
+                                                <Text style={styles.tableHeaderText}>
                                                     Set
                                                 </Text>
-                                                <Text className="flex-1 text-xs font-semibold text-gray-600 dark:text-gray-400 text-center">
+                                                <Text style={styles.tableHeaderTextCenter}>
                                                     Weight ({weightUnit})
                                                 </Text>
-                                                <Text className="flex-1 text-xs font-semibold text-gray-600 dark:text-gray-400 text-center">
+                                                <Text style={styles.tableHeaderTextCenter}>
                                                     Reps
                                                 </Text>
-                                                <Text className="flex-1 text-xs font-semibold text-gray-600 dark:text-gray-400 text-center">
+                                                <Text style={styles.tableHeaderTextCenter}>
                                                     Volume
                                                 </Text>
                                             </View>
@@ -224,29 +216,29 @@ export default function WorkoutDetailModal({ visible, workout, onClose }: Workou
                                             {exercise.sets.map((set: any) => (
                                                 <View
                                                     key={set.setNumber}
-                                                    className={`flex-row py-3 px-2 border-b border-gray-100 dark:border-gray-800 ${set.completed ? 'bg-green-50 dark:bg-green-900/20' : 'bg-white dark:bg-gray-900'}`}
+                                                    style={set.completed ? styles.tableRowCompleted : styles.tableRowIncomplete}
                                                 >
-                                                    <Text className="flex-1 text-sm font-semibold text-gray-900 dark:text-white">
+                                                    <Text style={styles.tableCellText}>
                                                         {set.setNumber}
                                                     </Text>
-                                                    <Text className="flex-1 text-sm text-gray-900 dark:text-white text-center">
+                                                    <Text style={styles.tableCellTextCenter}>
                                                         {set.weight || '-'}
                                                     </Text>
-                                                    <Text className="flex-1 text-sm text-gray-900 dark:text-white text-center">
+                                                    <Text style={styles.tableCellTextCenter}>
                                                         {set.reps || '-'}
                                                     </Text>
-                                                    <Text className="flex-1 text-sm text-gray-900 dark:text-white text-center">
+                                                    <Text style={styles.tableCellTextCenter}>
                                                         {set.weight && set.reps ? (set.weight * set.reps).toFixed(0) : '-'}
                                                     </Text>
                                                 </View>
                                             ))}
 
                                             {/* Footer Total */}
-                                            <View className="flex-row py-2.5 px-2 bg-gray-200 dark:bg-gray-800">
-                                                <Text className="flex-[3] text-sm font-semibold text-gray-900 dark:text-white text-right pr-2">
+                                            <View style={styles.tableFooterRow}>
+                                                <Text style={styles.tableFooterLabel}>
                                                     Exercise Total:
                                                 </Text>
-                                                <Text className="flex-1 text-sm font-bold text-gray-900 dark:text-white text-center">
+                                                <Text style={styles.tableFooterValue}>
                                                     {exercise.sets.reduce((total: number, set: any) =>
                                                         total + ((set.weight || 0) * (set.reps || 0)), 0
                                                     ).toFixed(0)}

@@ -19,13 +19,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getPasswordStrength } from '../lib/getPasswordStrength';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
 import { Ionicons } from '@expo/vector-icons';
+import RegisterStyles from '@/styles/auth/registerStyles';
 
 
 export default function Register() {
     const dispatch = useDispatch();
     const insets = useSafeAreaInsets();
+    const styles = RegisterStyles();
     const [register, { isLoading }] = useRegisterMutation();
 
     const [formData, setFormData] = useState({
@@ -123,22 +124,22 @@ export default function Register() {
                     }}
                     showsVerticalScrollIndicator={false}
                 >
-                    <View style={{ flex: 1, paddingHorizontal: 24, paddingVertical: 48 }}>
+                    <View style={styles.container}>
                         {/* Header */}
-                        <View className="items-center mb-8">
-                            <Text className="text-4xl font-bold text-white mb-2">
+                        <View style={styles.headerContainer}>
+                            <Text style={styles.headerTitle}>
                                 Create Account
                             </Text>
-                            <Text className="text-lg text-blue-100">
+                            <Text style={styles.headerSubtitle}>
                                 Join FitVerse today
                             </Text>
                         </View>
 
                         {/* Form */}
-                        <View className="gap-4">
+                        <View style={styles.formContainer}>
                             {/* Name Field */}
-                            <View className="mb-4">
-                                <Text className="text-sm font-semibold text-white mb-2">
+                            <View style={styles.fieldContainer}>
+                                <Text style={styles.fieldLabel}>
                                     Full Name
                                 </Text>
                                 <TextInput
@@ -147,23 +148,13 @@ export default function Register() {
                                     placeholder="Enter your full name"
                                     placeholderTextColor="#FFFFFF"
                                     autoCapitalize="words"
-                                    style={{
-                                        width: '100%',
-                                        paddingHorizontal: 16,
-                                        paddingVertical: 12,
-                                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                                        borderWidth: 1,
-                                        borderColor: 'rgba(255, 255, 255, 0.3)',
-                                        borderRadius: 12,
-                                        color: '#FFFFFF',
-                                        fontSize: 16,
-                                    }}
+                                    style={styles.textInput}
                                 />
                             </View>
 
                             {/* Username Field */}
-                            <View className="mb-4">
-                                <Text className="text-sm font-semibold text-white mb-2">
+                            <View style={styles.fieldContainer}>
+                                <Text style={styles.fieldLabel}>
                                     Username
                                 </Text>
                                 <TextInput
@@ -173,23 +164,13 @@ export default function Register() {
                                     placeholderTextColor="#FFFFFF"
                                     autoCapitalize="none"
                                     autoComplete="off"
-                                    style={{
-                                        width: '100%',
-                                        paddingHorizontal: 16,
-                                        paddingVertical: 12,
-                                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                                        borderWidth: 1,
-                                        borderColor: 'rgba(255, 255, 255, 0.3)',
-                                        borderRadius: 12,
-                                        color: '#FFFFFF',
-                                        fontSize: 16,
-                                    }}
+                                    style={styles.textInput}
                                 />
                             </View>
 
                             {/* Email Field */}
-                            <View className="mb-4">
-                                <Text className="text-sm font-semibold text-white mb-2">
+                            <View style={styles.fieldContainer}>
+                                <Text style={styles.fieldLabel}>
                                     Email Address
                                 </Text>
                                 <TextInput
@@ -200,26 +181,16 @@ export default function Register() {
                                     keyboardType="email-address"
                                     autoCapitalize="none"
                                     autoComplete="off"
-                                    style={{
-                                        width: '100%',
-                                        paddingHorizontal: 16,
-                                        paddingVertical: 12,
-                                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                                        borderWidth: 1,
-                                        borderColor: 'rgba(255, 255, 255, 0.3)',
-                                        borderRadius: 12,
-                                        color: '#FFFFFF',
-                                        fontSize: 16,
-                                    }}
+                                    style={styles.textInput}
                                 />
                             </View>
 
                             {/* Password Field */}
-                            <View className="mb-4">
-                                <Text className="text-sm font-semibold text-white mb-2">
+                            <View style={styles.fieldContainer}>
+                                <Text style={styles.fieldLabel}>
                                     Password
                                 </Text>
-                                <View className="relative">
+                                <View style={styles.passwordContainer}>
                                     <TextInput
                                         value={formData.password}
                                         onChangeText={(value) => handleInputChange('password', value)}
@@ -228,46 +199,28 @@ export default function Register() {
                                         secureTextEntry={!showPassword}
                                         autoCapitalize="none"
                                         textContentType="oneTimeCode"
-                                        style={{
-                                            width: '100%',
-                                            paddingHorizontal: 16,
-                                            paddingVertical: 12,
-                                            paddingRight: 48,
-                                            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                                            borderWidth: 1,
-                                            borderColor: 'rgba(255, 255, 255, 0.3)',
-                                            borderRadius: 12,
-                                            color: '#FFFFFF',
-                                            fontSize: 16,
-                                        }}
+                                        style={styles.passwordInput}
                                     />
                                     <TouchableOpacity
                                         onPress={() => setShowPassword(!showPassword)}
-                                        className="absolute right-4 top-3"
+                                        style={styles.passwordToggle}
                                     >
-                                        <Text className="text-white text-lg">
-                                            {showPassword ? <Ionicons name="eye" size={24} color="white" /> : <Ionicons name="eye-off" size={24} color="white" />}
-                                        </Text>
+                                        {showPassword ? <Ionicons name="eye" size={24} color="white" /> : <Ionicons name="eye-off" size={24} color="white" />}
                                     </TouchableOpacity>
                                 </View>
                                 {formData.password && (
-                                    <Text
-                                        className="text-xs mt-1"
-                                        style={{
-                                            color: '#FFFFFF'
-                                        }}
-                                    >
+                                    <Text style={styles.passwordStrengthText}>
                                         Password strength: {passwordStrength.text}
                                     </Text>
                                 )}
                             </View>
 
                             {/* Confirm Password Field */}
-                            <View className="mb-4">
-                                <Text className="text-sm font-semibold text-white mb-2">
+                            <View style={styles.fieldContainer}>
+                                <Text style={styles.fieldLabel}>
                                     Confirm Password
                                 </Text>
-                                <View className="relative">
+                                <View style={styles.passwordContainer}>
                                     <TextInput
                                         value={formData.confirmPassword}
                                         onChangeText={(value) =>
@@ -278,43 +231,27 @@ export default function Register() {
                                         secureTextEntry={!showConfirmPassword}
                                         autoCapitalize="none"
                                         textContentType="oneTimeCode"
-                                        style={{
-                                            width: '100%',
-                                            paddingHorizontal: 16,
-                                            paddingVertical: 12,
-                                            paddingRight: 48,
-                                            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                                            borderWidth: 1,
-                                            borderColor: 'rgba(255, 255, 255, 0.3)',
-                                            borderRadius: 12,
-                                            color: '#FFFFFF',
-                                            fontSize: 16,
-                                        }}
+                                        style={styles.passwordInput}
                                     />
                                     <TouchableOpacity
                                         onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                                        className="absolute right-4 top-3"
+                                        style={styles.passwordToggle}
                                     >
-                                        <Text className="text-white text-lg">
-                                            {showPassword ? <Ionicons name="eye" size={24} color="white" /> : <Ionicons name="eye-off" size={24} color="white" />}
-                                        </Text>
+                                        {showConfirmPassword ? <Ionicons name="eye" size={24} color="white" /> : <Ionicons name="eye-off" size={24} color="white" />}
                                     </TouchableOpacity>
                                 </View>
                             </View>
 
                             {/* Date of Birth Field */}
-                            <View className="mb-4">
-                                <Text className="text-sm font-semibold text-white mb-2">
+                            <View style={styles.fieldContainer}>
+                                <Text style={styles.fieldLabel}>
                                     Date of Birth
                                 </Text>
                                 <TouchableOpacity
                                     onPress={() => setShowDatePicker(true)}
-                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl"
+                                    style={styles.dobButton}
                                 >
-                                    <Text
-                                        className="text-base"
-                                        style={{ color: formData.dob ? 'white' : '#FFFFFF' }}
-                                    >
+                                    <Text style={styles.dobButtonText}>
                                         {formData.dob ? formatDisplayDate(formData.dob) : 'Select your date of birth'}
                                     </Text>
                                 </TouchableOpacity>
@@ -331,27 +268,19 @@ export default function Register() {
                             </View>
 
                             {/* Gender Field */}
-                            <View className="mb-4">
-                                <Text className="text-sm font-semibold text-white mb-2">
+                            <View style={styles.fieldContainer}>
+                                <Text style={styles.fieldLabel}>
                                     Gender
                                 </Text>
-                                <View className="flex-row gap-2">
+                                <View style={styles.genderRow}>
                                     {['male', 'female', 'other'].map((gender) => (
                                         <TouchableOpacity
                                             key={gender}
                                             onPress={() => handleInputChange('gender', gender)}
-                                            className="flex-1 py-3 rounded-xl border"
-                                            style={{
-                                                backgroundColor: formData.gender === gender ? 'white' : 'transparent',
-                                                borderColor: formData.gender === gender ? 'white' : 'rgba(255,255,255,0.5)'
-                                            }}
+                                            style={[styles.genderButton, formData.gender === gender ? styles.genderButtonActive : styles.genderButtonInactive]}
                                         >
                                             <Text
-                                                className="text-center capitalize text-base"
-                                                style={{
-                                                    color: formData.gender === gender ? '#2563EB' : 'white',
-                                                    fontWeight: formData.gender === gender ? '600' : 'normal'
-                                                }}
+                                                style={[styles.genderButtonText, formData.gender === gender ? styles.genderButtonTextActive : styles.genderButtonTextInactive]}
                                             >
                                                 {gender.charAt(0).toUpperCase() + gender.slice(1)}
                                             </Text>
@@ -363,22 +292,18 @@ export default function Register() {
                             {/* Terms and Conditions */}
                             <TouchableOpacity
                                 onPress={() => setAgreeToTerms(!agreeToTerms)}
-                                className="flex-row items-center mt-4"
+                                style={styles.termsContainer}
                             >
                                 <View
-                                    className="w-5 h-5 border-2 rounded items-center justify-center mr-2"
-                                    style={{
-                                        backgroundColor: agreeToTerms ? 'white' : 'transparent',
-                                        borderColor: agreeToTerms ? 'white' : 'rgba(255,255,255,0.5)'
-                                    }}
+                                    style={[styles.checkbox, agreeToTerms ? styles.checkboxChecked : styles.checkboxUnchecked]}
                                 >
                                     {agreeToTerms && (
                                         <Ionicons name="checkmark" size={14} color="#3b82f6" />
                                     )}
                                 </View>
-                                <Text className="text-sm text-white">
+                                <Text style={styles.termsText}>
                                     I agree to the{' '}
-                                    <Text className="font-semibold">Terms and Conditions</Text>
+                                    <Text style={styles.termsLink}>Terms and Conditions</Text>
                                 </Text>
                             </TouchableOpacity>
 
@@ -386,13 +311,12 @@ export default function Register() {
                             <TouchableOpacity
                                 onPress={handleSubmit}
                                 disabled={isLoading}
-                                className="w-full py-4 rounded-xl mt-6 items-center"
-                                style={{ backgroundColor: isLoading ? '#FFFFFF' : 'white' }}
+                                style={[styles.submitButton, isLoading ? styles.submitButtonDisabled : styles.submitButtonActive]}
                             >
                                 {isLoading ? (
                                     <ActivityIndicator color="#2563EB" />
                                 ) : (
-                                    <Text className="text-blue-600 text-center font-semibold text-lg">
+                                    <Text style={styles.submitButtonText}>
                                         Create Account
                                     </Text>
                                 )}
@@ -400,12 +324,12 @@ export default function Register() {
                         </View>
 
                         {/* Login Link */}
-                        <View className="flex-row justify-center mt-8">
-                            <Text className="text-blue-100 text-base">
+                        <View style={styles.loginLinkContainer}>
+                            <Text style={styles.loginText}>
                                 Already have an account?{' '}
                             </Text>
                             <TouchableOpacity onPress={() => router.push('/login')}>
-                                <Text className="text-white font-semibold text-base">
+                                <Text style={styles.loginLink}>
                                     Sign In
                                 </Text>
                             </TouchableOpacity>

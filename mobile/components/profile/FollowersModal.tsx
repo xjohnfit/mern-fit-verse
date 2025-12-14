@@ -7,9 +7,11 @@ import {
     FlatList,
     Image,
     Pressable,
+    useColorScheme,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getInitials } from '../../lib/getInitials';
+import FollowersModalStyles from '../../styles/profile/FollowersModalStyles';
 
 interface UserItem {
     _id: string;
@@ -35,7 +37,8 @@ export const FollowersModal: React.FC<FollowersModalProps> = ({
     title,
     onUserPress,
 }) => {
-    // Debug logging removed
+    const colorScheme = useColorScheme();
+    const isDark = colorScheme === 'dark';
 
     const renderUserItem = ({ item, index }: { item: UserItem; index: number; }) => {
         if (!item || !item._id) return null;
@@ -48,29 +51,29 @@ export const FollowersModal: React.FC<FollowersModalProps> = ({
                     }
                     onClose();
                 }}
-                className="flex-row items-center p-4 border-b border-gray-200 dark:border-gray-700"
+                style={isDark ? FollowersModalStyles.userItemDark : FollowersModalStyles.userItem}
             >
                 {/* User Photo */}
-                <View className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden mr-3">
+                <View style={isDark ? FollowersModalStyles.userPhotoContainerDark : FollowersModalStyles.userPhotoContainer}>
                     {item.photo ? (
                         <Image
                             source={{ uri: item.photo }}
-                            className="w-full h-full"
+                            style={FollowersModalStyles.userPhoto}
                             resizeMode="cover"
                         />
                     ) : (
-                        <View className="w-full h-full flex items-center justify-center bg-gray-300 dark:bg-gray-600">
+                        <View style={isDark ? FollowersModalStyles.userPhotoPlaceholderDark : FollowersModalStyles.userPhotoPlaceholder}>
                             <Ionicons name="person" size={24} color="#9ca3af" />
                         </View>
                     )}
                 </View>
 
                 {/* User Info */}
-                <View className="flex-1">
-                    <Text className="font-semibold text-gray-900 dark:text-gray-100">
+                <View style={FollowersModalStyles.userInfo}>
+                    <Text style={isDark ? FollowersModalStyles.userNameDark : FollowersModalStyles.userName}>
                         {item.name || 'Unknown User'}
                     </Text>
-                    <Text className="text-sm text-gray-500 dark:text-gray-400">
+                    <Text style={isDark ? FollowersModalStyles.userUsernameDark : FollowersModalStyles.userUsername}>
                         @{item.username || 'unknown'}
                     </Text>
                 </View>
@@ -85,14 +88,14 @@ export const FollowersModal: React.FC<FollowersModalProps> = ({
             transparent={true}
             onRequestClose={onClose}
         >
-            <View className="flex-1 bg-black/50">
-                <View className="flex-1 mt-20 bg-white dark:bg-gray-900 rounded-t-3xl">
+            <View style={FollowersModalStyles.modalOverlay}>
+                <View style={isDark ? FollowersModalStyles.modalContentDark : FollowersModalStyles.modalContent}>
                     {/* Header */}
-                    <View className="flex-row items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                        <Text className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                    <View style={isDark ? FollowersModalStyles.headerDark : FollowersModalStyles.header}>
+                        <Text style={isDark ? FollowersModalStyles.titleDark : FollowersModalStyles.title}>
                             {title}
                         </Text>
-                        <TouchableOpacity onPress={onClose} className="p-2">
+                        <TouchableOpacity onPress={onClose} style={FollowersModalStyles.closeButton}>
                             <Ionicons name="close" size={24} color="#6b7280" />
                         </TouchableOpacity>
                     </View>
@@ -103,11 +106,11 @@ export const FollowersModal: React.FC<FollowersModalProps> = ({
                             data={users.filter(user => user && user._id)}
                             renderItem={renderUserItem}
                             keyExtractor={(item, index) => item._id || `user-${index}`}
-                            className="flex-1"
+                            style={FollowersModalStyles.listContainer}
                         />
                     ) : (
-                        <View className="flex-1 items-center justify-center p-8">
-                            <Text className="text-gray-500 dark:text-gray-400 text-center">
+                        <View style={FollowersModalStyles.emptyContainer}>
+                            <Text style={isDark ? FollowersModalStyles.emptyTextDark : FollowersModalStyles.emptyText}>
                                 No {type} yet
                             </Text>
                         </View>

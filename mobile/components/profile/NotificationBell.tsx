@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, ScrollView, ActivityIndicator, Alert, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, ScrollView, ActivityIndicator, Alert, Image, useColorScheme } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useGetNotificationsQuery, useDeleteNotificationsMutation } from '../../slices/notificationApiSlice';
+import NotificationBellStyles from '../../styles/profile/NotificationBellStyles';
 
 interface NotificationBellProps {
     color?: string;
@@ -11,6 +12,8 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ color = '#ff
     const [isOpen, setIsOpen] = useState(false);
     const { data: notifications = [], isLoading } = useGetNotificationsQuery();
     const [deleteNotifications] = useDeleteNotificationsMutation();
+    const colorScheme = useColorScheme();
+    const isDark = colorScheme === 'dark';
 
     const unreadCount = notifications.filter((n) => !n.isRead).length;
 
@@ -88,13 +91,12 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ color = '#ff
             {/* Bell Button */}
             <TouchableOpacity
                 onPress={() => setIsOpen(true)}
-                className="relative p-2 rounded-full"
-                style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+                style={NotificationBellStyles.bellButton}
             >
                 <Ionicons name="notifications-outline" size={24} color={color} />
                 {unreadCount > 0 && (
-                    <View className="absolute -top-1 -right-1 bg-red-500 rounded-full min-w-[20px] h-5 items-center justify-center px-1">
-                        <Text className="text-white text-xs font-bold">
+                    <View style={NotificationBellStyles.badge}>
+                        <Text style={NotificationBellStyles.badgeText}>
                             {unreadCount > 9 ? '9+' : unreadCount}
                         </Text>
                     </View>
@@ -108,35 +110,35 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ color = '#ff
                 transparent={false}
                 onRequestClose={() => setIsOpen(false)}
             >
-                <View className="flex-1 bg-gray-50 dark:bg-gray-900">
+                <View style={isDark ? NotificationBellStyles.modalContainerDark : NotificationBellStyles.modalContainer}>
                     {/* Header */}
-                    <View className="bg-blue-500 dark:bg-blue-600 pt-12 pb-4 px-4">
-                        <View className="flex-row items-center justify-between mt-10">
-                            <View className="flex-row items-center">
+                    <View style={isDark ? NotificationBellStyles.modalHeaderDark : NotificationBellStyles.modalHeader}>
+                        <View style={NotificationBellStyles.headerContent}>
+                            <View style={NotificationBellStyles.headerLeft}>
                                 <Ionicons name="notifications" size={24} color="#fff" />
-                                <Text className="text-white text-xl font-bold ml-2">
+                                <Text style={NotificationBellStyles.headerTitle}>
                                     Notifications
                                 </Text>
                                 {unreadCount > 0 && (
-                                    <View className="bg-red-500 rounded-full ml-2 px-2 py-1">
-                                        <Text className="text-white text-xs font-bold">
+                                    <View style={NotificationBellStyles.headerBadge}>
+                                        <Text style={NotificationBellStyles.headerBadgeText}>
                                             {unreadCount}
                                         </Text>
                                     </View>
                                 )}
                             </View>
-                            <View className="flex-row items-center">
+                            <View style={NotificationBellStyles.headerRight}>
                                 {notifications.length > 0 && (
                                     <TouchableOpacity
                                         onPress={handleDeleteAll}
-                                        className="mr-3 p-2"
+                                        style={NotificationBellStyles.deleteButton}
                                     >
                                         <Ionicons name="trash-outline" size={20} color="#fff" />
                                     </TouchableOpacity>
                                 )}
                                 <TouchableOpacity
                                     onPress={() => setIsOpen(false)}
-                                    className="p-2"
+                                    style={NotificationBellStyles.closeButton}
                                 >
                                     <Ionicons name="close" size={24} color="#fff" />
                                 </TouchableOpacity>
@@ -145,21 +147,21 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ color = '#ff
                     </View>
 
                     {/* Notifications List */}
-                    <ScrollView className="flex-1">
+                    <ScrollView style={{ flex: 1 }}>
                         {isLoading ? (
-                            <View className="flex-1 items-center justify-center py-12">
+                            <View style={NotificationBellStyles.loadingContainer}>
                                 <ActivityIndicator size="large" color="#3b82f6" />
-                                <Text className="text-gray-600 dark:text-gray-400 mt-4">
+                                <Text style={isDark ? NotificationBellStyles.loadingTextDark : NotificationBellStyles.loadingText}>
                                     Loading notifications...
                                 </Text>
                             </View>
                         ) : notifications.length === 0 ? (
-                            <View className="flex-1 items-center justify-center py-12">
+                            <View style={NotificationBellStyles.emptyContainer}>
                                 <Ionicons name="notifications-off-outline" size={64} color="#9ca3af" />
-                                <Text className="text-gray-600 dark:text-gray-400 font-medium mt-4">
+                                <Text style={isDark ? NotificationBellStyles.emptyTitleDark : NotificationBellStyles.emptyTitle}>
                                     No notifications yet
                                 </Text>
-                                <Text className="text-gray-500 dark:text-gray-500 text-sm mt-2">
+                                <Text style={isDark ? NotificationBellStyles.emptySubtitleDark : NotificationBellStyles.emptySubtitle}>
                                     We'll notify you when something happens
                                 </Text>
                             </View>
@@ -168,23 +170,24 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ color = '#ff
                                 {notifications.map((notification) => (
                                     <TouchableOpacity
                                         key={notification._id}
-                                        className={`px-4 py-4 border-b border-gray-200 dark:border-gray-800 ${!notification.isRead
-                                            ? 'bg-blue-50 dark:bg-blue-900/20'
-                                            : 'bg-white dark:bg-gray-800'
-                                            }`}
+                                        style={
+                                            !notification.isRead
+                                                ? isDark ? NotificationBellStyles.notificationItemUnreadDark : NotificationBellStyles.notificationItemUnread
+                                                : isDark ? NotificationBellStyles.notificationItemDark : NotificationBellStyles.notificationItem
+                                        }
                                     >
-                                        <View className="flex-row items-start">
+                                        <View style={NotificationBellStyles.notificationContent}>
                                             {/* User Avatar */}
                                             {notification.from?.photo ? (
-                                                <View className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-700">
+                                                <View style={isDark ? NotificationBellStyles.avatarContainerDark : NotificationBellStyles.avatarContainer}>
                                                     <Image
                                                         source={{ uri: notification.from.photo }}
-                                                        className="w-full h-full"
+                                                        style={NotificationBellStyles.avatar}
                                                         resizeMode="cover"
                                                     />
                                                 </View>
                                             ) : (
-                                                <View className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-700 items-center justify-center border-2 border-gray-200 dark:border-gray-700">
+                                                <View style={isDark ? NotificationBellStyles.avatarPlaceholderDark : NotificationBellStyles.avatarPlaceholder}>
                                                     <Ionicons
                                                         name="person"
                                                         size={24}
@@ -194,9 +197,9 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ color = '#ff
                                             )}
 
                                             {/* Content */}
-                                            <View className="flex-1 ml-3">
-                                                <View className="flex-row items-center justify-between">
-                                                    <View className="flex-row items-center flex-1">
+                                            <View style={NotificationBellStyles.notificationTextContainer}>
+                                                <View style={NotificationBellStyles.notificationHeader}>
+                                                    <View style={NotificationBellStyles.notificationHeaderLeft}>
                                                         <Ionicons
                                                             name={getNotificationIcon(notification.type)}
                                                             size={16}
@@ -208,15 +211,15 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ color = '#ff
                                                                         : '#6b7280'
                                                             }
                                                         />
-                                                        <Text className="text-gray-900 dark:text-gray-100 font-medium text-sm ml-2 flex-1">
+                                                        <Text style={isDark ? NotificationBellStyles.notificationMessageDark : NotificationBellStyles.notificationMessage}>
                                                             {getNotificationMessage(notification)}
                                                         </Text>
                                                     </View>
                                                     {!notification.isRead && (
-                                                        <View className="w-2 h-2 bg-blue-500 rounded-full ml-2" />
+                                                        <View style={NotificationBellStyles.unreadDot} />
                                                     )}
                                                 </View>
-                                                <Text className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+                                                <Text style={isDark ? NotificationBellStyles.timestampDark : NotificationBellStyles.timestamp}>
                                                     {formatTimestamp(notification.createdAt)}
                                                 </Text>
                                             </View>

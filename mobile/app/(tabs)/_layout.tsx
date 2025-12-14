@@ -67,7 +67,7 @@ export default function TabsLayout() {
             headerShown: false,
         }}>
             <Tabs.Screen
-                name='home'
+                name='dashboard'
                 options={{
                     title: 'Home',
                     tabBarIcon: ({ focused }) => (

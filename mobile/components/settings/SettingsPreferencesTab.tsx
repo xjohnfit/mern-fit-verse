@@ -17,6 +17,7 @@ import { useUpdateUserProfileMutation, usersApiSlice } from '@/slices/usersApiSl
 import Slider from '@react-native-community/slider';
 import HelpAndSupportModal from '@/components/settings/HelpAndSupportModal';
 import UpdatePasswordModal from '@/components/settings/UpdatePasswordModal';
+import SettingsPreferencesTabStyles from '@/styles/settings/SettingsPreferencesTabStyles';
 
 interface SettingsPreferencesTabProps {
   onDeleteAccount: () => void;
@@ -24,6 +25,8 @@ interface SettingsPreferencesTabProps {
 
 const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDeleteAccount }) => {
   const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const styles = SettingsPreferencesTabStyles(isDark);
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { userInfo } = useAppSelector((state) => state.auth);
@@ -168,16 +171,16 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
     <TouchableOpacity
       onPress={onPress}
       disabled={!onPress}
-      className="flex-row items-center px-4 py-4 bg-white dark:bg-gray-800 rounded-xl mb-3 shadow-sm"
+      style={styles.settingItem}
       activeOpacity={0.7}
     >
-      <View className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-4">
-        <Ionicons name={icon} size={20} color={colorScheme === 'dark' ? '#60A5FA' : '#3B82F6'} />
+      <View style={styles.iconContainer}>
+        <Ionicons name={icon} size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
       </View>
-      <View className="flex-1">
-        <Text className="text-base font-semibold text-gray-900 dark:text-white">{title}</Text>
+      <View style={styles.settingTextContainer}>
+        <Text style={styles.settingTitle}>{title}</Text>
         {subtitle && (
-          <Text className="text-sm text-gray-500 dark:text-gray-400 mt-1">{subtitle}</Text>
+          <Text style={styles.settingSubtitle}>{subtitle}</Text>
         )}
       </View>
       {rightComponent ||
@@ -185,38 +188,38 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
           <Ionicons
             name="chevron-forward"
             size={20}
-            color={colorScheme === 'dark' ? '#9CA3AF' : '#6B7280'}
+            color={isDark ? '#9CA3AF' : '#6B7280'}
           />
         ))}
     </TouchableOpacity>
   );
 
   return (
-    <View className="pb-6">
+    <View style={styles.container}>
 
       {/* Workout Preferences */}
-      <View className="mb-6">
-        <Text className="text-lg font-bold text-gray-900 dark:text-white mb-4 px-1">
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionTitle}>
           Workout Preferences
         </Text>
 
         {/* Weight Unit */}
-        <View className="bg-white dark:bg-gray-800 rounded-xl p-5 mb-3 shadow-sm">
-          <View className="flex-row items-center mb-4">
-            <View className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-3">
-              <Ionicons name="barbell" size={20} color={colorScheme === 'dark' ? '#60A5FA' : '#3B82F6'} />
+        <View style={styles.weightUnitCard}>
+          <View style={styles.cardHeader}>
+            <View style={styles.cardIconContainer}>
+              <Ionicons name="barbell" size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
             </View>
-            <View className="flex-1">
-              <Text className="text-base font-semibold text-gray-900 dark:text-white">
+            <View style={styles.cardTextContainer}>
+              <Text style={styles.cardTitle}>
                 Weight Unit
               </Text>
-              <Text className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+              <Text style={styles.cardSubtitle}>
                 Choose your preferred weight measurement
               </Text>
             </View>
           </View>
 
-          <View className="flex-row gap-3">
+          <View style={styles.unitButtonsContainer}>
             {(['lbs', 'kg'] as const).map((unit) => {
               const isSelected = weightUnit === unit;
               return (
@@ -224,34 +227,24 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
                   key={unit}
                   onPress={() => handleWeightUnitChange(unit)}
                   disabled={isUpdatingProfile}
-                  className={`flex-1 px-4 py-4 rounded-2xl border-2 ${
-                    isSelected
-                      ? 'bg-blue-600 border-blue-600'
-                      : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600'
-                  }`}
+                  style={isSelected ? styles.unitButtonActive : styles.unitButton}
                   activeOpacity={0.7}
                 >
-                  <View className="items-center">
+                  <View style={styles.unitButtonContent}>
                     <Text
-                      className={`text-2xl font-bold mb-1 ${
-                        isSelected ? 'text-white' : 'text-gray-900 dark:text-white'
-                      }`}
+                      style={isSelected ? styles.unitButtonTextActive : styles.unitButtonText}
                     >
                       {unit.toUpperCase()}
                     </Text>
                     <Text
-                      className={`text-xs ${
-                        isSelected
-                          ? 'text-blue-100'
-                          : 'text-gray-500 dark:text-gray-400'
-                      }`}
+                      style={isSelected ? styles.unitButtonSubtextActive : styles.unitButtonSubtext}
                     >
                       {unit === 'lbs' ? 'Pounds' : 'Kilograms'}
                     </Text>
                   </View>
                   {isSelected && (
-                    <View className="absolute top-2 right-2">
-                      <View className="w-6 h-6 bg-white rounded-full items-center justify-center">
+                    <View style={styles.checkmarkContainer}>
+                      <View style={styles.checkmarkCircle}>
                         <Ionicons name="checkmark" size={16} color="#3B82F6" />
                       </View>
                     </View>
@@ -263,56 +256,56 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
         </View>
 
         {/* Rest Timer */}
-        <View className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm">
-          <View className="flex-row items-center mb-4">
-            <View className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 items-center justify-center mr-3">
-              <Ionicons name="timer" size={20} color={colorScheme === 'dark' ? '#C084FC' : '#A855F7'} />
+        <View style={styles.weightUnitCard}>
+          <View style={styles.cardHeader}>
+            <View style={styles.cardIconContainerPurple}>
+              <Ionicons name="timer" size={20} color={isDark ? '#C084FC' : '#A855F7'} />
             </View>
-            <View className="flex-1">
-              <Text className="text-base font-semibold text-gray-900 dark:text-white">
+            <View style={styles.cardTextContainer}>
+              <Text style={styles.cardTitle}>
                 Rest Timer
               </Text>
-              <Text className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+              <Text style={styles.cardSubtitle}>
                 Default rest time between sets
               </Text>
             </View>
           </View>
 
-          <View className="space-y-3">
-            <View className="flex-row items-center justify-between">
-              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <View style={styles.restTimerContent}>
+            <View style={styles.restTimerRow}>
+              <Text style={styles.restTimerLabel}>
                 Duration:
               </Text>
-              <Text className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+              <Text style={styles.restTimerValue}>
                 {restTimer} min{restTimer !== 1 ? 's' : ''}
               </Text>
             </View>
 
             <Slider
-              style={{ width: '100%', height: 40 }}
+              style={styles.sliderContainer}
               minimumValue={1}
               maximumValue={10}
               step={1}
               value={restTimer}
               onValueChange={(value: number) => handleRestTimerChange(value)}
               onSlidingComplete={(value: number) => handleRestTimerComplete(value)}
-              minimumTrackTintColor={colorScheme === 'dark' ? '#C084FC' : '#A855F7'}
-              maximumTrackTintColor={colorScheme === 'dark' ? '#374151' : '#E5E7EB'}
-              thumbTintColor={colorScheme === 'dark' ? '#C084FC' : '#A855F7'}
+              minimumTrackTintColor={isDark ? '#C084FC' : '#A855F7'}
+              maximumTrackTintColor={isDark ? '#374151' : '#E5E7EB'}
+              thumbTintColor={isDark ? '#C084FC' : '#A855F7'}
             />
 
-            <View className="flex-row justify-between">
-              <Text className="text-xs text-gray-500 dark:text-gray-400">1 min</Text>
-              <Text className="text-xs text-gray-500 dark:text-gray-400">5 mins</Text>
-              <Text className="text-xs text-gray-500 dark:text-gray-400">10 mins</Text>
+            <View style={styles.sliderLabels}>
+              <Text style={styles.sliderLabelText}>1 min</Text>
+              <Text style={styles.sliderLabelText}>5 mins</Text>
+              <Text style={styles.sliderLabelText}>10 mins</Text>
             </View>
           </View>
         </View>
       </View>
 
       {/* Appearance */}
-      <View className="mb-6">
-        <Text className="text-lg font-bold text-gray-900 dark:text-white mb-4 px-1">
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionTitle}>
           Appearance
         </Text>
 
@@ -338,8 +331,8 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
       </View>
 
       {/* Notifications */}
-      <View className="mb-6">
-        <Text className="text-lg font-bold text-gray-900 dark:text-white mb-4 px-1">
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionTitle}>
           Notifications
         </Text>
 
@@ -365,8 +358,8 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
       </View>
 
       {/* Privacy & Security */}
-      <View className="mb-6">
-        <Text className="text-lg font-bold text-gray-900 dark:text-white mb-4 px-1">
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionTitle}>
           Privacy & Security
         </Text>
 
@@ -393,8 +386,8 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
       </View>
 
       {/* Data Management */}
-      <View className="mb-6">
-        <Text className="text-lg font-bold text-gray-900 dark:text-white mb-4 px-1">
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionTitle}>
           Data Management
         </Text>
 
@@ -426,8 +419,8 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
       </View>
 
       {/* About */}
-      <View className="mb-6">
-        <Text className="text-lg font-bold text-gray-900 dark:text-white mb-4 px-1">
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionTitle}>
           About
         </Text>
 
@@ -447,24 +440,24 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
       </View>
 
       {/* Danger Zone */}
-      <View className="mb-6">
-        <Text className="text-lg font-bold text-red-600 dark:text-red-400 mb-4 px-1">
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionTitleDanger}>
           Danger Zone
         </Text>
 
         <TouchableOpacity
           onPress={onDeleteAccount}
-          className="flex-row items-center px-4 py-4 bg-red-50 dark:bg-red-900/20 rounded-xl mb-3 border border-red-200 dark:border-red-800"
+          style={styles.dangerButton}
           activeOpacity={0.7}
         >
-          <View className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 items-center justify-center mr-4">
+          <View style={styles.dangerIconContainer}>
             <Ionicons name="trash" size={20} color="#DC2626" />
           </View>
-          <View className="flex-1">
-            <Text className="text-base font-semibold text-red-600 dark:text-red-400">
+          <View style={styles.dangerTextContainer}>
+            <Text style={styles.dangerTitle}>
               Delete Account
             </Text>
-            <Text className="text-sm text-red-500 dark:text-red-400/80 mt-1">
+            <Text style={styles.dangerSubtitle}>
               Permanently delete your account
             </Text>
           </View>

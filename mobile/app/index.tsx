@@ -10,59 +10,62 @@ import { Redirect, useRouter } from "expo-router";
 import { useAppSelector } from "../hooks/useRedux";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import FeatureCard from "@/components/dashboard/FeatureCard";
+import FeatureCard from "@/components/onboarding/FeatureCard";
+import LandingStyles from "@/styles/onboarding/landingStyles";
 
 export default function LandingPage() {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const styles = LandingStyles();
 
   // Redirect authenticated users to home
   if (isAuthenticated) {
-    return <Redirect href="/(tabs)/home" />;
+    return <Redirect href="/(tabs)/dashboard" />;
   }
 
   return (
     <LinearGradient
-      colors={["#1e3a8a", "#3b82f6", "#60a5fa"]}
-      className="flex-1"
+      colors={["#0f172a", "#1e3a8a", "#3b82f6"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      style={styles.container}
     >
-      <StatusBar barStyle="light-content" backgroundColor="#1e3a8a" />
+      <StatusBar barStyle="light-content" backgroundColor="#0f172a" />
       <View style={{ height: insets.top }} />
       <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-          paddingBottom: 30 + insets.bottom,
-        }}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: 20 + insets.bottom }
+        ]}
+        showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View className="pt-20 px-6">
-          <View className="items-center mb-8">
-            <View>
-              <Image
-                source={require("../assets/fit-verse-logo-no-bg.png")}
-                style={{ width: 120, height: 120 }}
-                resizeMode="contain"
-              />
-            </View>
-            <Text className="text-5xl font-bold text-white mb-2">
-              FitVerse
-            </Text>
-            <Text className="text-xl text-blue-100 text-center">
-              Your Complete Fitness Universe
-            </Text>
+        <View style={styles.headerSection}>
+          <View style={styles.logoContainer}>
+            <Image
+              source={require("../assets/fit-verse-logo-no-bg.png")}
+              style={styles.logo}
+              resizeMode="contain"
+            />
           </View>
+          <Text style={styles.title}>
+            FitVerse
+          </Text>
+          <Text style={styles.subtitle}>
+            Your Complete Fitness Universe
+          </Text>
         </View>
 
         {/* Hero Section */}
-        <View className="px-6 mt-8">
-          <Text className="text-white text-lg text-center mb-12 leading-relaxed">
+        <View style={styles.heroSection}>
+          <Text style={styles.heroText}>
             Transform your fitness journey with personalized workouts, nutrition
             tracking, and a supportive community.
           </Text>
 
           {/* Features Grid */}
-          <View className="space-y-4 mb-12 gap-5">
+          <View style={styles.featuresContainer}>
             <FeatureCard
               icon="barbell"
               title="Custom Workouts"
@@ -87,28 +90,28 @@ export default function LandingPage() {
         </View>
 
         {/* CTA Buttons */}
-        <View className="px-6 pb-12">
+        <View style={styles.ctaSection}>
           <TouchableOpacity
             onPress={() => router.push("/register")}
-            className="bg-white rounded-full py-4 mb-4 shadow-lg"
+            style={styles.primaryButton}
             activeOpacity={0.8}
           >
-            <Text className="text-blue-600 text-center text-lg font-bold">
+            <Text style={styles.primaryButtonText}>
               Get Started
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => router.push("/login")}
-            className="bg-white/20 rounded-full py-4 border-2 border-white"
+            style={styles.secondaryButton}
             activeOpacity={0.8}
           >
-            <Text className="text-white text-center text-lg font-semibold">
+            <Text style={styles.secondaryButtonText}>
               Sign In
             </Text>
           </TouchableOpacity>
 
-          <Text className="text-blue-100 text-center mt-6 text-sm">
+          <Text style={styles.footerText}>
             Join thousands of users achieving their fitness goals
           </Text>
         </View>

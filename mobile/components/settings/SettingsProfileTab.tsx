@@ -18,6 +18,7 @@ import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import SettingsProfileTabStyles from '@/styles/settings/SettingsProfileTabStyles';
 
 interface SettingsProfileTabProps {
   onLogout: () => void;
@@ -26,6 +27,8 @@ interface SettingsProfileTabProps {
 const SettingsProfileTab: React.FC<SettingsProfileTabProps> = ({ onLogout }) => {
   const dispatch = useAppDispatch();
   const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const styles = SettingsProfileTabStyles(isDark);
   const { userInfo } = useAppSelector((state) => state.auth);
 
   const [updateUserProfile, { isLoading: isUpdating }] = useUpdateUserProfileMutation();
@@ -192,157 +195,107 @@ const SettingsProfileTab: React.FC<SettingsProfileTabProps> = ({ onLogout }) => 
   };
 
   return (
-    <View className="pb-6">
+    <View style={styles.container}>
       {/* Profile Photo */}
-      <View className="items-center mb-8 mt-2">
+      <View style={styles.photoSection}>
         <TouchableOpacity onPress={handlePickImage} activeOpacity={0.8} disabled={isUploadingPhoto}>
-          <View className="relative">
+          <View style={styles.imageContainer}>
             {photoUri ? (
               <Image
                 source={{ uri: photoUri }}
-                className="w-36 h-36 rounded-full border-4 border-white dark:border-gray-700 shadow-lg"
+                style={styles.profileImage}
               />
             ) : (
-              <View className="w-36 h-36 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 items-center justify-center border-4 border-white dark:border-gray-700 shadow-lg">
+              <View style={styles.profilePlaceholder}>
                 <Ionicons
                   name="person"
                   size={70}
-                  color={colorScheme === 'dark' ? '#9CA3AF' : '#6B7280'}
+                  color={isDark ? '#9CA3AF' : '#6B7280'}
                 />
               </View>
             )}
             {isUploadingPhoto && (
-              <View className="absolute inset-0 w-36 h-36 rounded-full bg-black/50 items-center justify-center">
+              <View style={styles.uploadingOverlay}>
                 <ActivityIndicator size="large" color="white" />
               </View>
             )}
-            <View className="absolute bottom-0 right-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 items-center justify-center border-4 border-white dark:border-gray-900 shadow-lg">
+            <View style={styles.cameraButton}>
               <Ionicons name="camera" size={22} color="white" />
             </View>
           </View>
         </TouchableOpacity>
-        <Text className="text-xl font-bold text-gray-900 dark:text-white mt-5">
+        <Text style={styles.profileName}>
           {userInfo?.name || 'Your Name'}
         </Text>
-        <Text className="text-base text-gray-500 dark:text-gray-400 mt-1">
+        <Text style={styles.profileUsername}>
           @{userInfo?.username || 'username'}
         </Text>
       </View>
 
       {/* Basic Info */}
-      <View className="mb-8">
-        <View className="flex-row items-center mb-5">
-          <View className="w-1 h-6 bg-blue-600 rounded-full mr-3" />
-          <Text className="text-xl font-bold text-gray-900 dark:text-white">
+      <View style={styles.sectionContainer}>
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionIndicatorBlue} />
+          <Text style={styles.sectionTitle}>
             Basic Information
           </Text>
         </View>
 
-        <View className="mb-5">
-          <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>
             Full Name
           </Text>
           <TextInput
             value={name}
             onChangeText={setName}
             placeholder="Enter your full name"
-            placeholderTextColor={colorScheme === 'dark' ? '#6B7280' : '#9CA3AF'}
-            style={{
-              paddingHorizontal: 20,
-              paddingVertical: 16,
-              backgroundColor: colorScheme === 'dark' ? '#1F2937' : '#FFFFFF',
-              borderRadius: 16,
-              fontSize: 16,
-              color: colorScheme === 'dark' ? '#FFFFFF' : '#111827',
-              borderWidth: 2,
-              borderColor: colorScheme === 'dark' ? '#374151' : '#E5E7EB',
-            }}
+            placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
+            style={styles.textInput}
           />
         </View>
 
-        <View className="mb-5">
-          <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>
             Username
           </Text>
           <TextInput
             value={username}
             onChangeText={setUsername}
-            placeholderTextColor={colorScheme === 'dark' ? '#6B7280' : '#9CA3AF'}
-            style={{
-              paddingHorizontal: 20,
-              paddingVertical: 16,
-              backgroundColor: colorScheme === 'dark' ? '#1F2937' : '#FFFFFF',
-              borderRadius: 16,
-              fontSize: 16,
-              color: colorScheme === 'dark' ? '#FFFFFF' : '#111827',
-              borderWidth: 2,
-              borderColor: colorScheme === 'dark' ? '#374151' : '#E5E7EB',
-            }}
+            placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
+            style={styles.textInput}
           />
         </View>
 
-        <View className="mb-5">
-          <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>
             Email
           </Text>
           <TextInput
             value={email}
             onChangeText={setEmail}
             placeholder="Enter your email"
-            placeholderTextColor={colorScheme === 'dark' ? '#6B7280' : '#9CA3AF'}
+            placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
             keyboardType="email-address"
-            style={{
-              paddingHorizontal: 20,
-              paddingVertical: 16,
-              backgroundColor: colorScheme === 'dark' ? '#1F2937' : '#FFFFFF',
-              borderRadius: 16,
-              fontSize: 16,
-              color: colorScheme === 'dark' ? '#FFFFFF' : '#111827',
-              borderWidth: 2,
-              borderColor: colorScheme === 'dark' ? '#374151' : '#E5E7EB',
-            }}
+            style={styles.textInput}
           />
         </View>
 
         <View>
-          <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
+          <Text style={styles.inputLabel}>
             Date of Birth
           </Text>
           <TouchableOpacity
             onPress={() => setShowDatePicker(true)}
             activeOpacity={0.7}
           >
-            <View
-              style={{
-                paddingHorizontal: 20,
-                paddingVertical: 16,
-                backgroundColor: colorScheme === 'dark' ? '#1F2937' : '#FFFFFF',
-                borderRadius: 16,
-                borderWidth: 2,
-                borderColor: colorScheme === 'dark' ? '#374151' : '#E5E7EB',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: dob
-                    ? colorScheme === 'dark'
-                      ? '#FFFFFF'
-                      : '#111827'
-                    : colorScheme === 'dark'
-                      ? '#6B7280'
-                      : '#9CA3AF',
-                }}
-              >
+            <View style={styles.dateButton}>
+              <Text style={dob ? styles.dateButtonText : styles.dateButtonPlaceholder}>
                 {dob ? formatDateForDisplay(dob) : 'Select date of birth'}
               </Text>
               <Ionicons
                 name="calendar-outline"
                 size={20}
-                color={colorScheme === 'dark' ? '#9CA3AF' : '#6B7280'}
+                color={isDark ? '#9CA3AF' : '#6B7280'}
               />
             </View>
           </TouchableOpacity>
@@ -359,82 +312,58 @@ const SettingsProfileTab: React.FC<SettingsProfileTabProps> = ({ onLogout }) => 
       </View>
 
       {/* Physical Info */}
-      <View className="mb-8">
-        <View className="flex-row items-center mb-5">
-          <View className="w-1 h-6 bg-purple-600 rounded-full mr-3" />
-          <Text className="text-xl font-bold text-gray-900 dark:text-white">
+      <View style={styles.sectionContainer}>
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionIndicatorPurple} />
+          <Text style={styles.sectionTitle}>
             Physical Information
           </Text>
         </View>
 
-        <View className="flex-row gap-4 mb-5">
-          <View className="flex-1">
-            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
+        <View style={styles.rowContainer}>
+          <View style={styles.halfInputContainer}>
+            <Text style={styles.inputLabel}>
               Height (cm)
             </Text>
             <TextInput
               value={height}
               onChangeText={setHeight}
               placeholder="0"
-              placeholderTextColor={colorScheme === 'dark' ? '#6B7280' : '#9CA3AF'}
+              placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
               keyboardType="numeric"
-              style={{
-                paddingHorizontal: 20,
-                paddingVertical: 16,
-                backgroundColor: colorScheme === 'dark' ? '#1F2937' : '#FFFFFF',
-                borderRadius: 16,
-                fontSize: 16,
-                color: colorScheme === 'dark' ? '#FFFFFF' : '#111827',
-                borderWidth: 2,
-                borderColor: colorScheme === 'dark' ? '#374151' : '#E5E7EB',
-              }}
+              style={styles.textInput}
             />
           </View>
 
-          <View className="flex-1">
-            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
+          <View style={styles.halfInputContainer}>
+            <Text style={styles.inputLabel}>
               Weight (lbs)
             </Text>
             <TextInput
               value={weight}
               onChangeText={setWeight}
               placeholder="0"
-              placeholderTextColor={colorScheme === 'dark' ? '#6B7280' : '#9CA3AF'}
+              placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
               keyboardType="numeric"
-              style={{
-                paddingHorizontal: 20,
-                paddingVertical: 16,
-                backgroundColor: colorScheme === 'dark' ? '#1F2937' : '#FFFFFF',
-                borderRadius: 16,
-                fontSize: 16,
-                color: colorScheme === 'dark' ? '#FFFFFF' : '#111827',
-                borderWidth: 2,
-                borderColor: colorScheme === 'dark' ? '#374151' : '#E5E7EB',
-              }}
+              style={styles.textInput}
             />
           </View>
         </View>
 
-        <View className="mb-5">
-          <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>
             Gender
           </Text>
-          <View className="flex-row gap-3">
+          <View style={styles.genderButtonsContainer}>
             {['male', 'female', 'other'].map((g) => (
               <TouchableOpacity
                 key={g}
                 onPress={() => setGender(g)}
-                className={`flex-1 px-4 py-4 rounded-2xl border-2 ${
-                  gender === g
-                    ? 'bg-blue-600 border-blue-600'
-                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
-                }`}
+                style={gender === g ? styles.genderButtonActive : styles.genderButton}
                 activeOpacity={0.7}
               >
                 <Text
-                  className={`text-center font-semibold text-base capitalize ${
-                    gender === g ? 'text-white' : 'text-gray-900 dark:text-white'
-                  }`}
+                  style={gender === g ? styles.genderButtonTextActive : styles.genderButtonText}
                 >
                   {g}
                 </Text>
@@ -444,7 +373,7 @@ const SettingsProfileTab: React.FC<SettingsProfileTabProps> = ({ onLogout }) => 
         </View>
 
         <View>
-          <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
+          <Text style={styles.inputLabel}>
             Fitness Goal
           </Text>
           {[
@@ -455,19 +384,14 @@ const SettingsProfileTab: React.FC<SettingsProfileTabProps> = ({ onLogout }) => 
             <TouchableOpacity
               key={g.value}
               onPress={() => setGoal(g.value)}
-              className={`flex-row items-center px-5 py-4 rounded-2xl border-2 ${
-                index > 0 ? 'mt-3' : ''
-              } ${
-                goal === g.value
-                  ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-600'
-                  : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
-              }`}
+              style={[
+                goal === g.value ? styles.goalButtonActive : styles.goalButton,
+                index > 0 && styles.goalButtonSpacing
+              ]}
               activeOpacity={0.7}
             >
               <View
-                className={`w-10 h-10 rounded-full items-center justify-center ${
-                  goal === g.value ? 'bg-blue-600' : 'bg-gray-100 dark:bg-gray-700'
-                }`}
+                style={goal === g.value ? styles.goalIconContainerActive : styles.goalIconContainer}
               >
                 <Ionicons
                   name={g.icon as any}
@@ -475,18 +399,14 @@ const SettingsProfileTab: React.FC<SettingsProfileTabProps> = ({ onLogout }) => 
                   color={
                     goal === g.value
                       ? '#FFFFFF'
-                      : colorScheme === 'dark'
+                      : isDark
                         ? '#9CA3AF'
                         : '#6B7280'
                   }
                 />
               </View>
               <Text
-                className={`ml-4 font-semibold text-base flex-1 ${
-                  goal === g.value
-                    ? 'text-blue-600 dark:text-blue-400'
-                    : 'text-gray-900 dark:text-white'
-                }`}
+                style={goal === g.value ? styles.goalButtonTextActive : styles.goalButtonText}
               >
                 {g.label}
               </Text>
@@ -499,48 +419,38 @@ const SettingsProfileTab: React.FC<SettingsProfileTabProps> = ({ onLogout }) => 
       </View>
 
       {/* Update Button */}
-      <TouchableOpacity
-        onPress={handleUpdateProfile}
-        disabled={isUpdating}
-        activeOpacity={0.8}
-        className="mb-6"
-      >
-        <LinearGradient
-          colors={['#3B82F6', '#8B5CF6']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={{
-            paddingVertical: 18,
-            paddingHorizontal: 24,
-            borderRadius: 16,
-            shadowColor: '#3B82F6',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 8,
-            elevation: 6,
-          }}
+      <View style={styles.updateButton}>
+        <TouchableOpacity
+          onPress={handleUpdateProfile}
+          disabled={isUpdating}
+          activeOpacity={0.8}
         >
-          <View className="flex-row items-center justify-center">
+          <LinearGradient
+            colors={['#3B82F6', '#8B5CF6']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.updateButtonGradient}
+          >
             {isUpdating ? (
               <ActivityIndicator color="white" size="small" />
             ) : (
               <>
                 <Ionicons name="save" size={22} color="white" />
-                <Text className="text-white font-bold text-lg ml-3">Update Profile</Text>
+                <Text style={styles.updateButtonText}>Update Profile</Text>
               </>
             )}
-          </View>
-        </LinearGradient>
-      </TouchableOpacity>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
 
       {/* Logout Button */}
       <TouchableOpacity
         onPress={onLogout}
-        className="flex-row items-center justify-center bg-red-600 px-6 py-4 rounded-xl"
+        style={styles.logoutButton}
         activeOpacity={0.8}
       >
         <Ionicons name="log-out" size={20} color="white" />
-        <Text className="text-white font-bold text-base ml-2">Logout</Text>
+        <Text style={styles.logoutButtonText}>Logout</Text>
       </TouchableOpacity>
     </View>
   );

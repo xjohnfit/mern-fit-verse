@@ -18,6 +18,7 @@ import { setCredentials } from '../slices/authSlice';
 import { apiSlice } from '../slices/apiSlice';
 import { useAppDispatch } from '../hooks/useRedux';
 import { Ionicons } from '@expo/vector-icons';
+import LoginStyles from '@/styles/auth/loginStyles';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
@@ -28,6 +29,7 @@ export default function LoginScreen() {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const insets = useSafeAreaInsets();
+    const styles = LoginStyles();
 
     const [login, { isLoading }] = useLoginMutation();
 
@@ -43,7 +45,7 @@ export default function LoginScreen() {
             dispatch(apiSlice.util.resetApiState());
             dispatch(setCredentials({ ...res }));
             // Navigate to main app
-            router.replace('/(tabs)/home' as any);
+            router.replace('/(tabs)/dashboard' as any);
         } catch (err: any) {
             console.error('Login error:', err);
             const errorMessage = err?.data?.message || err?.message || 'Login failed. Please try again.';
@@ -70,22 +72,22 @@ export default function LoginScreen() {
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
                 >
-                    <View style={{ flex: 1, justifyContent: 'center', paddingHorizontal: 32, paddingVertical: 64 }}>
+                    <View style={styles.container}>
                         {/* Header */}
-                        <View className="mb-12">
-                            <Text className="text-4xl font-bold text-white mb-3">
+                        <View style={styles.headerContainer}>
+                            <Text style={styles.headerTitle}>
                                 Welcome Back
                             </Text>
-                            <Text className="text-lg text-blue-100">
+                            <Text style={styles.headerSubtitle}>
                                 Sign in to continue your fitness journey
                             </Text>
                         </View>
 
                         {/* Form */}
-                        <View>
+                        <View style={styles.formContainer}>
                             {/* Email Field */}
-                            <View className="mb-6">
-                                <Text className="text-sm font-semibold text-white mb-3">
+                            <View style={styles.fieldContainer}>
+                                <Text style={styles.fieldLabel}>
                                     Email Address
                                 </Text>
                                 <TextInput
@@ -98,26 +100,16 @@ export default function LoginScreen() {
                                     autoComplete="off"
                                     multiline={false}
                                     textAlignVertical="center"
-                                    style={{
-                                        height: 56,
-                                        width: '100%',
-                                        paddingHorizontal: 20,
-                                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                                        borderWidth: 1,
-                                        borderColor: 'rgba(255, 255, 255, 0.3)',
-                                        borderRadius: 12,
-                                        color: '#FFFFFF',
-                                        fontSize: 16,
-                                    }}
+                                    style={styles.textInput}
                                 />
                             </View>
 
                             {/* Password Field */}
-                            <View className="mb-6">
-                                <Text className="text-sm font-semibold text-white mb-3">
+                            <View style={styles.fieldContainer}>
+                                <Text style={styles.fieldLabel}>
                                     Password
                                 </Text>
-                                <View className="relative">
+                                <View style={styles.passwordContainer}>
                                     <TextInput
                                         value={password}
                                         onChangeText={setPassword}
@@ -129,50 +121,37 @@ export default function LoginScreen() {
                                         textContentType="oneTimeCode"
                                         multiline={false}
                                         textAlignVertical="center"
-                                        style={{
-                                            height: 56,
-                                            width: '100%',
-                                            paddingHorizontal: 20,
-                                            paddingRight: 48,
-                                            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                                            borderWidth: 1,
-                                            borderColor: 'rgba(255, 255, 255, 0.3)',
-                                            borderRadius: 12,
-                                            color: '#FFFFFF',
-                                            fontSize: 16,
-                                        }}
+                                        style={styles.passwordInput}
                                     />
                                     <TouchableOpacity
                                         onPress={() => setShowPassword(!showPassword)}
-                                        style={{ position: 'absolute', right: 16, top: 16 }}
+                                        style={styles.passwordToggle}
                                     >
-                                        <Text className="text-white text-xl">
-                                            {showPassword ? <Ionicons name="eye" size={24} color="white" /> : <Ionicons name="eye-off" size={24} color="white" />}
-                                        </Text>
+                                        {showPassword ? <Ionicons name="eye" size={24} color="white" /> : <Ionicons name="eye-off" size={24} color="white" />}
                                     </TouchableOpacity>
                                 </View>
                             </View>
 
                             {/* Remember Me & Forgot Password */}
-                            <View className="flex-row justify-between items-center mb-8">
+                            <View style={styles.rememberForgotRow}>
                                 <TouchableOpacity
                                     onPress={() => setRememberMe(!rememberMe)}
-                                    className="flex-row items-center py-2"
+                                    style={styles.rememberMeContainer}
                                 >
                                     <View
-                                        className={`w-5 h-5 border-2 rounded ${rememberMe ? 'bg-white border-white' : 'border-white/50'} mr-3`}
+                                        style={[styles.checkbox, rememberMe ? styles.checkboxChecked : styles.checkboxUnchecked]}
                                     >
                                         {rememberMe && (
                                             <Ionicons name="checkmark" size={14} color="#3b82f6" />
                                         )}
                                     </View>
-                                    <Text className="text-sm text-white">
+                                    <Text style={styles.rememberText}>
                                         Remember me
                                     </Text>
                                 </TouchableOpacity>
 
-                                <TouchableOpacity className="py-2">
-                                    <Text className="text-sm text-white font-medium">
+                                <TouchableOpacity style={styles.forgotButton}>
+                                    <Text style={styles.forgotText}>
                                         Forgot password?
                                     </Text>
                                 </TouchableOpacity>
@@ -182,12 +161,12 @@ export default function LoginScreen() {
                             <TouchableOpacity
                                 onPress={handleSubmit}
                                 disabled={isLoading}
-                                className={`w-full py-4 rounded-xl ${isLoading ? 'bg-gray-400' : 'bg-white'} shadow-lg mb-8`}
+                                style={[styles.submitButton, isLoading ? styles.submitButtonDisabled : styles.submitButtonActive]}
                             >
                                 {isLoading ? (
-                                    <ActivityIndicator color="white" />
+                                    <ActivityIndicator color="#2563eb" />
                                 ) : (
-                                    <Text className="text-blue-600 text-center font-semibold text-lg">
+                                    <Text style={styles.submitButtonText}>
                                         Sign In
                                     </Text>
                                 )}
@@ -195,35 +174,35 @@ export default function LoginScreen() {
                         </View>
 
                         {/* Divider */}
-                        <View className="my-10 flex-row items-center">
-                            <View className="flex-1 h-px bg-white/30" />
-                            <Text className="mx-5 text-white text-sm">
+                        <View style={styles.dividerContainer}>
+                            <View style={styles.dividerLine} />
+                            <Text style={styles.dividerText}>
                                 Or continue with
                             </Text>
-                            <View className="flex-1 h-px bg-white/30" />
+                            <View style={styles.dividerLine} />
                         </View>
 
                         {/* Social Login Buttons */}
-                        <View className="flex-row justify-center mb-10">
-                            <TouchableOpacity className="flex-1 py-4 border border-white/50 rounded-xl mr-3">
-                                <Text className="text-center text-white font-medium">
+                        <View style={styles.socialButtonsRow}>
+                            <TouchableOpacity style={[styles.socialButton, styles.socialButtonLeft]}>
+                                <Text style={styles.socialButtonText}>
                                     Google
                                 </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity className="flex-1 py-4 border border-white/50 rounded-xl ml-3">
-                                <Text className="text-center text-white font-medium">
+                            <TouchableOpacity style={[styles.socialButton, styles.socialButtonRight]}>
+                                <Text style={styles.socialButtonText}>
                                     Facebook
                                 </Text>
                             </TouchableOpacity>
                         </View>
 
                         {/* Register Link */}
-                        <View className="flex-row justify-center pt-4">
-                            <Text className="text-blue-100 text-base">
+                        <View style={styles.registerLinkContainer}>
+                            <Text style={styles.registerText}>
                                 Don't have an account?{' '}
                             </Text>
                             <TouchableOpacity onPress={() => router.push('/register')}>
-                                <Text className="text-white font-semibold text-base">
+                                <Text style={styles.registerLink}>
                                     Sign Up
                                 </Text>
                             </TouchableOpacity>

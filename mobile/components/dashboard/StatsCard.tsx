@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
+import statsCardStyles from '../../styles/dashboard/StatsCard';
 
 interface StatsCardProps {
     icon: keyof typeof Ionicons.glyphMap;
@@ -9,7 +10,6 @@ interface StatsCardProps {
     label: string;
     value: string | number;
     subtitle?: string;
-    className?: string;
 }
 
 export default function StatsCard({
@@ -19,17 +19,16 @@ export default function StatsCard({
     label,
     value,
     subtitle,
-    className = '',
 }: StatsCardProps) {
     return (
-        <View className={`rounded-2xl overflow-hidden ${className}`} style={{ backgroundColor: bgColor }}>
-            <BlurView intensity={20} tint="light" className="p-4">
-                <View className="flex-row items-center justify-between mb-2">
+        <View style={[statsCardStyles.container, { backgroundColor: bgColor }]}>
+            <BlurView intensity={20} tint="light" style={statsCardStyles.blurView}>
+                <View style={statsCardStyles.header}>
                     <Ionicons name={icon} size={24} color={iconColor} />
                 </View>
-                <Text className="text-white/70 text-xs mb-1">{label}</Text>
-                <Text className="text-white text-2xl font-bold mb-1">{value}</Text>
-                {subtitle && <Text className="text-white/60 text-xs">{subtitle}</Text>}
+                <Text style={statsCardStyles.label}>{label}</Text>
+                <Text style={statsCardStyles.value}>{value}</Text>
+                {subtitle && <Text style={statsCardStyles.subtitle}>{subtitle}</Text>}
             </BlurView>
         </View>
     );

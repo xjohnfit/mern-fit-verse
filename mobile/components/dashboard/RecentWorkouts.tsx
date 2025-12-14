@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import WorkoutDetailModal from './WorkoutDetailModal';
 import { useDeleteWorkoutMutation } from '@/slices/workoutApiSlice';
+import recentWorkoutsStyles from '../../styles/dashboard/RecentWorkouts';
 
 interface Exercise {
     name: string;
@@ -103,15 +104,15 @@ export default function RecentWorkouts({ workouts, isLoading }: RecentWorkoutsPr
     if (isLoading) {
         return (
             <View>
-                <View className="flex-row items-center mb-4">
+                <View style={recentWorkoutsStyles.headerLeft}>
                     <Ionicons name="time" size={22} color="#10B981" style={{ marginRight: 8 }} />
-                    <Text className="text-xl font-bold text-gray-900 dark:text-white">
+                    <Text style={isDark ? recentWorkoutsStyles.headerTitleDark : recentWorkoutsStyles.headerTitle}>
                         Recent Workouts
                     </Text>
                 </View>
-                <View className="bg-white dark:bg-gray-800 rounded-2xl p-8 items-center justify-center">
+                <View style={isDark ? recentWorkoutsStyles.loadingContainerDark : recentWorkoutsStyles.loadingContainer}>
                     <ActivityIndicator size="large" color="#10B981" />
-                    <Text className="text-gray-500 dark:text-gray-400 mt-3">
+                    <Text style={isDark ? recentWorkoutsStyles.loadingTextDark : recentWorkoutsStyles.loadingText}>
                         Loading workouts...
                     </Text>
                 </View>
@@ -124,20 +125,20 @@ export default function RecentWorkouts({ workouts, isLoading }: RecentWorkoutsPr
     if (recentWorkouts.length === 0) {
         return (
             <View>
-                <View className="flex-row items-center mb-4">
+                <View style={recentWorkoutsStyles.headerLeft}>
                     <Ionicons name="time" size={22} color="#10B981" style={{ marginRight: 8 }} />
-                    <Text className="text-xl font-bold text-gray-900 dark:text-white">
+                    <Text style={isDark ? recentWorkoutsStyles.headerTitleDark : recentWorkoutsStyles.headerTitle}>
                         Recent Workouts
                     </Text>
                 </View>
-                <View className="bg-white dark:bg-gray-800 rounded-2xl p-8 items-center">
-                    <View className="bg-gray-100 dark:bg-gray-700 rounded-full p-4 mb-3">
+                <View style={isDark ? recentWorkoutsStyles.emptyContainerDark : recentWorkoutsStyles.emptyContainer}>
+                    <View style={isDark ? recentWorkoutsStyles.emptyIconWrapperDark : recentWorkoutsStyles.emptyIconWrapper}>
                         <Ionicons name="barbell-outline" size={40} color="#9CA3AF" />
                     </View>
-                    <Text className="text-gray-900 dark:text-white font-semibold text-base mb-1">
+                    <Text style={isDark ? recentWorkoutsStyles.emptyTitleDark : recentWorkoutsStyles.emptyTitle}>
                         No workouts yet
                     </Text>
-                    <Text className="text-gray-500 dark:text-gray-400 text-center text-sm">
+                    <Text style={isDark ? recentWorkoutsStyles.emptySubtitleDark : recentWorkoutsStyles.emptySubtitle}>
                         Start your fitness journey today!
                     </Text>
                 </View>
@@ -147,25 +148,25 @@ export default function RecentWorkouts({ workouts, isLoading }: RecentWorkoutsPr
 
     return (
         <View>
-            <View className="flex-row items-center justify-between mb-4">
-                <View className="flex-row items-center">
+            <View style={recentWorkoutsStyles.headerRow}>
+                <View style={recentWorkoutsStyles.headerLeft}>
                     <Ionicons name="time" size={22} color="#10B981" style={{ marginRight: 8 }} />
-                    <Text className="text-xl font-bold text-gray-900 dark:text-white">
+                    <Text style={isDark ? recentWorkoutsStyles.headerTitleDark : recentWorkoutsStyles.headerTitle}>
                         Recent Workouts
                     </Text>
                 </View>
-                <View className="flex-row items-center gap-2">
+                <View style={recentWorkoutsStyles.headerRight}>
                     <TouchableOpacity
                         onPress={() => setShowAllModal(true)}
-                        className="ml-2"
+                        style={recentWorkoutsStyles.seeAllButton}
                     >
-                        <Text className="text-sm text-blue-600 dark:text-blue-400 font-semibold">
+                        <Text style={isDark ? recentWorkoutsStyles.seeAllTextDark : recentWorkoutsStyles.seeAllText}>
                             See All
                         </Text>
                     </TouchableOpacity>
                 </View>
             </View>
-            <View className="gap-4">
+            <View style={recentWorkoutsStyles.workoutsContainer}>
                 {recentWorkouts.map((workout) => {
                     const isTemplate = workout.workoutType === 'template' && workout.templateName;
                     const stats = calculateStats(workout);
@@ -175,21 +176,21 @@ export default function RecentWorkouts({ workouts, isLoading }: RecentWorkoutsPr
                             key={workout._id}
                             activeOpacity={0.7}
                             onPress={() => setSelectedWorkout(workout)}
-                            className="bg-white dark:bg-gray-800 rounded-2xl shadow-md"
+                            style={isDark ? recentWorkoutsStyles.workoutCardDark : recentWorkoutsStyles.workoutCard}
                         >
                             {/* Header */}
-                            <View className="p-4 border-b border-gray-200 dark:border-gray-700">
+                            <View style={isDark ? recentWorkoutsStyles.workoutHeaderDark : recentWorkoutsStyles.workoutHeader}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                     <View>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <View style={recentWorkoutsStyles.workoutTypeRow}>
                                             <Ionicons name={isTemplate ? "albums" : "flash"} size={14} color={isTemplate ? "#a855f7" : "#3b82f6"} />
-                                            <Text className="text-xl text-gray-600 dark:text-gray-400 ml-1 font-medium">
+                                            <Text style={isDark ? recentWorkoutsStyles.workoutTypeNameDark : recentWorkoutsStyles.workoutTypeName}>
                                                 {isTemplate ? workout.templateName : 'Freestyle Workout'}
                                             </Text>
                                         </View>
                                     </View>
-                                    <View className="bg-gray-100 dark:bg-gray-700 px-2.5 py-1.5 rounded-lg">
-                                        <Text className="text-xs text-gray-600 dark:text-gray-400 font-semibold">
+                                    <View style={isDark ? recentWorkoutsStyles.dateBadgeDark : recentWorkoutsStyles.dateBadge}>
+                                        <Text style={isDark ? recentWorkoutsStyles.dateTextDark : recentWorkoutsStyles.dateText}>
                                             {formatDate(workout.createdAt)}
                                         </Text>
                                     </View>
@@ -197,65 +198,65 @@ export default function RecentWorkouts({ workouts, isLoading }: RecentWorkoutsPr
                             </View>
 
                             {/* Stats Grid */}
-                            <View className="p-4">
-                                <View style={{ flexDirection: 'row', marginBottom: 12 }}>
+                            <View style={recentWorkoutsStyles.statsSection}>
+                                <View style={recentWorkoutsStyles.statsRow}>
                                     {/* Duration */}
-                                    <View style={{ flex: 1, marginRight: 8 }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                                    <View style={recentWorkoutsStyles.statItem}>
+                                        <View style={recentWorkoutsStyles.statLabel}>
                                             <Ionicons name="time-outline" size={16} color="#3b82f6" />
-                                            <Text className="text-xs text-gray-600 dark:text-gray-400 ml-1 font-semibold">
+                                            <Text style={isDark ? recentWorkoutsStyles.statLabelTextDark : recentWorkoutsStyles.statLabelText}>
                                                 DURATION
                                             </Text>
                                         </View>
-                                        <Text className="text-2xl font-bold text-gray-900 dark:text-white">
+                                        <Text style={isDark ? recentWorkoutsStyles.statValueDark : recentWorkoutsStyles.statValue}>
                                             {workout.duration ? formatDuration(workout.duration) : 'N/A'}
                                         </Text>
                                     </View>
 
                                     {/* Exercises */}
-                                    <View style={{ flex: 1, marginLeft: 8 }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                                    <View style={recentWorkoutsStyles.statItemLeft}>
+                                        <View style={recentWorkoutsStyles.statLabel}>
                                             <Ionicons name="barbell-outline" size={16} color="#10b981" />
-                                            <Text className="text-xs text-gray-600 dark:text-gray-400 ml-1 font-semibold">
+                                            <Text style={isDark ? recentWorkoutsStyles.statLabelTextDark : recentWorkoutsStyles.statLabelText}>
                                                 EXERCISES
                                             </Text>
                                         </View>
-                                        <Text className="text-2xl font-bold text-gray-900 dark:text-white">
+                                        <Text style={isDark ? recentWorkoutsStyles.statValueDark : recentWorkoutsStyles.statValue}>
                                             {workout.exercises?.length || 0}
                                         </Text>
                                     </View>
                                 </View>
 
-                                <View style={{ flexDirection: 'row', marginBottom: 12 }}>
+                                <View style={recentWorkoutsStyles.statsRow}>
                                     {/* Sets */}
-                                    <View style={{ flex: 1, marginRight: 8 }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                                    <View style={recentWorkoutsStyles.statItem}>
+                                        <View style={recentWorkoutsStyles.statLabel}>
                                             <Ionicons name="checkmark-circle-outline" size={16} color="#f59e0b" />
-                                            <Text className="text-xs text-gray-600 dark:text-gray-400 ml-1 font-semibold">
+                                            <Text style={isDark ? recentWorkoutsStyles.statLabelTextDark : recentWorkoutsStyles.statLabelText}>
                                                 SETS
                                             </Text>
                                         </View>
-                                        <Text className="text-2xl font-bold text-gray-900 dark:text-white">
+                                        <Text style={isDark ? recentWorkoutsStyles.statValueDark : recentWorkoutsStyles.statValue}>
                                             {stats.completedSets}/{stats.totalSets}
                                         </Text>
                                     </View>
 
                                     {/* Volume */}
-                                    <View style={{ flex: 1, marginLeft: 8 }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                                    <View style={recentWorkoutsStyles.statItemLeft}>
+                                        <View style={recentWorkoutsStyles.statLabel}>
                                             <Ionicons name="analytics-outline" size={16} color="#8b5cf6" />
-                                            <Text className="text-xs text-gray-600 dark:text-gray-400 ml-1 font-semibold">
+                                            <Text style={isDark ? recentWorkoutsStyles.statLabelTextDark : recentWorkoutsStyles.statLabelText}>
                                                 VOLUME
                                             </Text>
                                         </View>
-                                        <Text className="text-2xl font-bold text-gray-900 dark:text-white">
+                                        <Text style={isDark ? recentWorkoutsStyles.statValueDark : recentWorkoutsStyles.statValue}>
                                             {stats.totalVolume.toLocaleString()} lbs
                                         </Text>
                                     </View>
                                 </View>
 
                                 {/* Progress Bar */}
-                                <View className="bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
+                                <View style={isDark ? recentWorkoutsStyles.progressBarDark : recentWorkoutsStyles.progressBar}>
                                     <View
                                         style={{
                                             backgroundColor: '#10b981',
@@ -264,7 +265,7 @@ export default function RecentWorkouts({ workouts, isLoading }: RecentWorkoutsPr
                                         }}
                                     />
                                 </View>
-                                <Text className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center">
+                                <Text style={isDark ? recentWorkoutsStyles.progressTextDark : recentWorkoutsStyles.progressText}>
                                     {stats.totalSets > 0 ? Math.round((stats.completedSets / stats.totalSets) * 100) : 0}% Complete
                                 </Text>
                             </View>

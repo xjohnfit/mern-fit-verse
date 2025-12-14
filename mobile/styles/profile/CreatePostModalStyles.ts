@@ -1,0 +1,141 @@
+import { StyleSheet } from 'react-native';
+
+const CreatePostModalStyles = StyleSheet.create({
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'flex-end',
+    },
+    modalContent: {
+        backgroundColor: '#FFFFFF',
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        height: '90%',
+    },
+    modalContentDark: {
+        backgroundColor: '#1F2937',
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        height: '90%',
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#E5E7EB',
+    },
+    headerDark: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#374151',
+    },
+    title: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#111827',
+    },
+    titleDark: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#F3F4F6',
+    },
+    postButton: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 9999,
+        backgroundColor: '#3B82F6',
+    },
+    postButtonDisabled: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 9999,
+        backgroundColor: '#D1D5DB',
+    },
+    postButtonDisabledDark: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 9999,
+        backgroundColor: '#4B5563',
+    },
+    postButtonText: {
+        color: '#FFFFFF',
+        fontWeight: '600',
+        fontSize: 14,
+    },
+    contentContainer: {
+        paddingHorizontal: 16,
+        paddingVertical: 16,
+    },
+    textInput: {
+        backgroundColor: '#F9FAFB',
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        color: '#111827',
+        fontSize: 16,
+        minHeight: 120,
+    },
+    textInputDark: {
+        backgroundColor: '#374151',
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        color: '#F3F4F6',
+        fontSize: 16,
+        minHeight: 120,
+    },
+    imagePreviewContainer: {
+        marginTop: 16,
+        position: 'relative',
+    },
+    imagePreview: {
+        width: '100%',
+        aspectRatio: 1,
+        borderRadius: 12,
+    },
+    removeImageButton: {
+        position: 'absolute',
+        top: 8,
+        right: 8,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        borderRadius: 9999,
+        padding: 8,
+    },
+    addImageButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#F3F4F6',
+        borderRadius: 12,
+        paddingVertical: 12,
+        marginTop: 16,
+    },
+    addImageButtonDark: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#374151',
+        borderRadius: 12,
+        paddingVertical: 12,
+        marginTop: 16,
+    },
+    addImageText: {
+        color: '#4B5563',
+        marginLeft: 8,
+        fontWeight: '500',
+    },
+    addImageTextDark: {
+        color: '#9CA3AF',
+        marginLeft: 8,
+        fontWeight: '500',
+    },
+});
+
+export default CreatePostModalStyles;

@@ -1,5 +1,6 @@
 import { View, Text } from 'react-native'
 import { Ionicons } from "@expo/vector-icons";
+import FeatureCardStyles from '@/styles/dashboard/FeatureCardStyles';
 
 const FeatureCard = ({
   icon,
@@ -10,14 +11,16 @@ const FeatureCard = ({
   title: string;
   description: string;
 }) => {
+  const styles = FeatureCardStyles();
+  
   return (
-    <View className="bg-white/10 backdrop-blur-lg rounded-2xl p-5 flex-row items-center">
-      <View className="bg-white/20 rounded-full p-3 mr-4">
+    <View style={styles.container}>
+      <View style={styles.iconContainer}>
         <Ionicons name={icon} size={28} color="white" />
       </View>
-      <View className="flex-1">
-        <Text className="text-white text-lg font-bold mb-1">{title}</Text>
-        <Text className="text-blue-100 text-sm">{description}</Text>
+      <View style={styles.textContainer}>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.description}>{description}</Text>
       </View>
     </View>
   );

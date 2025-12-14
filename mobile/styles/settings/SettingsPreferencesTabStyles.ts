@@ -1,0 +1,231 @@
+import { StyleSheet } from 'react-native';
+
+const SettingsPreferencesTabStyles = (isDark: boolean) =>
+    StyleSheet.create({
+        container: {
+            paddingBottom: 24,
+        },
+        sectionContainer: {
+            marginBottom: 24,
+        },
+        sectionTitle: {
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: isDark ? '#ffffff' : '#111827',
+            marginBottom: 16,
+            paddingHorizontal: 4,
+        },
+        sectionTitleDanger: {
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: isDark ? '#f87171' : '#dc2626',
+            marginBottom: 16,
+            paddingHorizontal: 4,
+        },
+        settingItem: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            backgroundColor: isDark ? '#1f2937' : '#ffffff',
+            borderRadius: 12,
+            marginBottom: 12,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.05,
+            shadowRadius: 2,
+            elevation: 2,
+        },
+        iconContainer: {
+            width: 40,
+            height: 40,
+            borderRadius: 9999,
+            backgroundColor: isDark ? 'rgba(59, 130, 246, 0.2)' : '#dbeafe',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 16,
+        },
+        settingTextContainer: {
+            flex: 1,
+        },
+        settingTitle: {
+            fontSize: 16,
+            fontWeight: '600',
+            color: isDark ? '#ffffff' : '#111827',
+        },
+        settingSubtitle: {
+            fontSize: 14,
+            color: isDark ? '#9ca3af' : '#6b7280',
+            marginTop: 4,
+        },
+        weightUnitCard: {
+            backgroundColor: isDark ? '#1f2937' : '#ffffff',
+            borderRadius: 12,
+            padding: 20,
+            marginBottom: 12,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.05,
+            shadowRadius: 2,
+            elevation: 2,
+        },
+        cardHeader: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 16,
+        },
+        cardIconContainer: {
+            width: 40,
+            height: 40,
+            borderRadius: 9999,
+            backgroundColor: isDark ? 'rgba(59, 130, 246, 0.2)' : '#dbeafe',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 12,
+        },
+        cardIconContainerPurple: {
+            width: 40,
+            height: 40,
+            borderRadius: 9999,
+            backgroundColor: isDark ? 'rgba(192, 132, 252, 0.2)' : '#f3e8ff',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 12,
+        },
+        cardTextContainer: {
+            flex: 1,
+        },
+        cardTitle: {
+            fontSize: 16,
+            fontWeight: '600',
+            color: isDark ? '#ffffff' : '#111827',
+        },
+        cardSubtitle: {
+            fontSize: 14,
+            color: isDark ? '#9ca3af' : '#6b7280',
+            marginTop: 2,
+        },
+        unitButtonsContainer: {
+            flexDirection: 'row',
+            gap: 12,
+        },
+        unitButton: {
+            flex: 1,
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            borderRadius: 16,
+            borderWidth: 2,
+            borderColor: isDark ? '#374151' : '#e5e7eb',
+            backgroundColor: isDark ? '#374151' : '#ffffff',
+        },
+        unitButtonActive: {
+            flex: 1,
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            borderRadius: 16,
+            borderWidth: 2,
+            borderColor: '#3b82f6',
+            backgroundColor: '#3b82f6',
+        },
+        unitButtonContent: {
+            alignItems: 'center',
+        },
+        unitButtonText: {
+            fontSize: 24,
+            fontWeight: 'bold',
+            color: isDark ? '#ffffff' : '#111827',
+            marginBottom: 4,
+        },
+        unitButtonTextActive: {
+            fontSize: 24,
+            fontWeight: 'bold',
+            color: '#ffffff',
+            marginBottom: 4,
+        },
+        unitButtonSubtext: {
+            fontSize: 12,
+            color: isDark ? '#9ca3af' : '#6b7280',
+        },
+        unitButtonSubtextActive: {
+            fontSize: 12,
+            color: '#dbeafe',
+        },
+        checkmarkContainer: {
+            position: 'absolute',
+            top: 8,
+            right: 8,
+        },
+        checkmarkCircle: {
+            width: 24,
+            height: 24,
+            backgroundColor: '#ffffff',
+            borderRadius: 9999,
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        restTimerContent: {
+            marginTop: 12,
+        },
+        restTimerRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+        },
+        restTimerLabel: {
+            fontSize: 14,
+            fontWeight: '500',
+            color: isDark ? '#d1d5db' : '#374151',
+        },
+        restTimerValue: {
+            fontSize: 24,
+            fontWeight: 'bold',
+            color: isDark ? '#c084fc' : '#a855f7',
+        },
+        sliderContainer: {
+            width: '100%',
+            height: 40,
+        },
+        sliderLabels: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+        },
+        sliderLabelText: {
+            fontSize: 12,
+            color: isDark ? '#9ca3af' : '#6b7280',
+        },
+        dangerButton: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            backgroundColor: isDark ? 'rgba(220, 38, 38, 0.1)' : '#fef2f2',
+            borderRadius: 12,
+            marginBottom: 12,
+            borderWidth: 1,
+            borderColor: isDark ? '#991b1b' : '#fecaca',
+        },
+        dangerIconContainer: {
+            width: 40,
+            height: 40,
+            borderRadius: 9999,
+            backgroundColor: isDark ? 'rgba(220, 38, 38, 0.2)' : '#fee2e2',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 16,
+        },
+        dangerTextContainer: {
+            flex: 1,
+        },
+        dangerTitle: {
+            fontSize: 16,
+            fontWeight: '600',
+            color: isDark ? '#f87171' : '#dc2626',
+        },
+        dangerSubtitle: {
+            fontSize: 14,
+            color: isDark ? 'rgba(248, 113, 113, 0.8)' : '#ef4444',
+            marginTop: 4,
+        },
+    });
+
+export default SettingsPreferencesTabStyles;

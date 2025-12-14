@@ -9,9 +9,12 @@ import {
     useColorScheme,
     ActivityIndicator,
     Dimensions,
+    KeyboardAvoidingView,
+    Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
+import HelpAndSupportModalStyles from '@/styles/settings/HelpAndSupportModalStyles';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -30,6 +33,7 @@ const HelpAndSupportModal: React.FC<HelpAndSupportModalProps> = ({
 }) => {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
+    const styles = HelpAndSupportModalStyles(isDark);
 
     const [message, setMessage] = useState('');
     const [isSending, setIsSending] = useState(false);
@@ -86,284 +90,143 @@ const HelpAndSupportModal: React.FC<HelpAndSupportModalProps> = ({
             transparent={true}
             onRequestClose={handleClose}
         >
-            <View
-                style={{
-                    flex: 1,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    justifyContent: 'flex-end',
-                }}
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={styles.modalOverlay}
             >
                 <TouchableOpacity
                     activeOpacity={1}
                     onPress={handleClose}
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                    }}
+                    style={styles.backdropTouchable}
                 />
-                <View
-                    style={{
-                        backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
-                        borderTopLeftRadius: 24,
-                        borderTopRightRadius: 24,
-                        height: SCREEN_HEIGHT * 0.9,
-                        paddingTop: 16,
-                    }}
-                >
+                <View style={styles.modalContainer}>
                     {/* Header */}
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                paddingHorizontal: 20,
-                                paddingBottom: 16,
-                                borderBottomWidth: 1,
-                                borderBottomColor: isDark ? '#374151' : '#E5E7EB',
-                            }}
-                        >
-                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                                <View
-                                    style={{
-                                        width: 40,
-                                        height: 40,
-                                        borderRadius: 20,
-                                        backgroundColor: isDark ? '#3B82F6' : '#DBEAFE',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    <Ionicons
-                                        name="mail"
-                                        size={22}
-                                        color={isDark ? '#FFFFFF' : '#3B82F6'}
-                                    />
-                                </View>
-                                <View>
-                                    <Text
-                                        style={{
-                                            fontSize: 20,
-                                            fontWeight: 'bold',
-                                            color: isDark ? '#F9FAFB' : '#111827',
-                                        }}
-                                    >
-                                        Help & Support
-                                    </Text>
-                                    <Text
-                                        style={{
-                                            fontSize: 13,
-                                            color: isDark ? '#9CA3AF' : '#6B7280',
-                                            marginTop: 2,
-                                        }}
-                                    >
-                                        Send us a message
-                                    </Text>
-                                </View>
-                            </View>
-                            <TouchableOpacity
-                                onPress={handleClose}
-                                disabled={isSending}
-                                style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 16,
-                                    backgroundColor: isDark ? '#374151' : '#F3F4F6',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
-                            >
+                    <View style={styles.header}>
+                        <View style={styles.headerLeft}>
+                            <View style={styles.headerIconContainer}>
                                 <Ionicons
-                                    name="close"
-                                    size={20}
-                                    color={isDark ? '#9CA3AF' : '#6B7280'}
+                                    name="mail"
+                                    size={22}
+                                    color={isDark ? '#FFFFFF' : '#3B82F6'}
                                 />
-                            </TouchableOpacity>
+                            </View>
+                            <View>
+                                <Text style={styles.headerTitle}>
+                                    Help & Support
+                                </Text>
+                                <Text style={styles.headerSubtitle}>
+                                    Send us a message
+                                </Text>
+                            </View>
+                        </View>
+                        <TouchableOpacity
+                            onPress={handleClose}
+                            disabled={isSending}
+                            style={styles.closeButton}
+                        >
+                            <Ionicons
+                                name="close"
+                                size={20}
+                                color={isDark ? '#9CA3AF' : '#6B7280'}
+                            />
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Content */}
+                    <ScrollView
+                        style={styles.scrollView}
+                        contentContainerStyle={styles.scrollViewContent}
+                        keyboardShouldPersistTaps="handled"
+                    >
+                        {/* Info Banner */}
+                        <View style={styles.infoCard}>
+                            <Ionicons
+                                name="information-circle"
+                                size={24}
+                                color={isDark ? '#60A5FA' : '#3B82F6'}
+                                style={styles.infoIcon}
+                            />
+                            <View style={styles.infoTextContainer}>
+                                <Text style={styles.infoText}>
+                                    We typically respond within 24-48 hours.
+                                </Text>
+                            </View>
                         </View>
 
-                        {/* Content */}
-                        <ScrollView
-                            style={{ flex: 1 }}
-                            contentContainerStyle={{ padding: 20 }}
-                            keyboardShouldPersistTaps="handled"
+                        {/* Full Name */}
+                        <View style={styles.fieldContainer}>
+                            <Text style={styles.fieldLabel}>
+                                Full Name
+                            </Text>
+                            <View style={styles.disabledField}>
+                                <Text style={styles.disabledFieldText}>
+                                    {userFullName}
+                                </Text>
+                            </View>
+                        </View>
+
+                        {/* Email */}
+                        <View style={styles.fieldContainer}>
+                            <Text style={styles.fieldLabel}>
+                                Email
+                            </Text>
+                            <View style={styles.disabledField}>
+                                <Text style={styles.disabledFieldText}>
+                                    {userEmail}
+                                </Text>
+                            </View>
+                        </View>
+
+                        {/* Message */}
+                        <View style={styles.messageContainer}>
+                            <Text style={styles.fieldLabel}>
+                                Message *
+                            </Text>
+                            <TextInput
+                                value={message}
+                                onChangeText={setMessage}
+                                placeholder="Describe your issue or question..."
+                                placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
+                                multiline
+                                numberOfLines={8}
+                                textAlignVertical="top"
+                                editable={!isSending}
+                                style={styles.textInput}
+                            />
+                            <Text style={styles.characterCount}>
+                                {message.length} / 1000 characters
+                            </Text>
+                        </View>
+
+                        {/* Send Button */}
+                        <TouchableOpacity
+                            onPress={handleSendEmail}
+                            disabled={isSending || !message.trim()}
+                            style={
+                                isSending || !message.trim()
+                                    ? styles.sendButtonDisabled
+                                    : styles.sendButton
+                            }
+                            activeOpacity={0.8}
                         >
-                            {/* Info Banner */}
-                            <View
-                                style={{
-                                    backgroundColor: isDark ? '#1E3A8A' : '#EFF6FF',
-                                    borderRadius: 12,
-                                    padding: 16,
-                                    marginBottom: 20,
-                                    flexDirection: 'row',
-                                    gap: 12,
-                                }}
+                            {isSending ? (
+                                <ActivityIndicator color="#FFFFFF" />
+                            ) : (
+                                <Ionicons name="send" size={20} color="#FFFFFF" />
+                            )}
+                            <Text
+                                style={
+                                    isSending || !message.trim()
+                                        ? styles.sendButtonTextDisabled
+                                        : styles.sendButtonText
+                                }
                             >
-                                <Ionicons
-                                    name="information-circle"
-                                    size={24}
-                                    color={isDark ? '#60A5FA' : '#3B82F6'}
-                                    style={{ marginTop: 2 }}
-                                />
-                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text
-                                        style={{
-                                            fontSize: 14,
-                                            color: isDark ? '#BFDBFE' : '#1E40AF',
-                                        }}
-                                    >
-                                        We typically respond within 24-48 hours.
-                                    </Text>
-                                </View>
-                            </View>
-
-                            {/* Full Name */}
-                            <View style={{ marginBottom: 16 }}>
-                                <Text
-                                    style={{
-                                        fontSize: 14,
-                                        fontWeight: '600',
-                                        color: isDark ? '#F9FAFB' : '#374151',
-                                        marginBottom: 8,
-                                    }}
-                                >
-                                    Full Name
-                                </Text>
-                                <View
-                                    style={{
-                                        backgroundColor: isDark ? '#374151' : '#F9FAFB',
-                                        borderRadius: 12,
-                                        padding: 16,
-                                    }}
-                                >
-                                    <Text
-                                        style={{
-                                            fontSize: 15,
-                                            color: isDark ? '#D1D5DB' : '#6B7280',
-                                        }}
-                                    >
-                                        {userFullName}
-                                    </Text>
-                                </View>
-                            </View>
-
-                            {/* Email */}
-                            <View style={{ marginBottom: 16 }}>
-                                <Text
-                                    style={{
-                                        fontSize: 14,
-                                        fontWeight: '600',
-                                        color: isDark ? '#F9FAFB' : '#374151',
-                                        marginBottom: 8,
-                                    }}
-                                >
-                                    Email
-                                </Text>
-                                <View
-                                    style={{
-                                        backgroundColor: isDark ? '#374151' : '#F9FAFB',
-                                        borderRadius: 12,
-                                        padding: 16,
-                                    }}
-                                >
-                                    <Text
-                                        style={{
-                                            fontSize: 15,
-                                            color: isDark ? '#D1D5DB' : '#6B7280',
-                                        }}
-                                    >
-                                        {userEmail}
-                                    </Text>
-                                </View>
-                            </View>
-
-                            {/* Message */}
-                            <View style={{ marginBottom: 20 }}>
-                                <Text
-                                    style={{
-                                        fontSize: 14,
-                                        fontWeight: '600',
-                                        color: isDark ? '#F9FAFB' : '#374151',
-                                        marginBottom: 8,
-                                    }}
-                                >
-                                    Message *
-                                </Text>
-                                <TextInput
-                                    value={message}
-                                    onChangeText={setMessage}
-                                    placeholder="Describe your issue or question..."
-                                    placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
-                                    multiline
-                                    numberOfLines={8}
-                                    textAlignVertical="top"
-                                    editable={!isSending}
-                                    style={{
-                                        backgroundColor: isDark ? '#374151' : '#FFFFFF',
-                                        borderRadius: 12,
-                                        padding: 16,
-                                        fontSize: 15,
-                                        color: isDark ? '#F9FAFB' : '#111827',
-                                        minHeight: 150,
-                                        borderWidth: 1,
-                                        borderColor: isDark ? '#4B5563' : '#E5E7EB',
-                                    }}
-                                />
-                                <Text
-                                    style={{
-                                        fontSize: 12,
-                                        color: isDark ? '#6B7280' : '#9CA3AF',
-                                        marginTop: 6,
-                                    }}
-                                >
-                                    {message.length} / 1000 characters
-                                </Text>
-                            </View>
-
-                            {/* Send Button */}
-                            <TouchableOpacity
-                                onPress={handleSendEmail}
-                                disabled={isSending || !message.trim()}
-                                style={{
-                                    backgroundColor:
-                                        isSending || !message.trim()
-                                            ? isDark
-                                                ? '#374151'
-                                                : '#E5E7EB'
-                                            : '#3B82F6',
-                                    borderRadius: 12,
-                                    padding: 16,
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: 8,
-                                }}
-                                activeOpacity={0.8}
-                            >
-                                {isSending ? (
-                                    <ActivityIndicator color="#FFFFFF" />
-                                ) : (
-                                    <Ionicons name="send" size={20} color="#FFFFFF" />
-                                )}
-                                <Text
-                                    style={{
-                                        fontSize: 16,
-                                        fontWeight: 'bold',
-                                        color:
-                                            isSending || !message.trim()
-                                                ? isDark
-                                                    ? '#6B7280'
-                                                    : '#9CA3AF'
-                                                : '#FFFFFF',
-                                    }}
-                                >
-                                    {isSending ? 'Sending...' : 'Send Message'}
-                                </Text>
-                            </TouchableOpacity>
-                        </ScrollView>
-                    </View>
+                                {isSending ? 'Sending...' : 'Send Message'}
+                            </Text>
+                        </TouchableOpacity>
+                    </ScrollView>
                 </View>
+            </KeyboardAvoidingView>
         </Modal>
     );
 };

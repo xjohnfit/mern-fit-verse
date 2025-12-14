@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, RefreshControl, Image, TouchableOpacity, TextInput, Alert, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, RefreshControl, Image, TouchableOpacity, TextInput, Alert, KeyboardAvoidingView, Platform, StatusBar, useColorScheme } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppSelector } from '../../hooks/useRedux';
@@ -10,12 +10,16 @@ import { FollowersModal } from '../../components/profile/FollowersModal';
 import { CreatePostModal } from '../../components/profile/CreatePostModal';
 import Toast from 'react-native-toast-message';
 import { formatRelativeTime } from '../../lib/formatDate';
+import profileStyles from '../../styles/profile/profileStyles';
 
 export default function ProfileScreen() {
     const { userInfo } = useAppSelector((state) => state.auth);
     const router = useRouter();
-    const { username: paramUsername } = useLocalSearchParams<{ username?: string }>();
+    const { username: paramUsername } = useLocalSearchParams<{ username?: string; }>();
     const [viewingUsername, setViewingUsername] = useState<string | null>(null);
+    const colorScheme = useColorScheme();
+    const isDark = colorScheme === 'dark';
+    const styles = profileStyles(isDark);
 
     // Update viewingUsername when paramUsername changes
     useEffect(() => {
@@ -255,9 +259,9 @@ export default function ProfileScreen() {
     // Loading state - show loading screen when initially loading OR when we have no data
     if ((isOwnProfile ? isLoadingOwn : isLoading) || !displayProfile) {
         return (
-            <View className="flex-1 bg-gray-50 dark:bg-gray-900 items-center justify-center">
+            <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#2563eb" />
-                <Text className="text-gray-600 dark:text-gray-400 mt-4">
+                <Text style={styles.loadingText}>
                     Loading profile...
                 </Text>
             </View>
@@ -267,12 +271,12 @@ export default function ProfileScreen() {
     // Error state
     if (error) {
         return (
-            <View className="flex-1 bg-gray-50 dark:bg-gray-900 items-center justify-center px-6">
+            <View style={styles.errorContainer}>
                 <Ionicons name="person-circle-outline" size={64} color="#9ca3af" />
-                <Text className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-4 mb-2">
+                <Text style={styles.errorTitle}>
                     Profile Not Found
                 </Text>
-                <Text className="text-gray-600 dark:text-gray-400 text-center">
+                <Text style={styles.errorText}>
                     Unable to load your profile. Please try again.
                 </Text>
             </View>
@@ -288,13 +292,13 @@ export default function ProfileScreen() {
             <StatusBar barStyle="light-content" backgroundColor="#3b82f6" />
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                className="flex-1"
+                style={styles.keyboardAvoidingView}
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
             >
-                <View className="flex-1 bg-gray-50 dark:bg-gray-900">
+                <View style={styles.container}>
                     <ScrollView
                         showsVerticalScrollIndicator={false}
-                        className="flex-1"
+                        style={styles.scrollView}
                         keyboardShouldPersistTaps="handled"
                         refreshControl={
                             <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
@@ -313,18 +317,18 @@ export default function ProfileScreen() {
                         />
 
                         {/* Posts Section - Full Width */}
-                        <View className="py-4 px-2">
+                        <View style={styles.postsSection}>
 
                             {isPostsLoading ? (
-                                <View className="py-8 items-center">
+                                <View style={styles.loadingPostsContainer}>
                                     <ActivityIndicator size="small" color="#2563eb" />
-                                    <Text className="text-gray-500 dark:text-gray-400 mt-2 text-sm">
+                                    <Text style={styles.loadingPostsText}>
                                         Loading posts...
                                     </Text>
                                 </View>
                             ) : postsError ? (
-                                <View className="py-8 items-center">
-                                    <Text className="text-gray-500 dark:text-gray-400 text-center">
+                                <View style={styles.errorPostsContainer}>
+                                    <Text style={styles.errorPostsText}>
                                         Failed to load posts
                                     </Text>
                                 </View>
@@ -334,21 +338,21 @@ export default function ProfileScreen() {
                                         const isLiked = post.likes?.some((like: any) => like._id === userInfo?._id || like === userInfo?._id);
                                         const isPostOwner = post.user?._id === userInfo?._id || post.user === userInfo?._id;
                                         return (
-                                            <View key={post._id} className="bg-white dark:bg-gray-800 shadow-sm mb-3 rounded-2xl">
+                                            <View key={post._id} style={styles.postCard}>
                                                 {/* Post Header with User Info and Delete */}
-                                                <View className="flex-row justify-between items-center px-4 p-4">
-                                                    <View className="flex-row items-center flex-1">
-                                                        <Text className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
+                                                <View style={styles.postHeader}>
+                                                    <View style={styles.postHeaderLeft}>
+                                                        <Text style={styles.postUsername}>
                                                             {post.user?.username || userInfo?.username}
                                                         </Text>
-                                                        <Text className="text-gray-500 dark:text-gray-400 text-xs ml-2">
+                                                        <Text style={styles.postTime}>
                                                             • {formatRelativeTime(post.createdAt)}
                                                         </Text>
                                                     </View>
                                                     {isPostOwner && (
                                                         <TouchableOpacity
                                                             onPress={() => handleDeletePost(post._id)}
-                                                            className="ml-2"
+                                                            style={styles.deleteButton}
                                                         >
                                                             <Ionicons name="trash-outline" size={20} color="#ef4444" />
                                                         </TouchableOpacity>
@@ -356,48 +360,48 @@ export default function ProfileScreen() {
                                                 </View>
                                                 {/* Post Content - Only show if there's text */}
                                                 {post.content && (
-                                                    <View className="px-4 pb-3">
-                                                        <Text className="text-gray-900 dark:text-gray-100 text-sm leading-relaxed">
+                                                    <View style={styles.postContentContainer}>
+                                                        <Text style={styles.postContent}>
                                                             {post.content}
                                                         </Text>
                                                     </View>
                                                 )}
                                                 {post.image && (
-                                                    <View className="w-full mb-3">
+                                                    <View style={styles.postImageContainer}>
                                                         <Image
                                                             source={{ uri: post.image }}
-                                                            style={{ width: '100%', aspectRatio: 1 }}
+                                                            style={styles.postImage}
                                                             resizeMode="cover"
                                                         />
                                                     </View>
                                                 )}
 
                                                 {/* Action Buttons */}
-                                                <View className="flex-row items-center px-4 pb-3">
+                                                <View style={styles.postActions}>
                                                     <TouchableOpacity
                                                         onPress={() => handleLikePost(post._id)}
-                                                        className="flex-row items-center mr-6"
+                                                        style={styles.likeButton}
                                                     >
                                                         <Ionicons
                                                             name={isLiked ? "heart" : "heart-outline"}
                                                             size={22}
                                                             color={isLiked ? "#ef4444" : "#6b7280"}
                                                         />
-                                                        <Text className="text-xs font-medium text-gray-700 dark:text-gray-300 ml-1.5">
+                                                        <Text style={styles.likeCount}>
                                                             {post.likes?.length || 0}
                                                         </Text>
                                                     </TouchableOpacity>
 
                                                     <TouchableOpacity
                                                         onPress={() => setShowCommentInput({ ...showCommentInput, [post._id]: !showCommentInput[post._id] })}
-                                                        className="flex-row items-center"
+                                                        style={styles.commentButton}
                                                     >
                                                         <Ionicons
                                                             name="chatbubble-outline"
                                                             size={20}
                                                             color="#6b7280"
                                                         />
-                                                        <Text className="text-xs font-medium text-gray-700 dark:text-gray-300 ml-1.5">
+                                                        <Text style={styles.commentCount}>
                                                             {post.comments?.length || 0}
                                                         </Text>
                                                     </TouchableOpacity>
@@ -405,19 +409,19 @@ export default function ProfileScreen() {
 
                                                 {/* Comment Input and Comments List - Only show when comment icon is clicked */}
                                                 {showCommentInput[post._id] && (
-                                                    <View className="px-4 pb-4 pt-3">
+                                                    <View style={styles.commentSection}>
                                                         {/* Comment Input */}
-                                                        <View className="flex-row items-center mb-3">
+                                                        <View style={styles.commentInputContainer}>
                                                             <TextInput
                                                                 value={commentTexts[post._id] || ''}
                                                                 onChangeText={(text) => setCommentTexts({ ...commentTexts, [post._id]: text })}
                                                                 placeholder="Add a comment..."
                                                                 placeholderTextColor="#9ca3af"
-                                                                className="flex-1 bg-gray-100 dark:bg-gray-700 rounded-full px-4 py-2 text-gray-900 dark:text-gray-100 text-sm"
+                                                                style={styles.commentInput}
                                                             />
                                                             <TouchableOpacity
                                                                 onPress={() => handleAddComment(post._id)}
-                                                                className="ml-2 bg-blue-500 rounded-full w-8 h-8 items-center justify-center"
+                                                                style={styles.sendButton}
                                                             >
                                                                 <Ionicons name="send" size={16} color="#fff" />
                                                             </TouchableOpacity>
@@ -429,20 +433,20 @@ export default function ProfileScreen() {
                                                                 {post.comments.slice(0, 3).map((comment: any, index: number) => {
                                                                     const isOwnComment = comment.user?._id === userInfo?._id;
                                                                     return (
-                                                                        <View key={index} className="mb-2">
-                                                                            <View className="flex-row items-start justify-between">
-                                                                                <View className="flex-1 flex-row items-start">
-                                                                                    <Text className="font-semibold text-gray-900 dark:text-gray-100 text-xs">
+                                                                        <View key={index} style={styles.commentItem}>
+                                                                            <View style={styles.commentContent}>
+                                                                                <View style={styles.commentLeft}>
+                                                                                    <Text style={styles.commentUsername}>
                                                                                         {comment.user?.username || 'Unknown'}
                                                                                     </Text>
-                                                                                    <Text className="text-gray-700 dark:text-gray-300 text-xs ml-2 flex-1">
+                                                                                    <Text style={styles.commentText}>
                                                                                         {comment.comment}
                                                                                     </Text>
                                                                                 </View>
                                                                                 {isOwnComment && (
                                                                                     <TouchableOpacity
                                                                                         onPress={() => handleDeleteComment(post._id, comment._id)}
-                                                                                        className="ml-2"
+                                                                                        style={styles.deleteCommentButton}
                                                                                     >
                                                                                         <Ionicons name="trash-outline" size={16} color="#ef4444" />
                                                                                     </TouchableOpacity>
@@ -452,7 +456,7 @@ export default function ProfileScreen() {
                                                                     );
                                                                 })}
                                                                 {post.comments.length > 3 && (
-                                                                    <Text className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                    <Text style={styles.viewAllComments}>
                                                                         View all {post.comments.length} comments
                                                                     </Text>
                                                                 )}
@@ -465,8 +469,8 @@ export default function ProfileScreen() {
                                     })}
                                 </View>
                             ) : (
-                                <View className="py-8 items-center">
-                                    <Text className="text-gray-500 dark:text-gray-400 text-center">
+                                <View style={styles.emptyPostsContainer}>
+                                    <Text style={styles.emptyPostsText}>
                                         No posts yet
                                     </Text>
                                 </View>
@@ -506,14 +510,7 @@ export default function ProfileScreen() {
                     {isOwnProfile && (
                         <TouchableOpacity
                             onPress={() => setShowCreatePostModal(true)}
-                            className="absolute bottom-6 right-6 bg-blue-500 rounded-full w-14 h-14 items-center justify-center shadow-lg"
-                            style={{
-                                shadowColor: '#000',
-                                shadowOffset: { width: 0, height: 2 },
-                                shadowOpacity: 0.25,
-                                shadowRadius: 3.84,
-                                elevation: 5,
-                            }}
+                            style={styles.fab}
                         >
                             <Ionicons name="add" size={32} color="#fff" />
                         </TouchableOpacity>
