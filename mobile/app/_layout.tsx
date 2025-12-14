@@ -1,6 +1,3 @@
-// Styles
-import '../global.css';
-
 // React
 import { useEffect } from 'react';
 
