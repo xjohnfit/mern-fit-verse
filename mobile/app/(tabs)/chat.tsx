@@ -1,11 +1,23 @@
+// React
 import { useState, useEffect, useRef } from 'react';
+
+// React Native
 import { AppState } from 'react-native';
+
+// Expo
 import { useLocalSearchParams } from 'expo-router';
+
+// Redux
 import { useSelector, useDispatch } from 'react-redux';
 
+// API Slices
 import { useGetUserProfileQuery } from '@/slices/usersApiSlice';
 import { useSendMessageMutation, useLazyGetMessagesQuery } from '@/slices/messageApiSlice';
+
+// Hooks
 import { getSocket } from '@/hooks/useSocket';
+
+// Utils
 import { getCachedMessages, cacheMessages, appendMessageToCache } from '@/lib/messageCache';
 import {
   showMessageNotification,
@@ -13,7 +25,10 @@ import {
   addNotificationResponseReceivedListener,
   setBadgeCount,
 } from '@/lib/notifications';
-import { UserListView, ConversationView } from '@/components/chat';
+
+// Components
+import UserListView from '@/components/chat/UserListView';
+import ConversationView from '@/components/chat/ConversationView';
 
 interface User {
   _id: string;

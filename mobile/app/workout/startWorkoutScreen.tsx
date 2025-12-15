@@ -18,7 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { Audio } from 'expo-av';
+import { useAudioPlayer, AudioSource, setAudioModeAsync } from 'expo-audio';
 import { useGetExercisesQuery } from '@/slices/exerciseApiSlice';
 import type { Exercise as ApiExercise } from '@/slices/exerciseApiSlice';
 import { useGetTemplateByIdQuery } from '@/slices/workoutTemplateApiSlice';
@@ -55,7 +55,7 @@ const StartWorkoutScreen = () => {
     // Refs
     const isFinishingRef = useRef(false);
     const templateLoadedRef = useRef(false);
-    const bellSoundRef = useRef<Audio.Sound | null>(null);
+    const bellSound = useAudioPlayer(require('../../assets/sounds/bell.wav') as AudioSource);
 
     // State
     const [searchTerm, setSearchTerm] = useState('');
@@ -145,27 +145,22 @@ const StartWorkoutScreen = () => {
         initializeWorkout();
     }, [templateIdFromUrl]);
 
-    // Workout timer effect
+    // Configure audio to play even in silent mode
     useEffect(() => {
-        const loadSound = async () => {
+        const configureAudio = async () => {
             try {
-                await Audio.setAudioModeAsync({
-                    playsInSilentModeIOS: true,
-                    staysActiveInBackground: false,
+                await setAudioModeAsync({
+                    playsInSilentMode: true,
                 });
-
-                const { sound } = await Audio.Sound.createAsync(
-                    require('../../assets/sounds/bell.wav'),
-                    { shouldPlay: false }
-                );
-                bellSoundRef.current = sound;
             } catch (error) {
-                console.error('Failed to load bell sound:', error);
+                console.error('Failed to configure audio mode:', error);
             }
         };
+        configureAudio();
+    }, []);
 
-        loadSound();
-
+    // Workout timer effect
+    useEffect(() => {
         let interval: ReturnType<typeof setInterval>;
         if (isTimerRunning) {
             interval = setInterval(() => {
@@ -175,8 +170,7 @@ const StartWorkoutScreen = () => {
         }
         return () => {
             clearInterval(interval);
-            bellSoundRef.current?.unloadAsync();
-        }
+        };
     }, [isTimerRunning, workoutStartTime, pausedTime]);
 
     // Save timer state
@@ -313,11 +307,11 @@ const StartWorkoutScreen = () => {
         return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
-    const playBellSound = async () => {
+    const playBellSound = () => {
         try {
-            if (bellSoundRef.current) {
-                await bellSoundRef.current.replayAsync();
-            }
+            bellSound.volume = 1.0;
+            bellSound.seekTo(0);
+            bellSound.play();
         } catch (error) {
             console.error('Error playing bell sound:', error);
         }

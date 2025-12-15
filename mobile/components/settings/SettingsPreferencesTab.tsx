@@ -15,7 +15,6 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { setCredentials } from '@/slices/authSlice';
 import { useUpdateUserProfileMutation, usersApiSlice } from '@/slices/usersApiSlice';
 import Slider from '@react-native-community/slider';
-import HelpAndSupportModal from '@/components/settings/HelpAndSupportModal';
 import UpdatePasswordModal from '@/components/settings/UpdatePasswordModal';
 import SettingsPreferencesTabStyles from '@/styles/settings/SettingsPreferencesTabStyles';
 
@@ -38,7 +37,6 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
   const [reducedMotion, setReducedMotion] = useState(false);
   const [weightUnit, setWeightUnit] = useState<'lbs' | 'kg'>('lbs');
   const [restTimer, setRestTimer] = useState<number>(2); // in minutes
-  const [showHelpModal, setShowHelpModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   // Ref to track when we're updating to prevent useEffect from overwriting
@@ -435,7 +433,7 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
           icon="help-circle"
           title="Help & Support"
           subtitle="Send us a message"
-          onPress={() => setShowHelpModal(true)}
+          onPress={() => router.push('/settings/helpAndSupport')}
         />
       </View>
 
@@ -468,14 +466,6 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
           />
         </TouchableOpacity>
       </View>
-
-      {/* Help & Support Modal */}
-      <HelpAndSupportModal
-        visible={showHelpModal}
-        onClose={() => setShowHelpModal(false)}
-        userFullName={userInfo?.name || ''}
-        userEmail={userInfo?.email || ''}
-      />
 
       {/* Update Password Modal */}
       <UpdatePasswordModal

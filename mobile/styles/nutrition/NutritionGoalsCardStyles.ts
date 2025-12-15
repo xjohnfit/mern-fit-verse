@@ -1,0 +1,198 @@
+import { StyleSheet } from 'react-native';
+
+const createStyles = (isDark: boolean) =>
+    StyleSheet.create({
+        container: {
+            margin: 20,
+            backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
+            borderRadius: 20,
+            padding: 20,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.12,
+            shadowRadius: 12,
+            elevation: 5,
+            borderWidth: 1,
+            borderColor: isDark ? '#374151' : '#F3F4F6',
+        },
+        header: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 20,
+        },
+        headerLeft: {
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        iconContainer: {
+            width: 44,
+            height: 44,
+            borderRadius: 12,
+            backgroundColor: '#10b98120',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 12,
+        },
+        headerTitle: {
+            fontSize: 20,
+            fontWeight: 'bold',
+            color: isDark ? '#FFFFFF' : '#111827',
+        },
+        settingsButton: {
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: isDark ? '#374151' : '#F3F4F6',
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        calculatedCaloriesContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginBottom: 12,
+            backgroundColor: isDark ? '#111827' : '#F9FAFB',
+            borderRadius: 8,
+            padding: 12,
+            borderWidth: 1,
+            borderColor: isDark ? '#374151' : '#E5E7EB',
+        },
+        calculatedCaloriesLabel: {
+            fontSize: 14,
+            fontWeight: '600',
+            color: isDark ? '#D1D5DB' : '#6B7280',
+            marginBottom: 4,
+        },
+        calculatedCaloriesValue: {
+            fontSize: 20,
+            fontWeight: 'bold',
+            color: '#3B82F6',
+        },
+        macroInfoText: {
+            fontSize: 11,
+            color: isDark ? '#6B7280' : '#9CA3AF',
+            marginTop: 2,
+        },
+        inputContainer: {
+            marginBottom: 12,
+        },
+        inputLabel: {
+            fontSize: 14,
+            fontWeight: '600',
+            color: isDark ? '#D1D5DB' : '#6B7280',
+            marginBottom: 4,
+            textTransform: 'capitalize',
+        },
+        input: {
+            backgroundColor: isDark ? '#374151' : '#F3F4F6',
+            borderRadius: 8,
+            paddingHorizontal: 12,
+            paddingVertical: 12,
+            fontSize: 16,
+            color: isDark ? '#FFFFFF' : '#111827',
+        },
+        saveButton: {
+            backgroundColor: '#10B981',
+            borderRadius: 12,
+            paddingVertical: 14,
+            alignItems: 'center',
+            marginTop: 8,
+        },
+        saveButtonText: {
+            color: '#FFFFFF',
+            fontSize: 16,
+            fontWeight: '600',
+        },
+        caloriesContainer: {
+            marginBottom: 20,
+        },
+        caloriesHeader: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 10,
+        },
+        caloriesLabelContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        caloriesLabel: {
+            fontSize: 15,
+            fontWeight: '700',
+            color: isDark ? '#D1D5DB' : '#6B7280',
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+        },
+        caloriesValue: {
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: isDark ? '#FFFFFF' : '#111827',
+        },
+        caloriesGoal: {
+            fontSize: 14,
+            fontWeight: '600',
+            color: isDark ? '#9CA3AF' : '#6B7280',
+        },
+        progressBarBackground: {
+            height: 12,
+            backgroundColor: isDark ? '#374151' : '#E5E7EB',
+            borderRadius: 6,
+            overflow: 'hidden',
+        },
+        macrosContainer: {
+            gap: 8,
+        },
+        macroRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 10,
+        },
+        macroIconContainer: {
+            width: 36,
+            height: 36,
+            borderRadius: 10,
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        macroBarContainer: {
+            flex: 1,
+            height: 36,
+            borderRadius: 10,
+            overflow: 'hidden',
+            borderWidth: 1.5,
+        },
+        macroBarBackground: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: isDark ? '#111827' : '#F9FAFB',
+        },
+        macroBarContent: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingHorizontal: 12,
+            height: '100%',
+            position: 'relative',
+        },
+        macroLabel: {
+            fontSize: 13,
+            color: isDark ? '#D1D5DB' : '#6B7280',
+            fontWeight: '700',
+            textTransform: 'uppercase',
+            letterSpacing: 0.3,
+        },
+        macroValue: {
+            fontSize: 16,
+            fontWeight: 'bold',
+        },
+        macroGoal: {
+            fontSize: 12,
+            fontWeight: '600',
+            color: isDark ? '#6B7280' : '#9CA3AF',
+        },
+    });
+
+export default createStyles;

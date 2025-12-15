@@ -68,7 +68,7 @@ const TermsOfService = () => {
                                         : termsOfServiceStyles.headerSubtitleLight,
                                 ]}
                             >
-                                Last Updated: December 11, 2025
+                                Last Updated: November 18, 2025
                             </Text>
                         </View>
                     </View>

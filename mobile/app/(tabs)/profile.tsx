@@ -1,21 +1,59 @@
+// React
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, RefreshControl, Image, TouchableOpacity, TextInput, Alert, KeyboardAvoidingView, Platform, StatusBar, useColorScheme } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+
+// React Native
+import {
+    View,
+    Text,
+    ScrollView,
+    ActivityIndicator,
+    RefreshControl,
+    TouchableOpacity,
+    KeyboardAvoidingView,
+    Platform,
+    StatusBar,
+    useColorScheme,
+} from 'react-native';
+
+// Expo
+import { useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+
+// Third-party
+import Toast from 'react-native-toast-message';
+
+// Hooks
 import { useAppSelector } from '../../hooks/useRedux';
-import { useViewUserProfileQuery, useFollowUnfollowUserMutation, useGetUserProfileQuery } from '../../slices/usersApiSlice';
-import { useGetUserPostsQuery, useLikeUnlikePostMutation, useAddCommentMutation, useDeleteCommentMutation, useDeletePostMutation, useCreatePostMutation } from '../../slices/postsApiSlice';
+
+// API Slices
+import {
+    useViewUserProfileQuery,
+    useFollowUnfollowUserMutation,
+    useGetUserProfileQuery,
+} from '../../slices/usersApiSlice';
+import {
+    useGetUserPostsQuery,
+    useLikeUnlikePostMutation,
+    useAddCommentMutation,
+    useDeleteCommentMutation,
+    useDeletePostMutation,
+    useCreatePostMutation,
+} from '../../slices/postsApiSlice';
+
+// Components
 import { ProfileHeader } from '../../components/profile/ProfileHeader';
 import { FollowersModal } from '../../components/profile/FollowersModal';
 import { CreatePostModal } from '../../components/profile/CreatePostModal';
-import Toast from 'react-native-toast-message';
-import { formatRelativeTime } from '../../lib/formatDate';
+import { PostCard } from '../../components/profile/PostCard';
+
+// Styles
 import profileStyles from '../../styles/profile/profileStyles';
 
 export default function ProfileScreen() {
     const { userInfo } = useAppSelector((state) => state.auth);
-    const router = useRouter();
-    const { username: paramUsername } = useLocalSearchParams<{ username?: string; }>();
+    const { username: paramUsername } = useLocalSearchParams<{
+        username?: string;
+    }>();
     const [viewingUsername, setViewingUsername] = useState<string | null>(null);
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
@@ -32,12 +70,11 @@ export default function ProfileScreen() {
     const [showFollowersModal, setShowFollowersModal] = useState(false);
     const [showFollowingModal, setShowFollowingModal] = useState(false);
     const [showCreatePostModal, setShowCreatePostModal] = useState(false);
-    const [commentTexts, setCommentTexts] = useState<Record<string, string>>({});
-    const [showCommentInput, setShowCommentInput] = useState<Record<string, boolean>>({});
 
     // Use viewing username or fall back to own username
     const profileUsername = viewingUsername || userInfo?.username;
-    const isOwnProfile = !viewingUsername || viewingUsername === userInfo?.username;
+    const isOwnProfile =
+        !viewingUsername || viewingUsername === userInfo?.username;
 
     // Fetch own profile to get populated followers/following
     const {
@@ -64,9 +101,9 @@ export default function ProfileScreen() {
     });
 
     // Use populated own profile for own profile, otherwise use API data for other users
-    const displayProfile = isOwnProfile ? ownProfile : (currentData || userProfile);
-
-
+    const displayProfile = isOwnProfile
+        ? ownProfile
+        : currentData || userProfile;
 
     const [followUnfollowUser, { isLoading: isFollowLoading }] =
         useFollowUnfollowUserMutation();
@@ -138,17 +175,9 @@ export default function ProfileScreen() {
         }
     };
 
-    const handleAddComment = async (postId: string) => {
-        const comment = commentTexts[postId]?.trim();
-        if (!comment) {
-            Alert.alert('Error', 'Please enter a comment');
-            return;
-        }
-
+    const handleAddComment = async (postId: string, comment: string) => {
         try {
             await addComment({ postId, comment }).unwrap();
-            setCommentTexts({ ...commentTexts, [postId]: '' });
-            setShowCommentInput({ ...showCommentInput, [postId]: false });
             refetchPosts();
         } catch (error: any) {
             Toast.show({
@@ -160,58 +189,35 @@ export default function ProfileScreen() {
     };
 
     const handleDeleteComment = async (postId: string, commentId: string) => {
-        Alert.alert(
-            'Delete Comment',
-            'Are you sure you want to delete this comment?',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Delete',
-                    style: 'destructive',
-                    onPress: async () => {
-                        try {
-                            await deleteComment({ postId, commentId }).unwrap();
-                            refetchPosts();
-                        } catch (error: any) {
-                            Toast.show({
-                                type: 'error',
-                                text1: 'Error',
-                                text2: error?.data?.message || 'Failed to delete comment',
-                            });
-                        }
-                    },
-                },
-            ]
-        );
+        try {
+            await deleteComment({ postId, commentId }).unwrap();
+            refetchPosts();
+        } catch (error: any) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: error?.data?.message || 'Failed to delete comment',
+            });
+        }
     };
 
     const handleDeletePost = async (postId: string) => {
-        Alert.alert(
-            'Delete Post',
-            'Are you sure you want to delete this post?',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Delete',
-                    style: 'destructive',
-                    onPress: async () => {
-                        try {
-                            await deletePost(postId).unwrap();
-                            refetchPosts();
-                        } catch (error: any) {
-                            Toast.show({
-                                type: 'error',
-                                text1: 'Error',
-                                text2: error?.data?.message || 'Failed to delete post',
-                            });
-                        }
-                    },
-                },
-            ]
-        );
+        try {
+            await deletePost(postId).unwrap();
+            refetchPosts();
+        } catch (error: any) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: error?.data?.message || 'Failed to delete post',
+            });
+        }
     };
 
-    const handleCreatePost = async (content: string, imageUri: string | null) => {
+    const handleCreatePost = async (
+        content: string,
+        imageUri: string | null
+    ) => {
         try {
             let base64Image = null;
 
@@ -260,10 +266,11 @@ export default function ProfileScreen() {
     if ((isOwnProfile ? isLoadingOwn : isLoading) || !displayProfile) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#2563eb" />
-                <Text style={styles.loadingText}>
-                    Loading profile...
-                </Text>
+                <ActivityIndicator
+                    size='large'
+                    color='#2563eb'
+                />
+                <Text style={styles.loadingText}>Loading profile...</Text>
             </View>
         );
     }
@@ -272,10 +279,12 @@ export default function ProfileScreen() {
     if (error) {
         return (
             <View style={styles.errorContainer}>
-                <Ionicons name="person-circle-outline" size={64} color="#9ca3af" />
-                <Text style={styles.errorTitle}>
-                    Profile Not Found
-                </Text>
+                <Ionicons
+                    name='person-circle-outline'
+                    size={64}
+                    color='#9ca3af'
+                />
+                <Text style={styles.errorTitle}>Profile Not Found</Text>
                 <Text style={styles.errorText}>
                     Unable to load your profile. Please try again.
                 </Text>
@@ -289,21 +298,25 @@ export default function ProfileScreen() {
 
     return (
         <>
-            <StatusBar barStyle="light-content" backgroundColor="#3b82f6" />
+            <StatusBar
+                barStyle='light-content'
+                backgroundColor='#3b82f6'
+            />
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.keyboardAvoidingView}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-            >
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
                 <View style={styles.container}>
                     <ScrollView
                         showsVerticalScrollIndicator={false}
                         style={styles.scrollView}
-                        keyboardShouldPersistTaps="handled"
+                        keyboardShouldPersistTaps='handled'
                         refreshControl={
-                            <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
-                        }
-                    >
+                            <RefreshControl
+                                refreshing={isLoading}
+                                onRefresh={onRefresh}
+                            />
+                        }>
                         {/* Profile Header with Cover Photo */}
                         <ProfileHeader
                             user={displayProfile}
@@ -313,15 +326,21 @@ export default function ProfileScreen() {
                             onFollowToggle={handleFollowToggle}
                             onShowFollowers={() => setShowFollowersModal(true)}
                             onShowFollowing={() => setShowFollowingModal(true)}
-                            onBackPress={viewingUsername ? () => setViewingUsername(null) : undefined}
+                            onBackPress={
+                                viewingUsername
+                                    ? () => setViewingUsername(null)
+                                    : undefined
+                            }
                         />
 
                         {/* Posts Section - Full Width */}
                         <View style={styles.postsSection}>
-
                             {isPostsLoading ? (
                                 <View style={styles.loadingPostsContainer}>
-                                    <ActivityIndicator size="small" color="#2563eb" />
+                                    <ActivityIndicator
+                                        size='small'
+                                        color='#2563eb'
+                                    />
                                     <Text style={styles.loadingPostsText}>
                                         Loading posts...
                                     </Text>
@@ -334,139 +353,17 @@ export default function ProfileScreen() {
                                 </View>
                             ) : userPosts && userPosts.length > 0 ? (
                                 <View>
-                                    {userPosts.map((post: any) => {
-                                        const isLiked = post.likes?.some((like: any) => like._id === userInfo?._id || like === userInfo?._id);
-                                        const isPostOwner = post.user?._id === userInfo?._id || post.user === userInfo?._id;
-                                        return (
-                                            <View key={post._id} style={styles.postCard}>
-                                                {/* Post Header with User Info and Delete */}
-                                                <View style={styles.postHeader}>
-                                                    <View style={styles.postHeaderLeft}>
-                                                        <Text style={styles.postUsername}>
-                                                            {post.user?.username || userInfo?.username}
-                                                        </Text>
-                                                        <Text style={styles.postTime}>
-                                                            • {formatRelativeTime(post.createdAt)}
-                                                        </Text>
-                                                    </View>
-                                                    {isPostOwner && (
-                                                        <TouchableOpacity
-                                                            onPress={() => handleDeletePost(post._id)}
-                                                            style={styles.deleteButton}
-                                                        >
-                                                            <Ionicons name="trash-outline" size={20} color="#ef4444" />
-                                                        </TouchableOpacity>
-                                                    )}
-                                                </View>
-                                                {/* Post Content - Only show if there's text */}
-                                                {post.content && (
-                                                    <View style={styles.postContentContainer}>
-                                                        <Text style={styles.postContent}>
-                                                            {post.content}
-                                                        </Text>
-                                                    </View>
-                                                )}
-                                                {post.image && (
-                                                    <View style={styles.postImageContainer}>
-                                                        <Image
-                                                            source={{ uri: post.image }}
-                                                            style={styles.postImage}
-                                                            resizeMode="cover"
-                                                        />
-                                                    </View>
-                                                )}
-
-                                                {/* Action Buttons */}
-                                                <View style={styles.postActions}>
-                                                    <TouchableOpacity
-                                                        onPress={() => handleLikePost(post._id)}
-                                                        style={styles.likeButton}
-                                                    >
-                                                        <Ionicons
-                                                            name={isLiked ? "heart" : "heart-outline"}
-                                                            size={22}
-                                                            color={isLiked ? "#ef4444" : "#6b7280"}
-                                                        />
-                                                        <Text style={styles.likeCount}>
-                                                            {post.likes?.length || 0}
-                                                        </Text>
-                                                    </TouchableOpacity>
-
-                                                    <TouchableOpacity
-                                                        onPress={() => setShowCommentInput({ ...showCommentInput, [post._id]: !showCommentInput[post._id] })}
-                                                        style={styles.commentButton}
-                                                    >
-                                                        <Ionicons
-                                                            name="chatbubble-outline"
-                                                            size={20}
-                                                            color="#6b7280"
-                                                        />
-                                                        <Text style={styles.commentCount}>
-                                                            {post.comments?.length || 0}
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                </View>
-
-                                                {/* Comment Input and Comments List - Only show when comment icon is clicked */}
-                                                {showCommentInput[post._id] && (
-                                                    <View style={styles.commentSection}>
-                                                        {/* Comment Input */}
-                                                        <View style={styles.commentInputContainer}>
-                                                            <TextInput
-                                                                value={commentTexts[post._id] || ''}
-                                                                onChangeText={(text) => setCommentTexts({ ...commentTexts, [post._id]: text })}
-                                                                placeholder="Add a comment..."
-                                                                placeholderTextColor="#9ca3af"
-                                                                style={styles.commentInput}
-                                                            />
-                                                            <TouchableOpacity
-                                                                onPress={() => handleAddComment(post._id)}
-                                                                style={styles.sendButton}
-                                                            >
-                                                                <Ionicons name="send" size={16} color="#fff" />
-                                                            </TouchableOpacity>
-                                                        </View>
-
-                                                        {/* Comments List */}
-                                                        {post.comments && post.comments.length > 0 && (
-                                                            <View>
-                                                                {post.comments.slice(0, 3).map((comment: any, index: number) => {
-                                                                    const isOwnComment = comment.user?._id === userInfo?._id;
-                                                                    return (
-                                                                        <View key={index} style={styles.commentItem}>
-                                                                            <View style={styles.commentContent}>
-                                                                                <View style={styles.commentLeft}>
-                                                                                    <Text style={styles.commentUsername}>
-                                                                                        {comment.user?.username || 'Unknown'}
-                                                                                    </Text>
-                                                                                    <Text style={styles.commentText}>
-                                                                                        {comment.comment}
-                                                                                    </Text>
-                                                                                </View>
-                                                                                {isOwnComment && (
-                                                                                    <TouchableOpacity
-                                                                                        onPress={() => handleDeleteComment(post._id, comment._id)}
-                                                                                        style={styles.deleteCommentButton}
-                                                                                    >
-                                                                                        <Ionicons name="trash-outline" size={16} color="#ef4444" />
-                                                                                    </TouchableOpacity>
-                                                                                )}
-                                                                            </View>
-                                                                        </View>
-                                                                    );
-                                                                })}
-                                                                {post.comments.length > 3 && (
-                                                                    <Text style={styles.viewAllComments}>
-                                                                        View all {post.comments.length} comments
-                                                                    </Text>
-                                                                )}
-                                                            </View>
-                                                        )}
-                                                    </View>
-                                                )}
-                                            </View>
-                                        );
-                                    })}
+                                    {userPosts.map((post: any) => (
+                                        <PostCard
+                                            key={post._id}
+                                            post={post}
+                                            currentUserId={userInfo?._id || ''}
+                                            onLike={handleLikePost}
+                                            onDelete={handleDeletePost}
+                                            onAddComment={handleAddComment}
+                                            onDeleteComment={handleDeleteComment}
+                                        />
+                                    ))}
                                 </View>
                             ) : (
                                 <View style={styles.emptyPostsContainer}>
@@ -482,9 +379,9 @@ export default function ProfileScreen() {
                     <FollowersModal
                         isOpen={showFollowersModal}
                         onClose={() => setShowFollowersModal(false)}
-                        type="followers"
+                        type='followers'
                         users={displayProfile?.followers || []}
-                        title="Followers"
+                        title='Followers'
                         onUserPress={handleUserPress}
                     />
 
@@ -492,9 +389,9 @@ export default function ProfileScreen() {
                     <FollowersModal
                         isOpen={showFollowingModal}
                         onClose={() => setShowFollowingModal(false)}
-                        type="following"
+                        type='following'
                         users={displayProfile?.following || []}
-                        title="Following"
+                        title='Following'
                         onUserPress={handleUserPress}
                     />
 
@@ -510,9 +407,12 @@ export default function ProfileScreen() {
                     {isOwnProfile && (
                         <TouchableOpacity
                             onPress={() => setShowCreatePostModal(true)}
-                            style={styles.fab}
-                        >
-                            <Ionicons name="add" size={32} color="#fff" />
+                            style={styles.fab}>
+                            <Ionicons
+                                name='add'
+                                size={32}
+                                color='#fff'
+                            />
                         </TouchableOpacity>
                     )}
                 </View>
