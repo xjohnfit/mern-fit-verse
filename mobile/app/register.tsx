@@ -303,7 +303,19 @@ export default function Register() {
                                 </View>
                                 <Text style={styles.termsText}>
                                     I agree to the{' '}
-                                    <Text style={styles.termsLink}>Terms and Conditions</Text>
+                                    <Text
+                                        style={styles.termsLink}
+                                        onPress={() => router.push('/TermsOfService')}
+                                    >
+                                        Terms of Service
+                                    </Text>
+                                    {' & '}
+                                    <Text
+                                        style={styles.termsLink}
+                                        onPress={() => router.push('/EULA')}
+                                    >
+                                        EULA
+                                    </Text>
                                 </Text>
                             </TouchableOpacity>
 
