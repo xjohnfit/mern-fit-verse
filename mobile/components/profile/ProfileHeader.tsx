@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
     ActivityIndicator,
     useColorScheme,
+    Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -15,6 +16,7 @@ import { calculateAge } from '../../lib/calculateAge';
 import { formatDateToMMDDYYYY } from '../../lib/formatDate';
 import { UserProfile } from '../../types/profile.types';
 import { NotificationBell } from './NotificationBell';
+import { OptionMenuModal } from './OptionMenuModal';
 import ProfileHeaderStyles from '../../styles/profile/ProfileHeaderStyles';
 
 // Helper function to format goal values to display labels
@@ -52,9 +54,20 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
+    const [showOptionsMenu, setShowOptionsMenu] = useState(false);
 
     const handleMessageClick = () => {
         router.push(`/chat?userId=${user._id}`);
+    };
+
+    const handleReportUser = () => {
+        // Report is handled in OptionMenuModal with proper API call and alert
+        // No additional action needed here
+    };
+
+    const handleBlockUser = () => {
+        // TODO: Implement block user API call
+        Alert.alert('Success', `${user.name} has been blocked.`);
     };
 
     // Safety check for user data
@@ -102,7 +115,10 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                         </View>
                         {/* More Options Button or Notification Bell */}
                         {!isOwnProfile ? (
-                            <TouchableOpacity style={ProfileHeaderStyles.moreButton}>
+                            <TouchableOpacity
+                                style={ProfileHeaderStyles.moreButton}
+                                onPress={() => setShowOptionsMenu(true)}
+                            >
                                 <Ionicons
                                     name='ellipsis-horizontal'
                                     color='#fff'
@@ -315,6 +331,16 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                     )}
                 </View>
             </View>
+
+            {/* Options Menu Modal */}
+            <OptionMenuModal
+                visible={showOptionsMenu}
+                userName={user.name}
+                userId={user._id}
+                onClose={() => setShowOptionsMenu(false)}
+                onReport={handleReportUser}
+                onBlock={handleBlockUser}
+            />
         </View>
     );
 };

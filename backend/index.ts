@@ -37,6 +37,7 @@ import customCategoryRoutes from './routes/customCategoryRoutes';
 import workoutRoutes from './routes/workoutRoutes';
 import workoutTemplateRoutes from './routes/workoutTemplateRoutes';
 import workoutTemplateFolderRoutes from './routes/workoutTemplateFolderRoutes';
+import reportRoutes from './routes/reportRoutes';
 
 // API Landing Screen
 import apiLandingScreen from './apiLandingScreen';
@@ -130,6 +131,7 @@ app.use('/api/custom-categories', customCategoryRoutes);
 app.use('/api/workouts', workoutRoutes);
 app.use('/api/workout-templates', workoutTemplateRoutes);
 app.use('/api/workout-template-folders', workoutTemplateFolderRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Error middlewares (should be placed AFTER all routes)
 app.use(notFound);

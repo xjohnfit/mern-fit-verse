@@ -34,6 +34,11 @@ export interface IUser {
     // Expo push notification token
     expoPushToken?: string | null;
 
+    // Account status (for reports/moderation)
+    isActive?: boolean;
+    isBanned?: boolean;
+    suspendedUntil?: Date | null;
+
     // timestamps
     createdAt: Date;
     updatedAt: Date;
@@ -76,6 +81,11 @@ const userSchema = new Schema<IUser>(
 
         // Expo push notification token
         expoPushToken: { type: String, default: null },
+
+        // Account status (for reports/moderation)
+        isActive: { type: Boolean, default: true },
+        isBanned: { type: Boolean, default: false },
+        suspendedUntil: { type: Date, default: null },
     },
     { timestamps: true }
 );

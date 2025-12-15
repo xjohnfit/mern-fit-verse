@@ -10,7 +10,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import SafeScreen from '@/components/layout/SafeScreen';
-import termsOfServiceStyles from '@/styles/settings/termsOfServiceStyles';
+import termsOfServiceStyles from '@/styles/onboarding/termsOfServiceStyles';
 
 const TermsOfService = () => {
     const router = useRouter();

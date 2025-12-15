@@ -12,6 +12,7 @@ import { Tabs } from '@/components/ui/tabs';
 // Local component imports
 import ExerciseManagementTab from '@/screens/protected/admin/components/ExerciseManagementTab';
 import UserManagementTab from '@/screens/protected/admin/components/UserManagementTab';
+import ReportsManagementTab from '@/screens/protected/admin/components/ReportsManagementTab';
 
 // Type imports
 import type { RootState } from '@/screens/protected/admin/admin.types';
@@ -43,6 +44,11 @@ const AdminScreen = () => {
       value: 'exercises',
       content: <ExerciseManagementTab />,
     },
+    {
+      title: 'Reports',
+      value: 'reports',
+      content: <ReportsManagementTab />,
+    },
   ];
 
   return (
@@ -51,7 +57,7 @@ const AdminScreen = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2 text-foreground">Admin Dashboard</h1>
           <p className="text-muted-foreground text-base">
-            Manage users & exercises
+            Manage users, exercises, and reports
           </p>
         </div>
 

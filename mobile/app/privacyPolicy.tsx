@@ -10,7 +10,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import SafeScreen from '@/components/layout/SafeScreen';
-import privacyPolicyStyles from '@/styles/settings/privacyPolicyStyles';
+import privacyPolicyStyles from '@/styles/onboarding/privacyPolicyStyles';
 
 const PrivacyPolicy = () => {
     const router = useRouter();

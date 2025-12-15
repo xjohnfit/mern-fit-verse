@@ -63,6 +63,81 @@ export interface UserManagementTabProps {
     isAdmin: boolean;
 }
 
+// Report related types
+export type ReportReason =
+    | 'harassment'
+    | 'hate_speech'
+    | 'spam'
+    | 'inappropriate_content'
+    | 'violence'
+    | 'other';
+
+export type ReportStatus = 'pending' | 'reviewed' | 'resolved' | 'dismissed';
+
+export type ReportAction =
+    | 'warning'
+    | 'suspend'
+    | 'ban'
+    | 'content_removed'
+    | 'no_action';
+
+export interface Report {
+    _id: string;
+    reporter: {
+        _id: string;
+        name: string;
+        username: string;
+        photo?: string;
+    };
+    reportedUser: {
+        _id: string;
+        name: string;
+        username: string;
+        photo?: string;
+        email?: string;
+    };
+    reportedPost?: string;
+    reason: ReportReason;
+    description?: string;
+    status: ReportStatus;
+    actionTaken?: ReportAction;
+    reviewedBy?: {
+        _id: string;
+        name: string;
+        username: string;
+    };
+    reviewedAt?: Date;
+    adminNotes?: string;
+    createdAt: Date;
+}
+
+export interface ReportsListResponse {
+    reports: Report[];
+    currentPage: number;
+    totalPages: number;
+    totalReports: number;
+}
+
+export interface ReportDetailsModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    report: Report | null;
+    onUpdate: (
+        reportId: string,
+        status: ReportStatus,
+        actionTaken?: ReportAction,
+        adminNotes?: string
+    ) => void;
+    isUpdating: boolean;
+}
+
+export interface ReportsTableProps {
+    reports: Report[];
+    onViewDetails: (report: Report) => void;
+    onDelete: (reportId: string) => void;
+    isLoading: boolean;
+}
+
 // Redux state types
 export interface RootState {
     auth: {
