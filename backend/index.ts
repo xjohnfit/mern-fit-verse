@@ -38,6 +38,7 @@ import workoutRoutes from './routes/workoutRoutes';
 import workoutTemplateRoutes from './routes/workoutTemplateRoutes';
 import workoutTemplateFolderRoutes from './routes/workoutTemplateFolderRoutes';
 import reportRoutes from './routes/reportRoutes';
+import blockRoutes from './routes/blockRoutes';
 
 // API Landing Screen
 import apiLandingScreen from './apiLandingScreen';
@@ -132,6 +133,7 @@ app.use('/api/workouts', workoutRoutes);
 app.use('/api/workout-templates', workoutTemplateRoutes);
 app.use('/api/workout-template-folders', workoutTemplateFolderRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/users', blockRoutes);
 
 // Error middlewares (should be placed AFTER all routes)
 app.use(notFound);

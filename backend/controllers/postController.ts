@@ -74,21 +74,61 @@ export const deletePost = asyncHandler(async (req: Request, res: Response) => {
 export const getUserPosts = asyncHandler(
     async (req: Request, res: Response) => {
         const { username } = req.params;
+        const currentUserId = req.user?._id;
+
         const user = await User.findOne({ username });
         if (!user) {
             res.status(404);
             throw new Error('User not found');
         }
+
+        // Check if there's a block relationship
+        const currentUser = await User.findById(currentUserId);
+
+        // Check if current user blocked target user or vice versa
+        const isBlocked = currentUser?.blockedUsers?.some(
+            (id: any) => id.toString() === user._id.toString()
+        );
+        const isBlockedBy = user.blockedUsers?.some(
+            (id: any) => id.toString() === currentUserId?.toString()
+        );
+
+        // If blocked, return empty array
+        if (isBlocked || isBlockedBy) {
+            res.json([]);
+            return;
+        }
+
         const posts = await Post.find({ author: user._id })
             .populate('author', 'name username photo')
             .populate('comments.user', 'name username photo')
             .sort({ createdAt: -1 });
 
-        // Transform the data to match frontend expectations
-        const transformedPosts = posts.map((post) => ({
-            ...post.toObject(),
-            user: post.author, // Map author to user for frontend compatibility
-        }));
+        // Get blocked users list for comment filtering
+        const blockedUsers = currentUser?.blockedUsers || [];
+        const usersWhoBlockedMe = await User.find({
+            blockedUsers: currentUserId,
+        }).select('_id');
+        const blockedByIds = usersWhoBlockedMe.map((u) => u._id);
+        const allBlockedIds = [...blockedUsers, ...blockedByIds];
+
+        // Transform the data to match frontend expectations and filter comments
+        const transformedPosts = posts.map((post) => {
+            const postObj = post.toObject();
+            // Filter out comments from blocked users
+            const filteredComments = postObj.comments.filter((comment: any) => {
+                const commentUserId = comment.user?._id?.toString();
+                return !allBlockedIds.some(
+                    (id: any) => id.toString() === commentUserId
+                );
+            });
+
+            return {
+                ...postObj,
+                user: post.author, // Map author to user for frontend compatibility
+                comments: filteredComments,
+            };
+        });
 
         res.json(transformedPosts);
     }
@@ -110,21 +150,47 @@ export const getFeedPosts = asyncHandler(
             throw new Error('User not found');
         }
 
+        // Get blocked users
+        const blockedUsers = user.blockedUsers || [];
+
+        // Get users who blocked the current user
+        const usersWhoBlockedMe = await User.find({
+            blockedUsers: userId,
+        }).select('_id');
+        const blockedByIds = usersWhoBlockedMe.map((u) => u._id);
+
+        // Combine all blocked user IDs
+        const allBlockedIds = [...blockedUsers, ...blockedByIds];
+
         // Get followed users IDs and include the current user's ID
         const followedUsers = user.following || [];
         const feedUserIds = [userId, ...followedUsers];
 
-        // Get posts from current user and followed users
-        const posts = await Post.find({ author: { $in: feedUserIds } })
+        // Get posts from current user and followed users, excluding blocked users
+        const posts = await Post.find({
+            author: { $in: feedUserIds, $nin: allBlockedIds },
+        })
             .populate('author', 'name username photo')
             .populate('comments.user', 'name username photo')
             .sort({ createdAt: -1 });
 
-        // Transform the data to match frontend expectations
-        const transformedPosts = posts.map((post) => ({
-            ...post.toObject(),
-            user: post.author, // Map author to user for frontend compatibility
-        }));
+        // Transform the data to match frontend expectations and filter comments
+        const transformedPosts = posts.map((post) => {
+            const postObj = post.toObject();
+            // Filter out comments from blocked users
+            const filteredComments = postObj.comments.filter((comment: any) => {
+                const commentUserId = comment.user?._id?.toString();
+                return !allBlockedIds.some(
+                    (id: any) => id.toString() === commentUserId
+                );
+            });
+
+            return {
+                ...postObj,
+                user: post.author, // Map author to user for frontend compatibility
+                comments: filteredComments,
+            };
+        });
 
         res.json(transformedPosts);
     }
@@ -140,17 +206,43 @@ export const getFollowedUsersPosts = asyncHandler(
             throw new Error('User not found');
         }
 
+        // Get blocked users
+        const blockedUsers = user.blockedUsers || [];
+
+        // Get users who blocked the current user
+        const usersWhoBlockedMe = await User.find({
+            blockedUsers: userId,
+        }).select('_id');
+        const blockedByIds = usersWhoBlockedMe.map((u) => u._id);
+
+        // Combine all blocked user IDs
+        const allBlockedIds = [...blockedUsers, ...blockedByIds];
+
         const followedUsers = user.following;
-        const posts = await Post.find({ author: { $in: followedUsers } })
+        const posts = await Post.find({
+            author: { $in: followedUsers, $nin: allBlockedIds },
+        })
             .populate('author', 'name username photo')
             .populate('comments.user', 'name username photo')
             .sort({ createdAt: -1 });
 
-        // Transform the data to match frontend expectations
-        const transformedPosts = posts.map((post) => ({
-            ...post.toObject(),
-            user: post.author, // Map author to user for frontend compatibility
-        }));
+        // Transform the data to match frontend expectations and filter comments
+        const transformedPosts = posts.map((post) => {
+            const postObj = post.toObject();
+            // Filter out comments from blocked users
+            const filteredComments = postObj.comments.filter((comment: any) => {
+                const commentUserId = comment.user?._id?.toString();
+                return !allBlockedIds.some(
+                    (id: any) => id.toString() === commentUserId
+                );
+            });
+
+            return {
+                ...postObj,
+                user: post.author, // Map author to user for frontend compatibility
+                comments: filteredComments,
+            };
+        });
 
         res.json(transformedPosts);
     }

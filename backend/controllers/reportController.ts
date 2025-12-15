@@ -131,7 +131,7 @@ export const getReportById = async (req: Request, res: Response) => {
 export const updateReportStatus = async (req: Request, res: Response) => {
     try {
         const { reportId } = req.params;
-        const { status, action, adminNotes } = req.body;
+        const { status, actionTaken, adminNotes } = req.body;
 
         const report = await Report.findById(reportId);
 
@@ -141,7 +141,7 @@ export const updateReportStatus = async (req: Request, res: Response) => {
         }
 
         report.status = status || report.status;
-        report.actionTaken = action;
+        report.actionTaken = actionTaken;
         report.adminNotes = adminNotes;
         report.reviewedBy = req.user._id;
         report.reviewedAt = new Date();
@@ -149,18 +149,18 @@ export const updateReportStatus = async (req: Request, res: Response) => {
         await report.save();
 
         // Take action based on decision
-        if (action === 'suspend' || action === 'ban') {
+        if (actionTaken === 'suspend' || actionTaken === 'ban') {
             await User.findByIdAndUpdate(report.reportedUser, {
-                isActive: action !== 'ban',
-                isBanned: action === 'ban',
+                isActive: actionTaken !== 'ban',
+                isBanned: actionTaken === 'ban',
                 suspendedUntil:
-                    action === 'suspend'
+                    actionTaken === 'suspend'
                         ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
                         : null,
             });
         }
 
-        if (action === 'content_removed' && report.reportedPost) {
+        if (actionTaken === 'content_removed' && report.reportedPost) {
             await Post.findByIdAndDelete(report.reportedPost);
         }
 

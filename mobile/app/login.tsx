@@ -174,16 +174,16 @@ export default function LoginScreen() {
                         </View>
 
                         {/* Divider */}
-                        <View style={styles.dividerContainer}>
+                        {/* <View style={styles.dividerContainer}>
                             <View style={styles.dividerLine} />
                             <Text style={styles.dividerText}>
                                 Or continue with
                             </Text>
                             <View style={styles.dividerLine} />
-                        </View>
+                        </View> */}
 
                         {/* Social Login Buttons */}
-                        <View style={styles.socialButtonsRow}>
+                        {/* <View style={styles.socialButtonsRow}>
                             <TouchableOpacity style={[styles.socialButton, styles.socialButtonLeft]}>
                                 <Text style={styles.socialButtonText}>
                                     Google
@@ -194,7 +194,7 @@ export default function LoginScreen() {
                                     Facebook
                                 </Text>
                             </TouchableOpacity>
-                        </View>
+                        </View> */}
 
                         {/* Register Link */}
                         <View style={styles.registerLinkContainer}>

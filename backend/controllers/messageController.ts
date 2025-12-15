@@ -11,6 +11,32 @@ export const getMessages = asyncHandler(async (req: Request, res: Response) => {
     const { senderId, receiverId } = req.params;
     const { limit = '50', before } = req.query;
 
+    // Check if there's a block relationship
+    const sender = await User.findById(senderId);
+    const receiver = await User.findById(receiverId);
+
+    if (!sender || !receiver) {
+        res.status(404);
+        throw new Error('User not found');
+    }
+
+    // Check if sender blocked receiver or vice versa
+    const isBlocked = sender.blockedUsers?.some(
+        (id: any) => id.toString() === receiverId
+    );
+    const isBlockedBy = receiver.blockedUsers?.some(
+        (id: any) => id.toString() === senderId
+    );
+
+    // If blocked, return empty message history
+    if (isBlocked || isBlockedBy) {
+        res.json({
+            messages: [],
+            hasMore: false,
+        });
+        return;
+    }
+
     const query: any = {
         $or: [
             { senderId, receiverId },
@@ -40,6 +66,28 @@ export const getMessages = asyncHandler(async (req: Request, res: Response) => {
 export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
     const { senderId, receiverId, text, image } = req.body;
 
+    // Check if there's a block relationship
+    const sender = await User.findById(senderId);
+    const receiver = await User.findById(receiverId);
+
+    if (!sender || !receiver) {
+        res.status(404);
+        throw new Error('User not found');
+    }
+
+    // Check if sender blocked receiver or vice versa
+    const isBlocked = sender.blockedUsers?.some(
+        (id: any) => id.toString() === receiverId
+    );
+    const isBlockedBy = receiver.blockedUsers?.some(
+        (id: any) => id.toString() === senderId
+    );
+
+    if (isBlocked || isBlockedBy) {
+        res.status(403);
+        throw new Error('Cannot send messages to this user');
+    }
+
     let imageUrl: string | undefined;
     if (image) {
         const uploadedImage = await cloudinary.uploader.upload(image);
@@ -54,17 +102,13 @@ export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
     const savedMessage = await newMessage.save();
 
     // Send push notification to receiver if they have a push token
-    const receiver = await User.findById(receiverId);
     if (receiver?.expoPushToken) {
-        const sender = await User.findById(senderId);
-        if (sender) {
-            await sendPushNotification(
-                receiver.expoPushToken,
-                sender.name || 'New Message',
-                text,
-                { senderId, receiverId, text, image: imageUrl }
-            );
-        }
+        await sendPushNotification(
+            receiver.expoPushToken,
+            sender.name || 'New Message',
+            text,
+            { senderId, receiverId, text, image: imageUrl }
+        );
     }
 
     // Emit the message to the receiver via Socket.IO

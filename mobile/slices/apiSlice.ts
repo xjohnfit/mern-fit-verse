@@ -61,6 +61,7 @@ export const apiSlice = createApi({
         'Food',
         'FoodSuggestions',
         'Report',
+        'Block',
     ],
     endpoints: (_builder) => ({}),
 });

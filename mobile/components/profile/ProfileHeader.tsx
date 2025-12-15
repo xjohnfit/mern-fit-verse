@@ -66,8 +66,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     };
 
     const handleBlockUser = () => {
-        // TODO: Implement block user API call
-        Alert.alert('Success', `${user.name} has been blocked.`);
+        // Block is handled in OptionMenuModal with proper API call and alert
+        // No additional action needed here
     };
 
     // Safety check for user data

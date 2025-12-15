@@ -11,6 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import OptionMenuModalStyles from '../../styles/profile/OptionMenuModalStyles';
 import { useReportUserMutation } from '../../slices/reportsApiSlice';
+import { useBlockUserMutation } from '../../slices/blockApiSlice';
 
 interface OptionMenuModalProps {
     visible: boolean;
@@ -32,6 +33,7 @@ export const OptionMenuModal: React.FC<OptionMenuModalProps> = ({
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
     const [reportUser, { isLoading: isReporting }] = useReportUserMutation();
+    const [blockUser, { isLoading: isBlocking }] = useBlockUserMutation();
 
     const handleReportUser = () => {
         onClose();
@@ -108,12 +110,23 @@ export const OptionMenuModal: React.FC<OptionMenuModalProps> = ({
                 {
                     text: 'Block',
                     style: 'destructive',
-                    onPress: () => {
-                        if (onBlock) {
-                            onBlock();
-                        } else {
-                            // Default behavior if no handler provided
-                            Alert.alert('Success', `${userName} has been blocked.`);
+                    onPress: async () => {
+                        try {
+                            const response = await blockUser(userId).unwrap();
+
+                            Alert.alert(
+                                'Success',
+                                response.message || `${userName} has been blocked.`
+                            );
+
+                            if (onBlock) {
+                                onBlock();
+                            }
+                        } catch (error: any) {
+                            Alert.alert(
+                                'Error',
+                                error?.data?.message || 'Failed to block user. Please try again.'
+                            );
                         }
                     },
                 },

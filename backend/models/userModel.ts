@@ -11,6 +11,7 @@ export interface IUser {
     gender: string;
     followers: string[];
     following: string[];
+    blockedUsers?: string[];
     admin: boolean;
 
     // Optional fields
@@ -57,6 +58,9 @@ const userSchema = new Schema<IUser>(
         gender: { type: String, required: true },
         followers: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
         following: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
+        blockedUsers: [
+            { type: Schema.Types.ObjectId, ref: 'User', default: [] },
+        ],
         admin: { type: Boolean, default: false },
 
         // Optional fields

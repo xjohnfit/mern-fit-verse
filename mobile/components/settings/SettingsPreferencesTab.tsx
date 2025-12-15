@@ -369,17 +369,24 @@ const SettingsPreferencesTab: React.FC<SettingsPreferencesTabProps> = ({ onDelet
         />
 
         <SettingItem
+          icon="ban"
+          title="Blocked Users"
+          subtitle="Manage blocked users"
+          onPress={() => router.push('/settings/blockedUsers')}
+        />
+
+        <SettingItem
           icon="shield-checkmark"
           title="Privacy Policy"
           subtitle="View our privacy policy"
-          onPress={() => router.push('/settings/privacyPolicy')}
+          onPress={() => router.push('/privacyPolicy')}
         />
 
         <SettingItem
           icon="document-text"
           title="Terms of Service"
           subtitle="View terms and conditions"
-          onPress={() => router.push('/settings/TermsOfService')}
+          onPress={() => router.push('/TermsOfService')}
         />
       </View>
 

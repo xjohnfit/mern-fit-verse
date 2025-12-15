@@ -76,8 +76,6 @@ export const updateUserProfile = asyncHandler(
             }
         }
 
-
-
         // Build update object
         const updateFields: any = {};
 
@@ -94,7 +92,11 @@ export const updateUserProfile = asyncHandler(
         // Handle restTimer
         if (req.body.restTimer !== undefined && req.body.restTimer !== null) {
             const restTimerValue = Number(req.body.restTimer);
-            if (!isNaN(restTimerValue) && restTimerValue >= 60 && restTimerValue <= 600) {
+            if (
+                !isNaN(restTimerValue) &&
+                restTimerValue >= 60 &&
+                restTimerValue <= 600
+            ) {
                 updateFields.restTimer = restTimerValue;
             }
         }
@@ -273,7 +275,9 @@ export const updateUserProfile = asyncHandler(
         }
 
         // Fetch fresh from database without password
-        const updatedUser = await User.findById(savedUser._id).select('-password');
+        const updatedUser = await User.findById(savedUser._id).select(
+            '-password'
+        );
 
         res.status(200).json(updatedUser);
     }
@@ -307,9 +311,29 @@ export const getSuggestedUsers = asyncHandler(
             res.status(404);
             throw new Error('User not found');
         }
+
+        // Get blocked users
+        const blockedUsers = currentUser.blockedUsers || [];
+
+        // Get users who blocked the current user
+        const usersWhoBlockedMe = await User.find({
+            blockedUsers: currentUserId,
+        }).select('_id');
+        const blockedByIds = usersWhoBlockedMe.map((u) => u._id);
+
+        // Combine all blocked user IDs
+        const allBlockedIds = [...blockedUsers, ...blockedByIds];
+
         const following = currentUser.following;
         const suggestedUsers = await User.aggregate([
-            { $match: { _id: { $ne: currentUserId, $nin: following } } },
+            {
+                $match: {
+                    _id: {
+                        $ne: currentUserId,
+                        $nin: [...following, ...allBlockedIds],
+                    },
+                },
+            },
             { $sample: { size: 10 } }, // Get 10 random users
             { $project: { password: 0, email: 0 } }, // Exclude sensitive fields
         ]);
