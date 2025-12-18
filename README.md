@@ -398,28 +398,29 @@ To create a vibrant, inclusive fitness community where users can share their jou
 FitVerse uses a modern microservices architecture that separates concerns and enables independent deployment:
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                         Load Balancer                       │
-│                    (NGINX / K8s Ingress)                    │
-└─────────────────────┬───────────────────────┬───────────────┘
-                      │                       │
-         ┌────────────▼────────────┐ ┌───────▼──────────┐
-         │   Frontend Service      │ │  Backend API     │
-         │   (React SPA)           │ │  (Express.js)    │
-         │   Port: 5173            │ │  Port: 5004      │
-         │   Docker: xjohnfit/     │ │  Docker: xjohnfit│
-         │   fitverse-frontend     │ │  /fitverse-api   │
-         └────────────┬────────────┘ └───────┬──────────┘
-                      │                      │
-                      │                      │
-         ┌────────────▼──────────────────────▼──────────┐
-         │          External Services                   │
-         ├──────────────────────────────────────────────┤
-         │  • MongoDB Atlas (Database)                  │
-         │  • Cloudinary (Image Storage)                │
-         │  • FatSecret API (Nutrition Data)            │
-         │  • Socket.IO (Real-time Communication)       │
-         └──────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────┐
+│                       Load Balancer                           │
+│                   (NGINX / K8s Ingress)                       │
+└────────────────────────┬──────────────────┬───────────────────┘
+                         │                  │
+           ┌─────────────▼────────────┐  ┌──▼────────────────┐
+           │   Frontend Service       │  │  Backend API      │
+           │   (React SPA)            │  │  (Express.js)     │
+           │   Port: 5173             │  │  Port: 5004       │
+           │   Docker: xjohnfit/      │  │  Docker: xjohnfit/│
+           │   fitverse-frontend      │  │  fitverse-api     │
+           └─────────────┬────────────┘  └──┬────────────────┘
+                         │                  │
+                         └────────┬─────────┘
+                                  │
+           ┌──────────────────────▼──────────────────────────┐
+           │              External Services                   │
+           ├──────────────────────────────────────────────────┤
+           │  • MongoDB Atlas (Database)                      │
+           │  • Cloudinary (Image Storage)                    │
+           │  • FatSecret API (Nutrition Data)                │
+           │  • Socket.IO (Real-time Communication)           │
+           └──────────────────────────────────────────────────┘
 ```
 
 ### Service Separation Benefits
