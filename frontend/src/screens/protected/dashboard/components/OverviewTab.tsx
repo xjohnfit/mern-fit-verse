@@ -72,7 +72,7 @@ export const OverviewTab = ({
                                 <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">{workoutStats?.totalWorkouts || 0}</p>
                                 <p className="text-cyan-200 text-xs mt-2">All time record</p>
                             </div>
-                            <Dumbbell className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-white/30" />
+                            <Dumbbell className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-white" />
                         </div>
                     </WobbleCard>
 
@@ -86,7 +86,7 @@ export const OverviewTab = ({
                                 <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">{workoutStats?.workoutsThisWeek || 0}</p>
                                 <p className="text-pink-200 text-xs mt-2">Keep it up! 💪</p>
                             </div>
-                            <Calendar className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-white/30" />
+                            <Calendar className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-white" />
                         </div>
                     </WobbleCard>
 
@@ -102,7 +102,7 @@ export const OverviewTab = ({
                                 </p>
                                 <p className="text-teal-200 text-xs mt-2">Consistency score</p>
                             </div>
-                            <TrendingUp className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-white/30" />
+                            <TrendingUp className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-white" />
                         </div>
                     </WobbleCard>
                 </div>

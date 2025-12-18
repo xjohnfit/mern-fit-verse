@@ -58,7 +58,6 @@ const Footer = () => {
                                                 to='/dashboard'
                                                 className='text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-xs sm:text-sm flex items-center gap-2 group'
                                             >
-                                                <LayoutDashboard className='w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-0 group-hover:opacity-100 transition-opacity' />
                                                 Dashboard
                                             </Link>
                                         </li>
@@ -67,7 +66,6 @@ const Footer = () => {
                                                 to='/nutrition'
                                                 className='text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors duration-200 text-xs sm:text-sm flex items-center gap-2 group'
                                             >
-                                                <UtensilsCrossed className='w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-0 group-hover:opacity-100 transition-opacity' />
                                                 Nutrition
                                             </Link>
                                         </li>
@@ -76,7 +74,6 @@ const Footer = () => {
                                                 to='/workout'
                                                 className='text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors duration-200 text-xs sm:text-sm flex items-center gap-2 group'
                                             >
-                                                <Dumbbell className='w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-0 group-hover:opacity-100 transition-opacity' />
                                                 Workout
                                             </Link>
                                         </li>
@@ -85,7 +82,6 @@ const Footer = () => {
                                                 to='/settings'
                                                 className='text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200 text-xs sm:text-sm flex items-center gap-2 group'
                                             >
-                                                <Settings className='w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-0 group-hover:opacity-100 transition-opacity' />
                                                 Settings
                                             </Link>
                                         </li>

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useLocation } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLogoutMutation } from '@/slices/usersApiSlice';
 import { clearCredentials } from '@/slices/authSlice';
@@ -38,7 +38,15 @@ function Header() {
     const [logoutApiCall] = useLogoutMutation();
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    const isActive = (path: string) => {
+        if (path === '/') {
+            return location.pathname === '/';
+        }
+        return location.pathname.startsWith(path);
+    };
 
     // Close mobile menu on window resize
     useEffect(() => {
@@ -76,7 +84,7 @@ function Header() {
     const closeMobileMenu = () => {
         setIsMobileMenuOpen(false);
     };
-    
+
     const avatar = userInfo ? (
         userInfo.photo ? (
             <img
@@ -125,40 +133,55 @@ function Header() {
                                 <div className='flex items-center space-x-1'>
                                     <Link
                                         to='/dashboard'
-                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 font-medium group'>
+                                        className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-medium group transition-all duration-200 ${isActive('/dashboard')
+                                            ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                                            : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20'
+                                            }`}>
                                         <LayoutDashboard className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
                                         <span>Dashboard</span>
                                     </Link>
 
                                     <Link
                                         to={`/profile/view/${userInfo?.username}`}
-                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-pink-500 dark:hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-all duration-200 font-medium group'>
+                                        className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-medium group transition-all duration-200 ${isActive('/profile')
+                                            ? 'text-pink-500 dark:text-pink-500 bg-pink-50 dark:bg-pink-900/20'
+                                            : 'text-gray-700 dark:text-gray-300 hover:text-pink-500 dark:hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20'
+                                            }`}>
                                         <User className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
                                         <span>Profile</span>
                                     </Link>
 
                                     <Link
                                         to='/messages'
-                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-green-500 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200 font-medium group'>
+                                        className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-medium group transition-all duration-200 ${isActive('/messages')
+                                            ? 'text-cyan-500 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/20'
+                                            : 'text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/20'
+                                            }`}>
                                         <MessageCircle className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
                                         <span>Messages</span>
                                     </Link>
 
                                     <Link
                                         to='/nutrition'
-                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-amber-500 dark:hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all duration-200 font-medium group'>
+                                        className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-medium group transition-all duration-200 ${isActive('/nutrition')
+                                            ? 'text-amber-500 dark:text-amber-500 bg-amber-50 dark:bg-amber-900/20'
+                                            : 'text-gray-700 dark:text-gray-300 hover:text-amber-500 dark:hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20'
+                                            }`}>
                                         <UtensilsCrossed className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
                                         <span>Nutrition</span>
                                     </Link>
 
                                     <Link
                                         to='/workout'
-                                        className='flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200 font-medium group'>
+                                        className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-medium group transition-all duration-200 ${isActive('/workout')
+                                            ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20'
+                                            : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20'
+                                            }`}>
                                         <Dumbbell className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
                                         <span>Workout</span>
                                     </Link>
 
-                                    
+
 
                                     {/* User Menu */}
                                     <NavigationMenu>
@@ -184,7 +207,10 @@ function Header() {
                                                                 asChild>
                                                                 <Link
                                                                     to='/admin'
-                                                                    className='flex flex-row items-center space-x-3 w-full px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:text-amber-600 dark:hover:text-amber-400 transition-all duration-200 group'>
+                                                                    className={`flex flex-row items-center space-x-3 w-full px-3 py-2 rounded-lg transition-all duration-200 group ${isActive('/admin')
+                                                                        ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400'
+                                                                        : 'text-gray-700 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:text-amber-600 dark:hover:text-amber-400'
+                                                                        }`}>
                                                                     <Shield className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
                                                                     <span className='font-medium'>
                                                                         Admin Panel
@@ -196,7 +222,10 @@ function Header() {
                                                             asChild>
                                                             <Link
                                                                 to='/settings'
-                                                                className='flex flex-row items-center space-x-3 w-full px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 group'>
+                                                                className={`flex flex-row items-center space-x-3 w-full px-3 py-2 rounded-lg transition-all duration-200 group ${isActive('/settings')
+                                                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400'
+                                                                    }`}>
                                                                 <Settings className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
                                                                 <span className='font-medium'>
                                                                     Settings
@@ -231,7 +260,10 @@ function Header() {
                                 <div className='flex items-center space-x-3'>
                                     <Link
                                         to='/'
-                                        className='flex items-center space-x-2 px-3 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 font-medium'>
+                                        className={`flex items-center space-x-2 px-3 py-2 rounded-xl font-medium transition-all duration-200 ${isActive('/')
+                                            ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-800'
+                                            : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                            }`}>
                                         <Home className='w-4 h-4' />
                                         <span>Home</span>
                                     </Link>
@@ -261,27 +293,42 @@ function Header() {
                                 <>
                                     <Link
                                         to='/dashboard'
-                                        className='p-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200'>
+                                        className={`p-2 rounded-xl transition-all duration-200 ${isActive('/dashboard')
+                                            ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                                            : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20'
+                                            }`}>
                                         <LayoutDashboard className='w-5 h-5' />
                                     </Link>
                                     <Link
                                         to={`/profile/view/${userInfo?.username}`}
-                                        className='p-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200'>
+                                        className={`p-2 rounded-xl transition-all duration-200 ${isActive('/profile')
+                                            ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20'
+                                            : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20'
+                                            }`}>
                                         <User className='w-5 h-5' />
                                     </Link>
                                     <Link
                                         to='/messages'
-                                        className='p-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200'>
+                                        className={`p-2 rounded-xl transition-all duration-200 ${isActive('/messages')
+                                            ? 'text-cyan-500 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/20'
+                                            : 'text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/20'
+                                            }`}>
                                         <MessageCircle className='w-5 h-5' />
                                     </Link>
                                     <Link
                                         to='/nutrition'
-                                        className='p-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200'>
+                                        className={`p-2 rounded-xl transition-all duration-200 ${isActive('/nutrition')
+                                            ? 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20'
+                                            : 'text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20'
+                                            }`}>
                                         <UtensilsCrossed className='w-5 h-5' />
                                     </Link>
                                     <Link
                                         to='/workout'
-                                        className='p-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all duration-200'>
+                                        className={`p-2 rounded-xl transition-all duration-200 ${isActive('/workout')
+                                            ? 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
+                                            : 'text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20'
+                                            }`}>
                                         <Dumbbell className='w-5 h-5' />
                                     </Link>
                                     <NotificationBell />
@@ -358,7 +405,10 @@ function Header() {
                                             <Link
                                                 to='/admin'
                                                 onClick={closeMobileMenu}
-                                                className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-xl transition-all duration-200 group'>
+                                                className={`flex items-center space-x-3 w-full p-3 rounded-xl transition-all duration-200 group ${isActive('/admin')
+                                                    ? 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20'
+                                                    : 'text-gray-700 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20'
+                                                    }`}>
                                                 <Shield className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
                                                 <span className='font-medium'>
                                                     Admin Panel
@@ -369,7 +419,10 @@ function Header() {
                                         <Link
                                             to='/settings'
                                             onClick={closeMobileMenu}
-                                            className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200 group'>
+                                            className={`flex items-center space-x-3 w-full p-3 rounded-xl transition-all duration-200 group ${isActive('/settings')
+                                                ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-800'
+                                                : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                                }`}>
                                             <Settings className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
                                             <span className='font-medium'>
                                                 Settings
@@ -390,7 +443,10 @@ function Header() {
                                     <Link
                                         to='/'
                                         onClick={closeMobileMenu}
-                                        className='flex items-center space-x-3 w-full p-3 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200'>
+                                        className={`flex items-center space-x-3 w-full p-3 rounded-xl transition-all duration-200 ${isActive('/')
+                                            ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-800'
+                                            : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                            }`}>
                                         <Home className='w-5 h-5' />
                                         <span className='font-medium'>
                                             Home
