@@ -5,7 +5,7 @@ import { setCredentials } from '@/slices/authSlice';
 import { apiSlice } from '@/slices/apiSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
-import { ArrowRight, Eye, EyeOff, User, AtSign, Mail, Lock, Calendar, Users } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, User, AtSign, Mail, Lock, Users } from 'lucide-react';
 
 const RegisterScreen = () => {
     const [formData, setFormData] = useState({
@@ -14,7 +14,6 @@ const RegisterScreen = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        dob: '',
         gender: '',
         terms: false,
     });
@@ -158,30 +157,6 @@ const RegisterScreen = () => {
                 }
                 break;
 
-            case 'dob':
-                const dobValue = value as string;
-                if (!dobValue) {
-                    error = 'Date of birth is required';
-                } else {
-                    const today = new Date();
-                    const birthDate = new Date(dobValue);
-                    let age = today.getFullYear() - birthDate.getFullYear();
-                    const monthDiff = today.getMonth() - birthDate.getMonth();
-
-                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                        age--;
-                    }
-
-                    if (birthDate >= today) {
-                        error = 'Date of birth cannot be in the future';
-                    } else if (age < 13) {
-                        error = 'You must be at least 13 years old';
-                    } else if (age > 120) {
-                        error = 'Please enter a valid date of birth';
-                    }
-                }
-                break;
-
             case 'gender':
                 if (!value) {
                     error = 'Gender is required';
@@ -197,7 +172,7 @@ const RegisterScreen = () => {
 
     const validateForm = () => {
         const newErrors: { [key: string]: string; } = {};
-        const requiredFields = ['name', 'username', 'email', 'password', 'confirmPassword', 'dob', 'gender'];
+        const requiredFields = ['name', 'username', 'email', 'password', 'confirmPassword', 'gender'];
 
         requiredFields.forEach(field => {
             const error = validateField(field, formData[field as keyof typeof formData]);
@@ -468,76 +443,40 @@ const RegisterScreen = () => {
                                 </div>
                             </div>
 
-                            {/* DOB & Gender Row */}
-                            <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
-                                {/* Date of Birth Field */}
-                                <div className='space-y-2'>
-                                    <label htmlFor='dob' className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                                        Date of Birth
-                                    </label>
-                                    <div className='relative group'>
-                                        <input
-                                            id='dob'
-                                            name='dob'
-                                            type='date'
-
-                                            value={formData.dob}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.dob
-                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                : 'border-gray-200 dark:border-gray-600 focus:border-pink-500 focus:ring-pink-500/20'
-                                                }`}
-                                        />
-                                        <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                                            <Calendar className='h-5 w-5 text-gray-400 group-focus-within:text-pink-500 transition-colors duration-200' />
-                                        </div>
+                            {/* Gender Field */}
+                            <div className='space-y-2'>
+                                <label htmlFor='gender' className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                                    Gender
+                                </label>
+                                <div className='relative group'>
+                                    <select
+                                        id='gender'
+                                        name='gender'
+                                        value={formData.gender}
+                                        onChange={handleInputChange}
+                                        className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.gender
+                                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                                            : 'border-gray-200 dark:border-gray-600 focus:border-teal-500 focus:ring-teal-500/20'
+                                            }`}
+                                    >
+                                        <option value=''>Select your gender</option>
+                                        <option value='male'>Male</option>
+                                        <option value='female'>Female</option>
+                                        <option value='other'>Other</option>
+                                        <option value='prefer-not-to-say'>Prefer not to say</option>
+                                    </select>
+                                    <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+                                        <Users className='h-5 w-5 text-gray-400 group-focus-within:text-teal-500 transition-colors duration-200' />
                                     </div>
-                                    {errors.dob && (
-                                        <p className='mt-2 text-sm text-red-500 dark:text-red-400 flex items-center'>
-                                            <svg className='w-4 h-4 mr-1' fill='currentColor' viewBox='0 0 20 20'>
-                                                <path fillRule='evenodd' d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z' clipRule='evenodd' />
-                                            </svg>
-                                            {errors.dob}
-                                        </p>
-                                    )}
                                 </div>
-
-                                {/* Gender Field */}
-                                <div className='space-y-2'>
-                                    <label htmlFor='gender' className='block text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                                        Gender
-                                    </label>
-                                    <div className='relative group'>
-                                        <select
-                                            id='gender'
-                                            name='gender'
-
-                                            value={formData.gender}
-                                            onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.gender
-                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                                                : 'border-gray-200 dark:border-gray-600 focus:border-teal-500 focus:ring-teal-500/20'
-                                                }`}
-                                        >
-                                            <option value=''>Select your gender</option>
-                                            <option value='male'>Male</option>
-                                            <option value='female'>Female</option>
-                                            <option value='other'>Other</option>
-                                            <option value='prefer-not-to-say'>Prefer not to say</option>
-                                        </select>
-                                        <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                                            <Users className='h-5 w-5 text-gray-400 group-focus-within:text-teal-500 transition-colors duration-200' />
-                                        </div>
-                                    </div>
-                                    {errors.gender && (
-                                        <p className='mt-2 text-sm text-red-500 dark:text-red-400 flex items-center'>
-                                            <svg className='w-4 h-4 mr-1' fill='currentColor' viewBox='0 0 20 20'>
-                                                <path fillRule='evenodd' d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z' clipRule='evenodd' />
-                                            </svg>
-                                            {errors.gender}
-                                        </p>
-                                    )}
-                                </div>
+                                {errors.gender && (
+                                    <p className='mt-2 text-sm text-red-500 dark:text-red-400 flex items-center'>
+                                        <svg className='w-4 h-4 mr-1' fill='currentColor' viewBox='0 0 20 20'>
+                                            <path fillRule='evenodd' d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z' clipRule='evenodd' />
+                                        </svg>
+                                        {errors.gender}
+                                    </p>
+                                )}
                             </div>
 
                             {/* Terms and Conditions */}

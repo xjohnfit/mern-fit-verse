@@ -33,7 +33,7 @@ const PrivacyPolicy = () => {
                                     Your Privacy Matters
                                 </h3>
                                 <p className='text-sm text-green-800 dark:text-green-200'>
-                                    This Privacy Policy explains how MERN FitVerse collects, uses, and protects
+                                    This Privacy Policy explains how FitVerse collects, uses, and protects
                                     your personal information. We are committed to transparency and protecting
                                     your data privacy.
                                 </p>

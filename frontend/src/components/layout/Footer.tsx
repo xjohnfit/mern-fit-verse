@@ -48,7 +48,6 @@ const Footer = () => {
                                         to='/'
                                         className='text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-xs sm:text-sm flex items-center gap-2 group'
                                     >
-                                        <Home className='w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-0 group-hover:opacity-100 transition-opacity' />
                                         Home
                                     </Link>
                                 </li>
@@ -213,13 +212,6 @@ const Footer = () => {
                                 John
                             </a>
                         </p>
-                        <div className='flex items-center gap-2 sm:gap-4 text-[10px] xs:text-xs text-gray-500 dark:text-gray-500'>
-                            <span className='hidden sm:inline'>v1.0.0</span>
-                            <span className='hidden sm:inline'>•</span>
-                            <span>MERN Stack</span>
-                            <span>•</span>
-                            <span>TypeScript</span>
-                        </div>
                     </div>
                 </div>
             </div>
