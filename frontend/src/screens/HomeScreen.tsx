@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import AlertModal from '@/components/modals/AlertModal';
-import { motion, useScroll, useTransform } from 'motion/react';
+import { motion } from 'motion/react';
 import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router';
 import { useSelector } from 'react-redux';
@@ -23,13 +23,6 @@ const HomeScreen = () => {
     const [alertVisible, setAlertVisible] = useState(false);
     const { isAuthenticated } = useSelector((state: any) => state.auth);
     const heroRef = useRef(null);
-    const { scrollYProgress } = useScroll({
-        target: heroRef,
-        offset: ["start start", "end start"]
-    });
-
-    const y = useTransform(scrollYProgress, [0, 1], ["0%", "0%"]);
-    const opacity = useTransform(scrollYProgress, [0, 1], [1, 1]);
 
     useEffect(() => {
         const hasSeenAlert = sessionStorage.getItem('hasSeenExperimentalWarning');
@@ -106,11 +99,11 @@ const HomeScreen = () => {
                 showCancel={false}
             />
 
-            <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-gray-900 dark:text-white overflow-hidden">
+            <div className="min-h-screen bg-linear-to-b from-gray-50 via-white to-gray-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-gray-900 dark:text-white overflow-hidden">
                 {/* Animated Background */}
                 <div className="fixed inset-0 overflow-hidden pointer-events-none">
                     <motion.div
-                        className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-r from-blue-500/5 to-purple-500/5 dark:from-blue-500/10 dark:to-purple-500/10 rounded-full blur-3xl"
+                        className="absolute -top-1/2 -left-1/2 w-full h-full bg-linear-to-r from-blue-500/5 to-purple-500/5 dark:from-blue-500/10 dark:to-purple-500/10 rounded-full blur-3xl"
                         animate={{
                             scale: [1, 1.2, 1],
                             rotate: [0, 90, 0],
@@ -122,7 +115,7 @@ const HomeScreen = () => {
                         }}
                     />
                     <motion.div
-                        className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-l from-pink-500/5 to-purple-500/5 dark:from-pink-500/10 dark:to-purple-500/10 rounded-full blur-3xl"
+                        className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-linear-to-l from-pink-500/5 to-purple-500/5 dark:from-pink-500/10 dark:to-purple-500/10 rounded-full blur-3xl"
                         animate={{
                             scale: [1.2, 1, 1.2],
                             rotate: [0, -90, 0],
@@ -162,7 +155,7 @@ const HomeScreen = () => {
                                 transition={{ duration: 0.8, delay: 0.3 }}
                                 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6"
                             >
-                                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+                                <span className="bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                                     Transform Your
                                 </span>
                                 <br />
@@ -190,7 +183,7 @@ const HomeScreen = () => {
                                     <>
                                         <Link to="/register">
                                             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-7 text-lg font-semibold rounded-full shadow-lg shadow-purple-500/30 dark:shadow-purple-500/50 hover:shadow-xl hover:shadow-purple-500/50 dark:hover:shadow-purple-500/60 transition-all duration-300">
+                                                <Button size="lg" className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-7 text-lg font-semibold rounded-full shadow-lg shadow-purple-500/30 dark:shadow-purple-500/50 hover:shadow-xl hover:shadow-purple-500/50 dark:hover:shadow-purple-500/60 transition-all duration-300">
                                                     Start Free Today
                                                     <ArrowRight className="ml-2 w-5 h-5" />
                                                 </Button>
@@ -208,7 +201,7 @@ const HomeScreen = () => {
                                     <>
                                         <Link to="/dashboard">
                                             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-7 text-lg font-semibold rounded-full shadow-lg shadow-purple-500/30 dark:shadow-purple-500/50">
+                                                <Button size="lg" className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-7 text-lg font-semibold rounded-full shadow-lg shadow-purple-500/30 dark:shadow-purple-500/50">
                                                     Go to Dashboard
                                                     <ArrowRight className="ml-2 w-5 h-5" />
                                                 </Button>
@@ -248,100 +241,113 @@ const HomeScreen = () => {
                             </motion.div>
                         </motion.div>
 
-                        {/* Floating Cards and Mobile App Section */}
+                        {/* Quick Features Grid */}
                         <motion.div
-                            className="mt-20 grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch"
+                            className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-4"
                         >
-                            {/* Left Column - Stacked Feature Cards */}
-                            <div className="flex flex-col gap-6">
-                                {[
-                                    { icon: Dumbbell, label: "Track Workouts", color: "from-blue-500 to-cyan-500" },
-                                    { icon: Apple, label: "Monitor Nutrition", color: "from-green-500 to-emerald-500" },
-                                    { icon: TrendingUp, label: "See Progress", color: "from-purple-500 to-pink-500" }
-                                ].map((item, index) => (
-                                    <motion.div
-                                        key={index}
-                                        initial={{ opacity: 0, y: 50 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.8, delay: 0.7 + index * 0.1 }}
-                                        whileHover={{ y: -10, transition: { duration: 0.2 } }}
-                                        className="p-6 rounded-2xl bg-white/80 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 shadow-sm dark:shadow-none transition-all duration-300"
-                                    >
-                                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-4`}>
-                                            <item.icon className="w-6 h-6 text-white" />
+                            {[
+                                { icon: Dumbbell, label: "Track Workouts", color: "from-blue-500 to-cyan-500", desc: "Log every rep & set" },
+                                { icon: Apple, label: "Monitor Nutrition", color: "from-green-500 to-emerald-500", desc: "500K+ food database" },
+                                { icon: TrendingUp, label: "See Progress", color: "from-purple-500 to-pink-500", desc: "Visual analytics" }
+                            ].map((item, index) => (
+                                <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, y: 30 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.6, delay: 0.7 + index * 0.1 }}
+                                    whileHover={{ y: -5, scale: 1.02 }}
+                                    className="group p-5 rounded-2xl bg-white/90 dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-purple-500/20 transition-all duration-300"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-14 h-14 rounded-xl bg-linear-to-br ${item.color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                                            <item.icon className="w-7 h-7 text-white" />
                                         </div>
-                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{item.label}</h3>
-                                    </motion.div>
-                                ))}
-                            </div>
-
-                            {/* Right Column - Mobile App Section */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 50 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.8, delay: 0.8 }}
-                                className="h-full p-10 rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-500/30 dark:via-purple-500/30 dark:to-pink-500/30 border border-gray-400 dark:border-white/40 flex flex-col justify-center items-center text-center shadow-lg dark:shadow-xl dark:shadow-purple-500/30"
-                            >
-                                <div className="mb-8">
-                                    <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
-                                        <Sparkles className="w-10 h-10 text-white" />
+                                        <div>
+                                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-0.5">{item.label}</h3>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">{item.desc}</p>
+                                        </div>
                                     </div>
-                                    <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-                                        <span className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
-                                            Take FitVerse Everywhere
+                                </motion.div>
+                            ))}
+                        </motion.div>
+
+                        {/* Mobile App CTA */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 1 }}
+                            className="mt-6 p-8 rounded-3xl bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-500/20 dark:via-purple-500/20 dark:to-pink-500/20 border-2 border-blue-200 dark:border-blue-400/40 relative overflow-hidden shadow-xl dark:shadow-2xl dark:shadow-blue-500/20"
+                        >
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-linear-to-br from-purple-400/20 to-pink-400/20 dark:from-purple-400/10 dark:to-pink-400/10 rounded-full blur-3xl" />
+                            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                                <div className="flex-1 text-center md:text-left">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-500/30 border border-blue-300 dark:border-blue-400/50 mb-3">
+                                        <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                        <span className="text-xs font-bold text-blue-700 dark:text-blue-300">COMING SOON</span>
+                                    </div>
+                                    <h3 className="text-2xl md:text-3xl font-bold mb-2">
+                                        <span className="bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+                                            FitVerse Mobile App
                                         </span>
-                                    </h2>
-                                    <p className="text-lg text-gray-800 dark:text-gray-200 max-w-md mx-auto font-medium">
-                                        Download our mobile app and track your fitness journey on the go
+                                    </h3>
+                                    <p className="text-base text-gray-700 dark:text-gray-300 mb-4">
+                                        Track your fitness journey on the go with our powerful mobile app
                                     </p>
+                                    <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+                                        <motion.a
+                                            href="#"
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            onClick={(e) => e.preventDefault()}
+                                            className="inline-block"
+                                        >
+                                            <img src="/app-store.png" alt="Download on App Store" className="h-12 object-contain" />
+                                        </motion.a>
+                                        <motion.a
+                                            href="#"
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            onClick={(e) => e.preventDefault()}
+                                            className="inline-block"
+                                        >
+                                            <img src="/google-play.png" alt="Get it on Google Play" className="h-12 object-contain" />
+                                        </motion.a>
+                                    </div>
                                 </div>
-                                <div className="">
-                                    <motion.a
-                                        href="#"
-                                        whileHover={{ scale: 1.15 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        onClick={(e) => e.preventDefault()}
-                                        className="block"
-                                    >
-                                        <img src="/app-store.png" alt="Download on App Store" className="h-20 w-full object-contain transition-shadow" />
-                                    </motion.a>
-                                    <motion.a
-                                        href="#"
-                                        whileHover={{ scale: 1.15 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        onClick={(e) => e.preventDefault()}
-                                        className="block"
-                                    >
-                                        <img src="/google-play.png" alt="Get it on Google Play" className="h-20 w-full object-contain transition-shadow" />
-                                    </motion.a>
+                                <div className="shrink-0">
+                                    <div className="w-24 h-24 rounded-2xl bg-linear-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-2xl">
+                                        <Sparkles className="w-12 h-12 text-white animate-pulse" />
+                                    </div>
                                 </div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-8 flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse"></span>
-                                    Coming Soon • Beta Testing
-                                </p>
-                            </motion.div>
+                            </div>
                         </motion.div>
                     </div>
                 </section>
 
                 {/* Stats Section */}
-                <section className="relative py-20 px-4">
+                <section className="relative py-24 px-4">
                     <div className="max-w-7xl mx-auto">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                             {stats.map((stat, index) => (
                                 <motion.div
                                     key={index}
-                                    initial={{ opacity: 0, scale: 0.5 }}
-                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    initial={{ opacity: 0, y: 30 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
-                                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                                    className="text-center"
+                                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                                    whileHover={{ y: -5, scale: 1.02 }}
+                                    className="group relative p-8 rounded-2xl bg-white/90 dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 text-center hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-purple-500/20 transition-all duration-300"
                                 >
-                                    <stat.icon className="w-8 h-8 mx-auto mb-4 text-purple-600 dark:text-purple-400" />
-                                    <div className="text-4xl sm:text-5xl font-bold mb-2 bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
-                                        {stat.value}
+                                    <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/5 group-hover:to-purple-500/5 dark:group-hover:from-blue-500/10 dark:group-hover:to-purple-500/10 transition-all duration-300" />
+                                    <div className="relative">
+                                        <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-linear-to-br from-blue-500 to-purple-500 mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                                            <stat.icon className="w-7 h-7 text-white" />
+                                        </div>
+                                        <div className="text-5xl font-bold mb-2 bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                                            {stat.value}
+                                        </div>
+                                        <div className="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">{stat.label}</div>
                                     </div>
-                                    <div className="text-gray-600 dark:text-gray-400">{stat.label}</div>
                                 </motion.div>
                             ))}
                         </div>
@@ -349,7 +355,7 @@ const HomeScreen = () => {
                 </section>
 
                 {/* Features Section */}
-                <section className="relative py-20 px-4">
+                <section className="relative py-24 px-4">
                     <div className="max-w-7xl mx-auto">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -358,36 +364,36 @@ const HomeScreen = () => {
                             transition={{ duration: 0.8 }}
                             className="text-center mb-16"
                         >
-                            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-                                <span className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">
+                                <span className="bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
                                     Everything You Need
                                 </span>
                             </h2>
-                            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                                 Powerful features designed to help you reach your fitness goals faster
                             </p>
                         </motion.div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {features.map((feature, index) => {
                                 const Icon = feature.icon;
                                 return (
                                     <motion.div
                                         key={index}
-                                        initial={{ opacity: 0, y: 50 }}
+                                        initial={{ opacity: 0, y: 30 }}
                                         whileInView={{ opacity: 1, y: 0 }}
                                         viewport={{ once: true }}
-                                        transition={{ duration: 0.5, delay: index * 0.1 }}
-                                        whileHover={{ y: -10, transition: { duration: 0.2 } }}
-                                        className="group relative p-8 rounded-2xl bg-white/80 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 shadow-sm dark:shadow-none transition-all duration-300"
+                                        transition={{ duration: 0.6, delay: index * 0.08 }}
+                                        whileHover={{ y: -8, scale: 1.02 }}
+                                        className="group relative p-6 rounded-2xl bg-white/90 dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-purple-500/20 transition-all duration-300"
                                     >
-                                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/5 group-hover:to-purple-500/5 dark:group-hover:from-blue-500/10 dark:group-hover:to-purple-500/10 transition-all duration-300" />
+                                        <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/5 group-hover:to-purple-500/5 dark:group-hover:from-blue-500/10 dark:group-hover:to-purple-500/10 transition-all duration-300" />
                                         <div className="relative">
-                                            <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                                                <Icon className="w-7 h-7 text-white" />
+                                            <div className={`w-12 h-12 rounded-xl bg-linear-to-br ${feature.gradient} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                                                <Icon className="w-6 h-6 text-white" />
                                             </div>
-                                            <h3 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">{feature.title}</h3>
-                                            <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
+                                            <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">{feature.title}</h3>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{feature.description}</p>
                                         </div>
                                     </motion.div>
                                 );
@@ -397,34 +403,53 @@ const HomeScreen = () => {
                 </section>
 
                 {/* Benefits Section */}
-                <section className="relative py-20 px-4">
-                    <div className="max-w-5xl mx-auto">
+                <section className="relative py-24 px-4">
+                    <div className="max-w-6xl mx-auto">
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.8 }}
-                            className="p-12 rounded-3xl bg-gradient-to-br from-blue-600 to-purple-600 relative overflow-hidden"
+                            className="relative p-10 md:p-14 rounded-3xl bg-linear-to-br from-blue-600 via-purple-600 to-pink-600 overflow-hidden shadow-2xl"
                         >
-                            <div className="absolute inset-0 bg-grid-white/10" />
+                            {/* Decorative Elements */}
+                            <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
+                            <div className="absolute bottom-0 left-0 w-80 h-80 bg-pink-400/20 rounded-full blur-3xl" />
+
                             <div className="relative z-10">
-                                <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center text-white">
-                                    Why Choose FitVerse?
-                                </h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="text-center mb-10">
+                                    <motion.div
+                                        initial={{ scale: 0.8, opacity: 0 }}
+                                        whileInView={{ scale: 1, opacity: 1 }}
+                                        viewport={{ once: true }}
+                                        transition={{ duration: 0.5 }}
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 mb-4"
+                                    >
+                                        <Award className="w-5 h-5 text-white" />
+                                        <span className="text-sm font-bold text-white uppercase tracking-wider">Premium Features</span>
+                                    </motion.div>
+                                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-white">
+                                        Why Choose FitVerse?
+                                    </h2>
+                                    <p className="text-lg text-white/90 max-w-2xl mx-auto">
+                                        Everything you need in one powerful platform
+                                    </p>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {benefits.map((benefit, index) => (
                                         <motion.div
                                             key={index}
-                                            initial={{ opacity: 0, x: -20 }}
-                                            whileInView={{ opacity: 1, x: 0 }}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
                                             viewport={{ once: true }}
-                                            transition={{ duration: 0.5, delay: index * 0.1 }}
-                                            className="flex items-center gap-3"
+                                            transition={{ duration: 0.5, delay: index * 0.08 }}
+                                            whileHover={{ scale: 1.05, y: -3 }}
+                                            className="flex items-center gap-3 p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300"
                                         >
-                                            <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                                                <Check className="w-4 h-4 text-white" />
+                                            <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+                                                <Check className="w-5 h-5 text-white font-bold" />
                                             </div>
-                                            <span className="text-lg text-white">{benefit}</span>
+                                            <span className="text-base font-medium text-white">{benefit}</span>
                                         </motion.div>
                                     ))}
                                 </div>
@@ -444,14 +469,14 @@ const HomeScreen = () => {
                                 transition={{ duration: 0.8 }}
                             >
                                 <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-                                    Ready to <span className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">Transform?</span>
+                                    Ready to <span className="bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">Transform?</span>
                                 </h2>
                                 <p className="text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto">
                                     Join thousands of fitness enthusiasts achieving their goals with FitVerse
                                 </p>
                                 <Link to="/register">
                                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                        <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-12 py-8 text-xl font-semibold rounded-full shadow-2xl shadow-purple-500/30 dark:shadow-purple-500/50 hover:shadow-purple-500/50 dark:hover:shadow-purple-500/60">
+                                        <Button size="lg" className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-12 py-8 text-xl font-semibold rounded-full shadow-2xl shadow-purple-500/30 dark:shadow-purple-500/50 hover:shadow-purple-500/50 dark:hover:shadow-purple-500/60">
                                             Start Your Journey Free
                                             <ArrowRight className="ml-2 w-6 h-6" />
                                         </Button>
