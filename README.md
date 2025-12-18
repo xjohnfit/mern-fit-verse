@@ -7,7 +7,7 @@
 **A Modern Full-Stack Social Fitness Platform with Microservices Architecture**
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/xjohnfit/mern-fit-verse)
-[![Version](https://img.shields.io/badge/version-2.0.0-blue)](https://github.com/xjohnfit/mern-fit-verse)
+[![Version](https://img.shields.io/badge/version-2.5.0-blue)](https://github.com/xjohnfit/mern-fit-verse)
 [![License](https://img.shields.io/badge/license-ISC-orange)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-enabled-blue)](https://hub.docker.com/r/xjohnfit)
 [![Kubernetes](https://img.shields.io/badge/kubernetes-ready-green)](kubernetes/)
@@ -91,6 +91,23 @@ To create a vibrant, inclusive fitness community where users can share their jou
   - Suggested users algorithm
   - Search functionality
   - Profile viewing and statistics
+
+### 🛡️ Safety & Moderation
+
+- **Block System**: 
+  - Block/unblock users
+  - Blocked users list management
+  - Automatic unfollowing on block
+  - Prevents interaction with blocked users
+  - Blocked users can't see your content
+  
+- **Report System**: 
+  - Report users for inappropriate behavior
+  - Report posts/content for violations
+  - Multiple report reasons (harassment, spam, inappropriate content)
+  - Report status tracking (pending, reviewed, resolved)
+  - Admin dashboard for report management
+  - Duplicate report prevention
 
 ### 📱 Social Feed & Interaction
 
@@ -222,11 +239,31 @@ To create a vibrant, inclusive fitness community where users can share their jou
   - Filter by date range
   - Exercise-specific history
 
-#### Workout Templates (In Progress)
-- **Template Creation**: Save frequently used workouts
-- **Template Folders**: Organize templates by category
-- **Quick Start**: Start workouts from templates
-- **Template Sharing**: Share templates with community (planned)
+#### Workout Templates
+- **Template Creation**: 
+  - Save frequently used workouts as templates
+  - Add exercises with default sets/reps/weight
+  - Template naming and descriptions
+  - Edit and delete templates
+  
+- **Template Folders**: 
+  - Organize templates into custom folders
+  - Create, rename, and delete folders
+  - Drag-and-drop reordering
+  - Move templates between folders
+  - Folder-based organization (e.g., "Chest Day", "Leg Day", "Full Body")
+  
+- **Quick Start**: 
+  - Start workouts from templates with one tap
+  - Pre-populated exercises and settings
+  - Modify template values during workout
+  
+- **Template Management**:
+  - Freestyle workouts (no template)
+  - Template browsing and search
+  - Template usage tracking
+  - Duplicate templates
+  - Template Sharing: Share templates with community (planned)
 
 ### 🎨 Modern User Experience
 
@@ -255,9 +292,26 @@ To create a vibrant, inclusive fitness community where users can share their jou
 
 ### 🛡️ Admin Features
 
-- **Admin Dashboard**: Dedicated admin screen
-- **User Management**: Admin middleware protection
-- **Content Moderation**: Tools for platform management
+- **Admin Dashboard**: Dedicated admin screen with platform overview
+- **User Management**: 
+  - Admin middleware protection
+  - View all users and statistics
+  - User role management
+  - Account suspension/activation
+  
+- **Content Moderation**: 
+  - Review user reports
+  - Manage reported content
+  - Report status updates (pending, reviewed, resolved, rejected)
+  - Action tracking on reports
+  - Delete inappropriate content
+  
+- **Report Management**:
+  - View all reports with filters
+  - Report details with context
+  - Report history per user
+  - Bulk report actions
+  
 - **Analytics**: User statistics and platform metrics (planned)
 
 ### 📱 Mobile Application (iOS/Android)
@@ -266,7 +320,13 @@ To create a vibrant, inclusive fitness community where users can share their jou
 - **React Native + Expo**: Cross-platform native app with platform-specific optimizations
 - **Expo Router**: File-based routing with deep linking support
 - **Native Performance**: 60fps animations with Reanimated
-- **Push Notifications**: Real-time message and activity alerts
+- **Push Notifications**: 
+  - Real-time message and activity alerts
+  - Background and foreground notification handling
+  - Expo Server SDK integration
+  - Push token management
+  - Notification tap handling with deep linking
+  - Custom notification sounds (planned)
 - **Haptic Feedback**: Touch-responsive interactions
 
 #### Mobile-First Features
@@ -295,6 +355,19 @@ To create a vibrant, inclusive fitness community where users can share their jou
   - Barcode scanning (planned)
   - Daily macro tracking
   - Custom meal categories
+  
+- **Safety & Moderation**:
+  - Block/unblock users
+  - View blocked users list
+  - Report users and content
+  - Account deletion option
+  
+- **Settings & Preferences**:
+  - Profile management
+  - Password updates
+  - Weight unit preferences (kg/lbs)
+  - Help and support
+  - Privacy and terms access
   
 - **Cross-Platform Sync**:
   - Real-time data sync with Socket.io
@@ -429,9 +502,13 @@ cookie-parser 1.4.7   | Cookie parsing
 // File Upload
 cloudinary 2.8.0      | Image management
 
+// Push Notifications
+expo-server-sdk 4.0.0 | Expo push notifications
+
 // Development
 nodemon 3.1.10        | Auto-restart dev server
 concurrently 9.2.1    | Run multiple scripts
+jest 30.2.0           | Testing framework
 ```
 
 ### External Services
@@ -458,30 +535,38 @@ Trivy Scanner         | Container security scanning
 
 ```typescript
 // Core Framework
-React Native 0.76.6   | Native mobile framework
-Expo SDK 52           | Managed React Native workflow
-Expo Router 4.x       | File-based navigation
+React Native 0.81.5   | Native mobile framework
+React 19.1.0          | Latest React version
+Expo SDK ~54.0.29     | Managed React Native workflow
+Expo Router ~6.0.19   | File-based navigation
 
 // UI & Styling
 NativeWind 4.x        | Tailwind CSS for React Native
-Expo Image 2.x        | Optimized image component
-Reanimated 3.x        | 60fps native animations
+Expo Image ~3.0.11    | Optimized image component
+Reanimated ~4.1.1     | 60fps native animations
+Expo Linear Gradient ~15.0.8 | Native gradients
 
 // State Management
-Redux Toolkit 2.x     | Same as web for consistency
+Redux Toolkit 2.11.0  | Same as web for consistency
 RTK Query             | API caching with offline support
 
 // Real-time
-Socket.IO Client 4.x  | WebSocket for live updates
+Socket.IO Client 4.8.1| WebSocket for live updates
 
 // Native Features
-Expo Image Picker     | Camera & gallery access
-Expo Notifications    | Push notifications
-Expo Haptics          | Touch feedback
-Expo Linking          | Deep linking
+Expo Image Picker ~17.0.10 | Camera & gallery access
+Expo Notifications ~0.32.15 | Push notifications (background & foreground)
+Expo Haptics ~15.0.8  | Touch feedback
+Expo Linking ~8.0.10  | Deep linking
+Expo Audio ~1.1.0     | Audio playback
+Expo Blur ~15.0.8     | Native blur effects
 
 // Storage
-AsyncStorage          | Local data persistence (message cache)
+AsyncStorage 2.2.0    | Local data persistence (message cache)
+
+// Navigation
+React Navigation 7.x  | Native navigation
+Bottom Tabs 7.4.0     | Tab navigation
 
 // Build & Deployment
 EAS Build             | Cloud-based native builds
@@ -495,237 +580,388 @@ EAS Update            | OTA updates
 
 ```
 mern-fit-verse/
-├── 📂 backend/                           # Express.js API Service
+├── 📂 backend/                              # Express.js API Service
 │   ├── 📂 config/
-│   │   ├── cloudinary.ts                 # Cloudinary SDK configuration
-│   │   ├── dbConnection.ts               # MongoDB connection
-│   │   └── socket.io.ts                  # Socket.IO server setup
+│   │   ├── cloudinary.ts                    # Cloudinary SDK configuration
+│   │   ├── dbConnection.ts                  # MongoDB connection
+│   │   └── socket.io.ts                     # Socket.IO server setup
+│   │
 │   ├── 📂 controllers/
-│   │   ├── authController.ts             # Authentication logic
-│   │   ├── userController.ts             # User management
-│   │   ├── postController.ts             # Social feed operations
-│   │   ├── messageController.ts          # Real-time messaging
-│   │   ├── notificationController.ts     # Notification management
-│   │   ├── nutritionController.ts        # Nutrition CRUD
-│   │   ├── fatSecretController.ts        # FatSecret API proxy
-│   │   ├── customCategoryController.ts   # Custom meal categories
-│   │   ├── exerciseController.ts         # Exercise library
-│   │   ├── workoutController.ts          # Workout logging
-│   │   ├── workoutTemplateController.ts  # Workout templates
-│   │   └── healthController.ts           # Health checks
+│   │   ├── authController.ts                # Authentication logic
+│   │   ├── blockController.ts               # Block/unblock user operations
+│   │   ├── customCategoryController.ts      # Custom meal categories
+│   │   ├── exerciseController.ts            # Exercise library
+│   │   ├── fatSecretController.ts           # FatSecret API proxy
+│   │   ├── healthController.ts              # Health checks
+│   │   ├── messageController.ts             # Real-time messaging
+│   │   ├── notificationController.ts        # Notification management
+│   │   ├── nutritionController.ts           # Nutrition CRUD
+│   │   ├── postController.ts                # Social feed operations
+│   │   ├── reportController.ts              # Report user/content system
+│   │   ├── userController.ts                # User management
+│   │   ├── workoutController.ts             # Workout logging
+│   │   ├── workoutTemplateController.ts     # Workout templates
+│   │   └── workoutTemplateFolderController.ts # Template folder organization
+│   │
 │   ├── 📂 middlewares/
-│   │   ├── authMiddleware.ts             # JWT verification
-│   │   ├── adminMiddleware.ts            # Admin authorization
-│   │   └── errorMiddleware.ts            # Error handling
+│   │   ├── adminMiddleware.ts               # Admin authorization
+│   │   ├── authMiddleware.ts                # JWT verification
+│   │   └── errorMiddleware.ts               # Error handling
+│   │
 │   ├── 📂 models/
-│   │   ├── userModel.ts                  # User schema
-│   │   ├── postModel.ts                  # Post schema
-│   │   ├── messageModel.ts               # Message schema
-│   │   ├── notificationModel.ts          # Notification schema
-│   │   ├── nutritionModel.ts             # Nutrition entry schema
-│   │   ├── customCategoryModel.ts        # Custom category schema
-│   │   ├── exerciseModel.ts              # Exercise schema
-│   │   ├── workoutModel.ts               # Workout schema
-│   │   └── workoutTemplateModel.ts       # Template schema
+│   │   ├── customCategoryModel.ts           # Custom category schema
+│   │   ├── exerciseModel.ts                 # Exercise schema
+│   │   ├── messageModel.ts                  # Message schema
+│   │   ├── notificationModel.ts             # Notification schema
+│   │   ├── nutritionModel.ts                # Nutrition entry schema
+│   │   ├── postModel.ts                     # Post schema
+│   │   ├── reportModel.ts                   # Report schema
+│   │   ├── userModel.ts                     # User schema (with blockedUsers)
+│   │   ├── workoutModel.ts                  # Workout schema
+│   │   ├── workoutTemplateFolderModel.ts    # Template folder schema
+│   │   └── workoutTemplateModel.ts          # Template schema
+│   │
 │   ├── 📂 routes/
-│   │   ├── authRoutes.ts                 # Auth endpoints
-│   │   ├── userRoutes.ts                 # User endpoints
-│   │   ├── postRoutes.ts                 # Post endpoints
-│   │   ├── messageRoutes.ts              # Message endpoints
-│   │   ├── notificationRoutes.ts         # Notification endpoints
-│   │   ├── nutritionRoutes.ts            # Nutrition endpoints
-│   │   ├── fatSecretRoutes.ts            # FatSecret proxy
-│   │   ├── customCategoryRoutes.ts       # Category endpoints
-│   │   ├── exercisesRoutes.ts            # Exercise endpoints
-│   │   ├── workoutRoutes.ts              # Workout endpoints
-│   │   ├── workoutTemplateRoutes.ts      # Template endpoints
-│   │   └── healthRoutes.ts               # Health endpoint
+│   │   ├── authRoutes.ts                    # Auth endpoints
+│   │   ├── blockRoutes.ts                   # Block/unblock endpoints
+│   │   ├── customCategoryRoutes.ts          # Category endpoints
+│   │   ├── exercisesRoutes.ts               # Exercise endpoints
+│   │   ├── fatSecretRoutes.ts               # FatSecret proxy
+│   │   ├── healthRoutes.ts                  # Health endpoint
+│   │   ├── messageRoutes.ts                 # Message endpoints
+│   │   ├── notificationRoutes.ts            # Notification endpoints
+│   │   ├── NutritionRoutes.ts               # Nutrition endpoints
+│   │   ├── postRoutes.ts                    # Post endpoints
+│   │   ├── reportRoutes.ts                  # Report endpoints
+│   │   ├── userRoutes.ts                    # User endpoints
+│   │   ├── workoutRoutes.ts                 # Workout endpoints
+│   │   ├── workoutTemplateFolderRoutes.ts   # Template folder endpoints
+│   │   └── workoutTemplateRoutes.ts         # Template endpoints
+│   │
 │   ├── 📂 utils/
-│   │   ├── generateToken.ts              # JWT helper
-│   │   └── weightConversion.ts           # Unit conversion
+│   │   ├── generateToken.ts                 # JWT helper
+│   │   ├── pushNotifications.ts             # Expo push notifications
+│   │   └── weightConversion.ts              # Unit conversion
+│   │
 │   ├── 📂 __tests__/
-│   │   └── health.test.ts                # Jest tests
+│   │   └── health.test.ts                   # Jest tests
+│   │
 │   ├── 📂 kubernetes/
-│   │   ├── deployment.yml                # K8s deployment
-│   │   └── service.yml                   # K8s service
-│   ├── .dockerignore
-│   ├── .env.development                  # Dev environment vars
-│   ├── .env.production                   # Prod environment vars
-│   ├── .env.example                      # Environment template
-│   ├── Dockerfile                        # Multi-stage build
-│   ├── docker-compose.yml                # Local development
-│   ├── Jenkinsfile                       # Backend CI/CD pipeline
-│   ├── jest.config.js                    # Jest configuration
-│   ├── tsconfig.json                     # TypeScript config
-│   ├── package.json                      # Dependencies
-│   ├── sonar-project.properties          # SonarQube config
-│   ├── owasp-suppressions.xml            # OWASP suppressions
-│   ├── index.ts                          # Express server entry
-│   ├── README.md                         # Backend documentation
-│   └── SOCKETIO_IMPLEMENTATION.md        # Socket.IO docs
+│   │   ├── deployment.yml                   # K8s deployment
+│   │   └── service.yml                      # K8s service
+│   │
+│   ├── .dockerignore                        # Docker ignore rules
+│   ├── .env.development                     # Dev environment vars
+│   ├── .env.production                      # Prod environment vars
+│   ├── .env.example                         # Environment template
+│   ├── apiLandingScreen.ts                  # API landing page
+│   ├── Dockerfile                           # Multi-stage build
+│   ├── docker-compose.yml                   # Local development
+│   ├── index.ts                             # Express server entry
+│   ├── Jenkinsfile                          # Backend CI/CD pipeline
+│   ├── jest.config.js                       # Jest configuration
+│   ├── owasp-suppressions.xml               # OWASP suppressions
+│   ├── package.json                         # Dependencies
+│   ├── sonar-project.properties             # SonarQube config
+│   └── tsconfig.json                        # TypeScript config
 │
-├── 📂 frontend/                          # React SPA Service
+├── 📂 frontend/                             # React SPA Service
 │   ├── 📂 public/
-│   │   └── fit-verse-logo-no-bg.png      # App logo
+│   │   ├── app-store.png                    # App Store badge
+│   │   ├── fit-verse-logo-no-bg.png         # App logo (transparent)
+│   │   ├── fit-verse-logo.png               # App logo
+│   │   └── google-play.png                  # Google Play badge
+│   │
 │   ├── 📂 src/
 │   │   ├── 📂 components/
 │   │   │   ├── 📂 common/
-│   │   │   │   ├── PrivateRoute.tsx      # Auth guard
-│   │   │   │   ├── ScrollToTop.tsx       # Scroll utility
-│   │   │   │   ├── ThemeToggle.tsx       # Theme switcher
-│   │   │   │   └── NotificationBell.tsx  # Notification icon
+│   │   │   │   ├── NotificationBell.tsx     # Notification icon
+│   │   │   │   ├── PrivateRoute.tsx         # Auth guard
+│   │   │   │   ├── ScrollToTop.tsx          # Scroll utility
+│   │   │   │   └── ThemeToggle.tsx          # Theme switcher
+│   │   │   │
 │   │   │   ├── 📂 layout/
-│   │   │   │   ├── Header.tsx            # Navigation header
-│   │   │   │   └── Footer.tsx            # Site footer
+│   │   │   │   ├── Footer.tsx               # Site footer
+│   │   │   │   └── Header.tsx               # Navigation header
+│   │   │   │
 │   │   │   ├── 📂 modals/
-│   │   │   │   └── AlertModal.tsx        # Alert dialogs
-│   │   │   └── 📂 ui/                    # Radix UI components
+│   │   │   │   └── AlertModal.tsx           # Alert dialogs
+│   │   │   │
+│   │   │   └── 📂 ui/                       # Radix UI components
+│   │   │       ├── accordion.tsx
+│   │   │       ├── animated-testimonials.tsx
 │   │   │       ├── avatar.tsx
+│   │   │       ├── badge.tsx
 │   │   │       ├── button.tsx
 │   │   │       ├── card.tsx
 │   │   │       ├── chart.tsx
+│   │   │       ├── dialog.tsx
 │   │   │       ├── input.tsx
 │   │   │       ├── navigation-menu.tsx
 │   │   │       ├── sonner.tsx
 │   │   │       ├── tabs.tsx
+│   │   │       ├── typewriter-effect.tsx
 │   │   │       └── wobble-card.tsx
+│   │   │
 │   │   ├── 📂 hooks/
-│   │   │   ├── useSocket.ts              # Socket.IO hook
-│   │   │   └── useNotifications.ts       # Notification hook
+│   │   │   └── useSocket.ts                 # Socket.IO hook
+│   │   │
 │   │   ├── 📂 lib/
-│   │   │   ├── calculateAge.ts           # Age calculation
-│   │   │   ├── cacheBuster.ts            # Image cache busting
-│   │   │   ├── formatDate.ts             # Date formatting
-│   │   │   ├── getInitials.ts            # Avatar initials
-│   │   │   ├── getPasswordStrength.ts    # Password validation
-│   │   │   ├── utils.ts                  # Utility functions
-│   │   │   └── weightConversion.ts       # Weight conversion
+│   │   │   ├── cacheBuster.ts               # Image cache busting
+│   │   │   ├── calculateAge.ts              # Age calculation
+│   │   │   ├── formatDate.ts                # Date formatting
+│   │   │   ├── getInitials.ts               # Avatar initials
+│   │   │   ├── getPasswordStrength.ts       # Password validation
+│   │   │   ├── utils.ts                     # Utility functions
+│   │   │   └── weightConversion.ts          # Weight conversion
+│   │   │
 │   │   ├── 📂 screens/
-│   │   │   ├── HomeScreen.tsx            # Landing page
-│   │   │   ├── LoginScreen.tsx           # Login form
-│   │   │   ├── RegisterScreen.tsx        # Registration form
-│   │   │   ├── PrivacyPolicy.tsx         # Privacy policy
-│   │   │   ├── TermsOfService.tsx        # Terms of service
-│   │   │   └── 📂 protected/             # Auth-required screens
+│   │   │   ├── HomeScreen.tsx               # Landing page
+│   │   │   ├── LoginScreen.tsx              # Login form
+│   │   │   ├── PrivacyPolicy.tsx            # Privacy policy
+│   │   │   ├── RegisterScreen.tsx           # Registration form
+│   │   │   ├── TermsOfService.tsx           # Terms of service
+│   │   │   │
+│   │   │   └── 📂 protected/                # Auth-required screens
 │   │   │       ├── 📂 admin/
 │   │   │       │   └── AdminScreen.tsx
+│   │   │       │
 │   │   │       ├── 📂 dashboard/
 │   │   │       │   ├── DashboardScreen.tsx
 │   │   │       │   ├── components/
 │   │   │       │   └── types.ts
+│   │   │       │
 │   │   │       ├── 📂 messages/
 │   │   │       │   ├── MessagesScreen.tsx
 │   │   │       │   └── components/
+│   │   │       │
 │   │   │       ├── 📂 nutrition/
 │   │   │       │   ├── NutritionScreen.tsx
 │   │   │       │   ├── components/
 │   │   │       │   ├── constants.ts
 │   │   │       │   └── types.ts
+│   │   │       │
 │   │   │       ├── 📂 profile/
 │   │   │       │   └── (profile screens)
+│   │   │       │
 │   │   │       ├── 📂 settings/
 │   │   │       │   └── (settings screens)
+│   │   │       │
 │   │   │       └── 📂 workout/
 │   │   │           ├── WorkoutScreen.tsx
 │   │   │           ├── StartWorkoutScreen.tsx
 │   │   │           ├── WorkoutDetailScreen.tsx
 │   │   │           ├── components/
 │   │   │           └── types.ts
+│   │   │
 │   │   ├── 📂 slices/
-│   │   │   ├── apiSlice.ts               # RTK Query base
-│   │   │   ├── authSlice.ts              # Auth state
-│   │   │   ├── usersApiSlice.ts          # User API
-│   │   │   ├── postsApiSlice.ts          # Posts API
-│   │   │   ├── messageApiSlice.ts        # Messages API
-│   │   │   ├── notificationApiSlice.ts   # Notifications API
-│   │   │   ├── nutritionApiSlice.ts      # Nutrition API
-│   │   │   ├── fatSecretApiSlice.ts      # FatSecret API
-│   │   │   ├── customCategoryApiSlice.ts # Categories API
-│   │   │   ├── exerciseApiSlice.ts       # Exercises API
-│   │   │   ├── workoutApiSlice.ts        # Workouts API
-│   │   │   └── workoutTemplateApiSlice.ts# Templates API
-│   │   ├── App.tsx                       # Root component
-│   │   ├── main.tsx                      # React entry
-│   │   ├── store.ts                      # Redux store
-│   │   └── index.css                     # Global styles
-│   ├── .env                              # Dev environment
-│   ├── .env.production                   # Prod environment
-│   ├── .env.example                      # Environment template
-│   ├── components.json                   # Radix UI config
-│   ├── Dockerfile                        # Multi-stage build
-│   ├── docker-compose.yml                # Local development
-│   ├── Jenkinsfile                       # Frontend CI/CD
-│   ├── vite.config.ts                    # Vite config
-│   ├── tsconfig.json                     # TypeScript config
-│   ├── eslint.config.js                  # ESLint config
-│   ├── tailwind.config.js                # Tailwind config
-│   ├── package.json                      # Dependencies
-│   └── README.md                         # Frontend docs
+│   │   │   ├── apiSlice.ts                  # RTK Query base
+│   │   │   ├── authSlice.ts                 # Auth state
+│   │   │   ├── customCategoryApiSlice.ts    # Categories API
+│   │   │   ├── exerciseApiSlice.ts          # Exercises API
+│   │   │   ├── fatSecretApiSlice.ts         # FatSecret API
+│   │   │   ├── messageApiSlice.ts           # Messages API
+│   │   │   ├── notificationApiSlice.ts      # Notifications API
+│   │   │   ├── nutritionApiSlice.ts         # Nutrition API
+│   │   │   ├── postsApiSlice.ts             # Posts API
+│   │   │   ├── reportsApiSlice.ts           # Reports API
+│   │   │   ├── socketSlice.ts               # Socket state
+│   │   │   ├── usersApiSlice.ts             # User API
+│   │   │   ├── workoutApiSlice.ts           # Workouts API
+│   │   │   ├── workoutTemplateApiSlice.ts   # Templates API
+│   │   │   └── workoutTemplateFolderApiSlice.ts # Template folders API
+│   │   │
+│   │   ├── App.tsx                          # Root component
+│   │   ├── index.css                        # Global styles
+│   │   ├── main.tsx                         # React entry
+│   │   └── store.ts                         # Redux store
+│   │
+│   ├── 📂 kubernetes/
+│   │   ├── deployment.yml                   # K8s deployment
+│   │   └── service.yml                      # K8s service
+│   │
+│   ├── .env                                 # Dev environment
+│   ├── .env.example                         # Environment template
+│   ├── .env.production                      # Prod environment
+│   ├── components.json                      # Radix UI config
+│   ├── docker-compose.yml                   # Local development
+│   ├── Dockerfile                           # Multi-stage build
+│   ├── eslint.config.js                     # ESLint config
+│   ├── index.html                           # HTML entry
+│   ├── Jenkinsfile                          # Frontend CI/CD
+│   ├── package.json                         # Dependencies
+│   ├── tsconfig.app.json                    # App TypeScript config
+│   ├── tsconfig.json                        # TypeScript config
+│   ├── tsconfig.node.json                   # Node TypeScript config
+│   └── vite.config.ts                       # Vite config
 │
-├── 📂 mobile/                            # React Native + Expo App
-│   ├── 📂 android/                       # Android native code
-│   │   ├── app/
-│   │   ├── build.gradle
-│   │   └── gradle.properties
-│   ├── 📂 app/
-│   │   ├── (auth)/
-│   │   │   ├── login.tsx                 # Login screen
-│   │   │   └── register.tsx              # Register screen
-│   │   ├── (tabs)/
-│   │   │   ├── _layout.tsx               # Tab navigator
-│   │   │   ├── feed.tsx                  # Social feed
-│   │   │   ├── chat.tsx                  # Messaging (with caching)
-│   │   │   ├── nutrition.tsx             # Nutrition tracker
-│   │   │   ├── workout.tsx               # Workout tracker
-│   │   │   └── profile.tsx               # User profile
-│   │   ├── _layout.tsx                   # Root navigator
-│   │   ├── index.tsx                     # Entry point
-│   │   └── +not-found.tsx                # 404 screen
-│   ├── 📂 assets/
-│   │   ├── fonts/
-│   │   └── images/
-│   ├── 📂 components/
-│   │   ├── MessageCard.tsx               # Chat message component
-│   │   ├── PostCard.tsx                  # Feed post component
-│   │   ├── WorkoutCard.tsx               # Workout component
-│   │   └── (UI components)
+├── 📂 mobile/                               # React Native + Expo App
+│   ├── 📂 android/                          # Android native code
+│   │   ├── 📂 app/
+│   │   │   └── build.gradle                 # App build config
+│   │   ├── build.gradle                     # Project build config
+│   │   ├── gradle.properties                # Gradle properties
+│   │   ├── gradlew                          # Gradle wrapper (Unix)
+│   │   ├── gradlew.bat                      # Gradle wrapper (Windows)
+│   │   └── settings.gradle                  # Gradle settings
+│   │
+│   ├── 📂 app/                              # Expo Router screens
+│   │   ├── 📂 (tabs)/                       # Tab navigator group
+│   │   │   ├── _layout.tsx                  # Tab layout
+│   │   │   ├── chat.tsx                     # Messaging (with caching)
+│   │   │   ├── dashboard.tsx                # Dashboard tab
+│   │   │   ├── nutrition.tsx                # Nutrition tracker tab
+│   │   │   ├── profile.tsx                  # User profile tab
+│   │   │   ├── settings.tsx                 # Settings tab
+│   │   │   └── workout.tsx                  # Workout tracker tab
+│   │   │
+│   │   ├── 📂 nutrition/
+│   │   │   └── addFoodScreen.tsx            # Add food to meal
+│   │   │
+│   │   ├── 📂 settings/
+│   │   │   ├── blockedUsers.tsx             # Blocked users list
+│   │   │   ├── deleteAccount.tsx            # Account deletion
+│   │   │   └── helpAndSupport.tsx           # Help & support
+│   │   │
+│   │   ├── 📂 workout/
+│   │   │   ├── BrowseExercisesScreen.tsx    # Exercise library
+│   │   │   ├── create-template.tsx          # Create workout template
+│   │   │   ├── edit-template/               # Edit template screens
+│   │   │   ├── startWorkoutScreen.tsx       # Active workout
+│   │   │   └── workoutSummary.tsx           # Workout completion
+│   │   │
+│   │   ├── _layout.tsx                      # Root navigator
+│   │   ├── EULA.tsx                         # End user license agreement
+│   │   ├── index.tsx                        # Entry/splash screen
+│   │   ├── login.tsx                        # Login screen
+│   │   ├── privacyPolicy.tsx                # Privacy policy
+│   │   ├── register.tsx                     # Register screen
+│   │   └── TermsOfService.tsx               # Terms of service
+│   │
+│   ├── 📂 assets/                           # Static assets
+│   │   ├── 📂 fonts/                        # Custom fonts
+│   │   └── 📂 images/                       # App images
+│   │
+│   ├── 📂 components/                       # React components
+│   │   ├── 📂 chat/
+│   │   │   ├── ChatHeader.tsx               # Chat screen header
+│   │   │   ├── ConversationView.tsx         # Conversation UI
+│   │   │   ├── EmptyState.tsx               # Empty chat state
+│   │   │   ├── MessageBubble.tsx            # Message bubble
+│   │   │   ├── MessageInput.tsx             # Message input field
+│   │   │   ├── UserListItem.tsx             # User list item
+│   │   │   └── UserListView.tsx             # User list
+│   │   │
+│   │   ├── 📂 dashboard/
+│   │   │   ├── DashboardHeader.tsx          # Dashboard header
+│   │   │   ├── NutritionOverview.tsx        # Nutrition summary
+│   │   │   ├── RecentWorkouts.tsx           # Recent workout list
+│   │   │   ├── SocialStats.tsx              # Social statistics
+│   │   │   ├── StatsCard.tsx                # Stats card component
+│   │   │   ├── SuggestedUsers.tsx           # User suggestions
+│   │   │   ├── WorkoutDetailModal.tsx       # Workout detail modal
+│   │   │   └── WorkoutStats.tsx             # Workout statistics
+│   │   │
+│   │   ├── 📂 layout/
+│   │   │   └── SafeScreen.tsx               # Safe area wrapper
+│   │   │
+│   │   ├── 📂 nutrition/
+│   │   │   ├── AddCustomCategoryButton.tsx  # Add category button
+│   │   │   ├── AddCustomCategoryModal.tsx   # Category creation modal
+│   │   │   ├── AddFoodButton.tsx            # Add food button
+│   │   │   ├── CustomCategoryCard.tsx       # Custom category card
+│   │   │   ├── DateNavigator.tsx            # Date picker navigation
+│   │   │   ├── EmptySearchState.tsx         # Empty search state
+│   │   │   ├── FoodDetailsCard.tsx          # Food details display
+│   │   │   ├── FoodItem.tsx                 # Food item component
+│   │   │   ├── FoodSuggestionsList.tsx      # Food autocomplete
+│   │   │   ├── LoadingState.tsx             # Loading indicator
+│   │   │   ├── MealCategoryCard.tsx         # Meal category card
+│   │   │   ├── MealsSectionHeader.tsx       # Section header
+│   │   │   ├── NutritionGoalsCard.tsx       # Daily goals card
+│   │   │   ├── NutritionHeader.tsx          # Nutrition screen header
+│   │   │   ├── SearchHeader.tsx             # Search bar
+│   │   │   └── ServingSizeInput.tsx         # Serving size input
+│   │   │
+│   │   ├── 📂 onboarding/
+│   │   │   └── FeatureCard.tsx              # Onboarding feature card
+│   │   │
+│   │   ├── 📂 profile/
+│   │   │   ├── CreatePostModal.tsx          # Post creation modal
+│   │   │   ├── FollowersModal.tsx           # Followers/following list
+│   │   │   ├── index.ts                     # Profile exports
+│   │   │   ├── NotificationBell.tsx         # Notification icon
+│   │   │   ├── OptionMenuModal.tsx          # Profile option menu
+│   │   │   ├── PostCard.tsx                 # Post card component
+│   │   │   └── ProfileHeader.tsx            # Profile header
+│   │   │
+│   │   ├── 📂 settings/
+│   │   │   ├── HelpAndSupport.tsx           # Help section
+│   │   │   ├── SettingsPreferencesTab.tsx   # Preferences tab
+│   │   │   ├── SettingsProfileTab.tsx       # Profile settings tab
+│   │   │   └── UpdatePasswordModal.tsx      # Password update modal
+│   │   │
+│   │   └── 📂 workout/
+│   │       ├── ActiveWorkoutBanner.tsx      # Active workout banner
+│   │       ├── constants.ts                 # Workout constants
+│   │       ├── CreateFolderDialog.tsx       # Create folder dialog
+│   │       ├── EditFolderDialog.tsx         # Edit folder dialog
+│   │       ├── ExerciseInfoModal.tsx        # Exercise info modal
+│   │       ├── FolderCard.tsx               # Template folder card
+│   │       ├── FreestyleWorkoutCard.tsx     # Freestyle workout card
+│   │       ├── index.ts                     # Workout exports
+│   │       ├── TemplateCard.tsx             # Template card
+│   │       └── WorkoutHeader.tsx            # Workout screen header
+│   │
 │   ├── 📂 hooks/
-│   │   ├── useSocket.ts                  # Socket.IO integration
-│   │   └── useColorScheme.ts             # Theme hook
+│   │   ├── useColorScheme.ts                # Theme hook
+│   │   └── useSocket.ts                     # Socket.IO integration
+│   │
 │   ├── 📂 lib/
-│   │   ├── messageCache.ts               # AsyncStorage message cache
-│   │   ├── weightConversion.ts           # Weight utilities
-│   │   └── utils.ts                      # Helper functions
-│   ├── 📂 slices/
-│   │   ├── apiSlice.ts                   # RTK Query base
-│   │   ├── authSlice.ts                  # Auth state
-│   │   ├── messageApiSlice.ts            # Messages with cache
-│   │   ├── postsApiSlice.ts              # Social feed API
-│   │   ├── nutritionApiSlice.ts          # Nutrition API
-│   │   ├── workoutApiSlice.ts            # Workout API
-│   │   └── (other API slices)
+│   │   ├── messageCache.ts                  # AsyncStorage message cache
+│   │   ├── utils.ts                         # Helper functions
+│   │   └── weightConversion.ts              # Weight utilities
+│   │
+│   ├── 📂 slices/                           # Redux slices
+│   │   ├── apiSlice.ts                      # RTK Query base
+│   │   ├── authSlice.ts                     # Auth state
+│   │   ├── blockApiSlice.ts                 # Block/unblock API
+│   │   ├── customCategoryApiSlice.ts        # Categories API
+│   │   ├── exerciseApiSlice.ts              # Exercises API
+│   │   ├── fatSecretApiSlice.ts             # FatSecret API
+│   │   ├── messageApiSlice.ts               # Messages with cache
+│   │   ├── notificationApiSlice.ts          # Notifications API
+│   │   ├── nutritionApiSlice.ts             # Nutrition API
+│   │   ├── postsApiSlice.ts                 # Social feed API
+│   │   ├── reportsApiSlice.ts               # Reports API
+│   │   ├── socketSlice.ts                   # Socket state
+│   │   ├── usersApiSlice.ts                 # User API
+│   │   ├── workoutApiSlice.ts               # Workout API
+│   │   ├── workoutTemplateApiSlice.ts       # Templates API
+│   │   └── workoutTemplateFolderApiSlice.ts # Template folders API
+│   │
+│   ├── 📂 styles/
+│   │   └── (style definitions)              # Custom styles
+│   │
 │   ├── 📂 types/
-│   │   └── types.ts                      # TypeScript definitions
-│   ├── .env                              # Environment variables
-│   ├── .env.example                      # Environment template
-│   ├── app.json                          # Expo config
-│   ├── eas.json                          # EAS Build config
-│   ├── babel.config.js                   # Babel configuration
-│   ├── metro.config.js                   # Metro bundler config
-│   ├── tailwind.config.js                # NativeWind config
-│   ├── tsconfig.json                     # TypeScript config
-│   ├── package.json                      # Dependencies
-│   ├── store.ts                          # Redux store
-│   ├── CHAT_IMPLEMENTATION.md            # Chat caching docs
-│   ├── BACKGROUND_NOTIFICATIONS_SETUP.md # Notifications guide
-│   ├── ISSUES_FIXED.md                   # Bug fix log
-│   └── REDUX_SETUP.md                    # Redux configuration
+│   │   └── types.ts                         # TypeScript definitions
+│   │
+│   ├── .env.development                     # Dev environment
+│   ├── .env.production                      # Prod environment
+│   ├── .gitignore                           # Git ignore rules
+│   ├── app.json                             # Expo configuration
+│   ├── babel.config.js                      # Babel configuration
+│   ├── eas.json                             # EAS Build config
+│   ├── eslint.config.js                     # ESLint config
+│   ├── expo-env.d.ts                        # Expo TypeScript defs
+│   ├── metro.config.js                      # Metro bundler config
+│   ├── package.json                         # Dependencies
+│   ├── store.ts                             # Redux store
+│   └── tsconfig.json                        # TypeScript config
 │
-├── .gitignore                            # Git ignore rules
-├── CONTRIBUTING.md                       # Contribution guidelines
-├── README.md                             # This file
-├── SOCKETIO_IMPLEMENTATION.md            # Real-time docs
-└── todo.txt                              # Development tasks
+├── .gitignore                               # Git ignore rules
+├── CONTRIBUTING.md                          # Contribution guidelines
+└── README.md                                # This file
 ```
 
 ---
@@ -1297,6 +1533,78 @@ POST /api/users/follow/:userId
 Authorization: Cookie (jwt)
 ```
 
+### Block & Report Endpoints
+
+#### Block User
+```http
+POST /api/users/block/:userId
+Authorization: Cookie (jwt)
+```
+
+#### Unblock User
+```http
+POST /api/users/unblock/:userId
+Authorization: Cookie (jwt)
+```
+
+#### Get Blocked Users
+```http
+GET /api/users/blocked
+Authorization: Cookie (jwt)
+```
+
+#### Report User/Content
+```http
+POST /api/reports
+Authorization: Cookie (jwt)
+Content-Type: application/json
+
+{
+  "reportedUserId": "user_id",
+  "reportedPostId": "post_id",  // optional
+  "reason": "harassment",
+  "description": "Detailed description of the issue"
+}
+```
+
+### Workout Template Folder Endpoints
+
+#### Get Template Folders
+```http
+GET /api/workout-template-folders
+Authorization: Cookie (jwt)
+```
+
+#### Create Template Folder
+```http
+POST /api/workout-template-folders
+Authorization: Cookie (jwt)
+Content-Type: application/json
+
+{
+  "name": "Chest Day",
+  "order": 1
+}
+```
+
+#### Update Template Folder
+```http
+PUT /api/workout-template-folders/:folderId
+Authorization: Cookie (jwt)
+Content-Type: application/json
+
+{
+  "name": "Upper Body",
+  "order": 2
+}
+```
+
+#### Delete Template Folder
+```http
+DELETE /api/workout-template-folders/:folderId
+Authorization: Cookie (jwt)
+```
+
 For complete API documentation, see [Backend README](backend/README.md#-api-documentation).
 
 ---
@@ -1350,6 +1658,8 @@ chore: update dependencies
 - [x] Like and comment system
 - [x] Real-time notifications
 - [x] Dark/light themes
+- [x] Block/unblock users
+- [x] Report system for users and content
 
 ### ✅ Phase 2: Nutrition Tracking (Completed)
 - [x] FatSecret API integration
@@ -1367,13 +1677,17 @@ chore: update dependencies
 - [x] Message persistence
 - [x] Conversation history
 
-### 🚧 Phase 4: Fitness Tracking (In Progress)
-- [x] Exercise library
+### ✅ Phase 4: Fitness Tracking (Completed)
+- [x] Exercise library (50+ exercises)
 - [x] Workout logging
 - [x] Workout templates
-- [ ] Progress tracking
+- [x] Template folder organization
+- [x] Freestyle workouts
+- [x] Set/rep/weight tracking
+- [x] Workout history
+- [ ] Advanced progress tracking (charts & analytics)
 - [ ] Personal records
-- [ ] Workout analytics
+- [ ] Workout analytics dashboard
 
 ### 📋 Phase 5: Advanced Features (Planned)
 - [ ] AI meal suggestions
