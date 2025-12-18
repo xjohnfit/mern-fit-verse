@@ -22,7 +22,6 @@ interface RegisterUserBody {
     name: string;
     username: string;
     email: string;
-    dob?: Date;
     password: string;
     gender: string;
 }
@@ -53,7 +52,7 @@ export const registerUser = asyncHandler(
         req: Request<{}, {}, RegisterUserBody>,
         res: Response
     ): Promise<void> => {
-        const { name, username, email, dob, password, gender } = req.body;
+        const { name, username, email, password, gender } = req.body;
 
         try {
             // Check if email is valid
@@ -88,7 +87,6 @@ export const registerUser = asyncHandler(
                 name,
                 username,
                 email,
-                dob,
                 password,
                 gender,
             });
