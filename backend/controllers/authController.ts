@@ -22,7 +22,7 @@ interface RegisterUserBody {
     name: string;
     username: string;
     email: string;
-    dob: Date;
+    dob?: Date;
     password: string;
     gender: string;
 }
@@ -172,12 +172,17 @@ export const deleteUser = asyncHandler(
                     const publicId = publicIdWithExtension.split('.')[0];
 
                     // Delete from cloudinary (try common folders)
-                    await cloudinary.uploader.destroy(`profile_photos/${publicId}`).catch(() => {
-                        // If not in profile_photos folder, try root
-                        return cloudinary.uploader.destroy(publicId);
-                    });
+                    await cloudinary.uploader
+                        .destroy(`profile_photos/${publicId}`)
+                        .catch(() => {
+                            // If not in profile_photos folder, try root
+                            return cloudinary.uploader.destroy(publicId);
+                        });
                 } catch (cloudinaryError) {
-                    console.error('Error deleting photo from Cloudinary:', cloudinaryError);
+                    console.error(
+                        'Error deleting photo from Cloudinary:',
+                        cloudinaryError
+                    );
                     // Continue with deletion even if cloudinary fails
                 }
             }
@@ -188,13 +193,19 @@ export const deleteUser = asyncHandler(
                 if (post.image) {
                     try {
                         const urlParts = post.image.split('/');
-                        const publicIdWithExtension = urlParts[urlParts.length - 1];
+                        const publicIdWithExtension =
+                            urlParts[urlParts.length - 1];
                         const publicId = publicIdWithExtension.split('.')[0];
-                        await cloudinary.uploader.destroy(`posts/${publicId}`).catch(() => {
-                            return cloudinary.uploader.destroy(publicId);
-                        });
+                        await cloudinary.uploader
+                            .destroy(`posts/${publicId}`)
+                            .catch(() => {
+                                return cloudinary.uploader.destroy(publicId);
+                            });
                     } catch (error) {
-                        console.error('Error deleting post image from Cloudinary:', error);
+                        console.error(
+                            'Error deleting post image from Cloudinary:',
+                            error
+                        );
                     }
                 }
             }
@@ -236,12 +247,12 @@ export const deleteUser = asyncHandler(
 
             // 9. Delete all messages (sent and received)
             await Message.deleteMany({
-                $or: [{ senderId: userId }, { receiverId: userId }]
+                $or: [{ senderId: userId }, { receiverId: userId }],
             });
 
             // 10. Delete all notifications (sent and received)
             await Notification.deleteMany({
-                $or: [{ from: userId }, { to: userId }]
+                $or: [{ from: userId }, { to: userId }],
             });
 
             // 11. Delete all custom categories
@@ -263,7 +274,7 @@ export const deleteUser = asyncHandler(
             });
 
             res.status(200).json({
-                message: 'User and all associated data deleted successfully'
+                message: 'User and all associated data deleted successfully',
             });
         } catch (error: any) {
             console.error('Error deleting user:', error);
@@ -305,14 +316,18 @@ export const updatePassword = asyncHandler(
             // Validate new password
             if (newPassword.length < 8) {
                 res.status(400);
-                throw new Error('New password must be at least 8 characters long');
+                throw new Error(
+                    'New password must be at least 8 characters long'
+                );
             }
 
             // Check if new password is same as current
             const isSamePassword = await user.matchPassword(newPassword);
             if (isSamePassword) {
                 res.status(400);
-                throw new Error('New password must be different from current password');
+                throw new Error(
+                    'New password must be different from current password'
+                );
             }
 
             // Update password
@@ -320,13 +335,17 @@ export const updatePassword = asyncHandler(
             await user.save();
 
             res.status(200).json({
-                message: 'Password updated successfully'
+                message: 'Password updated successfully',
             });
         } catch (error: any) {
             console.error('Error updating password:', error);
-            if (error.message === 'Current password is incorrect' ||
-                error.message === 'New password must be at least 8 characters long' ||
-                error.message === 'New password must be different from current password') {
+            if (
+                error.message === 'Current password is incorrect' ||
+                error.message ===
+                    'New password must be at least 8 characters long' ||
+                error.message ===
+                    'New password must be different from current password'
+            ) {
                 throw error;
             }
             res.status(500);
@@ -334,5 +353,3 @@ export const updatePassword = asyncHandler(
         }
     }
 );
-
-

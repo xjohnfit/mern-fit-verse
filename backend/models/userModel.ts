@@ -6,7 +6,7 @@ export interface IUser {
     name: string;
     username: string;
     email: string;
-    dob: Date;
+    dob?: Date;
     password: string;
     gender: string;
     followers: string[];
@@ -54,7 +54,7 @@ const userSchema = new Schema<IUser>(
         username: { type: String, required: true, unique: true },
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
-        dob: { type: Date, required: true },
+        dob: { type: Date, required: false },
         gender: { type: String, required: true },
         followers: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
         following: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
