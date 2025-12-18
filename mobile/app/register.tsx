@@ -18,7 +18,6 @@ import { apiSlice } from '../slices/apiSlice';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getPasswordStrength } from '../lib/getPasswordStrength';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 import RegisterStyles from '@/styles/auth/registerStyles';
 
@@ -35,15 +34,12 @@ export default function Register() {
         email: '',
         password: '',
         confirmPassword: '',
-        dob: '',
         gender: '',
     });
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [agreeToTerms, setAgreeToTerms] = useState(false);
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(undefined);
 
     const passwordStrength = getPasswordStrength(formData.password);
 
@@ -52,25 +48,6 @@ export default function Register() {
             ...prev,
             [field]: value,
         }));
-    };
-
-    const handleDateChange = (event: any, selectedDate?: Date) => {
-        setShowDatePicker(Platform.OS === 'ios');
-        if (selectedDate) {
-            setDateOfBirth(selectedDate);
-            const formattedDate = selectedDate.toISOString().split('T')[0];
-            handleInputChange('dob', formattedDate);
-        }
-    };
-
-    const formatDisplayDate = (dateString: string) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
     };
 
     const handleSubmit = async () => {
@@ -100,7 +77,7 @@ export default function Register() {
             const res = await register(registerData).unwrap();
             dispatch(apiSlice.util.resetApiState());
             dispatch(setCredentials({ ...res }));
-            router.replace('/(tabs)/home' as any);
+            router.replace('/(tabs)/dashboard' as any);
         } catch (err: any) {
             alert(err?.data?.message || 'Registration failed. Please try again.');
         }
@@ -240,31 +217,6 @@ export default function Register() {
                                         {showConfirmPassword ? <Ionicons name="eye" size={24} color="white" /> : <Ionicons name="eye-off" size={24} color="white" />}
                                     </TouchableOpacity>
                                 </View>
-                            </View>
-
-                            {/* Date of Birth Field */}
-                            <View style={styles.fieldContainer}>
-                                <Text style={styles.fieldLabel}>
-                                    Date of Birth
-                                </Text>
-                                <TouchableOpacity
-                                    onPress={() => setShowDatePicker(true)}
-                                    style={styles.dobButton}
-                                >
-                                    <Text style={styles.dobButtonText}>
-                                        {formData.dob ? formatDisplayDate(formData.dob) : 'Select your date of birth'}
-                                    </Text>
-                                </TouchableOpacity>
-                                {showDatePicker && (
-                                    <DateTimePicker
-                                        value={dateOfBirth || new Date()}
-                                        mode="date"
-                                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                                        onChange={handleDateChange}
-                                        maximumDate={new Date()}
-                                        minimumDate={new Date(1900, 0, 1)}
-                                    />
-                                )}
                             </View>
 
                             {/* Gender Field */}

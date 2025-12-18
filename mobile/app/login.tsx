@@ -47,9 +47,8 @@ export default function LoginScreen() {
             // Navigate to main app
             router.replace('/(tabs)/dashboard' as any);
         } catch (err: any) {
-            console.error('Login error:', err);
             const errorMessage = err?.data?.message || err?.message || 'Login failed. Please try again.';
-            alert(`Login failed: ${errorMessage}`);
+            alert(errorMessage);
         }
     };
 
@@ -97,7 +96,9 @@ export default function LoginScreen() {
                                     placeholderTextColor="#FFFFFF"
                                     keyboardType="email-address"
                                     autoCapitalize="none"
-                                    autoComplete="off"
+                                    autoComplete="email"
+                                    textContentType="emailAddress"
+                                    autoCorrect={false}
                                     multiline={false}
                                     textAlignVertical="center"
                                     style={styles.textInput}
