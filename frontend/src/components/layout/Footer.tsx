@@ -1,11 +1,7 @@
 import { Link } from 'react-router';
 import { useSelector } from 'react-redux';
 import {
-    Dumbbell,
-    Home,
     LayoutDashboard,
-    UtensilsCrossed,
-    Settings,
     Heart,
     Sparkles,
     BookOpen,
