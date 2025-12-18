@@ -10,6 +10,7 @@ const recentWorkoutsStyles = StyleSheet.create({
     headerLeft: {
         flexDirection: 'row',
         alignItems: 'center',
+        paddingBottom: 10,
     },
     headerTitle: {
         fontSize: 20,

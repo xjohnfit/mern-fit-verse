@@ -10,6 +10,9 @@ import {
     Image,
     useColorScheme,
     ActivityIndicator,
+    AppState,
+    Platform,
+    type AppStateStatus,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,12 +22,25 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { useAudioPlayer, AudioSource, setAudioModeAsync } from 'expo-audio';
+import * as Notifications from 'expo-notifications';
 import { useGetExercisesQuery } from '@/slices/exerciseApiSlice';
 import type { Exercise as ApiExercise } from '@/slices/exerciseApiSlice';
 import { useGetTemplateByIdQuery } from '@/slices/workoutTemplateApiSlice';
 import { useCreateWorkoutMutation } from '@/slices/workoutApiSlice';
 import type { WorkoutExercise, WorkoutSet } from '@/types/workout.types';
 import createStyles from '@/styles/workout/startWorkoutStyles';
+
+// Configure notification handler
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+        shouldShowBanner: true,
+        shouldShowList: true,
+        priority: Notifications.AndroidNotificationPriority.MAX,
+    }),
+});
 
 type Exercise = Omit<ApiExercise, 'instructions'> & { instructions: string | string[]; };
 
@@ -56,6 +72,10 @@ const StartWorkoutScreen = () => {
     const isFinishingRef = useRef(false);
     const templateLoadedRef = useRef(false);
     const bellSound = useAudioPlayer(require('../../assets/sounds/bell.wav') as AudioSource);
+    const appState = useRef(AppState.currentState);
+    const restTimerNotificationId = useRef<string | null>(null);
+    const workoutTimerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const restTimerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     // State
     const [searchTerm, setSearchTerm] = useState('');
@@ -123,6 +143,26 @@ const StartWorkoutScreen = () => {
                     try {
                         const parsed = JSON.parse(savedExercises);
                         setSelectedExercises(parsed);
+
+                        // Restore active rest timer if exists
+                        const savedRestTimer = await AsyncStorage.getItem('workout_active_rest_timer');
+                        if (savedRestTimer) {
+                            try {
+                                const timerData = JSON.parse(savedRestTimer);
+                                // Verify the timer is still valid for the current exercises
+                                const exerciseExists = parsed.some((ex: WorkoutExercise) => ex.id === timerData.exerciseId);
+                                if (exerciseExists) {
+                                    setActiveRestTimer(timerData);
+                                } else {
+                                    // Clear invalid timer
+                                    await AsyncStorage.removeItem('workout_active_rest_timer');
+                                }
+                            } catch (e) {
+                                console.error('Failed to parse saved rest timer', e);
+                                await AsyncStorage.removeItem('workout_active_rest_timer');
+                            }
+                        }
+
                         setIsLoading(false);
                     } catch (e) {
                         console.error('Failed to parse saved exercises', e);
@@ -131,6 +171,7 @@ const StartWorkoutScreen = () => {
                 } else if (templateIdFromUrl) {
                     // Clear saved exercises when loading a new template
                     await AsyncStorage.removeItem('workout_exercises');
+                    await AsyncStorage.removeItem('workout_active_rest_timer');
                     // Keep loading true until the template loads
                 } else {
                     // No saved exercises and no template-freestyle workout
@@ -159,17 +200,212 @@ const StartWorkoutScreen = () => {
         configureAudio();
     }, []);
 
-    // Workout timer effect
+    // Request notification permissions and setup channel
     useEffect(() => {
-        let interval: ReturnType<typeof setInterval>;
+        const setupNotifications = async () => {
+            try {
+                // Request permissions
+                const { status: existingStatus } = await Notifications.getPermissionsAsync();
+                let finalStatus = existingStatus;
+
+                if (existingStatus !== 'granted') {
+                    const { status } = await Notifications.requestPermissionsAsync();
+                    finalStatus = status;
+                }
+
+                if (finalStatus !== 'granted') {
+                    console.warn('Notification permissions not granted');
+                    return;
+                }
+
+                // Setup Android notification channel with sound
+                if (Platform.OS === 'android') {
+                    await Notifications.setNotificationChannelAsync('workout-timer', {
+                        name: 'Workout Timer',
+                        importance: Notifications.AndroidImportance.MAX,
+                        vibrationPattern: [0, 250, 250, 250],
+                        sound: 'default', // Use default for now, custom sounds need to be in res/raw
+                        enableVibrate: true,
+                        enableLights: true,
+                        lightColor: '#3b82f6',
+                        showBadge: true,
+                    });
+                }
+            } catch (error) {
+                console.error('Error setting up notifications:', error);
+            }
+        };
+
+        setupNotifications();
+
+        // Listen for notifications received while app is in foreground
+        const foregroundSubscription = Notifications.addNotificationReceivedListener((notification) => {
+            console.log('Notification received in foreground:', notification);
+            // Play bell sound when notification is received
+            if (notification.request.content.data?.playSound) {
+                playBellSound();
+            }
+        });
+
+        // Listen for notification responses (user tapped notification)
+        const responseSubscription = Notifications.addNotificationResponseReceivedListener((response) => {
+            console.log('Notification response:', response);
+            // Play bell sound when user taps notification
+            if (response.notification.request.content.data?.playSound) {
+                playBellSound();
+            }
+        });
+
+        return () => {
+            foregroundSubscription.remove();
+            responseSubscription.remove();
+        };
+    }, []);
+
+    // Handle app state changes (background/foreground)
+    useEffect(() => {
+        const handleAppStateChange = (nextAppState: AppStateStatus) => {
+            try {
+                if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
+                    // App has come to foreground - recalculate timers based on timestamps
+                    console.log('App came to foreground');
+
+                    // Recalculate workout time
+                    if (isTimerRunning) {
+                        const elapsed = Math.floor((Date.now() - workoutStartTime - pausedTime) / 1000);
+                        setWorkoutTime(elapsed);
+                    }
+
+                    // Recalculate rest timer if active
+                    if (activeRestTimer) {
+                        const elapsed = Date.now() - activeRestTimer.startTime;
+                        const restDuration = defaultRestTimer;
+                        const remaining = restDuration - elapsed;
+
+                        if (remaining <= 0) {
+                            // Timer has finished while in background
+                            try {
+                                playBellSound();
+                            } catch (err) {
+                                console.error('Error playing bell sound:', err);
+                            }
+                            setActiveRestTimer(null);
+                            setSelectedExercises((prev) =>
+                                prev.map((ex) => {
+                                    if (ex.id !== activeRestTimer.exerciseId) return ex;
+                                    return {
+                                        ...ex,
+                                        sets: ex.sets.map((set) =>
+                                            set.id === activeRestTimer.setId ? { ...set, restTimeRemaining: 0 } : set
+                                        ),
+                                    };
+                                })
+                            );
+                        }
+                    }
+
+                    // Cancel any pending rest timer notifications
+                    if (restTimerNotificationId.current) {
+                        Notifications.cancelScheduledNotificationAsync(restTimerNotificationId.current)
+                            .then(() => {
+                                restTimerNotificationId.current = null;
+                            })
+                            .catch((err) => console.error('Error canceling notification:', err));
+                    }
+                } else if (nextAppState.match(/inactive|background/)) {
+                    // App has gone to background
+                    console.log('App went to background');
+
+                    // Schedule notification for rest timer if active
+                    if (activeRestTimer) {
+                        const elapsed = Date.now() - activeRestTimer.startTime;
+                        const restDuration = defaultRestTimer;
+                        const remaining = restDuration - elapsed;
+
+                        if (remaining > 0) {
+                            // Cancel any existing notification first to prevent duplicates
+                            const scheduleNewNotification = () => {
+                                Notifications.scheduleNotificationAsync({
+                                    content: {
+                                        title: '⏰ Rest Timer Complete!',
+                                        body: 'Time to start your next set!',
+                                        sound: Platform.OS === 'android' ? 'default' : 'bell.wav',
+                                        priority: Notifications.AndroidNotificationPriority.MAX,
+                                        vibrate: [0, 250, 250, 250],
+                                        data: { playSound: true },
+                                        categoryIdentifier: 'workout-timer',
+                                    },
+                                    trigger: {
+                                        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+                                        seconds: Math.ceil(remaining / 1000),
+                                        repeats: false,
+                                        channelId: 'workout-timer',
+                                    },
+                                })
+                                    .then((notificationId) => {
+                                        restTimerNotificationId.current = notificationId;
+                                        console.log('Notification scheduled:', notificationId);
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error scheduling notification:', error);
+                                    });
+                            };
+
+                            if (restTimerNotificationId.current) {
+                                // Cancel existing notification before scheduling new one
+                                Notifications.cancelScheduledNotificationAsync(restTimerNotificationId.current)
+                                    .then(() => {
+                                        restTimerNotificationId.current = null;
+                                        scheduleNewNotification();
+                                    })
+                                    .catch((err) => {
+                                        console.error('Error canceling existing notification:', err);
+                                        scheduleNewNotification();
+                                    });
+                            } else {
+                                scheduleNewNotification();
+                            }
+                        }
+                    }
+                }
+
+                appState.current = nextAppState;
+            } catch (error) {
+                console.error('Error in app state change handler:', error);
+            }
+        };
+
+        const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+        return () => {
+            subscription.remove();
+        };
+    }, [activeRestTimer, isTimerRunning, workoutStartTime, pausedTime, defaultRestTimer]);
+
+    // Workout timer effect - uses timestamp-based calculation instead of increments
+    useEffect(() => {
+        if (workoutTimerIntervalRef.current) {
+            clearInterval(workoutTimerIntervalRef.current);
+            workoutTimerIntervalRef.current = null;
+        }
+
         if (isTimerRunning) {
-            interval = setInterval(() => {
+            // Immediately calculate current time
+            const elapsed = Math.floor((Date.now() - workoutStartTime - pausedTime) / 1000);
+            setWorkoutTime(elapsed);
+
+            // Update every 100ms for smooth display
+            workoutTimerIntervalRef.current = setInterval(() => {
                 const elapsed = Math.floor((Date.now() - workoutStartTime - pausedTime) / 1000);
                 setWorkoutTime(elapsed);
             }, 100);
         }
+
         return () => {
-            clearInterval(interval);
+            if (workoutTimerIntervalRef.current) {
+                clearInterval(workoutTimerIntervalRef.current);
+                workoutTimerIntervalRef.current = null;
+            }
         };
     }, [isTimerRunning, workoutStartTime, pausedTime]);
 
@@ -259,45 +495,102 @@ const StartWorkoutScreen = () => {
         }
     }, [templateData, exercisesData, templateIdFromUrl, defaultRestTimer]);
 
-    // Rest timer effect
+    // Rest timer effect - uses timestamp-based calculation and schedules notifications
     useEffect(() => {
-        if (!activeRestTimer) return;
+        if (restTimerIntervalRef.current) {
+            clearInterval(restTimerIntervalRef.current);
+            restTimerIntervalRef.current = null;
+        }
 
-        const interval = setInterval(() => {
-            const elapsed = Date.now() - activeRestTimer.startTime;
-            const restDuration: number = defaultRestTimer; // Use user's rest timer setting from database
-            const remaining = restDuration - elapsed;
-
-            if (remaining <= 0) {
-                playBellSound();
-                setActiveRestTimer(null);
-                setSelectedExercises((prev) =>
-                    prev.map((ex) => {
-                        if (ex.id !== activeRestTimer.exerciseId) return ex;
-                        return {
-                            ...ex,
-                            sets: ex.sets.map((set) =>
-                                set.id === activeRestTimer.setId ? { ...set, restTimeRemaining: 0 } : set
-                            ),
-                        };
-                    })
-                );
-            } else {
-                setSelectedExercises((prev) =>
-                    prev.map((ex) => {
-                        if (ex.id !== activeRestTimer.exerciseId) return ex;
-                        return {
-                            ...ex,
-                            sets: ex.sets.map((set) =>
-                                set.id === activeRestTimer.setId ? { ...set, restTimeRemaining: remaining } : set
-                            ),
-                        };
-                    })
-                );
+        if (!activeRestTimer) {
+            // Cancel any pending notifications when timer is cleared
+            if (restTimerNotificationId.current) {
+                Notifications.cancelScheduledNotificationAsync(restTimerNotificationId.current)
+                    .catch(err => console.error('Error canceling notification:', err));
+                restTimerNotificationId.current = null;
             }
-        }, 16); // ~60fps
+            // Clear saved rest timer from storage
+            AsyncStorage.removeItem('workout_active_rest_timer').catch(console.error);
+            return;
+        }
 
-        return () => clearInterval(interval);
+        const restDuration: number = defaultRestTimer;
+
+        // Calculate initial remaining time
+        const initialElapsed = Date.now() - activeRestTimer.startTime;
+        const initialRemaining = restDuration - initialElapsed;
+
+        // If already expired, complete immediately
+        if (initialRemaining <= 0) {
+            playBellSound();
+            setActiveRestTimer(null);
+            setSelectedExercises((prev) =>
+                prev.map((ex) => {
+                    if (ex.id !== activeRestTimer.exerciseId) return ex;
+                    return {
+                        ...ex,
+                        sets: ex.sets.map((set) =>
+                            set.id === activeRestTimer.setId ? { ...set, restTimeRemaining: 0 } : set
+                        ),
+                    };
+                })
+            );
+            return;
+        }
+
+        // Update UI every 16ms (~60fps) using timestamp-based calculation
+        restTimerIntervalRef.current = setInterval(() => {
+            try {
+                const elapsed = Date.now() - activeRestTimer.startTime;
+                const remaining = restDuration - elapsed;
+
+                if (remaining <= 0) {
+                    playBellSound();
+                    setActiveRestTimer(null);
+                    setSelectedExercises((prev) =>
+                        prev.map((ex) => {
+                            if (ex.id !== activeRestTimer.exerciseId) return ex;
+                            return {
+                                ...ex,
+                                sets: ex.sets.map((set) =>
+                                    set.id === activeRestTimer.setId ? { ...set, restTimeRemaining: 0 } : set
+                                ),
+                            };
+                        })
+                    );
+
+                    if (restTimerIntervalRef.current) {
+                        clearInterval(restTimerIntervalRef.current);
+                        restTimerIntervalRef.current = null;
+                    }
+                } else {
+                    setSelectedExercises((prev) =>
+                        prev.map((ex) => {
+                            if (ex.id !== activeRestTimer.exerciseId) return ex;
+                            return {
+                                ...ex,
+                                sets: ex.sets.map((set) =>
+                                    set.id === activeRestTimer.setId ? { ...set, restTimeRemaining: remaining } : set
+                                ),
+                            };
+                        })
+                    );
+                }
+            } catch (error) {
+                console.error('Error in rest timer interval:', error);
+                if (restTimerIntervalRef.current) {
+                    clearInterval(restTimerIntervalRef.current);
+                    restTimerIntervalRef.current = null;
+                }
+            }
+        }, 16);
+
+        return () => {
+            if (restTimerIntervalRef.current) {
+                clearInterval(restTimerIntervalRef.current);
+                restTimerIntervalRef.current = null;
+            }
+        };
     }, [activeRestTimer, defaultRestTimer]);
 
     const formatTime = (seconds: number) => {
@@ -309,9 +602,11 @@ const StartWorkoutScreen = () => {
 
     const playBellSound = () => {
         try {
-            bellSound.volume = 1.0;
-            bellSound.seekTo(0);
-            bellSound.play();
+            if (bellSound && typeof bellSound.play === 'function') {
+                bellSound.volume = 1.0;
+                bellSound.seekTo(0);
+                bellSound.play();
+            }
         } catch (error) {
             console.error('Error playing bell sound:', error);
         }
@@ -434,21 +729,27 @@ const StartWorkoutScreen = () => {
             );
 
             if (nextIncompleteSetInExercise) {
-                setActiveRestTimer({
+                const newTimer = {
                     exerciseId,
                     setId: nextIncompleteSetInExercise.id,
                     startTime: Date.now(),
-                });
+                };
+                setActiveRestTimer(newTimer);
+                // Save to AsyncStorage for persistence
+                AsyncStorage.setItem('workout_active_rest_timer', JSON.stringify(newTimer)).catch(console.error);
             } else {
                 for (let i = currentExerciseIndex + 1; i < selectedExercises.length; i++) {
                     const nextExercise = selectedExercises[i];
                     const firstIncompleteSet = nextExercise.sets.find((s) => !s.completed);
                     if (firstIncompleteSet) {
-                        setActiveRestTimer({
+                        const newTimer = {
                             exerciseId: nextExercise.id,
                             setId: firstIncompleteSet.id,
                             startTime: Date.now(),
-                        });
+                        };
+                        setActiveRestTimer(newTimer);
+                        // Save to AsyncStorage for persistence
+                        AsyncStorage.setItem('workout_active_rest_timer', JSON.stringify(newTimer)).catch(console.error);
                         break;
                     }
                 }
@@ -510,6 +811,23 @@ const StartWorkoutScreen = () => {
     const confirmFinishWorkout = async () => {
         isFinishingRef.current = true;
         setIsTimerRunning(false);
+
+        // Clear all timers and notifications
+        if (workoutTimerIntervalRef.current) {
+            clearInterval(workoutTimerIntervalRef.current);
+            workoutTimerIntervalRef.current = null;
+        }
+        if (restTimerIntervalRef.current) {
+            clearInterval(restTimerIntervalRef.current);
+            restTimerIntervalRef.current = null;
+        }
+        if (restTimerNotificationId.current) {
+            await Notifications.cancelScheduledNotificationAsync(restTimerNotificationId.current);
+            restTimerNotificationId.current = null;
+        }
+
+        // Cancel all pending notifications for this workout
+        await Notifications.cancelAllScheduledNotificationsAsync();
 
         const hasCompletedSet = selectedExercises.some((exercise) => exercise.sets.some((set) => set.completed));
 
@@ -576,6 +894,7 @@ const StartWorkoutScreen = () => {
             'workout_pause_start',
             'workout_template_id',
             'workout_template_name',
+            'workout_active_rest_timer',
         ];
         await AsyncStorage.multiRemove(keys);
     };
@@ -592,12 +911,43 @@ const StartWorkoutScreen = () => {
                 onPress: async () => {
                     isFinishingRef.current = true;
                     setIsTimerRunning(false);
+
+                    // Clear all timers and notifications
+                    if (workoutTimerIntervalRef.current) {
+                        clearInterval(workoutTimerIntervalRef.current);
+                        workoutTimerIntervalRef.current = null;
+                    }
+                    if (restTimerIntervalRef.current) {
+                        clearInterval(restTimerIntervalRef.current);
+                        restTimerIntervalRef.current = null;
+                    }
+                    if (restTimerNotificationId.current) {
+                        await Notifications.cancelScheduledNotificationAsync(restTimerNotificationId.current);
+                        restTimerNotificationId.current = null;
+                    }
+
+                    // Cancel all pending notifications for this workout
+                    await Notifications.cancelAllScheduledNotificationsAsync();
+
                     await clearWorkoutData();
                     router.replace('/workout');
                 },
             },
         ]);
     };
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            // Clear interval refs on unmount
+            if (workoutTimerIntervalRef.current) {
+                clearInterval(workoutTimerIntervalRef.current);
+            }
+            if (restTimerIntervalRef.current) {
+                clearInterval(restTimerIntervalRef.current);
+            }
+        };
+    }, []);
 
     if (isLoading) {
         return (
