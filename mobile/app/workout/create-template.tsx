@@ -62,7 +62,7 @@ const CreateTemplateScreen = () => {
         const newExercise: WorkoutTemplateExercise = {
             exerciseId: exercise.id,
             exerciseName: exercise.name,
-            sets: [{ setNumber: 1, targetReps: 10, targetWeight: 0, notes: '' }],
+            sets: [{ setNumber: 1, targetReps: 10, notes: '' }],
             notes: '',
         };
 
@@ -92,7 +92,7 @@ const CreateTemplateScreen = () => {
                     const newSetNumber = ex.sets.length + 1;
                     return {
                         ...ex,
-                        sets: [...ex.sets, { setNumber: newSetNumber, targetReps: 10, targetWeight: 0, notes: '' }],
+                        sets: [...ex.sets, { setNumber: newSetNumber, targetReps: 10, notes: '' }],
                     };
                 }
                 return ex;
@@ -371,61 +371,74 @@ const CreateTemplateScreen = () => {
                                             <View
                                                 key={set.setNumber}
                                                 style={{
-                                                    flexDirection: 'row',
-                                                    alignItems: 'center',
-                                                    gap: 8,
-                                                    backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
-                                                    borderRadius: 8,
-                                                    padding: 10,
+                                                    position: 'relative',
+                                                    overflow: 'hidden',
+                                                    backgroundColor: isDark ? '#0f172a' : '#f9fafb',
+                                                    borderRadius: 10,
+                                                    borderWidth: 2,
+                                                    borderColor: isDark ? '#334155' : '#e5e7eb',
                                                 }}
                                             >
-                                                <Text style={{ fontSize: 14, fontWeight: '600', color: isDark ? '#9CA3AF' : '#6B7280', width: 50 }}>
-                                                    Set {set.setNumber}
-                                                </Text>
-                                                <View style={{ flex: 1, flexDirection: 'row', gap: 8 }}>
-                                                    <View style={{ flex: 1 }}>
-                                                        <Text style={{ fontSize: 11, color: isDark ? '#9CA3AF' : '#6B7280', marginBottom: 4 }}>Reps</Text>
+                                                <View style={{
+                                                    flexDirection: 'row',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    padding: 12,
+                                                    gap: 10,
+                                                }}>
+                                                    <View style={{
+                                                        width: 28,
+                                                        height: 28,
+                                                        borderRadius: 14,
+                                                        borderWidth: 2,
+                                                        borderColor: isDark ? '#64748b' : '#d1d5db',
+                                                        backgroundColor: isDark ? '#1e293b' : '#fff',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                    }}>
+                                                        <Text style={{ fontSize: 14, fontWeight: '600', color: isDark ? '#94a3b8' : '#64748b' }}>
+                                                            {set.setNumber}
+                                                        </Text>
+                                                    </View>
+
+                                                    <View style={{
+                                                        flexDirection: 'row',
+                                                        alignItems: 'center',
+                                                        gap: 4,
+                                                    }}>
                                                         <TextInput
                                                             value={set.targetReps.toString()}
                                                             onChangeText={(text) => handleUpdateSet(exercise.exerciseId, set.setNumber, 'targetReps', Number(text) || 0)}
                                                             keyboardType="numeric"
+                                                            selectTextOnFocus
                                                             style={{
-                                                                backgroundColor: isDark ? '#374151' : '#F3F4F6',
+                                                                height: 32,
+                                                                backgroundColor: isDark ? '#0f172a' : '#fff',
+                                                                borderWidth: 1,
+                                                                borderColor: isDark ? '#475569' : '#d1d5db',
                                                                 borderRadius: 6,
-                                                                paddingHorizontal: 10,
-                                                                paddingVertical: 8,
-                                                                fontSize: 14,
-                                                                color: isDark ? '#FFFFFF' : '#111827',
+                                                                paddingHorizontal: 8,
+                                                                fontSize: 13,
+                                                                color: isDark ? '#e2e8f0' : '#111827',
                                                                 textAlign: 'center',
+                                                                width: 50,
                                                             }}
                                                         />
+                                                        <Text style={{
+                                                            fontSize: 11,
+                                                            color: isDark ? '#94a3b8' : '#6b7280'
+                                                        }}>reps</Text>
                                                     </View>
-                                                    <View style={{ flex: 1 }}>
-                                                        <Text style={{ fontSize: 11, color: isDark ? '#9CA3AF' : '#6B7280', marginBottom: 4 }}>Weight</Text>
-                                                        <TextInput
-                                                            value={set.targetWeight?.toString() || '0'}
-                                                            onChangeText={(text) => handleUpdateSet(exercise.exerciseId, set.setNumber, 'targetWeight', Number(text) || 0)}
-                                                            keyboardType="numeric"
-                                                            style={{
-                                                                backgroundColor: isDark ? '#374151' : '#F3F4F6',
-                                                                borderRadius: 6,
-                                                                paddingHorizontal: 10,
-                                                                paddingVertical: 8,
-                                                                fontSize: 14,
-                                                                color: isDark ? '#FFFFFF' : '#111827',
-                                                                textAlign: 'center',
-                                                            }}
-                                                        />
-                                                    </View>
-                                                </View>
-                                                {exercise.sets.length > 1 && (
+
                                                     <TouchableOpacity
                                                         onPress={() => handleRemoveSet(exercise.exerciseId, set.setNumber)}
-                                                        style={{ padding: 4 }}
+                                                        activeOpacity={0.7}
+                                                        disabled={exercise.sets.length === 1}
+                                                        style={{ opacity: exercise.sets.length === 1 ? 0.3 : 1 }}
                                                     >
-                                                        <Ionicons name="close-circle" size={20} color="#EF4444" />
+                                                        <Ionicons name="close-circle" size={20} color="#ef4444" />
                                                     </TouchableOpacity>
-                                                )}
+                                                </View>
                                             </View>
                                         ))}
                                     </View>
@@ -434,18 +447,20 @@ const CreateTemplateScreen = () => {
                                     <TouchableOpacity
                                         onPress={() => handleAddSet(exercise.exerciseId)}
                                         style={{
-                                            borderWidth: 1,
+                                            borderWidth: 2,
                                             borderColor: '#9333ea',
                                             borderStyle: 'dashed',
-                                            borderRadius: 8,
-                                            paddingVertical: 10,
+                                            borderRadius: 10,
+                                            paddingVertical: 12,
                                             alignItems: 'center',
                                             flexDirection: 'row',
                                             justifyContent: 'center',
+                                            backgroundColor: isDark ? '#1F2937' : '#F9FAFB',
                                         }}
+                                        activeOpacity={0.7}
                                     >
-                                        <Ionicons name="add" size={18} color="#9333ea" />
-                                        <Text style={{ color: '#9333ea', fontSize: 14, fontWeight: '600', marginLeft: 6 }}>Add Set</Text>
+                                        <Ionicons name="add-circle" size={20} color="#9333ea" />
+                                        <Text style={{ color: '#9333ea', fontSize: 15, fontWeight: '600', marginLeft: 8 }}>Add Set</Text>
                                     </TouchableOpacity>
                                 </View>
                             ))}

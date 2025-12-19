@@ -26,16 +26,16 @@ import * as Notifications from 'expo-notifications';
 import { useGetExercisesQuery } from '@/slices/exerciseApiSlice';
 import type { Exercise as ApiExercise } from '@/slices/exerciseApiSlice';
 import { useGetTemplateByIdQuery } from '@/slices/workoutTemplateApiSlice';
-import { useCreateWorkoutMutation } from '@/slices/workoutApiSlice';
+import { useCreateWorkoutMutation, useGetWorkoutsQuery } from '@/slices/workoutApiSlice';
 import type { WorkoutExercise, WorkoutSet } from '@/types/workout.types';
 import createStyles from '@/styles/workout/startWorkoutStyles';
 
-// Configure notification handler
+// Configure notification handler - this determines how notifications are presented when app is in foreground
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
         shouldPlaySound: true,
-        shouldSetBadge: false,
+        shouldSetBadge: true,
         shouldShowBanner: true,
         shouldShowList: true,
         priority: Notifications.AndroidNotificationPriority.MAX,
@@ -66,11 +66,12 @@ const StartWorkoutScreen = () => {
     const { data: templateData } = useGetTemplateByIdQuery(templateId!, {
         skip: !templateId,
     });
+    const { data: workoutsData } = useGetWorkoutsQuery();
     const [createWorkout, { isLoading: isSaving }] = useCreateWorkoutMutation();
 
     // Refs
     const isFinishingRef = useRef(false);
-    const templateLoadedRef = useRef(false);
+    const templateLoadedRef = useRef<string | null>(null); // Track which template was loaded
     const bellSound = useAudioPlayer(require('../../assets/sounds/bell.wav') as AudioSource);
     const appState = useRef(AppState.currentState);
     const restTimerNotificationId = useRef<string | null>(null);
@@ -86,6 +87,7 @@ const StartWorkoutScreen = () => {
         setId: string;
         startTime: number;
     } | null>(null);
+    const [isRestoringTimer, setIsRestoringTimer] = useState(true);
 
     // Timer state
     const [workoutStartTime, setWorkoutStartTime] = useState(Date.now());
@@ -93,6 +95,32 @@ const StartWorkoutScreen = () => {
     const [pauseStartTime, setPauseStartTime] = useState<number | null>(null);
     const [isTimerRunning, setIsTimerRunning] = useState(true);
     const [workoutTime, setWorkoutTime] = useState(0);
+
+    // Restore rest timer immediately on mount (before other initialization)
+    useEffect(() => {
+        const restoreTimer = async () => {
+            try {
+                const savedRestTimer = await AsyncStorage.getItem('workout_active_rest_timer');
+                if (savedRestTimer) {
+                    const timerData = JSON.parse(savedRestTimer);
+                    const elapsed = Date.now() - timerData.startTime;
+                    const remaining = defaultRestTimer - elapsed;
+
+                    if (remaining > 0) {
+                        setActiveRestTimer(timerData);
+                    } else {
+                        await AsyncStorage.removeItem('workout_active_rest_timer');
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to restore timer', error);
+            } finally {
+                setIsRestoringTimer(false);
+            }
+        };
+
+        restoreTimer();
+    }, [defaultRestTimer]);
 
     // Initialize workout state from AsyncStorage
     useEffect(() => {
@@ -143,26 +171,6 @@ const StartWorkoutScreen = () => {
                     try {
                         const parsed = JSON.parse(savedExercises);
                         setSelectedExercises(parsed);
-
-                        // Restore active rest timer if exists
-                        const savedRestTimer = await AsyncStorage.getItem('workout_active_rest_timer');
-                        if (savedRestTimer) {
-                            try {
-                                const timerData = JSON.parse(savedRestTimer);
-                                // Verify the timer is still valid for the current exercises
-                                const exerciseExists = parsed.some((ex: WorkoutExercise) => ex.id === timerData.exerciseId);
-                                if (exerciseExists) {
-                                    setActiveRestTimer(timerData);
-                                } else {
-                                    // Clear invalid timer
-                                    await AsyncStorage.removeItem('workout_active_rest_timer');
-                                }
-                            } catch (e) {
-                                console.error('Failed to parse saved rest timer', e);
-                                await AsyncStorage.removeItem('workout_active_rest_timer');
-                            }
-                        }
-
                         setIsLoading(false);
                     } catch (e) {
                         console.error('Failed to parse saved exercises', e);
@@ -215,21 +223,44 @@ const StartWorkoutScreen = () => {
 
                 if (finalStatus !== 'granted') {
                     console.warn('Notification permissions not granted');
+                    Alert.alert('Notifications Required', 'Please enable notifications in your device settings to receive rest timer alerts.');
                     return;
                 }
 
-                // Setup Android notification channel with sound
+                console.log('Notification permissions granted');
+
+                // iOS-specific notification reminder
+                if (Platform.OS === 'ios') {
+                    console.log('iOS: Make sure device is not in silent mode for notification sounds to play');
+                }
+
+                // Setup Android notification channel
                 if (Platform.OS === 'android') {
                     await Notifications.setNotificationChannelAsync('workout-timer', {
                         name: 'Workout Timer',
                         importance: Notifications.AndroidImportance.MAX,
                         vibrationPattern: [0, 250, 250, 250],
-                        sound: 'default', // Use default for now, custom sounds need to be in res/raw
+                        sound: 'default',
                         enableVibrate: true,
-                        enableLights: true,
-                        lightColor: '#3b82f6',
                         showBadge: true,
                     });
+                }
+
+                // For iOS, set notification categories to allow sound in background
+                if (Platform.OS === 'ios') {
+                    await Notifications.setNotificationCategoryAsync('workout-timer', [
+                        {
+                            identifier: 'TIMER_COMPLETE',
+                            buttonTitle: 'OK',
+                            options: {
+                                opensAppToForeground: true,
+                            },
+                        },
+                    ], {
+                        allowInCarPlay: true,
+                        allowAnnouncement: true,
+                    });
+                    console.log('iOS notification category configured');
                 }
             } catch (error) {
                 console.error('Error setting up notifications:', error);
@@ -237,29 +268,6 @@ const StartWorkoutScreen = () => {
         };
 
         setupNotifications();
-
-        // Listen for notifications received while app is in foreground
-        const foregroundSubscription = Notifications.addNotificationReceivedListener((notification) => {
-            console.log('Notification received in foreground:', notification);
-            // Play bell sound when notification is received
-            if (notification.request.content.data?.playSound) {
-                playBellSound();
-            }
-        });
-
-        // Listen for notification responses (user tapped notification)
-        const responseSubscription = Notifications.addNotificationResponseReceivedListener((response) => {
-            console.log('Notification response:', response);
-            // Play bell sound when user taps notification
-            if (response.notification.request.content.data?.playSound) {
-                playBellSound();
-            }
-        });
-
-        return () => {
-            foregroundSubscription.remove();
-            responseSubscription.remove();
-        };
     }, []);
 
     // Handle app state changes (background/foreground)
@@ -316,55 +324,38 @@ const StartWorkoutScreen = () => {
                     // App has gone to background
                     console.log('App went to background');
 
-                    // Schedule notification for rest timer if active
-                    if (activeRestTimer) {
+                    // Schedule notification for rest timer if active (only if not already scheduled)
+                    if (activeRestTimer && !restTimerNotificationId.current) {
                         const elapsed = Date.now() - activeRestTimer.startTime;
                         const restDuration = defaultRestTimer;
                         const remaining = restDuration - elapsed;
+                        console.log('Rest timer active, remaining seconds:', Math.ceil(remaining / 1000));
 
                         if (remaining > 0) {
-                            // Cancel any existing notification first to prevent duplicates
-                            const scheduleNewNotification = () => {
-                                Notifications.scheduleNotificationAsync({
-                                    content: {
-                                        title: '⏰ Rest Timer Complete!',
-                                        body: 'Time to start your next set!',
-                                        sound: Platform.OS === 'android' ? 'default' : 'bell.wav',
-                                        priority: Notifications.AndroidNotificationPriority.MAX,
-                                        vibrate: [0, 250, 250, 250],
-                                        data: { playSound: true },
-                                        categoryIdentifier: 'workout-timer',
-                                    },
-                                    trigger: {
-                                        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-                                        seconds: Math.ceil(remaining / 1000),
-                                        repeats: false,
-                                        channelId: 'workout-timer',
-                                    },
-                                })
-                                    .then((notificationId) => {
-                                        restTimerNotificationId.current = notificationId;
-                                        console.log('Notification scheduled:', notificationId);
-                                    })
-                                    .catch((error) => {
-                                        console.error('Error scheduling notification:', error);
-                                    });
-                            };
+                            const secondsToWait = Math.max(1, Math.ceil(remaining / 1000));
+                            console.log('Scheduling notification for', secondsToWait, 'seconds');
 
-                            if (restTimerNotificationId.current) {
-                                // Cancel existing notification before scheduling new one
-                                Notifications.cancelScheduledNotificationAsync(restTimerNotificationId.current)
-                                    .then(() => {
-                                        restTimerNotificationId.current = null;
-                                        scheduleNewNotification();
-                                    })
-                                    .catch((err) => {
-                                        console.error('Error canceling existing notification:', err);
-                                        scheduleNewNotification();
-                                    });
-                            } else {
-                                scheduleNewNotification();
-                            }
+                            Notifications.scheduleNotificationAsync({
+                                content: {
+                                    title: '⏰ Rest Timer Complete!',
+                                    body: 'Time to start your next set!',
+                                    sound: true,
+                                    priority: Notifications.AndroidNotificationPriority.MAX,
+                                    data: { playSound: true },
+                                },
+                                trigger: {
+                                    type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+                                    seconds: secondsToWait,
+                                    channelId: Platform.OS === 'android' ? 'workout-timer' : undefined,
+                                },
+                            })
+                                .then((notificationId) => {
+                                    restTimerNotificationId.current = notificationId;
+                                    console.log('Notification scheduled:', notificationId);
+                                })
+                                .catch((error) => {
+                                    console.error('Error scheduling notification:', error);
+                                });
                         }
                     }
                 }
@@ -454,9 +445,9 @@ const StartWorkoutScreen = () => {
 
     // Load template exercises only when starting from a template URL
     useEffect(() => {
-        // Only load template if we have a template from URL and haven't loaded it yet
-        if (templateIdFromUrl && templateData?.data && !templateLoadedRef.current && exercisesData) {
-            templateLoadedRef.current = true;
+        // Only load template if we have a template from URL and haven't loaded this specific template yet
+        if (templateIdFromUrl && templateData?.data && templateLoadedRef.current !== templateIdFromUrl && exercisesData) {
+            templateLoadedRef.current = templateIdFromUrl;
 
             const template = templateData.data;
             const exercises = exercisesData;
@@ -467,14 +458,20 @@ const StartWorkoutScreen = () => {
                 const exerciseData = exercises.find((ex) => ex.id === templateExercise.exerciseId);
                 if (!exerciseData) continue;
 
-                const workoutSets: WorkoutSet[] = templateExercise.sets.map((templateSet: any, index: number) => ({
-                    id: `${exerciseData.id}-set-${index + 1}`,
-                    setNumber: index + 1,
-                    completed: false,
-                    weight: templateSet.targetWeight || 0,
-                    reps: templateSet.targetReps || 0,
-                    restTimeRemaining: defaultRestTimer,
-                }));
+                const workoutSets: WorkoutSet[] = templateExercise.sets.map((templateSet: any, index: number) => {
+                    // Get last weight for this set, fallback to template target weight
+                    const lastPerf = getLastPerformance(exerciseData.id, index + 1);
+                    const weight = lastPerf?.weight || templateSet.targetWeight || 0;
+
+                    return {
+                        id: `${exerciseData.id}-set-${index + 1}`,
+                        setNumber: index + 1,
+                        completed: false,
+                        weight: weight,
+                        reps: templateSet.targetReps || 0,
+                        restTimeRemaining: defaultRestTimer,
+                    };
+                });
 
                 templateExercises.push({
                     id: exerciseData.id,
@@ -593,6 +590,27 @@ const StartWorkoutScreen = () => {
         };
     }, [activeRestTimer, defaultRestTimer]);
 
+    // Save active rest timer whenever it changes
+    useEffect(() => {
+        const saveRestTimer = async () => {
+            if (activeRestTimer) {
+                try {
+                    await AsyncStorage.setItem('workout_active_rest_timer', JSON.stringify(activeRestTimer));
+                } catch (error) {
+                    console.error('Failed to save rest timer', error);
+                }
+            } else {
+                try {
+                    await AsyncStorage.removeItem('workout_active_rest_timer');
+                } catch (error) {
+                    console.error('Failed to remove rest timer', error);
+                }
+            }
+        };
+
+        saveRestTimer();
+    }, [activeRestTimer]);
+
     const formatTime = (seconds: number) => {
         const hrs = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds % 3600) / 60);
@@ -600,16 +618,45 @@ const StartWorkoutScreen = () => {
         return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
-    const playBellSound = () => {
+    const playBellSound = async () => {
         try {
+            console.log('playBellSound called, bellSound exists:', !!bellSound);
             if (bellSound && typeof bellSound.play === 'function') {
+                // Reset to start and play
                 bellSound.volume = 1.0;
-                bellSound.seekTo(0);
-                bellSound.play();
+                await bellSound.seekTo(0);
+                await bellSound.play();
+                console.log('Bell sound played successfully');
+            } else {
+                console.log('Bell sound player not available');
             }
         } catch (error) {
             console.error('Error playing bell sound:', error);
         }
+    };
+
+    // Get last performance for an exercise
+    const getLastPerformance = (exerciseId: string, setNumber: number) => {
+        if (!workoutsData) return null;
+
+        // Sort workouts by date (most recent first)
+        const sortedWorkouts = [...workoutsData].sort((a: any, b: any) =>
+            new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
+        );
+
+        // Find the most recent workout that contains this exercise
+        for (const workout of sortedWorkouts) {
+            const exercise = workout.exercises?.find((ex: any) => ex.exerciseId === exerciseId);
+            if (exercise && exercise.sets && exercise.sets[setNumber - 1]) {
+                const set = exercise.sets[setNumber - 1];
+                return {
+                    weight: set.weight,
+                    reps: set.reps,
+                };
+            }
+        }
+
+        return null;
     };
 
     const filteredExercises = exercisesData?.filter(
@@ -622,6 +669,12 @@ const StartWorkoutScreen = () => {
         if (selectedExercises.find((ex) => ex.id === exercise.id)) {
             return;
         }
+
+        // Get last performance to pre-fill weights
+        const getLastWeight = (setNum: number) => {
+            const lastPerf = getLastPerformance(exercise.id, setNum);
+            return lastPerf?.weight || 0;
+        };
 
         const workoutExercise: WorkoutExercise = {
             id: exercise.id,
@@ -636,7 +689,7 @@ const StartWorkoutScreen = () => {
                     setNumber: 1,
                     completed: false,
                     restTimeRemaining: userInfo?.restTimer || 120,
-                    weight: 0,
+                    weight: getLastWeight(1),
                     reps: 0,
                 },
                 {
@@ -644,7 +697,7 @@ const StartWorkoutScreen = () => {
                     setNumber: 2,
                     completed: false,
                     restTimeRemaining: userInfo?.restTimer || 120,
-                    weight: 0,
+                    weight: getLastWeight(2),
                     reps: 0,
                 },
                 {
@@ -652,7 +705,7 @@ const StartWorkoutScreen = () => {
                     setNumber: 3,
                     completed: false,
                     restTimeRemaining: userInfo?.restTimer || 120,
-                    weight: 0,
+                    weight: getLastWeight(3),
                     reps: 0,
                 },
                 {
@@ -660,7 +713,7 @@ const StartWorkoutScreen = () => {
                     setNumber: 4,
                     completed: false,
                     restTimeRemaining: userInfo?.restTimer || 120,
-                    weight: 0,
+                    weight: getLastWeight(4),
                     reps: 0,
                 },
             ],
@@ -734,6 +787,7 @@ const StartWorkoutScreen = () => {
                     setId: nextIncompleteSetInExercise.id,
                     startTime: Date.now(),
                 };
+                console.log('Starting rest timer:', newTimer);
                 setActiveRestTimer(newTimer);
                 // Save to AsyncStorage for persistence
                 AsyncStorage.setItem('workout_active_rest_timer', JSON.stringify(newTimer)).catch(console.error);
@@ -747,6 +801,7 @@ const StartWorkoutScreen = () => {
                             setId: firstIncompleteSet.id,
                             startTime: Date.now(),
                         };
+                        console.log('Starting rest timer for next exercise:', newTimer);
                         setActiveRestTimer(newTimer);
                         // Save to AsyncStorage for persistence
                         AsyncStorage.setItem('workout_active_rest_timer', JSON.stringify(newTimer)).catch(console.error);
@@ -1079,65 +1134,65 @@ const StartWorkoutScreen = () => {
                                             onPress={() => handleCompleteSet(exercise.id, set.id)}
                                             activeOpacity={0.7}
                                         >
-                                            {set.completed && <Ionicons name="checkmark" size={16} color="#fff" />}
+                                            {set.completed ? (
+                                                <Ionicons name="checkmark" size={18} color="#fff" />
+                                            ) : (
+                                                <Text style={styles.setNumberInCheckbox}>{set.setNumber}</Text>
+                                            )}
                                         </TouchableOpacity>
 
-                                        <View style={styles.setInfo}>
-                                            <Text style={styles.setLabel}>Set {set.setNumber}</Text>
-                                            {set.completed && <Text style={styles.completedLabel}>Completed</Text>}
-                                        </View>
-
-                                        <View style={styles.setInputs}>
-                                            <View style={styles.inputGroup}>
-                                                <TextInput
-                                                    style={styles.input}
-                                                    value={set.weight?.toString() || ''}
-                                                    onChangeText={(text) =>
-                                                        handleUpdateSet(exercise.id, set.id, 'weight', parseFloat(text) || 0)
-                                                    }
-                                                    keyboardType="numeric"
-                                                    placeholder="0"
-                                                    placeholderTextColor={isDark ? '#64748b' : '#9ca3af'}
-                                                    editable={!set.completed}
-                                                />
-                                                <Text style={styles.inputLabel}>{weightUnit}</Text>
-                                            </View>
-                                            <Text style={styles.inputSeparator}>×</Text>
-                                            <View style={styles.inputGroup}>
-                                                <TextInput
-                                                    style={styles.input}
-                                                    value={set.reps?.toString() || ''}
-                                                    onChangeText={(text) =>
-                                                        handleUpdateSet(exercise.id, set.id, 'reps', parseInt(text) || 0)
-                                                    }
-                                                    keyboardType="numeric"
-                                                    placeholder="0"
-                                                    placeholderTextColor={isDark ? '#64748b' : '#9ca3af'}
-                                                    editable={!set.completed}
-                                                />
-                                                <Text style={styles.inputLabel}>reps</Text>
-                                            </View>
-                                        </View>
-
-                                        <View style={styles.setActions}>
-                                            {activeRestTimer?.setId === set.id && set.restTimeRemaining !== undefined && (
-                                                <View style={styles.restTimer}>
-                                                    <Ionicons name="timer-outline" size={14} color="#3b82f6" />
-                                                    <Text style={styles.restTimerText}>
-                                                        {Math.floor(set.restTimeRemaining / 60000)}:
-                                                        {Math.floor((set.restTimeRemaining % 60000) / 1000).toString().padStart(2, '0')}
+                                        {(() => {
+                                            const lastPerf = getLastPerformance(exercise.id, set.setNumber);
+                                            return lastPerf ? (
+                                                <View style={styles.lastPerformanceContainer}>
+                                                    <Text style={styles.lastPerformanceLabel}>Last</Text>
+                                                    <Text style={styles.lastPerformanceText}>
+                                                        {lastPerf.weight} × {lastPerf.reps}
                                                     </Text>
                                                 </View>
-                                            )}
-                                            {!set.completed && exercise.sets.length > 1 && (
-                                                <TouchableOpacity
-                                                    onPress={() => handleRemoveSet(exercise.id, set.id)}
-                                                    activeOpacity={0.7}
-                                                >
-                                                    <Ionicons name="close-circle" size={20} color="#ef4444" />
-                                                </TouchableOpacity>
-                                            )}
+                                            ) : <View style={styles.lastPerformancePlaceholder} />;
+                                        })()}
+
+                                        <View style={styles.inputGroup}>
+                                            <TextInput
+                                                style={[styles.input, styles.inputWeight]}
+                                                value={set.weight?.toString() || ''}
+                                                onChangeText={(text) =>
+                                                    handleUpdateSet(exercise.id, set.id, 'weight', parseFloat(text) || 0)
+                                                }
+                                                keyboardType="numeric"
+                                                placeholder="0"
+                                                placeholderTextColor={isDark ? '#64748b' : '#9ca3af'}
+                                                editable={!set.completed}
+                                                selectTextOnFocus
+                                            />
+                                            <Text style={styles.inputLabel}>{weightUnit}</Text>
                                         </View>
+
+                                        <View style={styles.inputGroup}>
+                                            <TextInput
+                                                style={[styles.input, styles.inputReps]}
+                                                value={set.reps?.toString() || ''}
+                                                onChangeText={(text) =>
+                                                    handleUpdateSet(exercise.id, set.id, 'reps', parseInt(text) || 0)
+                                                }
+                                                keyboardType="numeric"
+                                                placeholder="0"
+                                                placeholderTextColor={isDark ? '#64748b' : '#9ca3af'}
+                                                editable={!set.completed}
+                                                selectTextOnFocus
+                                            />
+                                            <Text style={styles.inputLabel}>reps</Text>
+                                        </View>
+
+                                        {!set.completed && exercise.sets.length > 1 ? (
+                                            <TouchableOpacity
+                                                onPress={() => handleRemoveSet(exercise.id, set.id)}
+                                                activeOpacity={0.7}
+                                            >
+                                                <Ionicons name="close-circle" size={20} color="#ef4444" />
+                                            </TouchableOpacity>
+                                        ) : <View style={styles.deleteIconPlaceholder} />}
                                     </View>
                                 </View>
                             ))}

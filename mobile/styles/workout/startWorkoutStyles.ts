@@ -236,6 +236,7 @@ const createStyles = (isDark: boolean) =>
             zIndex: 1,
             flexDirection: 'row',
             alignItems: 'center',
+            justifyContent: 'space-between',
             padding: 12,
             gap: 10,
         },
@@ -252,6 +253,11 @@ const createStyles = (isDark: boolean) =>
         checkButtonCompleted: {
             backgroundColor: '#10b981',
             borderColor: '#10b981',
+        },
+        setNumberInCheckbox: {
+            fontSize: 14,
+            fontWeight: '600',
+            color: isDark ? '#94a3b8' : '#64748b',
         },
         setInfo: {
             minWidth: 50,
@@ -272,14 +278,51 @@ const createStyles = (isDark: boolean) =>
             gap: 6,
             flex: 1,
         },
+        lastPerformanceContainer: {
+            alignItems: 'center',
+            minWidth: 50,
+        },
+        lastPerformancePlaceholder: {
+            width: 50,
+        },
+        lastPerformanceLabel: {
+            fontSize: 9,
+            color: isDark ? '#64748b' : '#9ca3af',
+            fontWeight: '600',
+            marginBottom: 2,
+            textTransform: 'uppercase',
+        },
+        lastPerformanceText: {
+            fontSize: 11,
+            color: isDark ? '#94a3b8' : '#6b7280',
+            fontWeight: '600',
+        },
+        deleteIconPlaceholder: {
+            width: 20,
+        },
         inputGroup: {
             flexDirection: 'row',
             alignItems: 'center',
             gap: 4,
-            flex: 1,
         },
         input: {
-            flex: 1,
+            height: 32,
+            backgroundColor: isDark ? '#0f172a' : '#fff',
+            borderWidth: 1,
+            borderColor: isDark ? '#475569' : '#d1d5db',
+            borderRadius: 6,
+            paddingHorizontal: 8,
+            fontSize: 13,
+            color: isDark ? '#e2e8f0' : '#111827',
+            textAlign: 'center',
+        },
+        inputWeight: {
+            width: 60,
+        },
+        inputReps: {
+            width: 50,
+        },
+        inputBase: {
             height: 32,
             backgroundColor: isDark ? '#0f172a' : '#fff',
             borderWidth: 1,

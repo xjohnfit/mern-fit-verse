@@ -45,7 +45,9 @@
                 "android.permission.WAKE_LOCK",
                 "android.permission.USE_FULL_SCREEN_INTENT",
                 "android.permission.FOREGROUND_SERVICE",
-                "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+                "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+                "android.permission.MODIFY_AUDIO_SETTINGS",
+                "android.permission.ACCESS_NOTIFICATION_POLICY"
             ]
         },
         "web": {
@@ -60,7 +62,7 @@
                 {
                     "icon": "./assets/fit-verse-logo.png",
                     "color": "#667eea",
-                    "sounds": [],
+                    "sounds": ["./assets/sounds/bell.wav"],
                     "mode": "production"
                 }
             ],
