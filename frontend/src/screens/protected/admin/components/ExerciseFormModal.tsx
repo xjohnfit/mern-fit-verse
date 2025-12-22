@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogBody, DialogFooter } from '@/components/ui/dialog';
@@ -7,6 +7,11 @@ import type { ExerciseFormModalProps } from '../admin.types';
 const ExerciseFormModal = ({ isOpen, onClose, onSubmit, form, onFormChange, isEditing }: ExerciseFormModalProps) => {
     const [imagePreview, setImagePreview] = useState<string>(form.image || '');
     const [isUploading, setIsUploading] = useState(false);
+
+    // Sync imagePreview with form.image whenever it changes (e.g., when opening a different exercise)
+    useEffect(() => {
+        setImagePreview(form.image || '');
+    }, [form.image, isOpen]);
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];

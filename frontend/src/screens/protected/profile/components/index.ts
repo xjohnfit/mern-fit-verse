@@ -5,3 +5,4 @@ export { CreatePostSection } from './CreatePostSection';
 export { PostCard } from './PostCard';
 export { PostsList } from './PostsList';
 export { FollowersFollowingModal } from './FollowersFollowingModal';
+export { OptionMenuModal } from './OptionMenuModal';

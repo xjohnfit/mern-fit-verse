@@ -1,10 +1,11 @@
-import { type FC } from 'react';
+import { type FC, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Users, UserCheck, MessageCircle, MoreHorizontal, User } from 'lucide-react';
 import { getInitials } from '@/lib/getInitials';
 import { type UserProfile } from '@/screens/protected/profile/profile.types';
+import { OptionMenuModal } from './OptionMenuModal';
 
 interface ProfileHeaderProps {
     user: UserProfile;
@@ -26,6 +27,7 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({
     onShowFollowing,
 }) => {
     const navigate = useNavigate();
+    const [showOptionsMenu, setShowOptionsMenu] = useState(false);
 
     const handleMessageClick = () => {
         navigate('/messages', {
@@ -132,6 +134,7 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({
                                             Message
                                         </Button>
                                         <Button
+                                            onClick={() => setShowOptionsMenu(true)}
                                             variant="outline"
                                             size="icon"
                                             className="text-white border-white bg-transparent hover:bg-white/10 w-8 h-8"
@@ -232,6 +235,7 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({
                                     Message
                                 </Button>
                                 <Button
+                                    onClick={() => setShowOptionsMenu(true)}
                                     variant="outline"
                                     size="icon"
                                     className="text-white border-white bg-transparent hover:bg-white/10"
@@ -243,6 +247,14 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({
                     </div>
                 </div>
             </div>
+
+            {/* Options Menu Modal */}
+            <OptionMenuModal
+                isOpen={showOptionsMenu}
+                onClose={() => setShowOptionsMenu(false)}
+                userName={user.username}
+                userId={user._id}
+            />
         </div>
     );
 };

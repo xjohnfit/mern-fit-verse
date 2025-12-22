@@ -1,5 +1,9 @@
 // React
 import { type FC } from "react";
+import { useNavigate } from "react-router";
+
+// Hooks
+import { useSocket } from "@/hooks/useSocket";
 
 // Third-party libraries
 import { toast } from "sonner";
@@ -18,7 +22,7 @@ import { EmptyMessages } from "./EmptyStates/EmptyMessages";
 import { getInitials } from "@/lib/getInitials";
 
 // Icons
-import { MessageSquare, MessageCircle } from "lucide-react";
+import { MessageSquare, MessageCircle, User } from "lucide-react";
 
 interface MessagesSectionProps {
     followedUsers: FollowedUser[] | undefined;
@@ -31,10 +35,39 @@ export const MessagesSection: FC<MessagesSectionProps> = ({
     isLoading,
     onUserClick,
 }) => {
+    const navigate = useNavigate();
+    const { onlineUsers } = useSocket();
+
+    // Sort users: online users first
+    const sortedUsers = followedUsers?.slice().sort((a, b) => {
+        const aOnline = onlineUsers.includes(a._id);
+        const bOnline = onlineUsers.includes(b._id);
+        if (aOnline && !bOnline) return -1;
+        if (!aOnline && bOnline) return 1;
+        return 0;
+    });
+
+    const handleMessageClick = (user: FollowedUser) => {
+        navigate('/messages', {
+            state: {
+                selectedUser: {
+                    _id: user._id,
+                    name: user.name,
+                    username: user.username,
+                    photo: user.photo
+                }
+            }
+        });
+    };
+
+    const handleSeeAllClick = () => {
+        navigate('/messages');
+    };
+
     return (
         <div className="hidden xl:block bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
             <div className="flex items-center space-x-2 mb-4">
-                <MessageSquare className="w-5 h-5 text-green-600" />
+                <MessageSquare className="w-5 h-5 text-blue-600 dark:text-blue-500" />
                 <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
                     Messages
                 </h2>
@@ -54,58 +87,64 @@ export const MessagesSection: FC<MessagesSectionProps> = ({
                 </div>
             ) : followedUsers && followedUsers.length > 0 ? (
                 <div className="space-y-3">
-                    {followedUsers.slice(0, 5).map((user) => (
-                        <div
-                            key={user._id}
-                            className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                        >
-                            <div className="relative">
-                                <Avatar
-                                    className="w-10 h-10"
+                    {sortedUsers?.slice(0, 5).map((user) => {
+                        const isOnline = onlineUsers.includes(user._id);
+                        return (
+                            <div
+                                key={user._id}
+                                className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                            >
+                                <div className="relative">
+                                    <Avatar
+                                        className="w-10 h-10"
+                                        onClick={() => onUserClick(user.username)}
+                                    >
+                                        <AvatarImage src={user.photo} alt={user.name} />
+                                        <AvatarFallback className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300">
+                                            <User className="w-5 h-5" />
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    {/* Online status indicator */}
+                                    {isOnline && (
+                                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
+                                    )}
+                                </div>
+                                <div
+                                    className="flex-1 min-w-0 cursor-pointer"
                                     onClick={() => onUserClick(user.username)}
                                 >
-                                    <AvatarImage src={user.photo} alt={user.name} />
-                                    <AvatarFallback className="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300">
-                                        {getInitials(user.name)}
-                                    </AvatarFallback>
-                                </Avatar>
-                                {/* Online status indicator - placeholder for future implementation */}
-                                <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
+                                    <p className="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">
+                                        {user.name}
+                                    </p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                        {isOnline ? (
+                                            <span className="text-green-600 dark:text-green-500 font-medium flex items-center gap-1">
+                                                <span className="inline-block w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                                Online
+                                            </span>
+                                        ) : (
+                                            `@${user.username}`
+                                        )}
+                                    </p>
+                                </div>
+                                <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="px-2 py-1 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/20"
+                                    onClick={() => handleMessageClick(user)}
+                                >
+                                    <MessageCircle className="w-4 h-4" />
+                                </Button>
                             </div>
-                            <div
-                                className="flex-1 min-w-0 cursor-pointer"
-                                onClick={() => onUserClick(user.username)}
-                            >
-                                <p className="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">
-                                    {user.name}
-                                </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                    @{user.username}
-                                </p>
-                            </div>
-                            <Button
-                                size="sm"
-                                variant="ghost"
-                                className="px-2 py-1 text-xs text-green-600 hover:text-green-700 hover:bg-green-50 dark:text-green-400 dark:hover:text-green-300 dark:hover:bg-green-900/20"
-                                onClick={() => {
-                                    // TODO: Implement messaging functionality
-                                    toast.success("Messaging feature coming soon!");
-                                }}
-                            >
-                                <MessageCircle className="w-4 h-4" />
-                            </Button>
-                        </div>
-                    ))}
+                        );
+                    })}
 
                     {followedUsers.length > 5 && (
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="w-full text-xs text-green-600 dark:text-green-400"
-                            onClick={() => {
-                                // TODO: Navigate to full messages page or expand list
-                                toast.info("Full messaging interface coming soon!");
-                            }}
+                            className="w-full text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                            onClick={handleSeeAllClick}
                         >
                             See all conversations
                         </Button>

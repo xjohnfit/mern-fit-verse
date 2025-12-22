@@ -1,7 +1,6 @@
-import { Search, MessageCircle } from 'lucide-react';
+import { Search, MessageCircle, User } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
-import { getInitials } from '@/lib/getInitials';
 
 interface User {
     _id: string;
@@ -17,6 +16,7 @@ interface UsersSidebarProps {
     isLoading: boolean;
     selectedUser: User | null;
     onUserClick: (user: User) => void;
+    onlineUsers: string[];
 }
 
 export const UsersSidebar = ({
@@ -25,7 +25,8 @@ export const UsersSidebar = ({
     filteredUsers,
     isLoading,
     selectedUser,
-    onUserClick
+    onUserClick,
+    onlineUsers
 }: UsersSidebarProps) => {
     return (
         <div className={`w-full md:w-80 bg-card md:border-r border-border flex flex-col ${selectedUser ? 'hidden md:flex' : 'flex'}`}>
@@ -74,19 +75,24 @@ export const UsersSidebar = ({
                                     }`}
                             >
                                 <div className="flex items-center space-x-3">
-                                    <Avatar className="w-12 h-12 shrink-0">
-                                        {user.photo ? (
-                                            <img
-                                                src={user.photo}
-                                                alt={user.name}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full bg-linear-to-br from-primary to-primary/70 flex items-center justify-center text-white font-semibold">
-                                                {getInitials(user.name)}
-                                            </div>
+                                    <div className="relative">
+                                        <Avatar className="w-12 h-12 shrink-0">
+                                            {user.photo ? (
+                                                <img
+                                                    src={user.photo}
+                                                    alt={user.name}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-linear-to-br from-primary to-primary/70 flex items-center justify-center text-white">
+                                                    <User className="w-5 h-5" />
+                                                </div>
+                                            )}
+                                        </Avatar>
+                                        {onlineUsers.includes(user._id) && (
+                                            <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-card rounded-full"></div>
                                         )}
-                                    </Avatar>
+                                    </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="font-semibold text-foreground truncate">
                                             {user.name}

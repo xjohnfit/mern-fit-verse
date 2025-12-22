@@ -66,7 +66,7 @@ const StartWorkoutScreen = () => {
     const { data: templateData } = useGetTemplateByIdQuery(templateId!, {
         skip: !templateId,
     });
-    const { data: workoutsData } = useGetWorkoutsQuery();
+    const { data: workoutsData } = useGetWorkoutsQuery({});
     const [createWorkout, { isLoading: isSaving }] = useCreateWorkoutMutation();
 
     // Refs

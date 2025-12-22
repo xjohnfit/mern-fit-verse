@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import {
-    View,
-    Text,
-    ScrollView,
-    TouchableOpacity,
-    ActivityIndicator,
-    useColorScheme,
-    TextInput,
-    StatusBar, Image,
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  useColorScheme,
+  TextInput,
+  StatusBar, Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -30,8 +30,21 @@ const BrowseExercisesScreen = () => {
   const [exerciseSearch, setExerciseSearch] = useState('');
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
   const { data: exercisesByCategory, isLoading: exercisesLoading } = useGetExercisesByCategoryQuery();
+
+  const toggleCategory = (category: string) => {
+    setExpandedCategories(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(category)) {
+        newSet.delete(category);
+      } else {
+        newSet.add(category);
+      }
+      return newSet;
+    });
+  };
 
   // Filter exercises by category based on search
   const filteredExercisesByCategory = useMemo(() => {
@@ -116,24 +129,37 @@ const BrowseExercisesScreen = () => {
 
       {/* Exercise List */}
       <ScrollView style={styles.exerciseList} contentContainerStyle={styles.exerciseListContent}>
-            {exercisesLoading ? (
-              <View style={styles.exerciseLoadingContainer}>
-                <ActivityIndicator size="large" color="#9333ea" />
-                <Text style={styles.exerciseLoadingText}>Loading exercises...</Text>
-              </View>
-            ) : totalFilteredExercises > 0 ? (
-              <View style={styles.exerciseGrid}>
-                {Object.entries(filteredExercisesByCategory).map(([category, exercises]) => (
-                  <View key={category} style={styles.categorySection}>
-                    <View style={styles.categoryHeader}>
-                      <View style={styles.categoryIconCircle}>
-                        <Ionicons name="fitness" size={18} color="#9333ea" />
-                      </View>
-                      <Text style={styles.categoryTitle}>{category}</Text>
-                      <View style={styles.categoryBadge}>
-                        <Text style={styles.categoryBadgeText}>{exercises.length}</Text>
-                      </View>
+        {exercisesLoading ? (
+          <View style={styles.exerciseLoadingContainer}>
+            <ActivityIndicator size="large" color="#9333ea" />
+            <Text style={styles.exerciseLoadingText}>Loading exercises...</Text>
+          </View>
+        ) : totalFilteredExercises > 0 ? (
+          <View style={styles.exerciseGrid}>
+            {Object.entries(filteredExercisesByCategory).map(([category, exercises]) => {
+              const isExpanded = expandedCategories.has(category);
+
+              return (
+                <View key={category} style={styles.categorySection}>
+                  <TouchableOpacity
+                    style={styles.categoryHeader}
+                    onPress={() => toggleCategory(category)}
+                    activeOpacity={0.7}
+                  >
+                    <Ionicons
+                      name={isExpanded ? "chevron-down" : "chevron-forward"}
+                      size={20}
+                      color={isDark ? '#FFFFFF' : '#7E22CE'}
+                    />
+                    <View style={styles.categoryIconCircle}>
+                      <Ionicons name="fitness" size={18} color="#9333ea" />
                     </View>
+                    <Text style={styles.categoryTitle}>{category}</Text>
+                    <View style={styles.categoryBadge}>
+                      <Text style={styles.categoryBadgeText}>{exercises.length}</Text>
+                    </View>
+                  </TouchableOpacity>
+                  {isExpanded && (
                     <View style={styles.categoryExercises}>
                       {exercises.map((exercise) => (
                         <TouchableOpacity
@@ -154,18 +180,20 @@ const BrowseExercisesScreen = () => {
                         </TouchableOpacity>
                       ))}
                     </View>
-                  </View>
-                ))}
-              </View>
-            ) : (
-              <View style={styles.exerciseEmptyState}>
-                <Ionicons name="search" size={48} color={isDark ? '#4B5563' : '#D1D5DB'} />
-                <Text style={styles.exerciseEmptyText}>
-                  {exerciseSearch ? 'No exercises found' : 'Start typing to search exercises'}
-                </Text>
-              </View>
-            )}
-          </ScrollView>
+                  )}
+                </View>
+              );
+            })}
+          </View>
+        ) : (
+          <View style={styles.exerciseEmptyState}>
+            <Ionicons name="search" size={48} color={isDark ? '#4B5563' : '#D1D5DB'} />
+            <Text style={styles.exerciseEmptyText}>
+              {exerciseSearch ? 'No exercises found' : 'Start typing to search exercises'}
+            </Text>
+          </View>
+        )}
+      </ScrollView>
 
       {/* Exercise Info Modal */}
       <ExerciseInfoModal

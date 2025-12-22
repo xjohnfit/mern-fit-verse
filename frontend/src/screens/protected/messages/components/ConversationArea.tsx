@@ -18,12 +18,14 @@ interface ConversationAreaProps {
     selectedUser: User | null;
     currentUserId: string | undefined;
     onBackToList: () => void;
+    onlineUsers: string[];
 }
 
 export const ConversationArea = ({
     selectedUser,
     currentUserId,
-    onBackToList
+    onBackToList,
+    onlineUsers
 }: ConversationAreaProps) => {
     const navigate = useNavigate();
     const [messageText, setMessageText] = useState('');
@@ -73,6 +75,7 @@ export const ConversationArea = ({
                         selectedUser={selectedUser}
                         onBackClick={onBackToList}
                         onUserClick={handleUserClick}
+                        onlineUsers={onlineUsers}
                     />
                     <MessagesList
                         selectedUser={selectedUser}
