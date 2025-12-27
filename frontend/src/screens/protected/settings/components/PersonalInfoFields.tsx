@@ -82,9 +82,6 @@ const PersonalInfoFields = ({
                         <option value='male'>Male</option>
                         <option value='female'>Female</option>
                         <option value='other'>Other</option>
-                        <option value='prefer-not-to-say'>
-                            Prefer not to say
-                        </option>
                     </select>
                     <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
                         <Users className='h-5 w-5 text-gray-400 group-focus-within:text-purple-500 transition-colors duration-200' />
