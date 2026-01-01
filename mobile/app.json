@@ -9,7 +9,7 @@
         "userInterfaceStyle": "automatic",
         "newArchEnabled": true,
         "extra": {
-            "mode": "production",
+            "mode": "development",
             "router": {},
             "eas": {
                 "projectId": "c75ee23b-09fd-49b9-9de4-7686ee4be445"
@@ -23,10 +23,8 @@
                 "UIBackgroundModes": [
                     "remote-notification",
                     "fetch",
-                    "audio",
-                    "processing"
-                ],
-                "NSPhotoLibraryUsageDescription": "FitVerse needs access to your photo library to let you upload photos, such as setting your profile picture or sharing workout progress."
+                    "audio"
+                ]
             }
         },
         "android": {
@@ -59,12 +57,21 @@
         "plugins": [
             "expo-router",
             [
+                "expo-image-picker",
+                {
+                    "photosPermission": "FitVerse needs access to your photos so you can update your profile picture.",
+                    "cameraPermission": "FitVerse needs access to your camera to allow you to take photos."
+                }
+            ],
+            [
                 "expo-notifications",
                 {
                     "icon": "./assets/fit-verse-logo.png",
                     "color": "#667eea",
-                    "sounds": ["./assets/sounds/bell.wav"],
-                    "mode": "production"
+                    "sounds": [
+                        "./assets/sounds/bell.wav"
+                    ],
+                    "mode": "development"
                 }
             ],
             [

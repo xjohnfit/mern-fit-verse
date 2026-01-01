@@ -21,7 +21,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { useAudioPlayer, AudioSource, setAudioModeAsync } from 'expo-audio';
 import * as Notifications from 'expo-notifications';
 import { useGetExercisesQuery } from '@/slices/exerciseApiSlice';
 import type { Exercise as ApiExercise } from '@/slices/exerciseApiSlice';
@@ -72,7 +71,6 @@ const StartWorkoutScreen = () => {
     // Refs
     const isFinishingRef = useRef(false);
     const templateLoadedRef = useRef<string | null>(null); // Track which template was loaded
-    const bellSound = useAudioPlayer(require('../../assets/sounds/bell.wav') as AudioSource);
     const appState = useRef(AppState.currentState);
     const restTimerNotificationId = useRef<string | null>(null);
     const workoutTimerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -194,20 +192,6 @@ const StartWorkoutScreen = () => {
         initializeWorkout();
     }, [templateIdFromUrl]);
 
-    // Configure audio to play even in silent mode
-    useEffect(() => {
-        const configureAudio = async () => {
-            try {
-                await setAudioModeAsync({
-                    playsInSilentMode: true,
-                });
-            } catch (error) {
-                console.error('Failed to configure audio mode:', error);
-            }
-        };
-        configureAudio();
-    }, []);
-
     // Request notification permissions and setup channel
     useEffect(() => {
         const setupNotifications = async () => {
@@ -292,11 +276,6 @@ const StartWorkoutScreen = () => {
 
                         if (remaining <= 0) {
                             // Timer has finished while in background
-                            try {
-                                playBellSound();
-                            } catch (err) {
-                                console.error('Error playing bell sound:', err);
-                            }
                             setActiveRestTimer(null);
                             setSelectedExercises((prev) =>
                                 prev.map((ex) => {
@@ -341,7 +320,6 @@ const StartWorkoutScreen = () => {
                                     body: 'Time to start your next set!',
                                     sound: true,
                                     priority: Notifications.AndroidNotificationPriority.MAX,
-                                    data: { playSound: true },
                                 },
                                 trigger: {
                                     type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
@@ -362,7 +340,7 @@ const StartWorkoutScreen = () => {
 
                 appState.current = nextAppState;
             } catch (error) {
-                console.error('Error in app state change handler:', error);
+                console.error('Error in handleAppStateChange:', error);
             }
         };
 
@@ -371,126 +349,7 @@ const StartWorkoutScreen = () => {
         return () => {
             subscription.remove();
         };
-    }, [activeRestTimer, isTimerRunning, workoutStartTime, pausedTime, defaultRestTimer]);
-
-    // Workout timer effect - uses timestamp-based calculation instead of increments
-    useEffect(() => {
-        if (workoutTimerIntervalRef.current) {
-            clearInterval(workoutTimerIntervalRef.current);
-            workoutTimerIntervalRef.current = null;
-        }
-
-        if (isTimerRunning) {
-            // Immediately calculate current time
-            const elapsed = Math.floor((Date.now() - workoutStartTime - pausedTime) / 1000);
-            setWorkoutTime(elapsed);
-
-            // Update every 100ms for smooth display
-            workoutTimerIntervalRef.current = setInterval(() => {
-                const elapsed = Math.floor((Date.now() - workoutStartTime - pausedTime) / 1000);
-                setWorkoutTime(elapsed);
-            }, 100);
-        }
-
-        return () => {
-            if (workoutTimerIntervalRef.current) {
-                clearInterval(workoutTimerIntervalRef.current);
-                workoutTimerIntervalRef.current = null;
-            }
-        };
-    }, [isTimerRunning, workoutStartTime, pausedTime]);
-
-    // Save timer state
-    useEffect(() => {
-        if (isFinishingRef.current) return;
-
-        const saveTimerState = async () => {
-            try {
-                await AsyncStorage.setItem('workout_timer_running', isTimerRunning.toString());
-
-                if (!isTimerRunning && pauseStartTime === null) {
-                    const newPauseStart = Date.now();
-                    setPauseStartTime(newPauseStart);
-                    await AsyncStorage.setItem('workout_pause_start', newPauseStart.toString());
-                } else if (isTimerRunning && pauseStartTime !== null) {
-                    const pauseDuration = Date.now() - pauseStartTime;
-                    const newPausedTime = pausedTime + pauseDuration;
-                    setPausedTime(newPausedTime);
-                    await AsyncStorage.setItem('workout_paused_time', newPausedTime.toString());
-                    setPauseStartTime(null);
-                    await AsyncStorage.removeItem('workout_pause_start');
-                }
-            } catch (error) {
-                console.error('Failed to save timer state', error);
-            }
-        };
-
-        saveTimerState();
-    }, [isTimerRunning, pauseStartTime, pausedTime]);
-
-    // Save selected exercises
-    useEffect(() => {
-        if (isFinishingRef.current || isLoading) return;
-
-        const saveExercises = async () => {
-            try {
-                await AsyncStorage.setItem('workout_exercises', JSON.stringify(selectedExercises));
-            } catch (error) {
-                console.error('Failed to save exercises', error);
-            }
-        };
-
-        saveExercises();
-    }, [selectedExercises, isLoading]);
-
-    // Load template exercises only when starting from a template URL
-    useEffect(() => {
-        // Only load template if we have a template from URL and haven't loaded this specific template yet
-        if (templateIdFromUrl && templateData?.data && templateLoadedRef.current !== templateIdFromUrl && exercisesData) {
-            templateLoadedRef.current = templateIdFromUrl;
-
-            const template = templateData.data;
-            const exercises = exercisesData;
-
-            const templateExercises: WorkoutExercise[] = [];
-
-            for (const templateExercise of template.exercises) {
-                const exerciseData = exercises.find((ex) => ex.id === templateExercise.exerciseId);
-                if (!exerciseData) continue;
-
-                const workoutSets: WorkoutSet[] = templateExercise.sets.map((templateSet: any, index: number) => {
-                    // Get last weight for this set, fallback to template target weight
-                    const lastPerf = getLastPerformance(exerciseData.id, index + 1);
-                    const weight = lastPerf?.weight || templateSet.targetWeight || 0;
-
-                    return {
-                        id: `${exerciseData.id}-set-${index + 1}`,
-                        setNumber: index + 1,
-                        completed: false,
-                        weight: weight,
-                        reps: templateSet.targetReps || 0,
-                        restTimeRemaining: defaultRestTimer,
-                    };
-                });
-
-                templateExercises.push({
-                    id: exerciseData.id,
-                    name: exerciseData.name,
-                    description: exerciseData.description,
-                    instructions: Array.isArray(exerciseData.instructions) ? exerciseData.instructions : [exerciseData.instructions],
-                    image: exerciseData.image,
-                    category: exerciseData.category,
-                    sets: workoutSets,
-                });
-            }
-
-            if (templateExercises.length > 0) {
-                setSelectedExercises(templateExercises);
-                AsyncStorage.setItem('workout_template_name', template.name);
-            }
-            setIsLoading(false);
-        }
-    }, [templateData, exercisesData, templateIdFromUrl, defaultRestTimer]);
+    }, [isTimerRunning, workoutStartTime, pausedTime, activeRestTimer, defaultRestTimer]);
 
     // Rest timer effect - uses timestamp-based calculation and schedules notifications
     useEffect(() => {
@@ -519,7 +378,7 @@ const StartWorkoutScreen = () => {
 
         // If already expired, complete immediately
         if (initialRemaining <= 0) {
-            playBellSound();
+            setActiveRestTimer(null);
             setActiveRestTimer(null);
             setSelectedExercises((prev) =>
                 prev.map((ex) => {
@@ -542,7 +401,7 @@ const StartWorkoutScreen = () => {
                 const remaining = restDuration - elapsed;
 
                 if (remaining <= 0) {
-                    playBellSound();
+                    setActiveRestTimer(null);
                     setActiveRestTimer(null);
                     setSelectedExercises((prev) =>
                         prev.map((ex) => {
@@ -616,23 +475,6 @@ const StartWorkoutScreen = () => {
         const mins = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
         return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    };
-
-    const playBellSound = async () => {
-        try {
-            console.log('playBellSound called, bellSound exists:', !!bellSound);
-            if (bellSound && typeof bellSound.play === 'function') {
-                // Reset to start and play
-                bellSound.volume = 1.0;
-                await bellSound.seekTo(0);
-                await bellSound.play();
-                console.log('Bell sound played successfully');
-            } else {
-                console.log('Bell sound player not available');
-            }
-        } catch (error) {
-            console.error('Error playing bell sound:', error);
-        }
     };
 
     // Get last performance for an exercise
@@ -1286,9 +1128,9 @@ const StartWorkoutScreen = () => {
                         </ScrollView>
                     </View>
                 </View>
+
             </Modal>
         </View>
     );
 };
-
 export default StartWorkoutScreen;
