@@ -19,15 +19,7 @@ import { useGetExercisesQuery } from '@/slices/exerciseApiSlice';
 import { useGetTemplateByIdQuery, useUpdateTemplateMutation, useDeleteTemplateMutation } from '@/slices/workoutTemplateApiSlice';
 import { useGetTemplateFoldersQuery } from '@/slices/workoutTemplateFolderApiSlice';
 import type { WorkoutTemplateExercise, WorkoutTemplateSet } from '@/slices/workoutTemplateApiSlice';
-
-// Exercise type from API
-interface Exercise {
-    id: string;
-    name: string;
-    description: string;
-    category: string;
-    image: string;
-}
+import { ExercisePickerModal } from '@/components/workout';
 
 const EditTemplateScreen = () => {
     const insets = useSafeAreaInsets();
@@ -50,7 +42,6 @@ const EditTemplateScreen = () => {
     const [templateExercises, setTemplateExercises] = useState<WorkoutTemplateExercise[]>([]);
     const [showExerciseSearch, setShowExerciseSearch] = useState(false);
     const [showFolderPicker, setShowFolderPicker] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
 
     const folders = foldersResponse?.data || [];
     const template = templateResponse?.data;
@@ -81,26 +72,22 @@ const EditTemplateScreen = () => {
         }
     }, [templateError]);
 
-    // Filter exercises based on search
-    const filteredExercises = exercises?.filter(
-        (exercise) =>
-            exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            exercise.category.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
     // Handlers
-    const handleAddExercise = (exercise: Exercise) => {
+    const handleAddExercise = (exercise: { id: string; name: string; description: string; category: string; image: string; }) => {
         const newExercise: WorkoutTemplateExercise = {
             exerciseId: exercise.id,
             exerciseName: exercise.name,
-            sets: [{ setNumber: 1, targetReps: 10, targetWeight: 0, notes: '' }],
+            sets: [
+                { setNumber: 1, targetReps: 10, targetWeight: 0, notes: '' },
+                { setNumber: 2, targetReps: 10, targetWeight: 0, notes: '' },
+                { setNumber: 3, targetReps: 10, targetWeight: 0, notes: '' },
+                { setNumber: 4, targetReps: 10, targetWeight: 0, notes: '' },
+            ],
             notes: '',
         };
 
         setTemplateExercises([...templateExercises, newExercise]);
         setShowExerciseSearch(false);
-        setSearchTerm('');
-        Toast.show({ type: 'success', text1: `${exercise.name} added` });
     };
 
     const handleRemoveExercise = (exerciseId: string) => {
@@ -259,7 +246,12 @@ const EditTemplateScreen = () => {
                 </View>
             </LinearGradient>
 
-            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
+            <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{ padding: 20 }}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
+            >
                 {/* Template Details Card */}
                 <View
                     style={{
@@ -470,24 +462,7 @@ const EditTemplateScreen = () => {
                                                     }}
                                                 />
                                             </View>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 }}>
-                                                <Text style={{ fontSize: 13, color: isDark ? '#9CA3AF' : '#6B7280' }}>Weight:</Text>
-                                                <TextInput
-                                                    value={set.targetWeight?.toString() || '0'}
-                                                    onChangeText={(text) => handleUpdateSet(exercise.exerciseId, set.setNumber, 'targetWeight', Number(text) || 0)}
-                                                    keyboardType="numeric"
-                                                    style={{
-                                                        flex: 1,
-                                                        backgroundColor: isDark ? '#374151' : '#F3F4F6',
-                                                        borderRadius: 6,
-                                                        paddingHorizontal: 8,
-                                                        paddingVertical: 6,
-                                                        fontSize: 14,
-                                                        color: isDark ? '#FFFFFF' : '#111827',
-                                                        textAlign: 'center',
-                                                    }}
-                                                />
-                                            </View>
+
                                             {exercise.sets.length > 1 && (
                                                 <TouchableOpacity
                                                     onPress={() => handleRemoveSet(exercise.exerciseId, set.setNumber)}
@@ -556,112 +531,13 @@ const EditTemplateScreen = () => {
                 </View>
             </ScrollView>
 
-            {/* Exercise Search Modal */}
-            <Modal visible={showExerciseSearch} animationType="slide" transparent>
-                <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
-                    <View
-                        style={{
-                            backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
-                            borderTopLeftRadius: 24,
-                            borderTopRightRadius: 24,
-                            maxHeight: '80%',
-                            paddingTop: 20,
-                            paddingBottom: insets.bottom + 20,
-                        }}
-                    >
-                        {/* Handle Bar */}
-                        <View style={{ alignItems: 'center', marginBottom: 16 }}>
-                            <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }} />
-                        </View>
-
-                        <View style={{ paddingHorizontal: 20 }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                                <Text style={{ fontSize: 20, fontWeight: 'bold', color: isDark ? '#FFFFFF' : '#111827' }}>
-                                    Add Exercise
-                                </Text>
-                                <TouchableOpacity onPress={() => setShowExerciseSearch(false)} style={{ padding: 4 }}>
-                                    <Ionicons name="close" size={24} color={isDark ? '#FFFFFF' : '#111827'} />
-                                </TouchableOpacity>
-                            </View>
-
-                            {/* Search Input */}
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    backgroundColor: isDark ? '#374151' : '#F3F4F6',
-                                    borderRadius: 12,
-                                    paddingHorizontal: 16,
-                                    marginBottom: 16,
-                                }}
-                            >
-                                <Ionicons name="search" size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
-                                <TextInput
-                                    value={searchTerm}
-                                    onChangeText={setSearchTerm}
-                                    placeholder="Search exercises..."
-                                    placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
-                                    style={{
-                                        flex: 1,
-                                        paddingVertical: 14,
-                                        paddingHorizontal: 12,
-                                        fontSize: 16,
-                                        color: isDark ? '#FFFFFF' : '#111827',
-                                    }}
-                                />
-                            </View>
-                        </View>
-
-                        {/* Exercise List */}
-                        <ScrollView style={{ paddingHorizontal: 20 }}>
-                            {exercisesLoading ? (
-                                <ActivityIndicator size="large" color="#9333ea" style={{ marginTop: 40 }} />
-                            ) : filteredExercises && filteredExercises.length > 0 ? (
-                                <View style={{ gap: 8 }}>
-                                    {filteredExercises.map((exercise) => {
-                                        const isAdded = templateExercises.some((ex) => ex.exerciseId === exercise.id);
-                                        return (
-                                            <TouchableOpacity
-                                                key={exercise.id}
-                                                onPress={() => !isAdded && handleAddExercise(exercise)}
-                                                disabled={isAdded}
-                                                style={{
-                                                    backgroundColor: isDark ? '#111827' : '#F9FAFB',
-                                                    borderRadius: 12,
-                                                    padding: 16,
-                                                    flexDirection: 'row',
-                                                    alignItems: 'center',
-                                                    opacity: isAdded ? 0.5 : 1,
-                                                }}
-                                            >
-                                                <View style={{ flex: 1 }}>
-                                                    <Text style={{ fontSize: 16, fontWeight: '600', color: isDark ? '#FFFFFF' : '#111827', marginBottom: 4 }}>
-                                                        {exercise.name}
-                                                    </Text>
-                                                    <Text style={{ fontSize: 13, color: isDark ? '#9CA3AF' : '#6B7280' }}>
-                                                        {exercise.category}
-                                                    </Text>
-                                                </View>
-                                                {isAdded ? (
-                                                    <Ionicons name="checkmark-circle" size={24} color="#10B981" />
-                                                ) : (
-                                                    <Ionicons name="add-circle-outline" size={24} color="#9333ea" />
-                                                )}
-                                            </TouchableOpacity>
-                                        );
-                                    })}
-                                </View>
-                            ) : (
-                                <View style={{ alignItems: 'center', paddingVertical: 40 }}>
-                                    <Text style={{ fontSize: 16, color: isDark ? '#9CA3AF' : '#6B7280' }}>
-                                        {searchTerm ? 'No exercises found' : 'Start typing to search exercises'}
-                                    </Text>
-                                </View>
-                            )}
-                        </ScrollView>
-                    </View>
-                </View>
-            </Modal>
+            {/* Exercise Picker Modal */}
+            <ExercisePickerModal
+                visible={showExerciseSearch}
+                onClose={() => setShowExerciseSearch(false)}
+                onSelectExercise={handleAddExercise}
+                addedExerciseIds={templateExercises.map((ex) => ex.exerciseId)}
+            />
 
             {/* Folder Picker Modal */}
             <Modal visible={showFolderPicker} animationType="fade" transparent>

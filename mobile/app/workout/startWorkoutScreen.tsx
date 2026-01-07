@@ -70,7 +70,7 @@ const StartWorkoutScreen = () => {
 
     // Refs
     const isFinishingRef = useRef(false);
-    const templateLoadedRef = useRef<string | null>(null); // Track which template was loaded
+    const templateLoadedRef = useRef<string | null>(null);
     const appState = useRef(AppState.currentState);
     const restTimerNotificationId = useRef<string | null>(null);
     const workoutTimerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -87,12 +87,9 @@ const StartWorkoutScreen = () => {
     } | null>(null);
     const [isRestoringTimer, setIsRestoringTimer] = useState(true);
 
-    // Timer state
-    const [workoutStartTime, setWorkoutStartTime] = useState(Date.now());
-    const [pausedTime, setPausedTime] = useState(0);
-    const [pauseStartTime, setPauseStartTime] = useState<number | null>(null);
-    const [isTimerRunning, setIsTimerRunning] = useState(true);
+    // NEW SIMPLE TIMER STATE
     const [workoutTime, setWorkoutTime] = useState(0);
+    const [isTimerRunning, setIsTimerRunning] = useState(true);
 
     // Restore rest timer immediately on mount (before other initialization)
     useEffect(() => {
@@ -131,41 +128,46 @@ const StartWorkoutScreen = () => {
                 const savedPauseStart = await AsyncStorage.getItem('workout_pause_start');
                 const savedTimerRunning = await AsyncStorage.getItem('workout_timer_running');
 
+                // Validate saved data - if timer data seems stale (inactive for >24 hours), clear it
+                let isStaleData = false;
+                if (savedStartTime && savedTimerRunning === 'false') {
+                    const savedStart = parseInt(savedStartTime);
+                    const hoursSinceStart = (Date.now() - savedStart) / (1000 * 60 * 60);
+                    if (hoursSinceStart > 24) {
+                        isStaleData = true;
+                        console.log('Detected stale workout data, clearing...');
+                        await clearWorkoutData();
+                    }
+                }
+
                 // Set template ID
                 if (templateIdFromUrl) {
                     await AsyncStorage.setItem('workout_template_id', templateIdFromUrl);
                     setTemplateId(templateIdFromUrl);
-                } else if (savedTemplateId) {
+                } else if (savedTemplateId && !isStaleData) {
                     setTemplateId(savedTemplateId);
                 }
 
-                // Set the start time
-                if (savedStartTime) {
-                    setWorkoutStartTime(parseInt(savedStartTime));
-                } else {
-                    const startTime = Date.now();
-                    await AsyncStorage.setItem('workout_start_time', startTime.toString());
+                // Initialize timer: Save start time if new workout
+                if (!savedStartTime || isStaleData) {
+                    const now = Date.now().toString();
+                    await AsyncStorage.setItem('workout_start_time', now);
                     await AsyncStorage.setItem('workout_timer_running', 'true');
-                    setWorkoutStartTime(startTime);
+                    setWorkoutTime(0);
+                } else {
+                    // Restore existing workout timer
+                    const startTime = parseInt(savedStartTime);
+                    const pausedTime = savedPausedTime ? parseInt(savedPausedTime) : 0;
+                    const elapsed = Math.floor((Date.now() - startTime - pausedTime) / 1000);
+                    setWorkoutTime(elapsed);
+
+                    // Restore running state
+                    const running = savedTimerRunning !== 'false';
+                    setIsTimerRunning(running);
                 }
 
-                // Set paused time
-                let paused = savedPausedTime ? parseInt(savedPausedTime) : 0;
-                if (savedPauseStart) {
-                    const pauseStart = parseInt(savedPauseStart);
-                    const additionalPause = Date.now() - pauseStart;
-                    paused += additionalPause;
-                    await AsyncStorage.setItem('workout_paused_time', paused.toString());
-                    await AsyncStorage.removeItem('workout_pause_start');
-                }
-                setPausedTime(paused);
-
-                // Set timer running state
-                const running = savedTimerRunning ? savedTimerRunning === 'true' : true;
-                setIsTimerRunning(running);
-
-                // Load saved exercises only if not loading a new template
-                if (savedExercises && !templateIdFromUrl) {
+                // Load saved exercises only if not loading a new template and data is not stale
+                if (savedExercises && !templateIdFromUrl && !isStaleData) {
                     try {
                         const parsed = JSON.parse(savedExercises);
                         setSelectedExercises(parsed);
@@ -191,6 +193,22 @@ const StartWorkoutScreen = () => {
 
         initializeWorkout();
     }, [templateIdFromUrl]);
+
+    // Cleanup on unmount (if user navigates away without finishing/canceling)
+    useEffect(() => {
+        return () => {
+            // Only cleanup if workout was being worked on but not properly finished
+            if (!isFinishingRef.current) {
+                // Clear intervals
+                if (workoutTimerIntervalRef.current) {
+                    clearInterval(workoutTimerIntervalRef.current);
+                }
+                if (restTimerIntervalRef.current) {
+                    clearInterval(restTimerIntervalRef.current);
+                }
+            }
+        };
+    }, []);
 
     // Request notification permissions and setup channel
     useEffect(() => {
@@ -261,12 +279,6 @@ const StartWorkoutScreen = () => {
                 if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
                     // App has come to foreground - recalculate timers based on timestamps
                     console.log('App came to foreground');
-
-                    // Recalculate workout time
-                    if (isTimerRunning) {
-                        const elapsed = Math.floor((Date.now() - workoutStartTime - pausedTime) / 1000);
-                        setWorkoutTime(elapsed);
-                    }
 
                     // Recalculate rest timer if active
                     if (activeRestTimer) {
@@ -349,7 +361,7 @@ const StartWorkoutScreen = () => {
         return () => {
             subscription.remove();
         };
-    }, [isTimerRunning, workoutStartTime, pausedTime, activeRestTimer, defaultRestTimer]);
+    }, [isTimerRunning, activeRestTimer, defaultRestTimer]);
 
     // Rest timer effect - uses timestamp-based calculation and schedules notifications
     useEffect(() => {
@@ -469,6 +481,71 @@ const StartWorkoutScreen = () => {
 
         saveRestTimer();
     }, [activeRestTimer]);
+
+    // NEW SIMPLE WORKOUT TIMER
+    useEffect(() => {
+        if (!isTimerRunning) {
+            if (workoutTimerIntervalRef.current) {
+                clearInterval(workoutTimerIntervalRef.current);
+                workoutTimerIntervalRef.current = null;
+            }
+            return;
+        }
+
+        const updateTimer = async () => {
+            try {
+                const savedStartTime = await AsyncStorage.getItem('workout_start_time');
+                const savedPausedTime = await AsyncStorage.getItem('workout_paused_time');
+
+                if (savedStartTime) {
+                    const startTime = parseInt(savedStartTime);
+                    const pausedTime = savedPausedTime ? parseInt(savedPausedTime) : 0;
+                    const elapsed = Math.floor((Date.now() - startTime - pausedTime) / 1000);
+                    setWorkoutTime(elapsed);
+                }
+            } catch (error) {
+                console.error('Timer update error:', error);
+            }
+        };
+
+        // Update immediately
+        updateTimer();
+
+        // Then update every second
+        workoutTimerIntervalRef.current = setInterval(updateTimer, 1000);
+
+        return () => {
+            if (workoutTimerIntervalRef.current) {
+                clearInterval(workoutTimerIntervalRef.current);
+                workoutTimerIntervalRef.current = null;
+            }
+        };
+    }, [isTimerRunning]);
+
+    // Handle timer pause/resume
+    const toggleTimer = async () => {
+        if (isTimerRunning) {
+            // PAUSE: Save current pause time
+            const currentPausedTime = await AsyncStorage.getItem('workout_paused_time');
+            const pausedSoFar = currentPausedTime ? parseInt(currentPausedTime) : 0;
+            await AsyncStorage.setItem('workout_pause_start', Date.now().toString());
+            await AsyncStorage.setItem('workout_timer_running', 'false');
+            setIsTimerRunning(false);
+        } else {
+            // RESUME: Calculate total paused time
+            const pauseStart = await AsyncStorage.getItem('workout_pause_start');
+            if (pauseStart) {
+                const currentPausedTime = await AsyncStorage.getItem('workout_paused_time');
+                const pausedSoFar = currentPausedTime ? parseInt(currentPausedTime) : 0;
+                const additionalPause = Date.now() - parseInt(pauseStart);
+                const totalPaused = pausedSoFar + additionalPause;
+                await AsyncStorage.setItem('workout_paused_time', totalPaused.toString());
+                await AsyncStorage.removeItem('workout_pause_start');
+            }
+            await AsyncStorage.setItem('workout_timer_running', 'true');
+            setIsTimerRunning(true);
+        }
+    };
 
     const formatTime = (seconds: number) => {
         const hrs = Math.floor(seconds / 3600);
@@ -758,6 +835,7 @@ const StartWorkoutScreen = () => {
 
             await createWorkout(workoutData).unwrap();
 
+            // Always clear workout data after successful save
             await clearWorkoutData();
 
             // Navigate to workout summary with data
@@ -783,6 +861,7 @@ const StartWorkoutScreen = () => {
     };
 
     const clearWorkoutData = async () => {
+        // Clear AsyncStorage
         const keys = [
             'workout_timer_running',
             'workout_exercises',
@@ -794,6 +873,9 @@ const StartWorkoutScreen = () => {
             'workout_active_rest_timer',
         ];
         await AsyncStorage.multiRemove(keys);
+
+        // Reset refs
+        templateLoadedRef.current = null;
     };
 
     const handleCancelWorkout = () => {
@@ -806,32 +888,97 @@ const StartWorkoutScreen = () => {
                 text: 'Yes, Cancel',
                 style: 'destructive',
                 onPress: async () => {
-                    isFinishingRef.current = true;
-                    setIsTimerRunning(false);
+                    try {
+                        isFinishingRef.current = true;
+                        setIsTimerRunning(false);
 
-                    // Clear all timers and notifications
-                    if (workoutTimerIntervalRef.current) {
-                        clearInterval(workoutTimerIntervalRef.current);
-                        workoutTimerIntervalRef.current = null;
-                    }
-                    if (restTimerIntervalRef.current) {
-                        clearInterval(restTimerIntervalRef.current);
-                        restTimerIntervalRef.current = null;
-                    }
-                    if (restTimerNotificationId.current) {
-                        await Notifications.cancelScheduledNotificationAsync(restTimerNotificationId.current);
-                        restTimerNotificationId.current = null;
-                    }
+                        // Clear all timers and notifications
+                        if (workoutTimerIntervalRef.current) {
+                            clearInterval(workoutTimerIntervalRef.current);
+                            workoutTimerIntervalRef.current = null;
+                        }
+                        if (restTimerIntervalRef.current) {
+                            clearInterval(restTimerIntervalRef.current);
+                            restTimerIntervalRef.current = null;
+                        }
+                        if (restTimerNotificationId.current) {
+                            await Notifications.cancelScheduledNotificationAsync(restTimerNotificationId.current);
+                            restTimerNotificationId.current = null;
+                        }
 
-                    // Cancel all pending notifications for this workout
-                    await Notifications.cancelAllScheduledNotificationsAsync();
+                        // Cancel all pending notifications for this workout
+                        await Notifications.cancelAllScheduledNotificationsAsync();
 
-                    await clearWorkoutData();
-                    router.replace('/workout');
+                        // Clear all workout data and reset state
+                        await clearWorkoutData();
+
+                        // Reset all state variables to initial values
+                        setWorkoutTime(0);
+                        setIsTimerRunning(true);
+                        setSelectedExercises([]);
+                        setTemplateId(null);
+                        setActiveRestTimer(null);
+
+                        // Small delay to ensure cleanup completes before navigation
+                        await new Promise(resolve => setTimeout(resolve, 100));
+
+                        // Navigate back to workout screen
+                        router.replace('/workout');
+                    } catch (error) {
+                        console.error('Error canceling workout:', error);
+                        router.replace('/workout');
+                    }
                 },
             },
         ]);
     };
+
+    // Load template exercises when templateData is available
+    useEffect(() => {
+        if (templateData && templateData.data && templateId && templateLoadedRef.current !== templateId) {
+            console.log('Loading exercises from template:', templateData.data.name);
+            templateLoadedRef.current = templateId;
+
+            const template = templateData.data;
+            const workoutExercises: WorkoutExercise[] = template.exercises.map((templateExercise: any) => {
+                // Find the exercise details from exercisesData
+                const exerciseDetails = exercisesData?.find((ex) => ex.id === templateExercise.exerciseId);
+
+                // Get last performance to pre-fill weights
+                const getLastWeight = (setNum: number) => {
+                    const lastPerf = getLastPerformance(templateExercise.exerciseId, setNum);
+                    return lastPerf?.weight || 0;
+                };
+
+                return {
+                    id: templateExercise.exerciseId,
+                    name: exerciseDetails?.name || templateExercise.exerciseName,
+                    description: exerciseDetails?.description || '',
+                    instructions: Array.isArray(exerciseDetails?.instructions) ? exerciseDetails.instructions : [],
+                    image: exerciseDetails?.image || '',
+                    category: exerciseDetails?.category || '',
+                    sets: templateExercise.sets.map((templateSet: any, index: number) => ({
+                        id: `${templateExercise.exerciseId}-set-${templateSet.setNumber}`,
+                        setNumber: templateSet.setNumber,
+                        completed: false,
+                        restTimeRemaining: userInfo?.restTimer || 120,
+                        weight: getLastWeight(templateSet.setNumber),
+                        reps: templateSet.targetReps || 0,
+                    })),
+                };
+            });
+
+            setSelectedExercises(workoutExercises);
+            setIsLoading(false);
+        }
+    }, [templateData, templateId, exercisesData, userInfo?.restTimer]);
+
+    // Save exercises to AsyncStorage whenever they change
+    useEffect(() => {
+        if (selectedExercises.length > 0 && !isLoading) {
+            AsyncStorage.setItem('workout_exercises', JSON.stringify(selectedExercises)).catch(console.error);
+        }
+    }, [selectedExercises, isLoading]);
 
     // Cleanup on unmount
     useEffect(() => {
@@ -870,7 +1017,7 @@ const StartWorkoutScreen = () => {
                     </View>
                     <TouchableOpacity
                         style={styles.pauseButton}
-                        onPress={() => setIsTimerRunning(!isTimerRunning)}
+                        onPress={toggleTimer}
                         activeOpacity={0.7}
                     >
                         <Ionicons name={isTimerRunning ? 'pause' : 'play'} size={20} color="#fff" />

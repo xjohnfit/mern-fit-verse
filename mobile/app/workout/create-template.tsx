@@ -15,19 +15,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
-import { useGetExercisesQuery } from '@/slices/exerciseApiSlice';
+import { Exercise } from '@/slices/exerciseApiSlice';
 import { useCreateTemplateMutation } from '@/slices/workoutTemplateApiSlice';
 import { useGetTemplateFoldersQuery } from '@/slices/workoutTemplateFolderApiSlice';
 import type { WorkoutTemplateExercise, WorkoutTemplateSet } from '@/slices/workoutTemplateApiSlice';
-
-// Exercise type from API
-interface Exercise {
-    id: string;
-    name: string;
-    description: string;
-    category: string;
-    image: string;
-}
+import { ExercisePickerModal } from '@/components/workout';
 
 const CreateTemplateScreen = () => {
     const insets = useSafeAreaInsets();
@@ -35,7 +27,6 @@ const CreateTemplateScreen = () => {
     const isDark = colorScheme === 'dark';
 
     // API hooks
-    const { data: exercises, isLoading: exercisesLoading } = useGetExercisesQuery();
     const { data: foldersResponse } = useGetTemplateFoldersQuery();
     const [createTemplate, { isLoading: isCreating }] = useCreateTemplateMutation();
 
@@ -46,30 +37,24 @@ const CreateTemplateScreen = () => {
     const [templateExercises, setTemplateExercises] = useState<WorkoutTemplateExercise[]>([]);
     const [showExerciseSearch, setShowExerciseSearch] = useState(false);
     const [showFolderPicker, setShowFolderPicker] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
 
     const folders = foldersResponse?.data || [];
-
-    // Filter exercises based on search
-    const filteredExercises = exercises?.filter(
-        (exercise) =>
-            exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            exercise.category.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     // Handlers
     const handleAddExercise = (exercise: Exercise) => {
         const newExercise: WorkoutTemplateExercise = {
             exerciseId: exercise.id,
             exerciseName: exercise.name,
-            sets: [{ setNumber: 1, targetReps: 10, notes: '' }],
+            sets: [
+                { setNumber: 1, targetReps: 10, notes: '' },
+                { setNumber: 2, targetReps: 10, notes: '' },
+                { setNumber: 3, targetReps: 10, notes: '' },
+                { setNumber: 4, targetReps: 10, notes: '' }
+            ],
             notes: '',
         };
 
         setTemplateExercises([...templateExercises, newExercise]);
-        setShowExerciseSearch(false);
-        setSearchTerm('');
-        Toast.show({ type: 'success', text1: `${exercise.name} added` });
     };
 
     const handleRemoveExercise = (exerciseId: string) => {
@@ -176,7 +161,12 @@ const CreateTemplateScreen = () => {
                 </View>
             </LinearGradient>
 
-            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
+            <ScrollView 
+                style={{ flex: 1 }} 
+                contentContainerStyle={{ padding: 20 }}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
+            >
                 {/* Template Details Card */}
                 <View
                     style={{
@@ -273,200 +263,155 @@ const CreateTemplateScreen = () => {
                 </View>
 
                 {/* Exercises Section */}
-                <View
-                    style={{
-                        backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
-                        borderRadius: 16,
-                        padding: 20,
-                        marginBottom: 16,
-                        shadowColor: '#000',
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.1,
-                        shadowRadius: 8,
-                        elevation: 3,
-                    }}
-                >
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold', color: isDark ? '#FFFFFF' : '#111827' }}>Exercises</Text>
-                        <TouchableOpacity
-                            onPress={() => setShowExerciseSearch(true)}
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold', color: isDark ? '#FFFFFF' : '#111827' }}>Exercises</Text>
+                    <TouchableOpacity
+                        onPress={() => setShowExerciseSearch(true)}
+                        style={{
+                            backgroundColor: '#9333ea',
+                            borderRadius: 10,
+                            paddingHorizontal: 16,
+                            paddingVertical: 8,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Ionicons name="add" size={20} color="#FFFFFF" />
+                        <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '600', marginLeft: 6 }}>Add Exercise</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* Exercise List */}
+                {templateExercises.length === 0 ? (
+                    <View style={{ alignItems: 'center', paddingVertical: 40, backgroundColor: isDark ? '#1F2937' : '#FFFFFF', borderRadius: 16, marginBottom: 16 }}>
+                        <View
                             style={{
-                                backgroundColor: '#9333ea',
-                                borderRadius: 10,
-                                paddingHorizontal: 16,
-                                paddingVertical: 8,
-                                flexDirection: 'row',
+                                width: 64,
+                                height: 64,
+                                borderRadius: 32,
+                                backgroundColor: isDark ? '#374151' : '#F3F4F6',
                                 alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: 16,
                             }}
                         >
-                            <Ionicons name="add" size={20} color="#FFFFFF" />
-                            <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '600', marginLeft: 6 }}>Add Exercise</Text>
-                        </TouchableOpacity>
+                            <Ionicons name="barbell-outline" size={32} color={isDark ? '#6B7280' : '#9CA3AF'} />
+                        </View>
+                        <Text style={{ fontSize: 16, fontWeight: '600', color: isDark ? '#D1D5DB' : '#6B7280', marginBottom: 8 }}>
+                            No exercises yet
+                        </Text>
+                        <Text style={{ fontSize: 14, color: isDark ? '#9CA3AF' : '#9CA3AF', textAlign: 'center' }}>
+                            Add exercises to build your workout template
+                        </Text>
                     </View>
-
-                    {/* Exercise List */}
-                    {templateExercises.length === 0 ? (
-                        <View style={{ alignItems: 'center', paddingVertical: 40 }}>
+                ) : (
+                    <View style={{ gap: 12, marginBottom: 16 }}>
+                        {templateExercises.map((exercise, index) => (
                             <View
+                                key={exercise.exerciseId}
                                 style={{
-                                    width: 64,
-                                    height: 64,
-                                    borderRadius: 32,
-                                    backgroundColor: isDark ? '#374151' : '#F3F4F6',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    marginBottom: 16,
+                                    backgroundColor: isDark ? '#111827' : '#F9FAFB',
+                                    borderRadius: 12,
+                                    padding: 16,
+                                    borderWidth: 1,
+                                    borderColor: isDark ? '#374151' : '#E5E7EB',
                                 }}
                             >
-                                <Ionicons name="barbell-outline" size={32} color={isDark ? '#6B7280' : '#9CA3AF'} />
-                            </View>
-                            <Text style={{ fontSize: 16, fontWeight: '600', color: isDark ? '#D1D5DB' : '#6B7280', marginBottom: 8 }}>
-                                No exercises yet
-                            </Text>
-                            <Text style={{ fontSize: 14, color: isDark ? '#9CA3AF' : '#9CA3AF', textAlign: 'center' }}>
-                                Add exercises to build your workout template
-                            </Text>
-                        </View>
-                    ) : (
-                        <View style={{ gap: 12 }}>
-                            {templateExercises.map((exercise, index) => (
-                                <View
-                                    key={exercise.exerciseId}
-                                    style={{
-                                        backgroundColor: isDark ? '#111827' : '#F9FAFB',
-                                        borderRadius: 12,
-                                        padding: 16,
-                                        borderWidth: 1,
-                                        borderColor: isDark ? '#374151' : '#E5E7EB',
-                                    }}
-                                >
-                                    {/* Exercise Header */}
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                                        <View style={{ flex: 1 }}>
-                                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: isDark ? '#FFFFFF' : '#111827', marginBottom: 4 }}>
-                                                {index + 1}. {exercise.exerciseName}
-                                            </Text>
-                                            <Text style={{ fontSize: 12, color: isDark ? '#9CA3AF' : '#6B7280' }}>
-                                                {exercise.sets.length} {exercise.sets.length === 1 ? 'set' : 'sets'}
-                                            </Text>
-                                        </View>
-                                        <TouchableOpacity
-                                            onPress={() => handleRemoveExercise(exercise.exerciseId)}
-                                            style={{
-                                                width: 32,
-                                                height: 32,
-                                                borderRadius: 16,
-                                                backgroundColor: '#FEE2E2',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                            }}
-                                        >
-                                            <Ionicons name="trash-outline" size={18} color="#EF4444" />
-                                        </TouchableOpacity>
+                                {/* Exercise Header */}
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                                    <View style={{ flex: 1 }}>
+                                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: isDark ? '#FFFFFF' : '#111827', marginBottom: 4 }}>
+                                            {index + 1}. {exercise.exerciseName}
+                                        </Text>
+                                        <Text style={{ fontSize: 12, color: isDark ? '#9CA3AF' : '#6B7280' }}>
+                                            {exercise.sets.length} {exercise.sets.length === 1 ? 'set' : 'sets'}
+                                        </Text>
                                     </View>
-
-                                    {/* Sets */}
-                                    <View style={{ gap: 8, marginBottom: 12 }}>
-                                        {exercise.sets.map((set) => (
-                                            <View
-                                                key={set.setNumber}
-                                                style={{
-                                                    position: 'relative',
-                                                    overflow: 'hidden',
-                                                    backgroundColor: isDark ? '#0f172a' : '#f9fafb',
-                                                    borderRadius: 10,
-                                                    borderWidth: 2,
-                                                    borderColor: isDark ? '#334155' : '#e5e7eb',
-                                                }}
-                                            >
-                                                <View style={{
-                                                    flexDirection: 'row',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'space-between',
-                                                    padding: 12,
-                                                    gap: 10,
-                                                }}>
-                                                    <View style={{
-                                                        width: 28,
-                                                        height: 28,
-                                                        borderRadius: 14,
-                                                        borderWidth: 2,
-                                                        borderColor: isDark ? '#64748b' : '#d1d5db',
-                                                        backgroundColor: isDark ? '#1e293b' : '#fff',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                    }}>
-                                                        <Text style={{ fontSize: 14, fontWeight: '600', color: isDark ? '#94a3b8' : '#64748b' }}>
-                                                            {set.setNumber}
-                                                        </Text>
-                                                    </View>
-
-                                                    <View style={{
-                                                        flexDirection: 'row',
-                                                        alignItems: 'center',
-                                                        gap: 4,
-                                                    }}>
-                                                        <TextInput
-                                                            value={set.targetReps.toString()}
-                                                            onChangeText={(text) => handleUpdateSet(exercise.exerciseId, set.setNumber, 'targetReps', Number(text) || 0)}
-                                                            keyboardType="numeric"
-                                                            selectTextOnFocus
-                                                            style={{
-                                                                height: 32,
-                                                                backgroundColor: isDark ? '#0f172a' : '#fff',
-                                                                borderWidth: 1,
-                                                                borderColor: isDark ? '#475569' : '#d1d5db',
-                                                                borderRadius: 6,
-                                                                paddingHorizontal: 8,
-                                                                fontSize: 13,
-                                                                color: isDark ? '#e2e8f0' : '#111827',
-                                                                textAlign: 'center',
-                                                                width: 50,
-                                                            }}
-                                                        />
-                                                        <Text style={{
-                                                            fontSize: 11,
-                                                            color: isDark ? '#94a3b8' : '#6b7280'
-                                                        }}>reps</Text>
-                                                    </View>
-
-                                                    <TouchableOpacity
-                                                        onPress={() => handleRemoveSet(exercise.exerciseId, set.setNumber)}
-                                                        activeOpacity={0.7}
-                                                        disabled={exercise.sets.length === 1}
-                                                        style={{ opacity: exercise.sets.length === 1 ? 0.3 : 1 }}
-                                                    >
-                                                        <Ionicons name="close-circle" size={20} color="#ef4444" />
-                                                    </TouchableOpacity>
-                                                </View>
-                                            </View>
-                                        ))}
-                                    </View>
-
-                                    {/* Add Set Button */}
                                     <TouchableOpacity
-                                        onPress={() => handleAddSet(exercise.exerciseId)}
+                                        onPress={() => handleRemoveExercise(exercise.exerciseId)}
                                         style={{
-                                            borderWidth: 2,
-                                            borderColor: '#9333ea',
-                                            borderStyle: 'dashed',
-                                            borderRadius: 10,
-                                            paddingVertical: 12,
+                                            width: 32,
+                                            height: 32,
+                                            borderRadius: 16,
+                                            backgroundColor: '#FEE2E2',
                                             alignItems: 'center',
-                                            flexDirection: 'row',
                                             justifyContent: 'center',
-                                            backgroundColor: isDark ? '#1F2937' : '#F9FAFB',
                                         }}
-                                        activeOpacity={0.7}
                                     >
-                                        <Ionicons name="add-circle" size={20} color="#9333ea" />
-                                        <Text style={{ color: '#9333ea', fontSize: 15, fontWeight: '600', marginLeft: 8 }}>Add Set</Text>
+                                        <Ionicons name="trash-outline" size={18} color="#EF4444" />
                                     </TouchableOpacity>
                                 </View>
-                            ))}
-                        </View>
-                    )}
-                </View>
+
+                                {/* Sets */}
+                                <View style={{ gap: 8, marginBottom: 12 }}>
+                                    {exercise.sets.map((set) => (
+                                        <View
+                                            key={set.setNumber}
+                                            style={{
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                gap: 8,
+                                                backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
+                                                borderRadius: 8,
+                                                padding: 10,
+                                            }}
+                                        >
+                                            <Text style={{ fontSize: 14, fontWeight: '600', color: isDark ? '#9CA3AF' : '#6B7280', width: 50 }}>
+                                                Set {set.setNumber}
+                                            </Text>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 }}>
+                                                <Text style={{ fontSize: 13, color: isDark ? '#9CA3AF' : '#6B7280' }}>Reps:</Text>
+                                                <TextInput
+                                                    value={set.targetReps.toString()}
+                                                    onChangeText={(text) => handleUpdateSet(exercise.exerciseId, set.setNumber, 'targetReps', Number(text) || 0)}
+                                                    keyboardType="numeric"
+                                                    selectTextOnFocus
+                                                    style={{
+                                                        flex: 1,
+                                                        backgroundColor: isDark ? '#374151' : '#F3F4F6',
+                                                        borderRadius: 6,
+                                                        paddingHorizontal: 8,
+                                                        paddingVertical: 6,
+                                                        fontSize: 14,
+                                                        color: isDark ? '#FFFFFF' : '#111827',
+                                                        textAlign: 'center',
+                                                    }}
+                                                />
+                                            </View>
+
+                                            {exercise.sets.length > 1 && (
+                                                <TouchableOpacity
+                                                    onPress={() => handleRemoveSet(exercise.exerciseId, set.setNumber)}
+                                                    style={{ padding: 4 }}
+                                                >
+                                                    <Ionicons name="close-circle" size={20} color="#EF4444" />
+                                                </TouchableOpacity>
+                                            )}
+                                        </View>
+                                    ))}
+                                </View>
+
+                                {/* Add Set Button */}
+                                <TouchableOpacity
+                                    onPress={() => handleAddSet(exercise.exerciseId)}
+                                    style={{
+                                        borderWidth: 1,
+                                        borderColor: '#9333ea',
+                                        borderStyle: 'dashed',
+                                        borderRadius: 8,
+                                        paddingVertical: 10,
+                                        alignItems: 'center',
+                                        flexDirection: 'row',
+                                        justifyContent: 'center',
+                                    }}
+                                >
+                                    <Ionicons name="add" size={18} color="#9333ea" />
+                                    <Text style={{ color: '#9333ea', fontSize: 14, fontWeight: '600', marginLeft: 6 }}>Add Set</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ))}
+                    </View>
+                )}
 
                 {/* Action Buttons */}
                 <View style={{ flexDirection: 'row', gap: 12, marginBottom: insets.bottom + 20 }}>
@@ -502,112 +447,14 @@ const CreateTemplateScreen = () => {
                 </View>
             </ScrollView>
 
-            {/* Exercise Search Modal */}
-            <Modal visible={showExerciseSearch} animationType="slide" transparent>
-                <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
-                    <View
-                        style={{
-                            backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
-                            borderTopLeftRadius: 24,
-                            borderTopRightRadius: 24,
-                            maxHeight: '80%',
-                            paddingTop: 20,
-                            paddingBottom: insets.bottom + 20,
-                        }}
-                    >
-                        {/* Handle Bar */}
-                        <View style={{ alignItems: 'center', marginBottom: 16 }}>
-                            <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }} />
-                        </View>
-
-                        <View style={{ paddingHorizontal: 20 }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                                <Text style={{ fontSize: 20, fontWeight: 'bold', color: isDark ? '#FFFFFF' : '#111827' }}>
-                                    Add Exercise
-                                </Text>
-                                <TouchableOpacity onPress={() => setShowExerciseSearch(false)} style={{ padding: 4 }}>
-                                    <Ionicons name="close" size={24} color={isDark ? '#FFFFFF' : '#111827'} />
-                                </TouchableOpacity>
-                            </View>
-
-                            {/* Search Input */}
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    backgroundColor: isDark ? '#374151' : '#F3F4F6',
-                                    borderRadius: 12,
-                                    paddingHorizontal: 16,
-                                    marginBottom: 16,
-                                }}
-                            >
-                                <Ionicons name="search" size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
-                                <TextInput
-                                    value={searchTerm}
-                                    onChangeText={setSearchTerm}
-                                    placeholder="Search exercises..."
-                                    placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
-                                    style={{
-                                        flex: 1,
-                                        paddingVertical: 14,
-                                        paddingHorizontal: 12,
-                                        fontSize: 16,
-                                        color: isDark ? '#FFFFFF' : '#111827',
-                                    }}
-                                />
-                            </View>
-                        </View>
-
-                        {/* Exercise List */}
-                        <ScrollView style={{ paddingHorizontal: 20 }}>
-                            {exercisesLoading ? (
-                                <ActivityIndicator size="large" color="#9333ea" style={{ marginTop: 40 }} />
-                            ) : filteredExercises && filteredExercises.length > 0 ? (
-                                <View style={{ gap: 8 }}>
-                                    {filteredExercises.map((exercise) => {
-                                        const isAdded = templateExercises.some((ex) => ex.exerciseId === exercise.id);
-                                        return (
-                                            <TouchableOpacity
-                                                key={exercise.id}
-                                                onPress={() => !isAdded && handleAddExercise(exercise)}
-                                                disabled={isAdded}
-                                                style={{
-                                                    backgroundColor: isDark ? '#111827' : '#F9FAFB',
-                                                    borderRadius: 12,
-                                                    padding: 16,
-                                                    flexDirection: 'row',
-                                                    alignItems: 'center',
-                                                    opacity: isAdded ? 0.5 : 1,
-                                                }}
-                                            >
-                                                <View style={{ flex: 1 }}>
-                                                    <Text style={{ fontSize: 16, fontWeight: '600', color: isDark ? '#FFFFFF' : '#111827', marginBottom: 4 }}>
-                                                        {exercise.name}
-                                                    </Text>
-                                                    <Text style={{ fontSize: 13, color: isDark ? '#9CA3AF' : '#6B7280' }}>
-                                                        {exercise.category}
-                                                    </Text>
-                                                </View>
-                                                {isAdded ? (
-                                                    <Ionicons name="checkmark-circle" size={24} color="#10B981" />
-                                                ) : (
-                                                    <Ionicons name="add-circle-outline" size={24} color="#9333ea" />
-                                                )}
-                                            </TouchableOpacity>
-                                        );
-                                    })}
-                                </View>
-                            ) : (
-                                <View style={{ alignItems: 'center', paddingVertical: 40 }}>
-                                    <Text style={{ fontSize: 16, color: isDark ? '#9CA3AF' : '#6B7280' }}>
-                                        {searchTerm ? 'No exercises found' : 'Start typing to search exercises'}
-                                    </Text>
-                                </View>
-                            )}
-                        </ScrollView>
-                    </View>
-                </View>
-            </Modal>
+            {/* Exercise Picker Modal */}
+            <ExercisePickerModal
+                visible={showExerciseSearch}
+                onClose={() => setShowExerciseSearch(false)}
+                onSelectExercise={handleAddExercise}
+                addedExerciseIds={templateExercises.map((ex) => ex.exerciseId)}
+                title="Add Exercise"
+            />
 
             {/* Folder Picker Modal */}
             <Modal visible={showFolderPicker} animationType="fade" transparent>
