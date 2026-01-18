@@ -5,9 +5,6 @@ import { useNavigate } from "react-router";
 // Hooks
 import { useSocket } from "@/hooks/useSocket";
 
-// Third-party libraries
-import { toast } from "sonner";
-
 // Types
 import { type FollowedUser } from "@/screens/protected/dashboard/dashboard.types";
 
@@ -17,9 +14,6 @@ import { Button } from "@/components/ui/button";
 
 // Components
 import { EmptyMessages } from "./EmptyStates/EmptyMessages";
-
-// Utilities
-import { getInitials } from "@/lib/getInitials";
 
 // Icons
 import { MessageSquare, MessageCircle, User } from "lucide-react";
