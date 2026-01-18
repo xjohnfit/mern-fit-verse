@@ -23,7 +23,7 @@ spec:
               value: "production"
             - name: PORT
               value: "5004"
-            - name: MONGODB_URI
+            - name: MONGO_URI
               valueFrom:
                 secretKeyRef: 
                   name: mern-fit-verse-secrets
