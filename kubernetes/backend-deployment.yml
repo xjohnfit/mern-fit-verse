@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mern-fit-verse-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mern-fit-verse-backend
+  template:
+    metadata:
+      labels:
+        app: mern-fit-verse-backend
+    spec:
+      containers:
+        - name: backend
+          image: xjohnfit/mern-fit-verse-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5004
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "5004"
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef: 
+                  name: mern-fit-verse-secrets
+                  key: mongodb-uri
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef: 
+                  name: mern-fit-verse-secrets
+                  key: jwt-secret
+            - name: FRONTEND_URL
+              value: "https://fitverse.codewithxjohn.com"
+          resources:
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 5004
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 5004
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      imagePullSecrets:
+        - name: regcred
