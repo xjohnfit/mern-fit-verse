@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mern-fit-verse
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    # Change to letsencrypt-prod after testing
+spec:
+  rules:
+  # Backend API
+  - host: api.fitverse.codewithxjohn.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: mern-fit-verse-backend
+            port:
+              number: 5004
+  # Frontend
+  - host: fitverse.codewithxjohn.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: mern-fit-verse-frontend
+            port:
+              number: 5005
+  tls:
+  - hosts:
+    - api.fitverse.codewithxjohn.com
+    - fitverse.codewithxjohn.com
+    secretName: mern-fit-verse-tls

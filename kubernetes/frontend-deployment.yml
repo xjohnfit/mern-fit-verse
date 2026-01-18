@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mern-fit-verse-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mern-fit-verse-frontend
+  template:
+    metadata:
+      labels:
+        app: mern-fit-verse-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: xjohnfit/mern-fit-verse-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5005
+          env:
+            - name: VITE_API_URL
+              value: "https://api.fitverse.codewithxjohn.com"
+            - name: VITE_MODE
+              value: "production"
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+      imagePullSecrets:
+        - name: regcred
