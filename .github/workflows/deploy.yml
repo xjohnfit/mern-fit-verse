@@ -72,7 +72,7 @@ jobs:
         run: |
           kubectl delete secret mern-fit-verse-secrets --ignore-not-found
           kubectl create secret generic mern-fit-verse-secrets \
-            --from-literal=mongodb-uri="${{ secrets.MONGODB_URI }}" \
+            --from-literal=mongo-uri="${{ secrets.MONGODB_URI }}" \
             --from-literal=jwt-secret="${{ secrets.JWT_SECRET }}"
 
       - name: Apply Kubernetes manifests
