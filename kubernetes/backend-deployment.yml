@@ -4,7 +4,7 @@ metadata:
   name: mern-fit-verse-backend
 spec:
   replicas: 1
-  selector:
+  selector: 
     matchLabels:
       app: mern-fit-verse-backend
   template:
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: xjohnfit/mern-fit-verse-backend:latest
+          image:  xjohnfit/mern-fit-verse-backend:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5004
@@ -23,18 +23,43 @@ spec:
               value: "production"
             - name: PORT
               value: "5004"
+            - name: FRONTEND_URL
+              value: "https://fitverse.codewithxjohn.com"
             - name: MONGO_URI
               valueFrom:
-                secretKeyRef: 
+                secretKeyRef:
                   name: mern-fit-verse-secrets
                   key: mongo-uri
             - name: JWT_SECRET
               valueFrom:
-                secretKeyRef: 
+                secretKeyRef:
                   name: mern-fit-verse-secrets
                   key: jwt-secret
-            - name: FRONTEND_URL
-              value: "https://fitverse.codewithxjohn.com"
+            - name: CLOUDINARY_CLOUD_NAME
+              valueFrom:
+                secretKeyRef: 
+                  name: mern-fit-verse-secrets
+                  key: cloudinary-cloud-name
+            - name: CLOUDINARY_API_KEY
+              valueFrom:
+                secretKeyRef: 
+                  name: mern-fit-verse-secrets
+                  key: cloudinary-api-key
+            - name: CLOUDINARY_API_SECRET
+              valueFrom: 
+                secretKeyRef:
+                  name: mern-fit-verse-secrets
+                  key:  cloudinary-api-secret
+            - name: FATSECRET_CONSUMER_KEY
+              valueFrom:
+                secretKeyRef: 
+                  name: mern-fit-verse-secrets
+                  key: fatsecret-consumer-key
+            - name:  FATSECRET_CONSUMER_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: mern-fit-verse-secrets
+                  key: fatsecret-consumer-secret
           resources:
             limits:
               cpu: "1"
