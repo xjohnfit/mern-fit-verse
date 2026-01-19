@@ -69,11 +69,16 @@ jobs:
             --docker-password=${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Create application secrets
-        run: |
+        run:  |
           kubectl delete secret mern-fit-verse-secrets --ignore-not-found
           kubectl create secret generic mern-fit-verse-secrets \
-            --from-literal=mongo-uri="${{ secrets.MONGODB_URI }}" \
-            --from-literal=jwt-secret="${{ secrets.JWT_SECRET }}"
+            --from-literal=mongo-uri="${{ secrets.MONGO_URI }}" \
+            --from-literal=jwt-secret="${{ secrets.JWT_SECRET }}" \
+            --from-literal=cloudinary-cloud-name="${{ secrets.CLOUDINARY_CLOUD_NAME }}" \
+            --from-literal=cloudinary-api-key="${{ secrets.CLOUDINARY_API_KEY }}" \
+            --from-literal=cloudinary-api-secret="${{ secrets.CLOUDINARY_API_SECRET }}" \
+            --from-literal=fatsecret-consumer-key="${{ secrets.FATSECRET_CONSUMER_KEY }}" \
+            --from-literal=fatsecret-consumer-secret="${{ secrets.FATSECRET_CONSUMER_SECRET }}"
 
       - name: Apply Kubernetes manifests
         run: kubectl apply -f kubernetes/
