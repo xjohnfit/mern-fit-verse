@@ -9,10 +9,14 @@ import type { User, UserManagementTabProps } from '../admin.types';
 const UserManagementTab = ({ currentUserId, isAdmin }: UserManagementTabProps) => {
     const [searchTerm, setSearchTerm] = useState('');
 
-    const { data: usersData, isLoading: usersLoading, refetch: refetchUsers } = useGetAllUsersQuery(undefined, {
+    const { data: usersData, isLoading: usersLoading, refetch: refetchUsers, error: usersError } = useGetAllUsersQuery(undefined, {
         skip: !isAdmin,
     });
     const [updateUserRole] = useUpdateUserRoleMutation();
+
+    console.log('Users data:', usersData);
+    console.log('Users loading:', usersLoading);
+    console.log('Users error:', usersError);
 
     // Handle user role update
     const handleRoleUpdate = async (userId: string, currentAdmin: boolean) => {

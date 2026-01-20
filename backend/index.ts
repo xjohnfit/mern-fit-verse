@@ -39,6 +39,7 @@ import workoutTemplateRoutes from './routes/workoutTemplateRoutes';
 import workoutTemplateFolderRoutes from './routes/workoutTemplateFolderRoutes';
 import reportRoutes from './routes/reportRoutes';
 import blockRoutes from './routes/blockRoutes';
+import supportRoutes from './routes/supportRoutes';
 
 // API Landing Screen
 import apiLandingScreen from './apiLandingScreen';
@@ -55,7 +56,7 @@ const allowedOrigins = [
 const corsOptions = {
     origin: (
         origin: string | undefined,
-        callback: (err: Error | null, allow?: boolean) => void
+        callback: (err: Error | null, allow?: boolean) => void,
     ) => {
         // Allow requests with no origin (like mobile apps, Postman, etc.)
         if (!origin) {
@@ -70,7 +71,7 @@ const corsOptions = {
                 /^http:\/\/192\.168\.\d{1,3}\.\d{1,3}/.test(origin) ||
                 /^http:\/\/10\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(origin) ||
                 /^http:\/\/172\.(1[6-9]|2[0-9]|3[0-1])\.\d{1,3}\.\d{1,3}/.test(
-                    origin
+                    origin,
                 );
 
             if (isLocalhost || isLocalNetwork) {
@@ -97,7 +98,7 @@ app.use(cors(corsOptions));
 app.use(
     express.json({
         limit: '50mb',
-    })
+    }),
 );
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
@@ -134,6 +135,7 @@ app.use('/api/workout-templates', workoutTemplateRoutes);
 app.use('/api/workout-template-folders', workoutTemplateFolderRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/users', blockRoutes);
+app.use('/api/support', supportRoutes);
 
 // Error middlewares (should be placed AFTER all routes)
 app.use(notFound);

@@ -73,7 +73,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             invalidatesTags: ['User'],
         }),
         // Admin endpoints
-        getAllUsers: builder.query({
+        getAllUsers: builder.query<any, void>({
             query: () => ({
                 url: '/users/admin/users',
                 method: 'GET',

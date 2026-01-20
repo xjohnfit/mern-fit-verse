@@ -10,13 +10,8 @@ interface GetAllReportsParams {
 export const reportsApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         // Get all reports (Admin only)
-        getAllReports: builder.query({
-            query: ({
-                page = 1,
-                limit = 10,
-                status,
-                reason,
-            }: GetAllReportsParams = {}) => {
+        getAllReports: builder.query<any, GetAllReportsParams>({
+            query: ({ page = 1, limit = 10, status, reason } = {}) => {
                 const params = new URLSearchParams();
                 params.append('page', page.toString());
                 params.append('limit', limit.toString());

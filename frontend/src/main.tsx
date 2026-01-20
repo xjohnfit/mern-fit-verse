@@ -39,6 +39,8 @@ import WorkoutDetailScreen from '@/screens/protected/workout/WorkoutDetailScreen
 import CreateTemplateScreen from '@/screens/protected/workout/CreateTemplateScreen';
 import EditTemplateScreen from '@/screens/protected/workout/EditTemplateScreen';
 import MessagesScreen from '@/screens/protected/messages/MessagesScreen';
+import SupportScreen from '@/screens/protected/SupportScreen';
+import SupportTicketDetailScreen from '@/screens/protected/SupportTicketDetailScreen';
 
 const router = createBrowserRouter([
     {
@@ -69,6 +71,8 @@ const router = createBrowserRouter([
                     { path: '/workout/:id', Component: WorkoutDetailScreen },
                     { path: '/workout/template/create', Component: CreateTemplateScreen },
                     { path: '/workout/template/edit/:id', Component: EditTemplateScreen },
+                    { path: '/support', Component: SupportScreen },
+                    { path: '/support/:id', Component: SupportTicketDetailScreen },
                 ],
             },
             // End Private Routes

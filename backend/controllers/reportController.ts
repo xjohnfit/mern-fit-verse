@@ -36,7 +36,7 @@ export const createReport = async (req: Request, res: Response) => {
         if (existingReport) {
             res.status(400);
             throw new Error(
-                'You have already reported this user. We are reviewing it.'
+                'You have already reported this user. We are reviewing it.',
             );
         }
 
@@ -71,9 +71,11 @@ export const createReport = async (req: Request, res: Response) => {
 // @access  Private/Admin
 export const getAllReports = async (req: Request, res: Response) => {
     try {
-        const { status, page = 1, limit = 20 } = req.query;
+        const { status, reason, page = 1, limit = 20 } = req.query;
 
-        const query = status ? { status } : {};
+        const query: any = {};
+        if (status) query.status = status;
+        if (reason) query.reason = reason;
 
         const reports = await Report.find(query)
             .populate('reporter', 'name username photo')

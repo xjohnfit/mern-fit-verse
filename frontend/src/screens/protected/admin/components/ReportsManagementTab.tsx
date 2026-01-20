@@ -16,12 +16,16 @@ const ReportsManagementTab = () => {
     const [selectedReport, setSelectedReport] = useState<Report | null>(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
 
-    const { data: reportsData, isLoading: reportsLoading, refetch: refetchReports } = useGetAllReportsQuery({
+    const { data: reportsData, isLoading: reportsLoading, refetch: refetchReports, error } = useGetAllReportsQuery({
         page,
         limit: 10,
         status: statusFilter !== 'all' ? statusFilter : undefined,
         reason: reasonFilter !== 'all' ? reasonFilter : undefined,
     });
+
+    console.log('Reports data:', reportsData);
+    console.log('Reports loading:', reportsLoading);
+    console.log('Reports error:', error);
 
     const [updateReportStatus, { isLoading: isUpdating }] = useUpdateReportStatusMutation();
     const [deleteReport] = useDeleteReportMutation();

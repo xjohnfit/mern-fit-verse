@@ -18,6 +18,7 @@ import {
     Home,
     MessageCircle,
     Shield,
+    HelpCircle,
 } from 'lucide-react';
 import {
     NavigationMenu,
@@ -234,6 +235,20 @@ function Header() {
                                                         </NavigationMenuLink>
                                                         <NavigationMenuLink
                                                             asChild>
+                                                            <Link
+                                                                to='/support'
+                                                                className={`flex flex-row items-center space-x-3 w-full px-3 py-2 rounded-lg transition-all duration-200 group ${isActive('/support')
+                                                                    ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400'
+                                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'
+                                                                    }`}>
+                                                                <HelpCircle className='w-4 h-4 group-hover:scale-110 transition-transform duration-200' />
+                                                                <span className='font-medium'>
+                                                                    Support
+                                                                </span>
+                                                            </Link>
+                                                        </NavigationMenuLink>
+                                                        <NavigationMenuLink
+                                                            asChild>
                                                             <button
                                                                 onClick={
                                                                     logoutHandler
@@ -426,6 +441,19 @@ function Header() {
                                             <Settings className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
                                             <span className='font-medium'>
                                                 Settings
+                                            </span>
+                                        </Link>
+
+                                        <Link
+                                            to='/support'
+                                            onClick={closeMobileMenu}
+                                            className={`flex items-center space-x-3 w-full p-3 rounded-xl transition-all duration-200 group ${isActive('/support')
+                                                ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20'
+                                                : 'text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'
+                                                }`}>
+                                            <HelpCircle className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
+                                            <span className='font-medium'>
+                                                Support
                                             </span>
                                         </Link>
 
