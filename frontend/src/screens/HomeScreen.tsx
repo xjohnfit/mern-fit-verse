@@ -167,8 +167,8 @@ const HomeScreen = () => {
                                 {!isAuthenticated ? (
                                     <>
                                         <Link to="/register" className="w-full sm:w-auto">
-                                            <Button 
-                                                size="lg" 
+                                            <Button
+                                                size="lg"
                                                 className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 md:px-10 py-6 md:py-7 text-base md:text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
                                             >
                                                 Start Free Today
@@ -176,9 +176,9 @@ const HomeScreen = () => {
                                             </Button>
                                         </Link>
                                         <Link to="/login" className="w-full sm:w-auto">
-                                            <Button 
-                                                size="lg" 
-                                                variant="outline" 
+                                            <Button
+                                                size="lg"
+                                                variant="outline"
                                                 className="w-full sm:w-auto border-2 border-gray-300 dark:border-white/20 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 backdrop-blur-sm px-8 md:px-10 py-6 md:py-7 text-base md:text-lg font-semibold rounded-full"
                                             >
                                                 Sign In
@@ -188,8 +188,8 @@ const HomeScreen = () => {
                                 ) : (
                                     <>
                                         <Link to="/dashboard" className="w-full sm:w-auto">
-                                            <Button 
-                                                size="lg" 
+                                            <Button
+                                                size="lg"
                                                 className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 md:px-10 py-6 md:py-7 text-base md:text-lg font-semibold rounded-full shadow-lg"
                                             >
                                                 Go to Dashboard
@@ -197,9 +197,9 @@ const HomeScreen = () => {
                                             </Button>
                                         </Link>
                                         <Link to="/workout" className="w-full sm:w-auto">
-                                            <Button 
-                                                size="lg" 
-                                                variant="outline" 
+                                            <Button
+                                                size="lg"
+                                                variant="outline"
                                                 className="w-full sm:w-auto border-2 border-gray-300 dark:border-white/20 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 px-8 md:px-10 py-6 md:py-7 text-base md:text-lg font-semibold rounded-full"
                                             >
                                                 Start Workout
@@ -433,8 +433,8 @@ const HomeScreen = () => {
                                     Join thousands of fitness enthusiasts achieving their goals with FitVerse
                                 </p>
                                 <Link to="/register">
-                                    <Button 
-                                        size="lg" 
+                                    <Button
+                                        size="lg"
                                         className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 md:px-12 py-6 md:py-8 text-lg md:text-xl font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300"
                                     >
                                         Start Your Journey Free
