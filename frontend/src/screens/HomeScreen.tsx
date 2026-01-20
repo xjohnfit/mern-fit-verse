@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import AlertModal from '@/components/modals/AlertModal';
 import { motion, useReducedMotion } from 'motion/react';
-import { useEffect, useState, useMemo, lazy, Suspense } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router';
 import { useSelector } from 'react-redux';
 import {
@@ -90,9 +90,9 @@ const HomeScreen = () => {
     ], []);
 
     // Simplified animation variants for better performance
-    const fadeIn = prefersReducedMotion
-        ? { opacity: 1, y: 0 }
-        : { opacity: 1, y: 0, transition: { duration: 0.5 } };
+    // const fadeIn = prefersReducedMotion
+    //     ? { opacity: 1, y: 0 }
+    //     : { opacity: 1, y: 0, transition: { duration: 0.5 } };
 
     const fadeInUp = prefersReducedMotion
         ? { initial: { opacity: 1, y: 0 }, animate: { opacity: 1, y: 0 } }
