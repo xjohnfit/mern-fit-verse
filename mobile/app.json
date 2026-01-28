@@ -20,11 +20,7 @@
             "bundleIdentifier": "com.xjohnfitcodes.fitverseapp",
             "infoPlist": {
                 "ITSAppUsesNonExemptEncryption": false,
-                "UIBackgroundModes": [
-                    "remote-notification",
-                    "fetch",
-                    "audio"
-                ]
+                "UIBackgroundModes": ["remote-notification", "fetch", "audio"]
             }
         },
         "android": {
@@ -68,9 +64,7 @@
                 {
                     "icon": "./assets/fit-verse-logo.png",
                     "color": "#667eea",
-                    "sounds": [
-                        "./assets/sounds/bell.wav"
-                    ],
+                    "sounds": ["./assets/sounds/bell.wav"],
                     "mode": "production"
                 }
             ],
@@ -87,7 +81,8 @@
                 }
             ],
             "expo-web-browser",
-            "expo-audio"
+            "expo-audio",
+            "expo-font"
         ],
         "experiments": {
             "typedRoutes": true,

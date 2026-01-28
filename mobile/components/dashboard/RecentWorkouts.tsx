@@ -180,11 +180,14 @@ export default function RecentWorkouts({ workouts, isLoading }: RecentWorkoutsPr
                         >
                             {/* Header */}
                             <View style={isDark ? recentWorkoutsStyles.workoutHeaderDark : recentWorkoutsStyles.workoutHeader}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                    <View>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+                                    <View style={{ flex: 1, paddingRight: 8 }}>
                                         <View style={recentWorkoutsStyles.workoutTypeRow}>
                                             <Ionicons name={isTemplate ? "albums" : "flash"} size={14} color={isTemplate ? "#a855f7" : "#3b82f6"} />
-                                            <Text style={isDark ? recentWorkoutsStyles.workoutTypeNameDark : recentWorkoutsStyles.workoutTypeName}>
+                                            <Text
+                                                style={isDark ? recentWorkoutsStyles.workoutTypeNameDark : recentWorkoutsStyles.workoutTypeName}
+                                                numberOfLines={1}
+                                            >
                                                 {isTemplate ? workout.templateName : 'Freestyle Workout'}
                                             </Text>
                                         </View>

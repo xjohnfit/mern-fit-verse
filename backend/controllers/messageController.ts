@@ -22,10 +22,10 @@ export const getMessages = asyncHandler(async (req: Request, res: Response) => {
 
     // Check if sender blocked receiver or vice versa
     const isBlocked = sender.blockedUsers?.some(
-        (id: any) => id.toString() === receiverId
+        (id: any) => id.toString() === receiverId,
     );
     const isBlockedBy = receiver.blockedUsers?.some(
-        (id: any) => id.toString() === senderId
+        (id: any) => id.toString() === senderId,
     );
 
     // If blocked, return empty message history
@@ -77,10 +77,10 @@ export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
 
     // Check if sender blocked receiver or vice versa
     const isBlocked = sender.blockedUsers?.some(
-        (id: any) => id.toString() === receiverId
+        (id: any) => id.toString() === receiverId,
     );
     const isBlockedBy = receiver.blockedUsers?.some(
-        (id: any) => id.toString() === senderId
+        (id: any) => id.toString() === senderId,
     );
 
     if (isBlocked || isBlockedBy) {
@@ -107,7 +107,7 @@ export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
             receiver.expoPushToken,
             sender.name || 'New Message',
             text,
-            { senderId, receiverId, text, image: imageUrl }
+            { senderId, receiverId, text, image: imageUrl },
         );
     }
 
@@ -119,3 +119,35 @@ export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
 
     res.status(201).json(savedMessage);
 });
+
+// Get all users that have messages with the current user
+export const getUsersWithMessages = asyncHandler(
+    async (req: Request, res: Response) => {
+        const { userId } = req.params;
+
+        // Get all messages where user is sender or receiver
+        const messages = await Message.find({
+            $or: [{ senderId: userId }, { receiverId: userId }],
+        })
+            .select('senderId receiverId')
+            .lean();
+
+        // Extract unique user IDs (excluding the current user)
+        const userIds = new Set<string>();
+        messages.forEach((msg) => {
+            if (msg.senderId.toString() !== userId) {
+                userIds.add(msg.senderId.toString());
+            }
+            if (msg.receiverId.toString() !== userId) {
+                userIds.add(msg.receiverId.toString());
+            }
+        });
+
+        // Get user details for all unique user IDs
+        const users = await User.find({
+            _id: { $in: Array.from(userIds) },
+        }).select('_id name username photo');
+
+        res.json(users);
+    },
+);

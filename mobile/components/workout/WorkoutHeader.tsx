@@ -41,6 +41,8 @@ const styles = StyleSheet.create({
     header: {
         paddingHorizontal: 20,
         paddingBottom: 24,
+        borderTopLeftRadius: 47,
+        borderTopRightRadius: 47,
     },
     headerContent: {
         paddingBottom: 4,

@@ -22,10 +22,24 @@ export interface GetMessagesResponse {
     hasMore: boolean;
 }
 
+export interface User {
+    _id: string;
+    name: string;
+    username: string;
+    photo?: string;
+}
+
 const MESSAGE_URL = '/messages';
 
 export const messageApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
+        getUsersWithMessages: builder.query<User[], string>({
+            query: (userId) => ({
+                url: `${MESSAGE_URL}/users/${userId}`,
+                method: 'GET',
+            }),
+            providesTags: ['Message'],
+        }),
         getMessages: builder.query<
             GetMessagesResponse,
             {
@@ -77,6 +91,7 @@ export const messageApiSlice = apiSlice.injectEndpoints({
 });
 
 export const {
+    useGetUsersWithMessagesQuery,
     useGetMessagesQuery,
     useSendMessageMutation,
     useLazyGetMessagesQuery,

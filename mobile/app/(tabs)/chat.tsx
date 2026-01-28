@@ -12,7 +12,11 @@ import { useSelector, useDispatch } from 'react-redux';
 
 // API Slices
 import { useGetUserProfileQuery } from '@/slices/usersApiSlice';
-import { useSendMessageMutation, useLazyGetMessagesQuery } from '@/slices/messageApiSlice';
+import {
+  useSendMessageMutation,
+  useLazyGetMessagesQuery,
+  useGetUsersWithMessagesQuery
+} from '@/slices/messageApiSlice';
 
 // Hooks
 import { getSocket } from '@/hooks/useSocket';
@@ -52,6 +56,13 @@ const ChatScreen = () => {
   const { userInfo } = useSelector((state: any) => state.auth);
   const { onlineUsers } = useSelector((state: any) => state.socket);
   const { data: currentUserProfile, isLoading: isLoadingProfile } = useGetUserProfileQuery({});
+
+  // Get users with messages
+  const { data: usersWithMessages, isLoading: isLoadingUsersWithMessages } = useGetUsersWithMessagesQuery(
+    userInfo?._id ?? '',
+    { skip: !userInfo?._id }
+  );
+
   const { userId } = useLocalSearchParams<{ userId?: string; }>();
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -68,13 +79,13 @@ const ChatScreen = () => {
 
   // Handle userId from navigation params
   useEffect(() => {
-    if (userId && currentUserProfile?.following) {
-      const user = currentUserProfile.following.find((u: User) => u._id === userId);
+    if (userId && usersWithMessages) {
+      const user = usersWithMessages.find((u: User) => u._id === userId);
       if (user) {
         setSelectedUser(user);
       }
     }
-  }, [userId, currentUserProfile]);
+  }, [userId, usersWithMessages]);
 
   // Use lazy query for manual message fetching
   const [fetchMessages] = useLazyGetMessagesQuery();
@@ -163,7 +174,7 @@ const ChatScreen = () => {
       const senderId = response.notification.request.content.data.senderId;
       if (senderId) {
         // Find user and open chat
-        const user = currentUserProfile?.following?.find((u: User) => u._id === senderId);
+        const user = usersWithMessages?.find((u: User) => u._id === senderId);
         if (user) {
           setSelectedUser(user);
         }
@@ -174,7 +185,7 @@ const ChatScreen = () => {
       notificationListener.remove();
       responseListener.remove();
     };
-  }, []); // Run only once on mount
+  }, [usersWithMessages]); // Update dependency
 
   // Listen for real-time messages via socket.io
   useEffect(() => {
@@ -206,7 +217,7 @@ const ChatScreen = () => {
         message.receiverId === userInfo?._id &&
         message.senderId !== selectedUser?._id
       ) {
-        const sender = currentUserProfile?.following?.find(
+        const sender = usersWithMessages?.find(
           (u: User) => u._id === message.senderId
         );
         if (sender) {
@@ -220,7 +231,7 @@ const ChatScreen = () => {
     return () => {
       socket.off('new-message', handleNewMessage);
     };
-  }, [selectedUser?._id, userInfo?._id, dispatch]); // Only depend on IDs, not full objects
+  }, [selectedUser?._id, userInfo?._id, usersWithMessages, dispatch]); // Update dependencies
 
   // Track app state for notifications
   useEffect(() => {
@@ -305,7 +316,7 @@ const ChatScreen = () => {
     }
   };
 
-  const filteredUsers = currentUserProfile?.following?.filter((user: User) =>
+  const filteredUsers = usersWithMessages?.filter((user: User) =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     user.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -319,7 +330,7 @@ const ChatScreen = () => {
         setSearchQuery={setSearchQuery}
         onlineUsers={onlineUsers}
         onUserSelect={setSelectedUser}
-        isLoading={isLoadingProfile}
+        isLoading={isLoadingUsersWithMessages}
       />
     );
   }

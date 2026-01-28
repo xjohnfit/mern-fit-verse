@@ -86,6 +86,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                     paddingTop: insets.top + 20,
                     paddingBottom: 24,
                     paddingHorizontal: 16,
+                    borderTopLeftRadius: 47,
+                    borderTopRightRadius: 47,
                 }}>
                 {/* Name and Username centered */}
                 <View style={ProfileHeaderStyles.nameContainer}>

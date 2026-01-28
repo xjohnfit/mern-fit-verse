@@ -4,6 +4,8 @@ const styles = StyleSheet.create({
     gradient: {
         paddingHorizontal: 20,
         paddingBottom: 24,
+        borderTopLeftRadius: 47,
+        borderTopRightRadius: 47,
     },
     container: {
         paddingBottom: 4,

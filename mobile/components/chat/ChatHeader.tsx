@@ -41,6 +41,8 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ user, isOnline, onBack }) => {
                 paddingTop: insets.top + 12,
                 paddingHorizontal: 16,
                 paddingBottom: 16,
+                borderTopLeftRadius: 47,
+                borderTopRightRadius: 47,
             }}
         >
             <View style={styles.container}>

@@ -12,6 +12,8 @@ const settingsStyles = (isDark: boolean) =>
         headerContainer: {
             paddingHorizontal: 20,
             paddingBottom: 24,
+            borderTopLeftRadius: 47,
+            borderTopRightRadius: 47,
         },
         headerInner: {
             paddingTop: 16,
