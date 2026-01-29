@@ -15,25 +15,40 @@ interface AuthenticatedRequest extends Request {
 
 // @desc    Create a new support ticket
 // @route   POST /api/support
-// @access  Private
+// @access  Public
 export const createSupportTicket = asyncHandler(
     async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-        const { subject, category, description, priority } = req.body;
+        const { subject, category, description, priority, contactEmail } =
+            req.body;
 
         if (!subject || !description) {
             res.status(400);
             throw new Error('Subject and description are required');
         }
 
-        const ticket = await SupportTicket.create({
-            user: req.user!._id,
+        // If user is not logged in, contactEmail is required
+        if (!req.user && !contactEmail) {
+            res.status(400);
+            throw new Error('Contact email is required for anonymous tickets');
+        }
+
+        const ticketData: any = {
             subject,
             category: category || 'other',
             description,
             priority: priority || 'medium',
             status: 'open',
             messages: [],
-        });
+        };
+
+        // Add user or contactEmail based on authentication status
+        if (req.user) {
+            ticketData.user = req.user._id;
+        } else {
+            ticketData.contactEmail = contactEmail;
+        }
+
+        const ticket = await SupportTicket.create(ticketData);
 
         const populatedTicket = await SupportTicket.findById(ticket._id)
             .populate('user', 'name email username photo')
@@ -85,12 +100,22 @@ export const getTicketById = asyncHandler(
         }
 
         // Check if user is the ticket owner or admin
-        if (
-            ticket.user.toString() !== req.user!._id.toString() &&
-            !req.user!.admin
-        ) {
-            res.status(403);
-            throw new Error('Not authorized to view this ticket');
+        // Allow access if: user is logged in AND (is ticket owner OR is admin)
+        // Note: Anonymous tickets can only be viewed by admins
+        if (req.user) {
+            const isOwner =
+                ticket.user &&
+                ticket.user.toString() === req.user._id.toString();
+            const isAdmin = req.user.admin;
+
+            if (!isOwner && !isAdmin) {
+                res.status(403);
+                throw new Error('Not authorized to view this ticket');
+            }
+        } else {
+            // No user logged in, deny access
+            res.status(401);
+            throw new Error('Not authorized, please log in');
         }
 
         res.status(200).json(ticket);

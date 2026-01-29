@@ -401,8 +401,13 @@ const SupportManagementTab = () => {
                                                 <div className='flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400'>
                                                     <Users className='w-4 h-4' />
                                                     <span>
-                                                        {ticket.user.name} (
-                                                        {ticket.user.email})
+                                                        {ticket.user ? (
+                                                            <>
+                                                                {ticket.user.name} ({ticket.user.email})
+                                                            </>
+                                                        ) : (
+                                                            <>Anonymous ({ticket.contactEmail})</>
+                                                        )}
                                                     </span>
                                                 </div>
                                             </div>

@@ -1,5 +1,5 @@
 import express from 'express';
-import { protect } from '../middlewares/authMiddleware';
+import { protect, optionalAuth } from '../middlewares/authMiddleware';
 import { admin } from '../middlewares/adminMiddleware';
 
 import {
@@ -17,7 +17,7 @@ import {
 const router = express.Router();
 
 // User routes
-router.post('/', protect, createSupportTicket); // Create new ticket
+router.post('/', optionalAuth, createSupportTicket); // Create new ticket (public, but attaches user if logged in)
 router.get('/my-tickets', protect, getMyTickets); // Get all tickets for logged-in user
 router.get('/:id', protect, getTicketById); // Get single ticket
 router.post('/:id/messages', protect, addMessageToTicket); // Add message to ticket

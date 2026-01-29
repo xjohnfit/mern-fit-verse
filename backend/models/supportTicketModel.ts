@@ -2,7 +2,8 @@ import { Schema, model, Types } from 'mongoose';
 
 export interface ISupportTicket {
     _id: string;
-    user: Types.ObjectId;
+    user?: Types.ObjectId;
+    contactEmail?: string;
     subject: string;
     category: 'technical' | 'account' | 'billing' | 'feedback' | 'other';
     priority: 'low' | 'medium' | 'high';
@@ -25,7 +26,12 @@ const supportTicketSchema = new Schema<ISupportTicket>(
         user: {
             type: Schema.Types.ObjectId,
             ref: 'User',
-            required: true,
+            required: false,
+        },
+        contactEmail: {
+            type: String,
+            trim: true,
+            lowercase: true,
         },
         subject: {
             type: String,

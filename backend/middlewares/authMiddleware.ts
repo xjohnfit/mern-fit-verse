@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
-import asyncHandler from "express-async-handler";
-import User from "../models/userModel";
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+import asyncHandler from 'express-async-handler';
+import User from '../models/userModel';
 
 // Extend Request interface to include user property
 declare global {
@@ -17,22 +17,55 @@ interface JwtPayload {
     userId: string;
 }
 
-export const protect = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    let token;
+export const protect = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+        let token;
 
-    token = req.cookies["fit-verse-token"];
+        token = req.cookies['fit-verse-token'];
 
-    if (token) {
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
-            req.user = await User.findById(decoded.userId).select("-password");
-            next();
-        } catch (error) {
+        if (token) {
+            try {
+                const decoded = jwt.verify(
+                    token,
+                    process.env.JWT_SECRET!,
+                ) as JwtPayload;
+                req.user = await User.findById(decoded.userId).select(
+                    '-password',
+                );
+                next();
+            } catch (error) {
+                res.status(401);
+                throw new Error('Not authorized, invalid token');
+            }
+        } else {
             res.status(401);
-            throw new Error("Not authorized, invalid token");
+            throw new Error('Not authorized, no token');
         }
-    } else {
-        res.status(401);
-        throw new Error("Not authorized, no token");
-    }
-});
+    },
+);
+
+// Optional authentication - attaches user if token exists but doesn't throw error if not
+export const optionalAuth = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+        let token;
+
+        token = req.cookies['fit-verse-token'];
+
+        if (token) {
+            try {
+                const decoded = jwt.verify(
+                    token,
+                    process.env.JWT_SECRET!,
+                ) as JwtPayload;
+                req.user = await User.findById(decoded.userId).select(
+                    '-password',
+                );
+            } catch (error) {
+                // Invalid token, but we continue anyway
+                req.user = undefined;
+            }
+        }
+
+        next();
+    },
+);

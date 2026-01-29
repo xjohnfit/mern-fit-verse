@@ -295,7 +295,15 @@ function Header() {
                                         Get Started
                                     </Link>
 
-                                    <div className='ml-3 pl-3 border-l border-gray-300 dark:border-gray-600'>
+                                    <div className='ml-3 pl-3 border-l border-gray-300 dark:border-gray-600 flex items-center space-x-2'>
+                                        <Link
+                                            to='/support'
+                                            className={`p-2 rounded-xl transition-all duration-200 ${isActive('/support')
+                                                ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20'
+                                                : 'text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'
+                                                }`}>
+                                            <HelpCircle className='w-5 h-5' />
+                                        </Link>
                                         <ThemeToggle />
                                     </div>
                                 </div>
@@ -368,6 +376,14 @@ function Header() {
                                         to='/register'
                                         className='px-4 py-2 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200'>
                                         Get Started
+                                    </Link>
+                                    <Link
+                                        to='/support'
+                                        className={`p-2 rounded-xl transition-all duration-200 ${isActive('/support')
+                                            ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20'
+                                            : 'text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'
+                                            }`}>
+                                        <HelpCircle className='w-5 h-5' />
                                     </Link>
                                     <ThemeToggle />
                                 </>
@@ -478,6 +494,19 @@ function Header() {
                                         <Home className='w-5 h-5' />
                                         <span className='font-medium'>
                                             Home
+                                        </span>
+                                    </Link>
+
+                                    <Link
+                                        to='/support'
+                                        onClick={closeMobileMenu}
+                                        className={`flex items-center space-x-3 w-full p-3 rounded-xl transition-all duration-200 ${isActive('/support')
+                                            ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20'
+                                            : 'text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'
+                                            }`}>
+                                        <HelpCircle className='w-5 h-5' />
+                                        <span className='font-medium'>
+                                            Support
                                         </span>
                                     </Link>
 

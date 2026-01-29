@@ -148,6 +148,14 @@ const Footer = () => {
                             </h3>
                             <ul className='space-y-1.5 sm:space-y-2 flex flex-col items-center lg:items-start'>
                                 <li>
+                                    <Link
+                                        to='/support'
+                                        className='text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 text-xs sm:text-sm'
+                                    >
+                                        Support
+                                    </Link>
+                                </li>
+                                <li>
                                     <a
                                         href='https://github.com/xjohnfit/mern-fit-verse/blob/main/CONTRIBUTING.md'
                                         target='_blank'

@@ -54,6 +54,8 @@ const router = createBrowserRouter([
             { path: '/register', Component: RegisterScreen },
             { path: '/privacy-policy', Component: PrivacyPolicy },
             { path: '/terms-of-service', Component: TermsOfService },
+            { path: '/support', Component: SupportScreen },
+            { path: '/support/:id', Component: SupportTicketDetailScreen },
             // End Public Routes
 
             // Private Routes
@@ -71,8 +73,6 @@ const router = createBrowserRouter([
                     { path: '/workout/:id', Component: WorkoutDetailScreen },
                     { path: '/workout/template/create', Component: CreateTemplateScreen },
                     { path: '/workout/template/edit/:id', Component: EditTemplateScreen },
-                    { path: '/support', Component: SupportScreen },
-                    { path: '/support/:id', Component: SupportTicketDetailScreen },
                 ],
             },
             // End Private Routes
