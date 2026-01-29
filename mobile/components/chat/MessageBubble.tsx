@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { View, Text, Image, useColorScheme } from 'react-native';
+import React, { useMemo, useEffect, useRef } from 'react';
+import { View, Text, Image, useColorScheme, Animated } from 'react-native';
 import createStyles from '@/styles/chat/MessageBubbleStyles';
 
 interface Message {
@@ -21,8 +21,35 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isMyMessage }) =
     const isDark = colorScheme === 'dark';
     const styles = useMemo(() => createStyles(isDark, isMyMessage), [isDark, isMyMessage]);
 
+    const opacity = useRef(new Animated.Value(0)).current;
+    const translateY = useRef(new Animated.Value(20)).current;
+
+    useEffect(() => {
+        Animated.parallel([
+            Animated.timing(opacity, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true,
+            }),
+            Animated.spring(translateY, {
+                toValue: 0,
+                friction: 8,
+                tension: 40,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    }, []);
+
     return (
-        <View style={styles.container}>
+        <Animated.View
+            style={[
+                styles.container,
+                {
+                    opacity,
+                    transform: [{ translateY }],
+                }
+            ]}
+        >
             <View style={styles.bubble}>
                 {message.image && (
                     <Image
@@ -38,8 +65,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isMyMessage }) =
                             color: isMyMessage
                                 ? '#fff'
                                 : isDark
-                                ? '#f9fafb'
-                                : '#1f2937',
+                                    ? '#f9fafb'
+                                    : '#1f2937',
                         },
                     ]}
                 >
@@ -63,7 +90,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isMyMessage }) =
                     </Text>
                 )}
             </View>
-        </View>
+        </Animated.View>
     );
 };
 

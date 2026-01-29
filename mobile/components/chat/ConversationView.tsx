@@ -79,7 +79,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({
             'keyboardDidShow',
             () => {
                 setTimeout(() => {
-                    flatListRef.current?.scrollToEnd({ animated: true });
+                    flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
                 }, 100);
             }
         );
@@ -89,7 +89,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({
         };
     }, []);
 
-    // Auto-scroll to the bottom when new messages arrive
+    // Auto-scroll to the bottom when new messages arrive (for inverted list, scroll to offset 0)
     const scrollToBottom = useCallback(() => {
         if (scrollTimeoutRef.current) {
             clearTimeout(scrollTimeoutRef.current);
@@ -97,9 +97,9 @@ const ConversationView: React.FC<ConversationViewProps> = ({
 
         scrollTimeoutRef.current = setTimeout(() => {
             if (flatListRef.current && messages.length > 0) {
-                flatListRef.current.scrollToEnd({ animated: true });
+                flatListRef.current.scrollToOffset({ offset: 0, animated: true });
             }
-        }, 150);
+        }, 100);
     }, [messages.length]);
 
     useEffect(() => {
@@ -140,21 +140,21 @@ const ConversationView: React.FC<ConversationViewProps> = ({
                     <FlatList
                         key={selectedUser._id}
                         ref={flatListRef}
-                        data={messages}
+                        data={[...messages].reverse()}
                         keyExtractor={(item) => item._id}
                         contentContainerStyle={styles.messagesContainer}
-                        inverted={false}
-                        maintainVisibleContentPosition={{
-                            minIndexForVisible: 0,
-                        }}
+                        inverted={true}
                         onScroll={(event) => {
-                            const { contentOffset } = event.nativeEvent;
-                            if (contentOffset.y < 100 && !isLoadingMore && hasMoreMessages) {
+                            const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+                            const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y;
+
+                            // Load more when scrolling near the top (which is bottom in inverted list)
+                            if (distanceFromBottom > contentSize.height - 200 && !isLoadingMore && hasMoreMessages) {
                                 onLoadMore();
                             }
                         }}
                         scrollEventThrottle={400}
-                        ListHeaderComponent={
+                        ListFooterComponent={
                             isLoadingMore ? (
                                 <View style={styles.loadingMoreContainer}>
                                     <ActivityIndicator size="small" color="#06b6d4" />
@@ -165,7 +165,7 @@ const ConversationView: React.FC<ConversationViewProps> = ({
                             ) : !hasMoreMessages && messages.length > 0 ? (
                                 <View style={styles.noMoreMessagesContainer}>
                                     <Text style={styles.noMoreMessagesText}>
-                                        No more messages
+                                        Beginning of conversation
                                     </Text>
                                 </View>
                             ) : null

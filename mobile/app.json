@@ -20,7 +20,7 @@
             "bundleIdentifier": "com.xjohnfitcodes.fitverseapp",
             "infoPlist": {
                 "ITSAppUsesNonExemptEncryption": false,
-                "UIBackgroundModes": ["remote-notification", "fetch", "audio"]
+                "UIBackgroundModes": ["remote-notification", "fetch"]
             }
         },
         "android": {
@@ -64,7 +64,6 @@
                 {
                     "icon": "./assets/fit-verse-logo.png",
                     "color": "#667eea",
-                    "sounds": ["./assets/sounds/bell.wav"],
                     "mode": "production"
                 }
             ],

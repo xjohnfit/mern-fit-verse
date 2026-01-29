@@ -8,8 +8,6 @@ const createStyles = (isDark: boolean) =>
         messagesContainer: {
             paddingHorizontal: 16,
             paddingVertical: 12,
-            flexGrow: 1,
-            justifyContent: 'flex-end',
         },
         loadingContainer: {
             flex: 1,
@@ -41,5 +39,3 @@ const createStyles = (isDark: boolean) =>
     });
 
 export default createStyles;
-
-

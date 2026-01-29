@@ -35,14 +35,13 @@ export async function registerForPushNotificationsAsync(): Promise<
                 ios: {
                     allowAlert: true,
                     allowBadge: true,
-                    allowSound: true,
                     allowDisplayInCarPlay: true,
                     allowCriticalAlerts: true,
                 },
             });
             finalStatus = status;
         }
-        
+
         try {
             const projectId = Constants.expoConfig?.extra?.eas?.projectId;
             if (!projectId) {
@@ -65,14 +64,13 @@ export async function registerForPushNotificationsAsync(): Promise<
 export async function showMessageNotification(
     senderName: string,
     message: string,
-    senderId: string
+    senderId: string,
 ) {
     await Notifications.scheduleNotificationAsync({
         content: {
             title: senderName,
             body: message,
             data: { senderId, type: 'message' },
-            sound: true,
             priority: Notifications.AndroidNotificationPriority.HIGH,
             categoryIdentifier: 'message',
         },
@@ -105,7 +103,7 @@ export async function setBadgeCount(count: number) {
  * Add notification listener
  */
 export function addNotificationReceivedListener(
-    callback: (notification: Notifications.Notification) => void
+    callback: (notification: Notifications.Notification) => void,
 ) {
     return Notifications.addNotificationReceivedListener(callback);
 }
@@ -114,7 +112,7 @@ export function addNotificationReceivedListener(
  * Add notification response listener (when user taps notification)
  */
 export function addNotificationResponseReceivedListener(
-    callback: (response: Notifications.NotificationResponse) => void
+    callback: (response: Notifications.NotificationResponse) => void,
 ) {
     return Notifications.addNotificationResponseReceivedListener(callback);
 }

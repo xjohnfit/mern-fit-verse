@@ -33,7 +33,6 @@ import createStyles from '@/styles/workout/startWorkoutStyles';
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
-        shouldPlaySound: true,
         shouldSetBadge: true,
         shouldShowBanner: true,
         shouldShowList: true,
@@ -231,24 +230,18 @@ const StartWorkoutScreen = () => {
 
                 console.log('Notification permissions granted');
 
-                // iOS-specific notification reminder
-                if (Platform.OS === 'ios') {
-                    console.log('iOS: Make sure device is not in silent mode for notification sounds to play');
-                }
-
                 // Setup Android notification channel
                 if (Platform.OS === 'android') {
                     await Notifications.setNotificationChannelAsync('workout-timer', {
                         name: 'Workout Timer',
                         importance: Notifications.AndroidImportance.MAX,
                         vibrationPattern: [0, 250, 250, 250],
-                        sound: 'default',
                         enableVibrate: true,
                         showBadge: true,
                     });
                 }
 
-                // For iOS, set notification categories to allow sound in background
+                // Configure iOS notification categories
                 if (Platform.OS === 'ios') {
                     await Notifications.setNotificationCategoryAsync('workout-timer', [
                         {
@@ -330,7 +323,6 @@ const StartWorkoutScreen = () => {
                                 content: {
                                     title: '⏰ Rest Timer Complete!',
                                     body: 'Time to start your next set!',
-                                    sound: true,
                                     priority: Notifications.AndroidNotificationPriority.MAX,
                                 },
                                 trigger: {
