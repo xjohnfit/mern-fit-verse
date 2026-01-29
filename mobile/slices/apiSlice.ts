@@ -2,9 +2,6 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
-// For Android emulator, use 10.0.2.2 instead of localhost
-// For iOS simulator, localhost works fine
-// For physical devices or Expo Go, use your computer's IP address
 const getBaseUrl = () => {
     // Use mode from app.json as the source of truth
     const mode = Constants.expoConfig?.extra?.mode;
@@ -15,22 +12,25 @@ const getBaseUrl = () => {
     }
 
     // Development mode
-    // IMPORTANT: If using Expo Go or physical device, replace with your computer's IP
-    // Find your IP: Windows (ipconfig), Mac/Linux (ifconfig)
-    // Example: 'http://192.168.1.100:5004/api'
+    // Your computer's IP address (update this if your IP changes)
+    const YOUR_IP = '192.168.4.53';
+    const devUrl = `http://${YOUR_IP}:5004/api`;
 
-    // TEMPORARY: Using localhost for web/simulator
-    // CHANGE THIS to your IP if using Expo Go or physical device
-    const devUrl = 'http://192.168.4.53:5004/api';
+    // Check if running in Expo Go (physical device)
+    const isExpoGo = Constants.appOwnership === 'expo';
 
     if (Platform.OS === 'android') {
-        // For Android emulator, use 10.0.2.2
-        // For Expo Go on Android, use your computer's IP
-        return 'http://10.0.2.2:5004/api';
+        return isExpoGo ? devUrl : 'http://10.0.2.2:5004/api';
     }
 
-    // For iOS simulator, Expo Go on iOS, or web
-    return devUrl;
+    if (Platform.OS === 'ios') {
+        // For iOS simulator, localhost works
+        // For Expo Go on iOS physical device, use computer's IP
+        return isExpoGo ? devUrl : 'http://localhost:5004/api';
+    }
+
+    // For web or other platforms
+    return 'http://localhost:5004/api';
 };
 
 const baseUrl = getBaseUrl();

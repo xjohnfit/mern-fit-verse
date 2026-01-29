@@ -12,21 +12,30 @@ import {
 let socket: Socket | null = null;
 
 const getSocketUrl = () => {
-    const isProduction =
-        !__DEV__ || Constants.expoConfig?.extra?.mode === 'production';
+    // Use mode from app.json as the source of truth
+    const mode = Constants.expoConfig?.extra?.mode;
+    const isProduction = mode === 'production';
 
     if (isProduction) {
         return 'https://api.fitverse.codewithxjohn.com';
     }
 
     // Development mode
-    const devUrl = 'http://192.168.4.53:5004';
+    const YOUR_IP = '192.168.4.53';
+    const devUrl = `http://${YOUR_IP}:5004`;
+
+    // Check if running in Expo Go (physical device)
+    const isExpoGo = Constants.appOwnership === 'expo';
 
     if (Platform.OS === 'android') {
-        return 'http://10.0.2.2:5004';
+        return isExpoGo ? devUrl : 'http://10.0.2.2:5004';
     }
 
-    return devUrl;
+    if (Platform.OS === 'ios') {
+        return isExpoGo ? devUrl : 'http://localhost:5004';
+    }
+
+    return 'http://localhost:5004';
 };
 
 const SOCKET_URL = getSocketUrl();
@@ -35,7 +44,7 @@ export const useSocket = () => {
     const dispatch = useDispatch();
     const { userInfo } = useSelector((state: any) => state.auth);
     const { onlineUsers, isConnected } = useSelector(
-        (state: any) => state.socket
+        (state: any) => state.socket,
     );
 
     useEffect(() => {

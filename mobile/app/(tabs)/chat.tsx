@@ -57,11 +57,15 @@ const ChatScreen = () => {
   const { onlineUsers } = useSelector((state: any) => state.socket);
   const { data: currentUserProfile, isLoading: isLoadingProfile } = useGetUserProfileQuery({});
 
+  console.log('🔐 Current userInfo:', JSON.stringify(userInfo, null, 2));
+
   // Get users with messages
-  const { data: usersWithMessages, isLoading: isLoadingUsersWithMessages } = useGetUsersWithMessagesQuery(
+  const { data: usersWithMessages, isLoading: isLoadingUsersWithMessages, error: usersError } = useGetUsersWithMessagesQuery(
     userInfo?._id ?? '',
     { skip: !userInfo?._id }
   );
+
+  console.log('👥 Users with messages:', usersWithMessages?.length, 'Loading:', isLoadingUsersWithMessages, 'Error:', usersError);
 
   const { userId } = useLocalSearchParams<{ userId?: string; }>();
 
@@ -79,8 +83,10 @@ const ChatScreen = () => {
 
   // Handle userId from navigation params
   useEffect(() => {
+    console.log('🔗 userId from params:', userId, 'usersWithMessages count:', usersWithMessages?.length);
     if (userId && usersWithMessages) {
       const user = usersWithMessages.find((u: User) => u._id === userId);
+      console.log('Found user from params:', user?.username);
       if (user) {
         setSelectedUser(user);
       }
@@ -92,9 +98,15 @@ const ChatScreen = () => {
 
   // Load cached messages and fetch latest when user is selected
   useEffect(() => {
-    const loadMessagesForUser = async () => {
-      if (!selectedUser || !userInfo) return;
+    console.log('🔍 Effect triggered - selectedUser:', selectedUser?._id, 'userInfo:', userInfo?._id);
 
+    const loadMessagesForUser = async () => {
+      if (!selectedUser || !userInfo) {
+        console.log('❌ Missing selectedUser or userInfo');
+        return;
+      }
+
+      console.log('✅ Loading messages for user:', selectedUser.username);
       setIsInitialLoad(true);
       setHasMoreMessages(true);
 
@@ -122,18 +134,21 @@ const ChatScreen = () => {
           }
         } catch (error) {
           console.error('Failed to fetch messages in background:', error);
+          console.error('Error details:', JSON.stringify(error, null, 2));
         }
       } else {
         setAllMessages([]);
 
         // Fetch from API if no cache exists
         try {
+          console.log('Fetching messages for:', userInfo._id, 'to:', selectedUser._id);
           const result = await fetchMessages({
             senderId: userInfo._id,
             receiverId: selectedUser._id,
             limit: 50,
           }).unwrap();
 
+          console.log('Messages fetched:', result);
           if (result && result.messages && Array.isArray(result.messages)) {
             setAllMessages(result.messages);
             setHasMoreMessages(result.hasMore || false);
@@ -142,11 +157,13 @@ const ChatScreen = () => {
             await cacheMessages(userInfo._id, selectedUser._id, result.messages);
           } else {
             // Empty result but successful
+            console.log('Empty messages result');
             setAllMessages([]);
             setHasMoreMessages(false);
           }
         } catch (error) {
           console.error('Failed to fetch messages:', error);
+          console.error('Error details:', JSON.stringify(error, null, 2));
           // Set empty arrays on error
           setAllMessages([]);
           setHasMoreMessages(false);

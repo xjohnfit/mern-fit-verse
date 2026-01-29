@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import { v2 as cloudinary } from 'cloudinary';
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import Message from '../models/messageModel';
 import { io, getReceiverSocketId } from '../config/socket.io';
 
@@ -125,9 +126,18 @@ export const getUsersWithMessages = asyncHandler(
     async (req: Request, res: Response) => {
         const { userId } = req.params;
 
+        // Validate userId format
+        if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+            res.status(400);
+            throw new Error('Invalid user ID format');
+        }
+
+        // Convert to ObjectId
+        const userObjectId = new mongoose.Types.ObjectId(userId);
+
         // Get all messages where user is sender or receiver
         const messages = await Message.find({
-            $or: [{ senderId: userId }, { receiverId: userId }],
+            $or: [{ senderId: userObjectId }, { receiverId: userObjectId }],
         })
             .select('senderId receiverId')
             .lean();
