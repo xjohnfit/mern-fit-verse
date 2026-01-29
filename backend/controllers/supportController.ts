@@ -143,7 +143,7 @@ export const addMessageToTicket = asyncHandler(
 
         // Check if user is the ticket owner or admin
         if (
-            ticket.user.toString() !== req.user!._id.toString() &&
+            ticket.user!.toString() !== req.user!._id.toString() &&
             !req.user!.admin
         ) {
             res.status(403);
@@ -189,7 +189,7 @@ export const updateTicket = asyncHandler(
 
         // Check if user is the ticket owner or admin
         if (
-            ticket.user.toString() !== req.user!._id.toString() &&
+            ticket.user!.toString() !== req.user!._id.toString() &&
             !req.user!.admin
         ) {
             res.status(403);
@@ -229,7 +229,7 @@ export const deleteTicket = asyncHandler(
 
         // Only ticket owner or admin can delete
         if (
-            ticket.user.toString() !== req.user!._id.toString() &&
+            ticket.user!.toString() !== req.user!._id.toString() &&
             !req.user!.admin
         ) {
             res.status(403);
