@@ -109,12 +109,12 @@ const HomeScreen = () => {
                 showCancel={false}
             />
 
-            <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-gray-900 dark:text-white overflow-hidden">
+            <div className="min-h-screen bg-linear-to-b from-gray-50 via-white to-gray-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-gray-900 dark:text-white overflow-hidden">
                 {/* Simplified Background - Only render if motion is enabled */}
                 {!prefersReducedMotion && (
                     <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-50">
-                        <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-r from-blue-500/5 to-purple-500/5 dark:from-blue-500/10 dark:to-purple-500/10 rounded-full blur-3xl" />
-                        <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-l from-pink-500/5 to-purple-500/5 dark:from-pink-500/10 dark:to-purple-500/10 rounded-full blur-3xl" />
+                        <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-linear-to-r from-blue-500/5 to-purple-500/5 dark:from-blue-500/10 dark:to-purple-500/10 rounded-full blur-3xl" />
+                        <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-linear-to-l from-pink-500/5 to-purple-500/5 dark:from-pink-500/10 dark:to-purple-500/10 rounded-full blur-3xl" />
                     </div>
                 )}
 
@@ -142,7 +142,7 @@ const HomeScreen = () => {
                                 transition={{ duration: 0.6, delay: 0.2 }}
                                 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight"
                             >
-                                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+                                <span className="bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                                     Transform Your
                                 </span>
                                 <br />
@@ -169,7 +169,7 @@ const HomeScreen = () => {
                                         <Link to="/register" className="w-full sm:w-auto">
                                             <Button
                                                 size="lg"
-                                                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 md:px-10 py-6 md:py-7 text-base md:text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+                                                className="w-full sm:w-auto bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 md:px-10 py-6 md:py-7 text-base md:text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
                                             >
                                                 Start Free Today
                                                 <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
@@ -190,7 +190,7 @@ const HomeScreen = () => {
                                         <Link to="/dashboard" className="w-full sm:w-auto">
                                             <Button
                                                 size="lg"
-                                                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 md:px-10 py-6 md:py-7 text-base md:text-lg font-semibold rounded-full shadow-lg"
+                                                className="w-full sm:w-auto bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 md:px-10 py-6 md:py-7 text-base md:text-lg font-semibold rounded-full shadow-lg"
                                             >
                                                 Go to Dashboard
                                                 <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
@@ -217,15 +217,15 @@ const HomeScreen = () => {
                                 className="mt-8 md:mt-12 flex flex-wrap justify-center items-center gap-4 md:gap-8 text-gray-600 dark:text-gray-400 text-xs md:text-sm px-4"
                             >
                                 <div className="flex items-center gap-1.5 md:gap-2">
-                                    <Check className="w-4 h-4 md:w-5 md:h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
+                                    <Check className="w-4 h-4 md:w-5 md:h-5 text-green-600 dark:text-green-400 shrink-0" />
                                     <span>First year free</span>
                                 </div>
                                 <div className="flex items-center gap-1.5 md:gap-2">
-                                    <Check className="w-4 h-4 md:w-5 md:h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
+                                    <Check className="w-4 h-4 md:w-5 md:h-5 text-green-600 dark:text-green-400 shrink-0" />
                                     <span>No Credit Card</span>
                                 </div>
                                 <div className="flex items-center gap-1.5 md:gap-2">
-                                    <Check className="w-4 h-4 md:w-5 md:h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
+                                    <Check className="w-4 h-4 md:w-5 md:h-5 text-green-600 dark:text-green-400 shrink-0" />
                                     <span>10K+ Active Users</span>
                                 </div>
                             </motion.div>
@@ -249,7 +249,7 @@ const HomeScreen = () => {
                                     className="group p-4 md:p-5 rounded-2xl bg-white/90 dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 hover:shadow-lg dark:hover:shadow-xl transition-all duration-300"
                                 >
                                     <div className="flex items-center gap-3 md:gap-4">
-                                        <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shrink-0 shadow-md`}>
+                                        <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl bg-linear-to-br ${item.color} flex items-center justify-center shrink-0 shadow-md`}>
                                             <item.icon className="w-6 h-6 md:w-7 md:h-7 text-white" />
                                         </div>
                                         <div>
@@ -261,30 +261,51 @@ const HomeScreen = () => {
                             ))}
                         </motion.div>
 
-                        {/* Mobile App CTA - Simplified for performance */}
+                        {/* Mobile App CTA - Now Available */}
                         <motion.div
                             {...fadeInUp}
                             transition={{ duration: 0.6, delay: 0.8 }}
-                            className="mt-6 p-6 md:p-8 rounded-3xl bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-500/20 dark:via-purple-500/20 dark:to-pink-500/20 border-2 border-blue-200 dark:border-blue-400/40 relative overflow-hidden shadow-lg"
+                            className="mt-6 p-6 md:p-8 rounded-3xl bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-500/20 dark:via-purple-500/20 dark:to-pink-500/20 border-2 border-blue-200 dark:border-blue-400/40 relative overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300"
                         >
+                            {/* Animated Background Effects */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-purple-400/10 to-pink-400/10 dark:from-blue-500/20 dark:via-purple-500/20 dark:to-pink-500/20 animate-pulse"></div>
+
                             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
                                 <div className="flex-1 text-center md:text-left">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-500/30 border border-blue-300 dark:border-blue-400/50 mb-3">
-                                        <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-600 dark:text-blue-400" />
-                                        <span className="text-xs font-bold text-blue-700 dark:text-blue-300">COMING SOON</span>
+                                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-500/30 dark:to-emerald-500/30 border border-green-300 dark:border-green-400/50 mb-4 shadow-sm">
+                                        <span className="relative flex h-2 w-2">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                        </span>
+                                        <span className="text-xs md:text-sm font-bold text-green-700 dark:text-green-300">NOW AVAILABLE</span>
                                     </div>
-                                    <h3 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">
-                                        <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
-                                            FitVerse Mobile App
+                                    <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3">
+                                        <span className="bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+                                            FitVerse Pro Mobile
                                         </span>
                                     </h3>
-                                    <p className="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-4">
-                                        Track your fitness journey on the go with our powerful mobile app
+                                    <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 mb-6 max-w-xl">
+                                        Track your fitness journey anywhere, anytime. Access workouts, nutrition plans, and social features on the go.
                                     </p>
-                                </div>
-                                <div className="shrink-0">
-                                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-xl">
-                                        <Sparkles className="w-10 h-10 md:w-12 md:h-12 text-white" />
+                                    <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
+                                        <a
+                                            href="https://apps.apple.com/us/app/fitverse-pro/id6756185000"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="group transition-transform hover:scale-105 active:scale-95 duration-200"
+                                        >
+                                            <img
+                                                src="/app-store.png"
+                                                alt="Download on the App Store"
+                                                className="h-26 md:h-20 w-auto drop-shadow-lg group-hover:drop-shadow-xl transition-all"
+                                            />
+                                        </a>
+                                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                            <Check className="w-4 h-4 text-green-500" />
+                                            <span>iOS</span>
+                                            <Check className="w-4 h-4 text-green-500" />
+                                            <span>Free</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -305,10 +326,10 @@ const HomeScreen = () => {
                                     transition={{ duration: 0.5, delay: index * 0.1 }}
                                     className="group relative p-6 md:p-8 rounded-2xl bg-white/90 dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 text-center hover:shadow-lg transition-all duration-300"
                                 >
-                                    <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 mb-3 md:mb-4 shadow-md">
+                                    <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-xl bg-linear-to-br from-blue-500 to-purple-500 mb-3 md:mb-4 shadow-md">
                                         <stat.icon className="w-6 h-6 md:w-7 md:h-7 text-white" />
                                     </div>
-                                    <div className="text-3xl md:text-4xl lg:text-5xl font-bold mb-1 md:mb-2 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                                    <div className="text-3xl md:text-4xl lg:text-5xl font-bold mb-1 md:mb-2 bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
                                         {stat.value}
                                     </div>
                                     <div className="text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">{stat.label}</div>
@@ -329,7 +350,7 @@ const HomeScreen = () => {
                             className="text-center mb-12 md:mb-16"
                         >
                             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4">
-                                <span className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                                <span className="bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
                                     Everything You Need
                                 </span>
                             </h2>
@@ -350,7 +371,7 @@ const HomeScreen = () => {
                                         transition={{ duration: 0.5, delay: index * 0.05 }}
                                         className="group relative p-5 md:p-6 rounded-2xl bg-white/90 dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 hover:shadow-lg transition-all duration-300"
                                     >
-                                        <div className={`w-11 h-11 md:w-12 md:h-12 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-3 md:mb-4 shadow-md`}>
+                                        <div className={`w-11 h-11 md:w-12 md:h-12 rounded-xl bg-linear-to-br ${feature.gradient} flex items-center justify-center mb-3 md:mb-4 shadow-md`}>
                                             <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
                                         </div>
                                         <h3 className="text-lg md:text-xl font-bold mb-2 text-gray-900 dark:text-white">{feature.title}</h3>
@@ -370,7 +391,7 @@ const HomeScreen = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: "-50px" }}
                             transition={{ duration: 0.6 }}
-                            className="relative p-8 md:p-10 lg:p-14 rounded-3xl bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 overflow-hidden shadow-xl"
+                            className="relative p-8 md:p-10 lg:p-14 rounded-3xl bg-linear-to-br from-blue-600 via-purple-600 to-pink-600 overflow-hidden shadow-xl"
                         >
                             {/* Simplified decorative elements */}
                             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl opacity-50" />
@@ -427,7 +448,7 @@ const HomeScreen = () => {
                                 transition={{ duration: 0.6 }}
                             >
                                 <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 px-4">
-                                    Ready to <span className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">Transform?</span>
+                                    Ready to <span className="bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">Transform?</span>
                                 </h2>
                                 <p className="text-base md:text-xl text-gray-600 dark:text-gray-400 mb-8 md:mb-10 max-w-2xl mx-auto px-4">
                                     Join thousands of fitness enthusiasts achieving their goals with FitVerse
@@ -435,7 +456,7 @@ const HomeScreen = () => {
                                 <Link to="/register">
                                     <Button
                                         size="lg"
-                                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 md:px-12 py-6 md:py-8 text-lg md:text-xl font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300"
+                                        className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 md:px-12 py-6 md:py-8 text-lg md:text-xl font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300"
                                     >
                                         Start Your Journey Free
                                         <ArrowRight className="ml-2 w-5 h-5 md:w-6 md:h-6" />
