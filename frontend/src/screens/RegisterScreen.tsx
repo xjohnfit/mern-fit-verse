@@ -101,9 +101,11 @@ const RegisterScreen = () => {
                     error = 'Username must be at least 3 characters';
                 } else if (usernameValue.length > 20) {
                     error = 'Username must be less than 20 characters';
-                } else if (!/^[a-zA-Z0-9_]+$/.test(usernameValue)) {
+                } else if (/\s/.test(usernameValue)) {
+                    error = 'Username cannot contain spaces';
+                } else if (!/^[a-zA-Z0-9_.-]+$/.test(usernameValue)) {
                     error =
-                        'Username can only contain letters, numbers, and underscores';
+                        'Username can only contain letters, numbers, underscores, dashes, and dots';
                 } else if (/^\d+$/.test(usernameValue)) {
                     error = 'Username cannot be only numbers';
                 }

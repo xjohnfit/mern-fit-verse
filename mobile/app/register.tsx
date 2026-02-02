@@ -40,30 +40,99 @@ export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [agreeToTerms, setAgreeToTerms] = useState(false);
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     const passwordStrength = getPasswordStrength(formData.password);
+
+    const validateField = (field: string, value: string): string => {
+        let error = '';
+
+        switch (field) {
+            case 'name':
+                if (!value.trim()) {
+                    error = 'Name is required';
+                } else if (value.trim().length < 2) {
+                    error = 'Name must be at least 2 characters';
+                }
+                break;
+
+            case 'username':
+                if (!value.trim()) {
+                    error = 'Username is required';
+                } else if (value.length < 3) {
+                    error = 'Username must be at least 3 characters';
+                } else if (value.length > 20) {
+                    error = 'Username must be less than 20 characters';
+                } else if (/\s/.test(value)) {
+                    error = 'Username cannot contain spaces';
+                } else if (!/^[a-zA-Z0-9_.-]+$/.test(value)) {
+                    error = 'Username can only contain letters, numbers, underscores, dashes, and dots';
+                } else if (/^\d+$/.test(value)) {
+                    error = 'Username cannot be only numbers';
+                }
+                break;
+
+            case 'email':
+                if (!value.trim()) {
+                    error = 'Email is required';
+                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                    error = 'Please enter a valid email address';
+                }
+                break;
+
+            case 'password':
+                if (!value) {
+                    error = 'Password is required';
+                } else if (value.length < 8) {
+                    error = 'Password must be at least 8 characters';
+                }
+                break;
+
+            case 'confirmPassword':
+                if (!value) {
+                    error = 'Please confirm your password';
+                } else if (value !== formData.password) {
+                    error = 'Passwords do not match';
+                }
+                break;
+        }
+
+        return error;
+    };
 
     const handleInputChange = (field: string, value: string) => {
         setFormData((prev) => ({
             ...prev,
             [field]: value,
         }));
+
+        // Real-time validation
+        const error = validateField(field, value);
+        setErrors((prev) => ({
+            ...prev,
+            [field]: error,
+        }));
     };
 
     const handleSubmit = async () => {
-        if (
-            !formData.name ||
-            !formData.username ||
-            !formData.email ||
-            !formData.password ||
-            !formData.confirmPassword
-        ) {
-            alert('Please fill in all required fields');
-            return;
-        }
+        // Validate all fields
+        const newErrors: { [key: string]: string } = {};
+        
+        newErrors.name = validateField('name', formData.name);
+        newErrors.username = validateField('username', formData.username);
+        newErrors.email = validateField('email', formData.email);
+        newErrors.password = validateField('password', formData.password);
+        newErrors.confirmPassword = validateField('confirmPassword', formData.confirmPassword);
 
-        if (formData.password !== formData.confirmPassword) {
-            alert('Passwords do not match');
+        // Remove empty errors
+        Object.keys(newErrors).forEach(key => {
+            if (!newErrors[key]) delete newErrors[key];
+        });
+
+        setErrors(newErrors);
+
+        // Check if there are any errors
+        if (Object.keys(newErrors).length > 0) {
             return;
         }
 
@@ -125,8 +194,13 @@ export default function Register() {
                                     placeholder="Enter your full name"
                                     placeholderTextColor="#FFFFFF"
                                     autoCapitalize="words"
-                                    style={styles.textInput}
+                                    style={[styles.textInput, errors.name && { borderColor: '#EF4444', borderWidth: 2 }]}
                                 />
+                                {errors.name && (
+                                    <Text style={{ color: '#FCA5A5', fontSize: 12, marginTop: 4 }}>
+                                        {errors.name}
+                                    </Text>
+                                )}
                             </View>
 
                             {/* Username Field */}
@@ -141,8 +215,13 @@ export default function Register() {
                                     placeholderTextColor="#FFFFFF"
                                     autoCapitalize="none"
                                     autoComplete="off"
-                                    style={styles.textInput}
+                                    style={[styles.textInput, errors.username && { borderColor: '#EF4444', borderWidth: 2 }]}
                                 />
+                                {errors.username && (
+                                    <Text style={{ color: '#FCA5A5', fontSize: 12, marginTop: 4 }}>
+                                        {errors.username}
+                                    </Text>
+                                )}
                             </View>
 
                             {/* Email Field */}
@@ -158,8 +237,13 @@ export default function Register() {
                                     keyboardType="email-address"
                                     autoCapitalize="none"
                                     autoComplete="off"
-                                    style={styles.textInput}
+                                    style={[styles.textInput, errors.email && { borderColor: '#EF4444', borderWidth: 2 }]}
                                 />
+                                {errors.email && (
+                                    <Text style={{ color: '#FCA5A5', fontSize: 12, marginTop: 4 }}>
+                                        {errors.email}
+                                    </Text>
+                                )}
                             </View>
 
                             {/* Password Field */}
@@ -167,7 +251,7 @@ export default function Register() {
                                 <Text style={styles.fieldLabel}>
                                     Password
                                 </Text>
-                                <View style={styles.passwordContainer}>
+                                <View style={[styles.passwordContainer, (errors.password || errors.confirmPassword) && { borderColor: '#EF4444', borderWidth: 2 }]}>
                                     <TextInput
                                         value={formData.password}
                                         onChangeText={(value) => handleInputChange('password', value)}
@@ -185,7 +269,11 @@ export default function Register() {
                                         {showPassword ? <Ionicons name="eye" size={24} color="white" /> : <Ionicons name="eye-off" size={24} color="white" />}
                                     </TouchableOpacity>
                                 </View>
-                                {formData.password && (
+                                {errors.password ? (
+                                    <Text style={{ color: '#FCA5A5', fontSize: 12, marginTop: 4 }}>
+                                        {errors.password}
+                                    </Text>
+                                ) : formData.password && (
                                     <Text style={styles.passwordStrengthText}>
                                         Password strength: {passwordStrength.text}
                                     </Text>
@@ -197,7 +285,7 @@ export default function Register() {
                                 <Text style={styles.fieldLabel}>
                                     Confirm Password
                                 </Text>
-                                <View style={styles.passwordContainer}>
+                                <View style={[styles.passwordContainer, (errors.password || errors.confirmPassword) && { borderColor: '#EF4444', borderWidth: 2 }]}>
                                     <TextInput
                                         value={formData.confirmPassword}
                                         onChangeText={(value) =>
@@ -217,6 +305,11 @@ export default function Register() {
                                         {showConfirmPassword ? <Ionicons name="eye" size={24} color="white" /> : <Ionicons name="eye-off" size={24} color="white" />}
                                     </TouchableOpacity>
                                 </View>
+                                {errors.confirmPassword && (
+                                    <Text style={{ color: '#FCA5A5', fontSize: 12, marginTop: 4 }}>
+                                        {errors.confirmPassword}
+                                    </Text>
+                                )}
                             </View>
 
                             {/* Gender Field */}

@@ -18,6 +18,7 @@ interface ExercisePickerModalProps {
     visible: boolean;
     onClose: () => void;
     onSelectExercise: (exercise: Exercise) => void;
+    onRemoveExercise?: (exerciseId: string) => void;
     addedExerciseIds?: string[];
     title?: string;
 }
@@ -26,6 +27,7 @@ const ExercisePickerModal: React.FC<ExercisePickerModalProps> = ({
     visible,
     onClose,
     onSelectExercise,
+    onRemoveExercise,
     addedExerciseIds = [],
     title = 'Add Exercise',
 }) => {
@@ -78,8 +80,12 @@ const ExercisePickerModal: React.FC<ExercisePickerModalProps> = ({
         0
     );
 
-    const handleExercisePress = (exercise: Exercise) => {
-        onSelectExercise(exercise);
+    const handleExercisePress = (exercise: Exercise, isAdded: boolean) => {
+        if (isAdded && onRemoveExercise) {
+            onRemoveExercise(exercise.id);
+        } else {
+            onSelectExercise(exercise);
+        }
         setSearchTerm('');
     };
 
@@ -274,17 +280,15 @@ const ExercisePickerModal: React.FC<ExercisePickerModalProps> = ({
                                                         return (
                                                             <TouchableOpacity
                                                                 key={exercise.id}
-                                                                onPress={() => !isAdded && handleExercisePress(exercise)}
-                                                                disabled={isAdded}
+                                                                onPress={() => handleExercisePress(exercise, isAdded)}
                                                                 style={{
                                                                     backgroundColor: isDark ? '#111827' : '#F9FAFB',
                                                                     borderRadius: 12,
                                                                     padding: 14,
                                                                     flexDirection: 'row',
                                                                     alignItems: 'center',
-                                                                    opacity: isAdded ? 0.5 : 1,
                                                                     borderWidth: 1,
-                                                                    borderColor: isDark ? '#374151' : '#E5E7EB',
+                                                                    borderColor: isAdded ? '#10B981' : (isDark ? '#374151' : '#E5E7EB'),
                                                                 }}
                                                             >
                                                                 {/* Exercise Image */}

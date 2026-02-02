@@ -6,7 +6,6 @@ import {
     TouchableOpacity,
     TextInput,
     Alert,
-    Modal,
     Image,
     useColorScheme,
     ActivityIndicator,
@@ -27,6 +26,7 @@ import type { Exercise as ApiExercise } from '@/slices/exerciseApiSlice';
 import { useGetTemplateByIdQuery } from '@/slices/workoutTemplateApiSlice';
 import { useCreateWorkoutMutation, useGetWorkoutsQuery } from '@/slices/workoutApiSlice';
 import type { WorkoutExercise, WorkoutSet } from '@/types/workout.types';
+import { ExercisePickerModal } from '@/components/workout';
 import createStyles from '@/styles/workout/startWorkoutStyles';
 
 // Configure notification handler - this determines how notifications are presented when app is in foreground
@@ -60,7 +60,7 @@ const StartWorkoutScreen = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     // Queries and mutations
-    const { data: exercisesData, isLoading: exercisesLoading } = useGetExercisesQuery();
+    const { data: exercisesData } = useGetExercisesQuery();
     const { data: templateData } = useGetTemplateByIdQuery(templateId!, {
         skip: !templateId,
     });
@@ -76,7 +76,6 @@ const StartWorkoutScreen = () => {
     const restTimerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     // State
-    const [searchTerm, setSearchTerm] = useState('');
     const [selectedExercises, setSelectedExercises] = useState<WorkoutExercise[]>([]);
     const [showExerciseSearch, setShowExerciseSearch] = useState(false);
     const [activeRestTimer, setActiveRestTimer] = useState<{
@@ -570,12 +569,6 @@ const StartWorkoutScreen = () => {
         return null;
     };
 
-    const filteredExercises = exercisesData?.filter(
-        (exercise) =>
-            exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            exercise.description.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
     const handleAddExercise = (exercise: Exercise) => {
         if (selectedExercises.find((ex) => ex.id === exercise.id)) {
             return;
@@ -631,8 +624,6 @@ const StartWorkoutScreen = () => {
         };
 
         setSelectedExercises([...selectedExercises, workoutExercise]);
-        setShowExerciseSearch(false);
-        setSearchTerm('');
     };
 
     const handleAddSet = (exerciseId: string) => {
@@ -1201,74 +1192,16 @@ const StartWorkoutScreen = () => {
                 )}
             </ScrollView>
 
-            {/* Exercise Search Modal */}
-            <Modal visible={showExerciseSearch} animationType="slide" transparent={true}>
-                <View style={styles.modalOverlay}>
-                    <View style={[styles.modalContent, { paddingBottom: insets.bottom + 20 }]}>
-                        <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>Add Exercise</Text>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setShowExerciseSearch(false);
-                                    setSearchTerm('');
-                                }}
-                                activeOpacity={0.7}
-                            >
-                                <Ionicons name="close" size={24} color={isDark ? '#e2e8f0' : '#374151'} />
-                            </TouchableOpacity>
-                        </View>
-
-                        <View style={styles.searchContainer}>
-                            <Ionicons name="search" size={20} color={isDark ? '#64748b' : '#9ca3af'} />
-                            <TextInput
-                                style={styles.searchInput}
-                                placeholder="Search exercises..."
-                                placeholderTextColor={isDark ? '#64748b' : '#9ca3af'}
-                                value={searchTerm}
-                                onChangeText={setSearchTerm}
-                                autoFocus
-                            />
-                        </View>
-
-                        <ScrollView style={styles.exerciseList}>
-                            {exercisesLoading ? (
-                                <View style={styles.loadingState}>
-                                    <ActivityIndicator size="large" color="#3b82f6" />
-                                    <Text style={styles.loadingText}>Loading exercises...</Text>
-                                </View>
-                            ) : filteredExercises && filteredExercises.length > 0 ? (
-                                filteredExercises.map((exercise) => (
-                                    <TouchableOpacity
-                                        key={exercise.id}
-                                        style={styles.exerciseListItem}
-                                        onPress={() => handleAddExercise(exercise)}
-                                        activeOpacity={0.7}
-                                    >
-                                        {exercise.image && (
-                                            <Image source={{ uri: exercise.image }} style={styles.exerciseListImage} />
-                                        )}
-                                        <View style={styles.exerciseListInfo}>
-                                            <Text style={styles.exerciseListName} numberOfLines={1}>
-                                                {exercise.name}
-                                            </Text>
-                                            <Text style={styles.exerciseListCategory}>{exercise.category}</Text>
-                                        </View>
-                                        <Ionicons name="add-circle" size={24} color="#3b82f6" />
-                                    </TouchableOpacity>
-                                ))
-                            ) : (
-                                <View style={styles.emptySearchState}>
-                                    <Ionicons name="search-outline" size={48} color={isDark ? '#475569' : '#9ca3af'} />
-                                    <Text style={styles.emptySearchText}>
-                                        {searchTerm ? 'No exercises found' : 'Start typing to search'}
-                                    </Text>
-                                </View>
-                            )}
-                        </ScrollView>
-                    </View>
-                </View>
-
-            </Modal>
+            {/* Exercise Picker Modal */}
+            <ExercisePickerModal
+                visible={showExerciseSearch}
+                onClose={() => setShowExerciseSearch(false)}
+                onSelectExercise={handleAddExercise}
+                onRemoveExercise={(exerciseId) => {
+                    setSelectedExercises((prev) => prev.filter((ex) => ex.id !== exerciseId));
+                }}
+                addedExerciseIds={selectedExercises.map((ex) => ex.id)}
+            />
         </View>
     );
 };
