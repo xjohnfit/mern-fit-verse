@@ -40,7 +40,7 @@ export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [agreeToTerms, setAgreeToTerms] = useState(false);
-    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [errors, setErrors] = useState<{ [key: string]: string; }>({});
 
     const passwordStrength = getPasswordStrength(formData.password);
 
@@ -116,8 +116,8 @@ export default function Register() {
 
     const handleSubmit = async () => {
         // Validate all fields
-        const newErrors: { [key: string]: string } = {};
-        
+        const newErrors: { [key: string]: string; } = {};
+
         newErrors.name = validateField('name', formData.name);
         newErrors.username = validateField('username', formData.username);
         newErrors.email = validateField('email', formData.email);

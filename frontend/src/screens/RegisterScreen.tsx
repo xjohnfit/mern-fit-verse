@@ -31,7 +31,7 @@ const RegisterScreen = () => {
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [errors, setErrors] = useState<{ [key: string]: string; }>({});
 
     const passwordStrength = getPasswordStrength(formData.password);
 
@@ -169,7 +169,7 @@ const RegisterScreen = () => {
     };
 
     const validateForm = () => {
-        const newErrors: { [key: string]: string } = {};
+        const newErrors: { [key: string]: string; } = {};
         const requiredFields = [
             'name',
             'username',
@@ -281,11 +281,10 @@ const RegisterScreen = () => {
                                             type='text'
                                             value={formData.name}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${
-                                                errors.name
+                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.name
                                                     ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
                                                     : 'border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500/20'
-                                            }`}
+                                                }`}
                                             placeholder='Enter your full name'
                                         />
                                         <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
@@ -323,11 +322,10 @@ const RegisterScreen = () => {
                                             type='text'
                                             value={formData.username}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${
-                                                errors.username
+                                            className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.username
                                                     ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
                                                     : 'border-gray-200 dark:border-gray-600 focus:border-purple-500 focus:ring-purple-500/20'
-                                            }`}
+                                                }`}
                                             placeholder='Choose a username'
                                         />
                                         <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
@@ -366,11 +364,10 @@ const RegisterScreen = () => {
                                         type='email'
                                         value={formData.email}
                                         onChange={handleInputChange}
-                                        className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${
-                                            errors.email
+                                        className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.email
                                                 ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
                                                 : 'border-gray-200 dark:border-gray-600 focus:border-green-500 focus:ring-green-500/20'
-                                        }`}
+                                            }`}
                                         placeholder='Enter your email address'
                                     />
                                     <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
@@ -414,11 +411,10 @@ const RegisterScreen = () => {
                                             }
                                             value={formData.password}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${
-                                                errors.password
+                                            className={`w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.password
                                                     ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
                                                     : 'border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500/20'
-                                            }`}
+                                                }`}
                                             placeholder='Create a password'
                                         />
                                         <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
@@ -443,15 +439,14 @@ const RegisterScreen = () => {
                                             <div className='flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1'>
                                                 <span>Password Strength</span>
                                                 <span
-                                                    className={`font-medium ${
-                                                        passwordStrength.score <=
-                                                        2
+                                                    className={`font-medium ${passwordStrength.score <=
+                                                            2
                                                             ? 'text-red-500'
                                                             : passwordStrength.score ===
-                                                              3
-                                                            ? 'text-yellow-500'
-                                                            : 'text-green-500'
-                                                    }`}>
+                                                                3
+                                                                ? 'text-yellow-500'
+                                                                : 'text-green-500'
+                                                        }`}>
                                                     {passwordStrength.text}
                                                 </span>
                                             </div>
@@ -459,11 +454,10 @@ const RegisterScreen = () => {
                                                 <div
                                                     className={`h-1.5 rounded-full transition-all duration-300 ${passwordStrength.color}`}
                                                     style={{
-                                                        width: `${
-                                                            (passwordStrength.score /
+                                                        width: `${(passwordStrength.score /
                                                                 4) *
                                                             100
-                                                        }%`,
+                                                            }%`,
                                                     }}></div>
                                             </div>
                                         </div>
@@ -503,11 +497,10 @@ const RegisterScreen = () => {
                                             }
                                             value={formData.confirmPassword}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${
-                                                errors.confirmPassword
+                                            className={`w-full px-4 py-3 pl-11 pr-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.confirmPassword
                                                     ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
                                                     : 'border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500/20'
-                                            }`}
+                                                }`}
                                             placeholder='Confirm your password'
                                         />
                                         <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
@@ -559,11 +552,10 @@ const RegisterScreen = () => {
                                         name='gender'
                                         value={formData.gender}
                                         onChange={handleInputChange}
-                                        className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${
-                                            errors.gender
+                                        className={`w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-gray-700/50 border rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:outline-none transition-all duration-300 group-hover:shadow-md ${errors.gender
                                                 ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
                                                 : 'border-gray-200 dark:border-gray-600 focus:border-teal-500 focus:ring-teal-500/20'
-                                        }`}>
+                                            }`}>
                                         <option value=''>
                                             Select your gender
                                         </option>
