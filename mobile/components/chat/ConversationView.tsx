@@ -177,12 +177,17 @@ const ConversationView: React.FC<ConversationViewProps> = ({
                                 </View>
                             ) : null
                         }
-                        renderItem={({ item }) => (
-                            <MessageBubble
-                                message={item}
-                                isMyMessage={item.senderId === currentUserId}
-                            />
-                        )}
+                        renderItem={({ item }) => {
+                            const messageSenderId = typeof item.senderId === 'string'
+                                ? item.senderId
+                                : item.senderId._id;
+                            return (
+                                <MessageBubble
+                                    message={item}
+                                    isMyMessage={messageSenderId === currentUserId}
+                                />
+                            );
+                        }}
                     />
                 )}
 
