@@ -118,11 +118,7 @@ export default function TabsLayout() {
             <Tabs.Screen
                 name='settings'
                 options={{
-                    title: 'Settings',
-                    tabBarIcon: ({ focused }) => (
-                        <TabBarIcon name='settings' color='#6366f1' focused={focused} />
-                    ),
-                    tabBarActiveTintColor: '#6366f1',
+                    href: null,
                 }}
             />
         </Tabs>

@@ -42,14 +42,14 @@ export const getUserProfile = asyncHandler(
         }
 
         res.status(200).json(user);
-    }
+    },
 );
 
 // Update logged-in user profile
 export const updateUserProfile = asyncHandler(
     async (
         req: Request<{}, {}, UpdateUserBody> & AuthenticatedRequest,
-        res: Response
+        res: Response,
     ): Promise<void> => {
         const user = await User.findById(req.user!._id);
 
@@ -120,7 +120,7 @@ export const updateUserProfile = asyncHandler(
                 if (typeof photoData !== 'string' || !photoData.trim()) {
                     res.status(400);
                     throw new Error(
-                        'Invalid photo data format. Expected base64 string.'
+                        'Invalid photo data format. Expected base64 string.',
                     );
                 }
 
@@ -151,7 +151,7 @@ export const updateUserProfile = asyncHandler(
                     photoData = `data:${mimeType};base64,${base64Data}`;
                     console.log(
                         'Added data URI prefix with detected type:',
-                        mimeType
+                        mimeType,
                     );
                 }
 
@@ -159,7 +159,7 @@ export const updateUserProfile = asyncHandler(
                 // iPhone Chrome may send HEIC as application/octet-stream
                 if (
                     photoData.startsWith(
-                        'data:application/octet-stream;base64,'
+                        'data:application/octet-stream;base64,',
                     )
                 ) {
                     const base64Part = photoData.split(',')[1];
@@ -171,10 +171,10 @@ export const updateUserProfile = asyncHandler(
                         // This is a HEIC file, fix the MIME type
                         photoData = photoData.replace(
                             'data:application/octet-stream',
-                            'data:image/heic'
+                            'data:image/heic',
                         );
                         console.log(
-                            'Detected and corrected HEIC file from application/octet-stream'
+                            'Detected and corrected HEIC file from application/octet-stream',
                         );
                     }
                 }
@@ -185,11 +185,11 @@ export const updateUserProfile = asyncHandler(
                 if (!dataURIPattern.test(photoData)) {
                     console.error(
                         'Invalid photo data format:',
-                        photoData.substring(0, 100)
+                        photoData.substring(0, 100),
                     );
                     res.status(400);
                     throw new Error(
-                        'Invalid image format. Supported formats: JPEG, PNG, GIF, WebP, HEIC, AVIF, BMP'
+                        'Invalid image format. Supported formats: JPEG, PNG, GIF, WebP, HEIC, AVIF, BMP',
                     );
                 }
 
@@ -209,13 +209,13 @@ export const updateUserProfile = asyncHandler(
                     if (publicId) {
                         try {
                             await cloudinary.uploader.destroy(
-                                `fit-verse/users/${publicId}`
+                                `fit-verse/users/${publicId}`,
                             );
                             console.log('Previous photo deleted successfully');
                         } catch (deleteError) {
                             console.warn(
                                 'Failed to delete old photo, continuing with upload:',
-                                deleteError
+                                deleteError,
                             );
                         }
                     }
@@ -237,12 +237,12 @@ export const updateUserProfile = asyncHandler(
                                 fetch_format: 'auto', // Automatically deliver the best format for the user's browser
                             },
                         ],
-                    }
+                    },
                 );
 
                 console.log(
                     'Photo upload successful:',
-                    cloudinaryResult.secure_url
+                    cloudinaryResult.secure_url,
                 );
                 user.photo = cloudinaryResult.secure_url;
             } catch (uploadError: any) {
@@ -270,17 +270,17 @@ export const updateUserProfile = asyncHandler(
         if (updateFields.restTimer !== undefined) {
             await User.updateOne(
                 { _id: savedUser._id },
-                { $set: { restTimer: updateFields.restTimer } }
+                { $set: { restTimer: updateFields.restTimer } },
             );
         }
 
         // Fetch fresh from database without password
         const updatedUser = await User.findById(savedUser._id).select(
-            '-password'
+            '-password',
         );
 
         res.status(200).json(updatedUser);
-    }
+    },
 );
 
 // View another user profile
@@ -298,7 +298,7 @@ export const viewUserProfile = asyncHandler(
         }
 
         res.status(200).json(user);
-    }
+    },
 );
 
 // Get suggested users to follow
@@ -338,7 +338,7 @@ export const getSuggestedUsers = asyncHandler(
             { $project: { password: 0, email: 0 } }, // Exclude sensitive fields
         ]);
         res.status(200).json(suggestedUsers);
-    }
+    },
 );
 
 // Follow/Unfollow User
@@ -397,7 +397,7 @@ export const followUnfollowUser = asyncHandler(
             res.status(500);
             throw new Error('Server Error');
         }
-    }
+    },
 );
 
 // Update nutrition goals
@@ -444,7 +444,7 @@ export const updateNutritionGoals = asyncHandler(
 
         const updatedUser = await user.save();
         const userWithoutPassword = await User.findById(updatedUser._id).select(
-            '-password'
+            '-password',
         );
 
         res.status(200).json({
@@ -452,7 +452,7 @@ export const updateNutritionGoals = asyncHandler(
             message: 'Nutrition goals updated successfully',
             data: userWithoutPassword,
         });
-    }
+    },
 );
 
 // Admin: Get all users
@@ -473,7 +473,7 @@ export const getAllUsers = asyncHandler(
             count: users.length,
             data: users,
         });
-    }
+    },
 );
 
 // Admin: Update user role
@@ -513,7 +513,7 @@ export const updateUserRole = asyncHandler(
         const updatedUser = await user.save();
 
         const userWithoutPassword = await User.findById(updatedUser._id).select(
-            '-password'
+            '-password',
         );
 
         res.status(200).json({
@@ -523,7 +523,24 @@ export const updateUserRole = asyncHandler(
             } admin successfully`,
             data: userWithoutPassword,
         });
-    }
+    },
+);
+
+// Get user's following list
+export const getFollowing = asyncHandler(
+    async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+        const userId = req.user!._id;
+        const user = await User.findById(userId)
+            .select('following')
+            .populate('following', 'name username photo');
+
+        if (!user) {
+            res.status(404);
+            throw new Error('User not found');
+        }
+
+        res.status(200).json(user.following);
+    },
 );
 
 // Update Expo push notification token
@@ -537,7 +554,7 @@ export const updatePushToken = asyncHandler(
         if (!user) {
             console.error(
                 '[updatePushToken] User not found for _id:',
-                req.user?._id
+                req.user?._id,
             );
             res.status(404);
             throw new Error('User not found');
@@ -548,5 +565,5 @@ export const updatePushToken = asyncHandler(
         console.log('[updatePushToken] Saved expoPushToken to user:', user._id);
 
         res.status(200).json({ message: 'Push token updated' });
-    }
+    },
 );

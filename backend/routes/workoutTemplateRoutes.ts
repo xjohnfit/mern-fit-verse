@@ -6,6 +6,7 @@ import {
     updateTemplate,
     deleteTemplate,
     moveTemplateToFolder,
+    importTemplate,
 } from '../controllers/workoutTemplateController';
 import { protect } from '../middlewares/authMiddleware';
 
@@ -16,6 +17,8 @@ router.use(protect);
 
 // Routes for workout templates
 router.route('/').get(getTemplates).post(createTemplate);
+
+router.route('/import/:id').post(importTemplate);
 
 router
     .route('/:id')

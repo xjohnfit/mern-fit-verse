@@ -6,7 +6,7 @@ import WorkoutTemplate from '../models/workoutTemplateModel';
 // @access  Private
 export const getTemplates = async (
     req: Request,
-    res: Response
+    res: Response,
 ): Promise<void> => {
     try {
         const userId = req.user?._id;
@@ -42,7 +42,7 @@ export const getTemplates = async (
 // @access  Private
 export const getTemplateById = async (
     req: Request,
-    res: Response
+    res: Response,
 ): Promise<void> => {
     try {
         const userId = req.user?._id;
@@ -88,7 +88,7 @@ export const getTemplateById = async (
 // @access  Private
 export const createTemplate = async (
     req: Request,
-    res: Response
+    res: Response,
 ): Promise<void> => {
     try {
         const userId = req.user?._id;
@@ -140,7 +140,7 @@ export const createTemplate = async (
 // @access  Private
 export const updateTemplate = async (
     req: Request,
-    res: Response
+    res: Response,
 ): Promise<void> => {
     try {
         const userId = req.user?._id;
@@ -198,7 +198,7 @@ export const updateTemplate = async (
 // @access  Private
 export const deleteTemplate = async (
     req: Request,
-    res: Response
+    res: Response,
 ): Promise<void> => {
     try {
         const userId = req.user?._id;
@@ -247,7 +247,7 @@ export const deleteTemplate = async (
 // @access  Private
 export const moveTemplateToFolder = async (
     req: Request,
-    res: Response
+    res: Response,
 ): Promise<void> => {
     try {
         const userId = req.user?._id;
@@ -289,6 +289,62 @@ export const moveTemplateToFolder = async (
         res.status(500).json({
             success: false,
             message: 'Error moving template',
+            error: error instanceof Error ? error.message : 'Unknown error',
+        });
+    }
+};
+
+// @desc    Import a shared template
+// @route   POST /api/workout-templates/import/:id
+// @access  Private
+export const importTemplate = async (
+    req: Request,
+    res: Response,
+): Promise<void> => {
+    try {
+        const userId = req.user?._id;
+        const templateId = req.params.id;
+
+        if (!userId) {
+            res.status(401).json({
+                success: false,
+                message: 'User not authenticated',
+            });
+            return;
+        }
+
+        // Find the original template
+        const originalTemplate = await WorkoutTemplate.findById(templateId);
+
+        if (!originalTemplate) {
+            res.status(404).json({
+                success: false,
+                message: 'Template not found',
+            });
+            return;
+        }
+
+        // Create a copy for the current user
+        const importedTemplate = new WorkoutTemplate({
+            userId: userId,
+            name: `${originalTemplate.name} (imported)`,
+            description: originalTemplate.description,
+            exercises: originalTemplate.exercises,
+            folderId: undefined, // Don't assign to any folder by default
+        });
+
+        await importedTemplate.save();
+
+        res.status(201).json({
+            success: true,
+            message: 'Template imported successfully',
+            data: importedTemplate,
+        });
+    } catch (error) {
+        console.error('Error importing template:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error importing template',
             error: error instanceof Error ? error.message : 'Unknown error',
         });
     }

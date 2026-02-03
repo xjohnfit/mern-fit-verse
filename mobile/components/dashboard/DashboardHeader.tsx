@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import DashboardHeaderStyles from '../../styles/dashboard/DashboardHeaderStyles';
 
 interface DashboardHeaderProps {
@@ -11,6 +12,11 @@ interface DashboardHeaderProps {
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userName, topInset }) => {
     const styles = DashboardHeaderStyles;
+    const router = useRouter();
+
+    const handleSettingsPress = () => {
+        router.push('/settings');
+    };
 
     return (
         <LinearGradient
@@ -37,6 +43,13 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userName, topInset })
                             Welcome back, {userName}
                         </Text>
                     </View>
+                    <TouchableOpacity
+                        style={styles.settingsButton}
+                        onPress={handleSettingsPress}
+                        activeOpacity={0.7}
+                    >
+                        <Ionicons name="settings-outline" size={26} color="#fff" />
+                    </TouchableOpacity>
                 </View>
             </View>
         </LinearGradient>

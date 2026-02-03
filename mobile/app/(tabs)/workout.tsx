@@ -22,6 +22,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // Redux
 import { useGetTemplateFoldersQuery } from "@/slices/workoutTemplateFolderApiSlice";
 import { useGetTemplatesQuery } from "@/slices/workoutTemplateApiSlice";
+import { useGetWorkoutStatsQuery, useGetWorkoutsQuery } from "@/slices/workoutApiSlice";
+import { useGetUserProfileQuery } from "@/slices/usersApiSlice";
 
 // Components
 import {
@@ -33,6 +35,8 @@ import {
   ActiveWorkoutBanner,
   FreestyleWorkoutCard,
 } from '@/components/workout';
+import WorkoutStats from '@/components/dashboard/WorkoutStats';
+import RecentWorkouts from '@/components/dashboard/RecentWorkouts';
 
 // Types
 import type { WorkoutTemplateFolder } from "@/types/workout.types";
@@ -58,10 +62,16 @@ const WorkoutScreen = () => {
     useGetTemplateFoldersQuery();
   const { data: templatesResponse, isLoading: templatesLoading } =
     useGetTemplatesQuery();
+  const { data: workoutStats } = useGetWorkoutStatsQuery({});
+  const { data: currentUserProfile } = useGetUserProfileQuery({});
+  const { data: workouts, isLoading: isLoadingWorkouts } = useGetWorkoutsQuery({});
 
   const folders = foldersResponse?.data || [];
   const templates = templatesResponse?.data || [];
   const unsortedTemplates = templates.filter((t) => !t.folderId);
+
+  const joinDate = currentUserProfile?.createdAt ? new Date(currentUserProfile.createdAt) : new Date();
+  const daysActive = Math.floor((new Date().getTime() - joinDate.getTime()) / (1000 * 60 * 60 * 24));
 
   const handleEditFolder = (folder: WorkoutTemplateFolder) => {
     setSelectedFolder(folder);
@@ -107,6 +117,15 @@ const WorkoutScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         <WorkoutHeader paddingTop={insets.top} />
+
+        {/* Workout Stats - Compact */}
+        <View style={styles.contentWrapper}>
+          <WorkoutStats
+            workoutStats={workoutStats}
+            daysActive={daysActive}
+            compact={true}
+          />
+        </View>
 
         <View style={styles.contentWrapper}>
           {hasActiveWorkout && <ActiveWorkoutBanner />}
@@ -171,11 +190,11 @@ const WorkoutScreen = () => {
                 </TouchableOpacity>
               </View>
 
-            <TouchableOpacity
-              style={styles.actionCardFull}
-              onPress={() => router.push('/workout/BrowseExercisesScreen' as any)}
-              activeOpacity={0.8}
-            >
+              <TouchableOpacity
+                style={styles.actionCardFull}
+                onPress={() => router.push('/workout/BrowseExercisesScreen' as any)}
+                activeOpacity={0.8}
+              >
                 <LinearGradient
                   colors={
                     isDark ? ["#065f46", "#047857"] : ["#d1fae5", "#a7f3d0"]
@@ -347,6 +366,11 @@ const WorkoutScreen = () => {
 
         <View style={styles.contentWrapper}>
           <FreestyleWorkoutCard hasActiveWorkout={hasActiveWorkout} />
+        </View>
+
+        {/* Recent Workouts */}
+        <View style={styles.contentWrapper}>
+          <RecentWorkouts workouts={workouts} isLoading={isLoadingWorkouts} compact={true} />
         </View>
       </ScrollView>
 

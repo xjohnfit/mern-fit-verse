@@ -1,11 +1,22 @@
 import { apiSlice } from './apiSlice';
 
+export interface TemplateData {
+    _id: string;
+    name: string;
+    description?: string;
+    exercises: any[];
+}
+
 export interface Message {
     _id: string;
-    senderId: string;
+    senderId:
+        | string
+        | { _id: string; name: string; username: string; photo?: string };
     receiverId: string;
     text: string;
     image?: string;
+    messageType?: 'text' | 'image' | 'template';
+    templateData?: TemplateData;
     createdAt: string;
     updatedAt?: string;
 }
@@ -15,6 +26,12 @@ export interface SendMessageRequest {
     receiverId: string;
     text: string;
     image?: string;
+}
+
+export interface ShareTemplateRequest {
+    senderId: string;
+    receiverId: string;
+    templateId: string;
 }
 
 export interface GetMessagesResponse {
@@ -87,6 +104,14 @@ export const messageApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ['Message'],
         }),
+        shareTemplate: builder.mutation<Message, ShareTemplateRequest>({
+            query: (data) => ({
+                url: `${MESSAGE_URL}/share-template`,
+                method: 'POST',
+                body: data,
+            }),
+            invalidatesTags: ['Message'],
+        }),
     }),
 });
 
@@ -94,5 +119,6 @@ export const {
     useGetUsersWithMessagesQuery,
     useGetMessagesQuery,
     useSendMessageMutation,
+    useShareTemplateMutation,
     useLazyGetMessagesQuery,
 } = messageApiSlice;

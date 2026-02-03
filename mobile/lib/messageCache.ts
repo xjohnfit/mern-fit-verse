@@ -2,10 +2,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface Message {
     _id: string;
-    senderId: string;
+    senderId:
+        | string
+        | { _id: string; name: string; username: string; photo?: string };
     receiverId: string;
     text: string;
     image?: string;
+    messageType?: 'text' | 'image' | 'template';
+    templateData?: {
+        _id: string;
+        name: string;
+        description?: string;
+        exercises: any[];
+    };
     createdAt: string;
     updatedAt?: string;
 }
@@ -34,7 +43,7 @@ const getCacheKey = (userId1: string, userId2: string): string => {
 export const cacheMessages = async (
     currentUserId: string,
     otherUserId: string,
-    messages: Message[]
+    messages: Message[],
 ): Promise<void> => {
     try {
         const cacheKey = getCacheKey(currentUserId, otherUserId);
@@ -55,7 +64,7 @@ export const cacheMessages = async (
  */
 export const getCachedMessages = async (
     currentUserId: string,
-    otherUserId: string
+    otherUserId: string,
 ): Promise<Message[] | null> => {
     try {
         const cacheKey = getCacheKey(currentUserId, otherUserId);
@@ -87,7 +96,7 @@ export const getCachedMessages = async (
             (msg) =>
                 msg &&
                 msg.createdAt &&
-                new Date(msg.createdAt).getTime() > oneDayAgo
+                new Date(msg.createdAt).getTime() > oneDayAgo,
         );
 
         return recentMessages;
@@ -103,24 +112,24 @@ export const getCachedMessages = async (
 export const appendMessageToCache = async (
     currentUserId: string,
     otherUserId: string,
-    newMessage: Message
+    newMessage: Message,
 ): Promise<void> => {
     try {
         const cachedMessages = await getCachedMessages(
             currentUserId,
-            otherUserId
+            otherUserId,
         );
         if (cachedMessages && Array.isArray(cachedMessages)) {
             // Check if message already exists
             const messageExists = cachedMessages.some(
-                (msg) => msg._id === newMessage._id
+                (msg) => msg._id === newMessage._id,
             );
             if (!messageExists) {
                 const updatedMessages = [...cachedMessages, newMessage];
                 await cacheMessages(
                     currentUserId,
                     otherUserId,
-                    updatedMessages
+                    updatedMessages,
                 );
             }
         } else {
@@ -139,7 +148,7 @@ export const clearAllMessageCaches = async (): Promise<void> => {
     try {
         const allKeys = await AsyncStorage.getAllKeys();
         const messageCacheKeys = allKeys.filter((key) =>
-            key.startsWith(MESSAGE_CACHE_PREFIX)
+            key.startsWith(MESSAGE_CACHE_PREFIX),
         );
         await AsyncStorage.multiRemove(messageCacheKeys);
     } catch (error) {
@@ -152,7 +161,7 @@ export const clearAllMessageCaches = async (): Promise<void> => {
  */
 export const clearConversationCache = async (
     currentUserId: string,
-    otherUserId: string
+    otherUserId: string,
 ): Promise<void> => {
     try {
         const cacheKey = getCacheKey(currentUserId, otherUserId);

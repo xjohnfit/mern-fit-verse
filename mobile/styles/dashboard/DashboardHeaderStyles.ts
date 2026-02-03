@@ -46,6 +46,15 @@ const styles = StyleSheet.create({
         marginTop: 4,
         fontWeight: '500',
     },
+    settingsButton: {
+        width: 44,
+        height: 44,
+        borderRadius: 12,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 12,
+    },
 });
 
 export default styles;

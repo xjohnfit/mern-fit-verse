@@ -3,6 +3,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import Message from '../models/messageModel';
+import WorkoutTemplate from '../models/workoutTemplateModel';
 import { io, getReceiverSocketId } from '../config/socket.io';
 
 import { sendPushNotification } from '../utils/pushNotifications';
@@ -53,6 +54,8 @@ export const getMessages = asyncHandler(async (req: Request, res: Response) => {
     const messages = await Message.find(query)
         .sort({ createdAt: -1 }) // Sort descending to get latest first
         .limit(parseInt(limit as string))
+        .populate('templateData', 'name description exercises')
+        .populate('senderId', 'name username photo')
         .exec();
 
     // Reverse to get chronological order (oldest to newest)
@@ -159,5 +162,87 @@ export const getUsersWithMessages = asyncHandler(
         }).select('_id name username photo');
 
         res.json(users);
+    },
+);
+
+// Share workout template via message
+export const shareTemplate = asyncHandler(
+    async (req: Request, res: Response) => {
+        const { senderId, receiverId, templateId } = req.body;
+
+        // Validate inputs
+        if (!senderId || !receiverId || !templateId) {
+            res.status(400);
+            throw new Error(
+                'Sender ID, receiver ID, and template ID are required',
+            );
+        }
+
+        // Check if users exist
+        const sender = await User.findById(senderId);
+        const receiver = await User.findById(receiverId);
+
+        if (!sender || !receiver) {
+            res.status(404);
+            throw new Error('User not found');
+        }
+
+        // Check if there's a block relationship
+        const isBlocked = sender.blockedUsers?.some(
+            (id: any) => id.toString() === receiverId,
+        );
+        const isBlockedBy = receiver.blockedUsers?.some(
+            (id: any) => id.toString() === senderId,
+        );
+
+        if (isBlocked || isBlockedBy) {
+            res.status(403);
+            throw new Error('Cannot share templates with this user');
+        }
+
+        // Check if template exists and belongs to sender
+        const template = await WorkoutTemplate.findOne({
+            _id: templateId,
+            userId: senderId,
+        });
+
+        if (!template) {
+            res.status(404);
+            throw new Error('Template not found or you do not have permission');
+        }
+
+        // Create message with template
+        const newMessage = new Message({
+            senderId,
+            receiverId,
+            text: `Shared workout template: ${template.name}`,
+            messageType: 'template',
+            templateData: templateId,
+        });
+
+        const savedMessage = await newMessage.save();
+
+        // Populate template data for response
+        const populatedMessage = await Message.findById(savedMessage._id)
+            .populate('templateData', 'name description exercises')
+            .populate('senderId', 'name username photo');
+
+        // Send push notification
+        if (receiver?.expoPushToken) {
+            await sendPushNotification(
+                receiver.expoPushToken,
+                sender.name || 'New Template',
+                `${sender.name} shared a workout template: ${template.name}`,
+                { senderId, receiverId, templateId, messageType: 'template' },
+            );
+        }
+
+        // Emit the message to the receiver via Socket.IO
+        const receiverSocketId = getReceiverSocketId(receiverId);
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit('new-message', populatedMessage);
+        }
+
+        res.status(201).json(populatedMessage);
     },
 );

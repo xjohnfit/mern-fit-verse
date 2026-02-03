@@ -1,5 +1,6 @@
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, Modal, useColorScheme, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import WorkoutDetailModal from './WorkoutDetailModal';
 import { useDeleteWorkoutMutation } from '@/slices/workoutApiSlice';
@@ -34,9 +35,10 @@ interface Workout {
 interface RecentWorkoutsProps {
     workouts: Workout[];
     isLoading: boolean;
+    compact?: boolean;
 }
 
-export default function RecentWorkouts({ workouts, isLoading }: RecentWorkoutsProps) {
+export default function RecentWorkouts({ workouts, isLoading, compact = false }: RecentWorkoutsProps) {
     const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
     const [showAllModal, setShowAllModal] = useState(false);
     const colorScheme = useColorScheme();
@@ -147,135 +149,294 @@ export default function RecentWorkouts({ workouts, isLoading }: RecentWorkoutsPr
     }
 
     return (
-        <View>
-            <View style={recentWorkoutsStyles.headerRow}>
-                <View style={recentWorkoutsStyles.headerLeft}>
-                    <Ionicons name="time" size={22} color="#10B981" style={{ marginRight: 8 }} />
-                    <Text style={isDark ? recentWorkoutsStyles.headerTitleDark : recentWorkoutsStyles.headerTitle}>
-                        Recent Workouts
-                    </Text>
-                </View>
-                <View style={recentWorkoutsStyles.headerRight}>
-                    <TouchableOpacity
-                        onPress={() => setShowAllModal(true)}
-                        style={recentWorkoutsStyles.seeAllButton}
-                    >
-                        <Text style={isDark ? recentWorkoutsStyles.seeAllTextDark : recentWorkoutsStyles.seeAllText}>
-                            See All
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-            <View style={recentWorkoutsStyles.workoutsContainer}>
-                {recentWorkouts.map((workout) => {
-                    const isTemplate = workout.workoutType === 'template' && workout.templateName;
-                    const stats = calculateStats(workout);
-
-                    return (
+        <View style={compact ? recentWorkoutsStyles.sectionCompact : recentWorkoutsStyles.section}>
+            {compact ? (
+                <LinearGradient
+                    colors={isDark ? ['#1F2937', '#111827'] : ['#FFFFFF', '#F9FAFB']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={isDark ? recentWorkoutsStyles.cardContainerCompactDark : recentWorkoutsStyles.cardContainerCompact}
+                >
+                    <View style={recentWorkoutsStyles.headerRowCompact}>
+                        <View style={recentWorkoutsStyles.headerLeft}>
+                            <Ionicons name="time" size={16} color="#10B981" style={{ marginRight: 8 }} />
+                            <Text style={isDark ? recentWorkoutsStyles.headerTitleCompactDark : recentWorkoutsStyles.headerTitleCompact}>
+                                Recent Workouts
+                            </Text>
+                        </View>
                         <TouchableOpacity
-                            key={workout._id}
-                            activeOpacity={0.7}
-                            onPress={() => setSelectedWorkout(workout)}
-                            style={isDark ? recentWorkoutsStyles.workoutCardDark : recentWorkoutsStyles.workoutCard}
+                            onPress={() => setShowAllModal(true)}
+                            style={isDark ? recentWorkoutsStyles.seeAllButtonCompactDark : recentWorkoutsStyles.seeAllButtonCompact}
+                            activeOpacity={0.8}
                         >
-                            {/* Header */}
-                            <View style={isDark ? recentWorkoutsStyles.workoutHeaderDark : recentWorkoutsStyles.workoutHeader}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
-                                    <View style={{ flex: 1, paddingRight: 8 }}>
-                                        <View style={recentWorkoutsStyles.workoutTypeRow}>
-                                            <Ionicons name={isTemplate ? "albums" : "flash"} size={14} color={isTemplate ? "#a855f7" : "#3b82f6"} />
-                                            <Text
-                                                style={isDark ? recentWorkoutsStyles.workoutTypeNameDark : recentWorkoutsStyles.workoutTypeName}
-                                                numberOfLines={1}
-                                            >
-                                                {isTemplate ? workout.templateName : 'Freestyle Workout'}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                    <View style={isDark ? recentWorkoutsStyles.dateBadgeDark : recentWorkoutsStyles.dateBadge}>
-                                        <Text style={isDark ? recentWorkoutsStyles.dateTextDark : recentWorkoutsStyles.dateText}>
-                                            {formatDate(workout.createdAt)}
-                                        </Text>
-                                    </View>
-                                </View>
-                            </View>
-
-                            {/* Stats Grid */}
-                            <View style={recentWorkoutsStyles.statsSection}>
-                                <View style={recentWorkoutsStyles.statsRow}>
-                                    {/* Duration */}
-                                    <View style={recentWorkoutsStyles.statItem}>
-                                        <View style={recentWorkoutsStyles.statLabel}>
-                                            <Ionicons name="time-outline" size={16} color="#3b82f6" />
-                                            <Text style={isDark ? recentWorkoutsStyles.statLabelTextDark : recentWorkoutsStyles.statLabelText}>
-                                                DURATION
-                                            </Text>
-                                        </View>
-                                        <Text style={isDark ? recentWorkoutsStyles.statValueDark : recentWorkoutsStyles.statValue}>
-                                            {workout.duration ? formatDuration(workout.duration) : 'N/A'}
-                                        </Text>
-                                    </View>
-
-                                    {/* Exercises */}
-                                    <View style={recentWorkoutsStyles.statItemLeft}>
-                                        <View style={recentWorkoutsStyles.statLabel}>
-                                            <Ionicons name="barbell-outline" size={16} color="#10b981" />
-                                            <Text style={isDark ? recentWorkoutsStyles.statLabelTextDark : recentWorkoutsStyles.statLabelText}>
-                                                EXERCISES
-                                            </Text>
-                                        </View>
-                                        <Text style={isDark ? recentWorkoutsStyles.statValueDark : recentWorkoutsStyles.statValue}>
-                                            {workout.exercises?.length || 0}
-                                        </Text>
-                                    </View>
-                                </View>
-
-                                <View style={recentWorkoutsStyles.statsRow}>
-                                    {/* Sets */}
-                                    <View style={recentWorkoutsStyles.statItem}>
-                                        <View style={recentWorkoutsStyles.statLabel}>
-                                            <Ionicons name="checkmark-circle-outline" size={16} color="#f59e0b" />
-                                            <Text style={isDark ? recentWorkoutsStyles.statLabelTextDark : recentWorkoutsStyles.statLabelText}>
-                                                SETS
-                                            </Text>
-                                        </View>
-                                        <Text style={isDark ? recentWorkoutsStyles.statValueDark : recentWorkoutsStyles.statValue}>
-                                            {stats.completedSets}/{stats.totalSets}
-                                        </Text>
-                                    </View>
-
-                                    {/* Volume */}
-                                    <View style={recentWorkoutsStyles.statItemLeft}>
-                                        <View style={recentWorkoutsStyles.statLabel}>
-                                            <Ionicons name="analytics-outline" size={16} color="#8b5cf6" />
-                                            <Text style={isDark ? recentWorkoutsStyles.statLabelTextDark : recentWorkoutsStyles.statLabelText}>
-                                                VOLUME
-                                            </Text>
-                                        </View>
-                                        <Text style={isDark ? recentWorkoutsStyles.statValueDark : recentWorkoutsStyles.statValue}>
-                                            {stats.totalVolume.toLocaleString()} lbs
-                                        </Text>
-                                    </View>
-                                </View>
-
-                                {/* Progress Bar */}
-                                <View style={isDark ? recentWorkoutsStyles.progressBarDark : recentWorkoutsStyles.progressBar}>
-                                    <View
-                                        style={{
-                                            backgroundColor: '#10b981',
-                                            height: '100%',
-                                            width: `${stats.totalSets > 0 ? (stats.completedSets / stats.totalSets) * 100 : 0}%`
-                                        }}
-                                    />
-                                </View>
-                                <Text style={isDark ? recentWorkoutsStyles.progressTextDark : recentWorkoutsStyles.progressText}>
-                                    {stats.totalSets > 0 ? Math.round((stats.completedSets / stats.totalSets) * 100) : 0}% Complete
+                            <LinearGradient
+                                colors={isDark ? ['#2563EB', '#1d4ed8'] : ['#3b82f6', '#2563eb']}
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 1, y: 1 }}
+                                style={recentWorkoutsStyles.seeAllButtonGradient}
+                            >
+                                <Text style={recentWorkoutsStyles.seeAllButtonText}>
+                                    See All
                                 </Text>
-                            </View>
+                                <Ionicons name="arrow-forward" size={14} color="#fff" />
+                            </LinearGradient>
                         </TouchableOpacity>
-                    );
-                })}
-            </View>
+                    </View>
+                    <View style={recentWorkoutsStyles.workoutsContainer}>
+                        {recentWorkouts.map((workout) => {
+                            const isTemplate = workout.workoutType === 'template' && workout.templateName;
+                            const stats = calculateStats(workout);
+
+                            return (
+                                <TouchableOpacity
+                                    key={workout._id}
+                                    activeOpacity={0.7}
+                                    onPress={() => setSelectedWorkout(workout)}
+                                    style={isDark ? (compact ? recentWorkoutsStyles.workoutCardCompactDark : recentWorkoutsStyles.workoutCardDark) : (compact ? recentWorkoutsStyles.workoutCardCompact : recentWorkoutsStyles.workoutCard)}
+                                >
+                                    {/* Header */}
+                                    <View style={isDark ? recentWorkoutsStyles.workoutHeaderDark : recentWorkoutsStyles.workoutHeader}>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+                                            <View style={{ flex: 1, paddingRight: 8 }}>
+                                                <View style={recentWorkoutsStyles.workoutTypeRow}>
+                                                    <Ionicons name={isTemplate ? "albums" : "flash"} size={compact ? 12 : 14} color={isTemplate ? "#a855f7" : "#3b82f6"} />
+                                                    <Text
+                                                        style={isDark ? (compact ? recentWorkoutsStyles.workoutTypeNameCompactDark : recentWorkoutsStyles.workoutTypeNameDark) : (compact ? recentWorkoutsStyles.workoutTypeNameCompact : recentWorkoutsStyles.workoutTypeName)}
+                                                        numberOfLines={1}
+                                                    >
+                                                        {isTemplate ? workout.templateName : 'Freestyle Workout'}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                            <View style={isDark ? (compact ? recentWorkoutsStyles.dateBadgeCompactDark : recentWorkoutsStyles.dateBadgeDark) : (compact ? recentWorkoutsStyles.dateBadgeCompact : recentWorkoutsStyles.dateBadge)}>
+                                                <Text style={isDark ? (compact ? recentWorkoutsStyles.dateTextCompactDark : recentWorkoutsStyles.dateTextDark) : (compact ? recentWorkoutsStyles.dateTextCompact : recentWorkoutsStyles.dateText)}>
+                                                    {formatDate(workout.createdAt)}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </View>
+
+                                    {/* Stats Grid - Hide detailed stats in compact mode */}
+                                    {!compact ? (
+                                        <View style={recentWorkoutsStyles.statsSection}>
+                                            <View style={recentWorkoutsStyles.statsRow}>
+                                                {/* Duration */}
+                                                <View style={recentWorkoutsStyles.statItem}>
+                                                    <View style={recentWorkoutsStyles.statLabel}>
+                                                        <Ionicons name="time-outline" size={16} color="#3b82f6" />
+                                                        <Text style={isDark ? recentWorkoutsStyles.statLabelTextDark : recentWorkoutsStyles.statLabelText}>
+                                                            DURATION
+                                                        </Text>
+                                                    </View>
+                                                    <Text style={isDark ? recentWorkoutsStyles.statValueDark : recentWorkoutsStyles.statValue}>
+                                                        {workout.duration ? formatDuration(workout.duration) : 'N/A'}
+                                                    </Text>
+                                                </View>
+
+                                                {/* Exercises */}
+                                                <View style={recentWorkoutsStyles.statItemLeft}>
+                                                    <View style={recentWorkoutsStyles.statLabel}>
+                                                        <Ionicons name="barbell-outline" size={16} color="#10b981" />
+                                                        <Text style={isDark ? recentWorkoutsStyles.statLabelTextDark : recentWorkoutsStyles.statLabelText}>
+                                                            EXERCISES
+                                                        </Text>
+                                                    </View>
+                                                    <Text style={isDark ? recentWorkoutsStyles.statValueDark : recentWorkoutsStyles.statValue}>
+                                                        {workout.exercises?.length || 0}
+                                                    </Text>
+                                                </View>
+                                            </View>
+
+                                            <View style={recentWorkoutsStyles.statsRow}>
+                                                {/* Sets */}
+                                                <View style={recentWorkoutsStyles.statItem}>
+                                                    <View style={recentWorkoutsStyles.statLabel}>
+                                                        <Ionicons name="checkmark-circle-outline" size={16} color="#f59e0b" />
+                                                        <Text style={isDark ? recentWorkoutsStyles.statLabelTextDark : recentWorkoutsStyles.statLabelText}>
+                                                            SETS
+                                                        </Text>
+                                                    </View>
+                                                    <Text style={isDark ? recentWorkoutsStyles.statValueDark : recentWorkoutsStyles.statValue}>
+                                                        {stats.completedSets}/{stats.totalSets}
+                                                    </Text>
+                                                </View>
+
+                                                {/* Volume */}
+                                                <View style={recentWorkoutsStyles.statItemLeft}>
+                                                    <View style={recentWorkoutsStyles.statLabel}>
+                                                        <Ionicons name="analytics-outline" size={16} color="#8b5cf6" />
+                                                        <Text style={isDark ? recentWorkoutsStyles.statLabelTextDark : recentWorkoutsStyles.statLabelText}>
+                                                            VOLUME
+                                                        </Text>
+                                                    </View>
+                                                    <Text style={isDark ? recentWorkoutsStyles.statValueDark : recentWorkoutsStyles.statValue}>
+                                                        {stats.totalVolume.toLocaleString()} lbs
+                                                    </Text>
+                                                </View>
+                                            </View>
+
+                                            {/* Progress Bar */}
+                                            <View style={isDark ? recentWorkoutsStyles.progressBarDark : recentWorkoutsStyles.progressBar}>
+                                                <View
+                                                    style={{
+                                                        backgroundColor: '#10b981',
+                                                        height: '100%',
+                                                        width: `${stats.totalSets > 0 ? (stats.completedSets / stats.totalSets) * 100 : 0}%`
+                                                    }}
+                                                />
+                                            </View>
+                                            <Text style={isDark ? recentWorkoutsStyles.progressTextDark : recentWorkoutsStyles.progressText}>
+                                                {stats.totalSets > 0 ? Math.round((stats.completedSets / stats.totalSets) * 100) : 0}% Complete
+                                            </Text>
+                                        </View>
+                                    ) : (
+                                        <View style={recentWorkoutsStyles.compactStatsRow}>
+                                            <View style={recentWorkoutsStyles.compactStat}>
+                                                <Ionicons name="time-outline" size={12} color="#3b82f6" />
+                                                <Text style={isDark ? recentWorkoutsStyles.compactStatTextDark : recentWorkoutsStyles.compactStatText}>
+                                                    {workout.duration ? formatDuration(workout.duration) : 'N/A'}
+                                                </Text>
+                                            </View>
+                                            <View style={recentWorkoutsStyles.compactStat}>
+                                                <Ionicons name="barbell-outline" size={12} color="#10b981" />
+                                                <Text style={isDark ? recentWorkoutsStyles.compactStatTextDark : recentWorkoutsStyles.compactStatText}>
+                                                    {workout.exercises?.length || 0} exercises
+                                                </Text>
+                                            </View>
+                                            <View style={recentWorkoutsStyles.compactStat}>
+                                                <Ionicons name="checkmark-circle-outline" size={12} color="#f59e0b" />
+                                                <Text style={isDark ? recentWorkoutsStyles.compactStatTextDark : recentWorkoutsStyles.compactStatText}>
+                                                    {stats.completedSets}/{stats.totalSets} sets
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    )}
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </View>
+                </LinearGradient>
+            ) : (
+                <View style={isDark ? recentWorkoutsStyles.cardContainerDark : recentWorkoutsStyles.cardContainer}>
+                    <View style={recentWorkoutsStyles.headerRow}>
+                        <View style={recentWorkoutsStyles.headerLeft}>
+                            <Ionicons name="time" size={22} color="#10B981" style={{ marginRight: 8 }} />
+                            <Text style={isDark ? recentWorkoutsStyles.headerTitleDark : recentWorkoutsStyles.headerTitle}>
+                                Recent Workouts
+                            </Text>
+                        </View>
+                        <View style={recentWorkoutsStyles.headerRight}>
+                            <TouchableOpacity
+                                onPress={() => setShowAllModal(true)}
+                                style={recentWorkoutsStyles.seeAllButton}
+                            >
+                                <Text style={isDark ? recentWorkoutsStyles.seeAllTextDark : recentWorkoutsStyles.seeAllText}>
+                                    See All
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    <View style={recentWorkoutsStyles.workoutsContainer}>
+                        {recentWorkouts.map((workout) => {
+                            const isTemplate = workout.workoutType === 'template' && workout.templateName;
+                            const stats = calculateStats(workout);
+
+                            return (
+                                <TouchableOpacity
+                                    key={workout._id}
+                                    activeOpacity={0.7}
+                                    onPress={() => setSelectedWorkout(workout)}
+                                    style={isDark ? recentWorkoutsStyles.workoutCardDark : recentWorkoutsStyles.workoutCard}
+                                >
+                                    {/* Same content as compact mode but without compact styles */}
+                                    <View style={isDark ? recentWorkoutsStyles.workoutHeaderDark : recentWorkoutsStyles.workoutHeader}>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+                                            <View style={{ flex: 1, paddingRight: 8 }}>
+                                                <View style={recentWorkoutsStyles.workoutTypeRow}>
+                                                    <Ionicons name={isTemplate ? "albums" : "flash"} size={14} color={isTemplate ? "#a855f7" : "#3b82f6"} />
+                                                    <Text
+                                                        style={isDark ? recentWorkoutsStyles.workoutTypeNameDark : recentWorkoutsStyles.workoutTypeName}
+                                                        numberOfLines={1}
+                                                    >
+                                                        {isTemplate ? workout.templateName : 'Freestyle Workout'}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                            <View style={isDark ? recentWorkoutsStyles.dateBadgeDark : recentWorkoutsStyles.dateBadge}>
+                                                <Text style={isDark ? recentWorkoutsStyles.dateTextDark : recentWorkoutsStyles.dateText}>
+                                                    {formatDate(workout.createdAt)}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    <View style={recentWorkoutsStyles.statsSection}>
+                                        <View style={recentWorkoutsStyles.statsRow}>
+                                            <View style={recentWorkoutsStyles.statItem}>
+                                                <View style={recentWorkoutsStyles.statLabel}>
+                                                    <Ionicons name="time-outline" size={16} color="#3b82f6" />
+                                                    <Text style={isDark ? recentWorkoutsStyles.statLabelTextDark : recentWorkoutsStyles.statLabelText}>
+                                                        DURATION
+                                                    </Text>
+                                                </View>
+                                                <Text style={isDark ? recentWorkoutsStyles.statValueDark : recentWorkoutsStyles.statValue}>
+                                                    {workout.duration ? formatDuration(workout.duration) : 'N/A'}
+                                                </Text>
+                                            </View>
+                                            <View style={recentWorkoutsStyles.statItemLeft}>
+                                                <View style={recentWorkoutsStyles.statLabel}>
+                                                    <Ionicons name="barbell-outline" size={16} color="#10b981" />
+                                                    <Text style={isDark ? recentWorkoutsStyles.statLabelTextDark : recentWorkoutsStyles.statLabelText}>
+                                                        EXERCISES
+                                                    </Text>
+                                                </View>
+                                                <Text style={isDark ? recentWorkoutsStyles.statValueDark : recentWorkoutsStyles.statValue}>
+                                                    {workout.exercises?.length || 0}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        <View style={recentWorkoutsStyles.statsRow}>
+                                            <View style={recentWorkoutsStyles.statItem}>
+                                                <View style={recentWorkoutsStyles.statLabel}>
+                                                    <Ionicons name="checkmark-circle-outline" size={16} color="#f59e0b" />
+                                                    <Text style={isDark ? recentWorkoutsStyles.statLabelTextDark : recentWorkoutsStyles.statLabelText}>
+                                                        SETS
+                                                    </Text>
+                                                </View>
+                                                <Text style={isDark ? recentWorkoutsStyles.statValueDark : recentWorkoutsStyles.statValue}>
+                                                    {stats.completedSets}/{stats.totalSets}
+                                                </Text>
+                                            </View>
+                                            <View style={recentWorkoutsStyles.statItemLeft}>
+                                                <View style={recentWorkoutsStyles.statLabel}>
+                                                    <Ionicons name="analytics-outline" size={16} color="#8b5cf6" />
+                                                    <Text style={isDark ? recentWorkoutsStyles.statLabelTextDark : recentWorkoutsStyles.statLabelText}>
+                                                        VOLUME
+                                                    </Text>
+                                                </View>
+                                                <Text style={isDark ? recentWorkoutsStyles.statValueDark : recentWorkoutsStyles.statValue}>
+                                                    {stats.totalVolume.toLocaleString()} lbs
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        <View style={isDark ? recentWorkoutsStyles.progressBarDark : recentWorkoutsStyles.progressBar}>
+                                            <View
+                                                style={{
+                                                    backgroundColor: '#10b981',
+                                                    height: '100%',
+                                                    width: `${stats.totalSets > 0 ? (stats.completedSets / stats.totalSets) * 100 : 0}%`
+                                                }}
+                                            />
+                                        </View>
+                                        <Text style={isDark ? recentWorkoutsStyles.progressTextDark : recentWorkoutsStyles.progressText}>
+                                            {stats.totalSets > 0 ? Math.round((stats.completedSets / stats.totalSets) * 100) : 0}% Complete
+                                        </Text>
+                                    </View>
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </View>
+                </View>
+            )}
             <WorkoutDetailModal
                 visible={selectedWorkout !== null}
                 workout={selectedWorkout}

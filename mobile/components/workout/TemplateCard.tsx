@@ -40,6 +40,16 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template, hasActiveW
         router.push(`/workout/edit-template/${template._id}` as any);
     };
 
+    const handleShareTemplate = () => {
+        router.push({
+            pathname: '/share-template',
+            params: {
+                templateId: template._id,
+                templateName: template.name,
+            },
+        } as any);
+    };
+
     return (
         <View style={styles.container}>
             <TouchableOpacity
@@ -72,6 +82,14 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template, hasActiveW
                         </View>
                     </View>
                 </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                style={styles.shareButton}
+                onPress={handleShareTemplate}
+                activeOpacity={0.7}
+            >
+                <Ionicons name="share-social" size={18} color={isDark ? '#a78bfa' : '#9333ea'} />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -143,6 +161,15 @@ const createStyles = (isDark: boolean) => StyleSheet.create({
     statText: {
         fontSize: 11,
         color: isDark ? '#94a3b8' : '#6b7280',
+    },
+    shareButton: {
+        width: 36,
+        height: 36,
+        borderRadius: 8,
+        backgroundColor: isDark ? '#334155' : '#f3e8ff',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 8,
     },
     startButton: {
         borderRadius: 8,

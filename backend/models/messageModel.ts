@@ -5,16 +5,18 @@ interface IMessage {
     receiverId: mongoose.Schema.Types.ObjectId;
     text: string;
     image: string;
+    messageType: 'text' | 'image' | 'template';
+    templateData?: mongoose.Schema.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
 }
 
 const messageSchema = new Schema(
     {
-        senderId: { 
-            type: Schema.Types.ObjectId, 
-            ref: 'User', 
-            required: true 
+        senderId: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
         },
         receiverId: {
             type: Schema.Types.ObjectId,
@@ -22,9 +24,19 @@ const messageSchema = new Schema(
             required: true,
         },
         text: { type: String, required: false },
-        image: { type: String , required: false },
+        image: { type: String, required: false },
+        messageType: {
+            type: String,
+            enum: ['text', 'image', 'template'],
+            default: 'text',
+        },
+        templateData: {
+            type: Schema.Types.ObjectId,
+            ref: 'WorkoutTemplate',
+            required: false,
+        },
     },
-    { timestamps: true }
+    { timestamps: true },
 );
 
 const Message: Model<IMessage> = model<IMessage>('Message', messageSchema);

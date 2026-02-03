@@ -145,6 +145,14 @@ export const workoutTemplateApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ['WorkoutTemplate'],
         }),
+        importTemplate: builder.mutation<CreateTemplateResponse, string>({
+            query: (id) => ({
+                url: `${BASE_URL}/workout-templates/import/${id}`,
+                method: 'POST',
+                credentials: 'include',
+            }),
+            invalidatesTags: ['WorkoutTemplate'],
+        }),
     }),
 });
 
@@ -155,4 +163,5 @@ export const {
     useUpdateTemplateMutation,
     useDeleteTemplateMutation,
     useMoveTemplateMutation,
+    useImportTemplateMutation,
 } = workoutTemplateApiSlice;

@@ -1,11 +1,67 @@
 import { StyleSheet } from 'react-native';
 
 const recentWorkoutsStyles = StyleSheet.create({
+    section: {
+        marginBottom: 24,
+    },
+    sectionCompact: {
+        marginBottom: 12,
+    },
+    cardContainer: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        padding: 20,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 3,
+    },
+    cardContainerDark: {
+        backgroundColor: '#1F2937',
+        borderRadius: 16,
+        padding: 20,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 3,
+    },
+    cardContainerCompact: {
+        borderRadius: 12,
+        padding: 12,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 1,
+    },
+    cardContainerCompactDark: {
+        borderRadius: 12,
+        padding: 12,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 1,
+    },
     headerRow: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: 16,
+        marginBottom: 12,
     },
     headerLeft: {
         flexDirection: 'row',
@@ -37,6 +93,52 @@ const recentWorkoutsStyles = StyleSheet.create({
     seeAllTextDark: {
         fontSize: 14,
         color: '#60A5FA',
+        fontWeight: '600',
+    },
+    seeAllTextCompact: {
+        fontSize: 12,
+        color: '#2563EB',
+        fontWeight: '600',
+    },
+    seeAllTextCompactDark: {
+        fontSize: 12,
+        color: '#60A5FA',
+        fontWeight: '600',
+    },
+    seeAllButtonCompact: {
+        borderRadius: 8,
+        overflow: 'hidden',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        elevation: 2,
+    },
+    seeAllButtonCompactDark: {
+        borderRadius: 8,
+        overflow: 'hidden',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
+        elevation: 2,
+    },
+    seeAllButtonGradient: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        gap: 6,
+    },
+    seeAllButtonText: {
+        fontSize: 12,
+        color: '#FFFFFF',
         fontWeight: '600',
     },
     loadingContainer: {
@@ -241,6 +343,97 @@ const recentWorkoutsStyles = StyleSheet.create({
         color: '#9CA3AF',
         marginTop: 4,
         textAlign: 'center',
+    },
+    // Compact styles
+    headerRowCompact: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+    },
+    headerTitleCompact: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#111827',
+    },
+    headerTitleCompactDark: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#FFFFFF',
+    },
+    workoutCardCompact: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        elevation: 1,
+    },
+    workoutCardCompactDark: {
+        backgroundColor: '#1F2937',
+        borderRadius: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.15,
+        shadowRadius: 2,
+        elevation: 1,
+    },
+    workoutTypeNameCompact: {
+        fontSize: 14,
+        color: '#4B5563',
+        marginLeft: 4,
+        fontWeight: '500',
+    },
+    workoutTypeNameCompactDark: {
+        fontSize: 14,
+        color: '#9CA3AF',
+        marginLeft: 4,
+        fontWeight: '500',
+    },
+    dateBadgeCompact: {
+        backgroundColor: '#F3F4F6',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 6,
+    },
+    dateBadgeCompactDark: {
+        backgroundColor: '#374151',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 6,
+    },
+    dateTextCompact: {
+        fontSize: 10,
+        color: '#4B5563',
+        fontWeight: '600',
+    },
+    dateTextCompactDark: {
+        fontSize: 10,
+        color: '#9CA3AF',
+        fontWeight: '600',
+    },
+    compactStatsRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+    },
+    compactStat: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+    },
+    compactStatText: {
+        fontSize: 11,
+        color: '#6B7280',
+        fontWeight: '500',
+    },
+    compactStatTextDark: {
+        fontSize: 11,
+        color: '#9CA3AF',
+        fontWeight: '500',
     },
 });
 

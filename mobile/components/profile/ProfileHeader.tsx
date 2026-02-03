@@ -57,7 +57,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     const [showOptionsMenu, setShowOptionsMenu] = useState(false);
 
     const handleMessageClick = () => {
-        router.push(`/chat?userId=${user._id}`);
+        router.push(`/(tabs)/chat?userId=${user._id}&username=${user.username}&name=${encodeURIComponent(user.name)}&photo=${encodeURIComponent(user.photo || '')}`);
     };
 
     const handleReportUser = () => {

@@ -15,7 +15,6 @@ import Toast from "react-native-toast-message";
 import { useAppSelector } from "../../hooks/useRedux";
 
 // API Slices
-import { useGetWorkoutStatsQuery, useGetWorkoutsQuery } from "../../slices/workoutApiSlice";
 import { useGetDailyNutritionQuery } from "../../slices/nutritionApiSlice";
 import { useGetUserProfileQuery, useGetSuggestedUsersQuery, useFollowUnfollowUserMutation } from "../../slices/usersApiSlice";
 import { useGetPostsQuery } from "../../slices/postsApiSlice";
@@ -23,8 +22,6 @@ import { useGetPostsQuery } from "../../slices/postsApiSlice";
 // Components
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import NutritionOverview from "@/components/dashboard/NutritionOverview";
-import WorkoutStats from "@/components/dashboard/WorkoutStats";
-import RecentWorkouts from "@/components/dashboard/RecentWorkouts";
 import SocialStats from "@/components/dashboard/SocialStats";
 import SuggestedUsers from "@/components/dashboard/SuggestedUsers";
 
@@ -40,8 +37,6 @@ export default function HomeScreen() {
     const isDark = colorScheme === 'dark';
 
     // Fetch data
-    const { data: workoutStats, refetch: refetchWorkoutStats } = useGetWorkoutStatsQuery({});
-    const { data: workouts, isLoading: isLoadingWorkouts, refetch: refetchWorkouts } = useGetWorkoutsQuery({});
     const { data: nutritionData, refetch: refetchNutrition } = useGetDailyNutritionQuery();
     const { data: currentUserProfile, refetch: refetchProfile } = useGetUserProfileQuery({});
     const { data: suggestedUsers, isLoading: isLoadingSuggested, refetch: refetchSuggested } = useGetSuggestedUsersQuery({});
@@ -51,8 +46,6 @@ export default function HomeScreen() {
     const handleRefresh = async () => {
         setRefreshing(true);
         await Promise.all([
-            refetchWorkoutStats(),
-            refetchWorkouts(),
             refetchNutrition(),
             refetchProfile(),
             refetchSuggested(),
@@ -134,17 +127,6 @@ export default function HomeScreen() {
                         nutritionTotals={nutritionTotals}
                         nutritionGoals={nutritionGoals}
                     />
-
-                    {/* Workout Stats */}
-                    <WorkoutStats
-                        workoutStats={workoutStats}
-                        daysActive={daysActive}
-                    />
-
-                    {/* Recent Workouts */}
-                    <View style={dashboardStyles.section}>
-                        <RecentWorkouts workouts={workouts} isLoading={isLoadingWorkouts} />
-                    </View>
 
                     {/* Social Stats */}
                     <SocialStats

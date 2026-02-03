@@ -25,10 +25,17 @@ interface User {
 
 interface Message {
     _id: string;
-    senderId: string;
+    senderId: string | { _id: string; name: string; username: string; photo?: string; };
     receiverId: string;
     text: string;
     image?: string;
+    messageType?: 'text' | 'image' | 'template';
+    templateData?: {
+        _id: string;
+        name: string;
+        description?: string;
+        exercises: any[];
+    };
     createdAt: string;
 }
 

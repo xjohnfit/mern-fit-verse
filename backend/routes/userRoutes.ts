@@ -12,6 +12,7 @@ import {
     getAllUsers,
     updateUserRole,
     updatePushToken,
+    getFollowing,
 } from '../controllers/userController';
 
 const router = express.Router();
@@ -22,6 +23,7 @@ router.put('/nutrition-goals', protect, updateNutritionGoals); // Update nutriti
 router.get('/profile/view/suggested', protect, getSuggestedUsers); // Get suggested users to follow
 router.get('/profile/view/:username', protect, viewUserProfile); // View another user's profile
 router.post('/profile/follow/:username', protect, followUnfollowUser); // Follow/Unfollow a user
+router.get('/following', protect, getFollowing); // Get user's following list
 
 // Admin routes
 router.get('/admin/users', protect, admin, getAllUsers); // Admin: Get all users

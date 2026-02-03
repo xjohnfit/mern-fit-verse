@@ -259,6 +259,7 @@ const createStyles = (isDark: boolean) => StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         gap: 12,
+        justifyContent: 'center',
     },
     colorOption: {
         width: 52,

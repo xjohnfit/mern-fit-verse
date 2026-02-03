@@ -43,10 +43,17 @@ interface User {
 
 interface Message {
   _id: string;
-  senderId: string;
+  senderId: string | { _id: string; name: string; username: string; photo?: string; };
   receiverId: string;
   text: string;
   image?: string;
+  messageType?: 'text' | 'image' | 'template';
+  templateData?: {
+    _id: string;
+    name: string;
+    description?: string;
+    exercises: any[];
+  };
   createdAt: string;
   updatedAt?: string;
 }
@@ -63,7 +70,12 @@ const ChatScreen = () => {
     { skip: !userInfo?._id }
   );
 
-  const { userId } = useLocalSearchParams<{ userId?: string; }>();
+  const { userId, username, name, photo } = useLocalSearchParams<{
+    userId?: string;
+    username?: string;
+    name?: string;
+    photo?: string;
+  }>();
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -83,9 +95,19 @@ const ChatScreen = () => {
       const user = usersWithMessages.find((u: User) => u._id === userId);
       if (user) {
         setSelectedUser(user);
+      } else if (username && name) {
+        // Create user object from params if not found in usersWithMessages
+        // This handles the case of messaging someone for the first time
+        const newUser: User = {
+          _id: userId,
+          username: username,
+          name: decodeURIComponent(name),
+          photo: photo ? decodeURIComponent(photo) : undefined,
+        };
+        setSelectedUser(newUser);
       }
     }
-  }, [userId, usersWithMessages]);
+  }, [userId, username, name, photo, usersWithMessages]);
 
   // Use lazy query for manual message fetching
   const [fetchMessages] = useLazyGetMessagesQuery();
@@ -197,7 +219,8 @@ const ChatScreen = () => {
     const handleNewMessage = async (message: Message) => {
       // If message is for current user
       if (message.receiverId === userInfo?._id || message.senderId === userInfo?._id) {
-        const otherUserId = message.senderId === userInfo._id ? message.receiverId : message.senderId;
+        const messageSenderId = typeof message.senderId === 'string' ? message.senderId : message.senderId._id;
+        const otherUserId = messageSenderId === userInfo._id ? message.receiverId : messageSenderId;
 
         // Update cache with new message
         await appendMessageToCache(userInfo._id, otherUserId, message);

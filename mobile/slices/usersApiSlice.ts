@@ -100,6 +100,13 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
+        getFollowing: builder.query<any[], void>({
+            query: () => ({
+                url: '/users/following',
+                method: 'GET',
+            }),
+            providesTags: ['User'],
+        }),
     }),
 });
 
@@ -117,4 +124,5 @@ export const {
     useGetAllUsersQuery,
     useUpdateUserRoleMutation,
     useUpdatePasswordMutation,
+    useGetFollowingQuery,
 } = usersApiSlice;
