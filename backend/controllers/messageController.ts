@@ -153,16 +153,11 @@ export const getUsersWithMessages = asyncHandler(
                     ? msg.receiverId.toString()
                     : msg.senderId.toString();
 
-            if (otherUserId !== userId) {
+            if (otherUserId !== userId && msg.createdAt) {
                 const currentLastMessage = userLastMessageMap.get(otherUserId);
-                if (
-                    !currentLastMessage ||
-                    new Date(msg.createdAt) > currentLastMessage
-                ) {
-                    userLastMessageMap.set(
-                        otherUserId,
-                        new Date(msg.createdAt),
-                    );
+                const messageDate = new Date(msg.createdAt);
+                if (!currentLastMessage || messageDate > currentLastMessage) {
+                    userLastMessageMap.set(otherUserId, messageDate);
                 }
             }
         });
