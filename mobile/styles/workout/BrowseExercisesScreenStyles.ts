@@ -152,9 +152,9 @@ const createStyles = (isDark: boolean) =>
             alignItems: 'center',
         },
         exerciseIconCircle: {
-            width: 40,
-            height: 40,
-            borderRadius: 20,
+            width: 60,
+            height: 60,
+            borderRadius: 30,
             backgroundColor: isDark ? '#334155' : '#F9FAFB',
             alignItems: 'center',
             justifyContent: 'center',
@@ -164,9 +164,9 @@ const createStyles = (isDark: boolean) =>
             borderColor: isDark ? '#475569' : '#E5E7EB',
         },
         exerciseImage: {
-            width: 40,
-            height: 40,
-            borderRadius: 20,
+            width: 60,
+            height: 60,
+            borderRadius: 30,
         },
         exerciseInfo: {
             flex: 1,

@@ -44,6 +44,7 @@ export interface User {
     name: string;
     username: string;
     photo?: string;
+    lastMessageAt?: string;
 }
 
 const MESSAGE_URL = '/messages';

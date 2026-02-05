@@ -142,26 +142,48 @@ export const getUsersWithMessages = asyncHandler(
         const messages = await Message.find({
             $or: [{ senderId: userObjectId }, { receiverId: userObjectId }],
         })
-            .select('senderId receiverId')
+            .select('senderId receiverId createdAt')
             .lean();
 
-        // Extract unique user IDs (excluding the current user)
-        const userIds = new Set<string>();
+        // Extract unique user IDs with their last message timestamp
+        const userLastMessageMap = new Map<string, Date>();
         messages.forEach((msg) => {
-            if (msg.senderId.toString() !== userId) {
-                userIds.add(msg.senderId.toString());
-            }
-            if (msg.receiverId.toString() !== userId) {
-                userIds.add(msg.receiverId.toString());
+            const otherUserId =
+                msg.senderId.toString() === userId
+                    ? msg.receiverId.toString()
+                    : msg.senderId.toString();
+
+            if (otherUserId !== userId) {
+                const currentLastMessage = userLastMessageMap.get(otherUserId);
+                if (
+                    !currentLastMessage ||
+                    new Date(msg.createdAt) > currentLastMessage
+                ) {
+                    userLastMessageMap.set(otherUserId, new Date(msg.createdAt));
+                }
             }
         });
 
         // Get user details for all unique user IDs
         const users = await User.find({
-            _id: { $in: Array.from(userIds) },
+            _id: { $in: Array.from(userLastMessageMap.keys()) },
         }).select('_id name username photo');
 
-        res.json(users);
+        // Add lastMessageAt to each user and sort by latest message
+        const usersWithLastMessage = users
+            .map((user) => ({
+                _id: user._id,
+                name: user.name,
+                username: user.username,
+                photo: user.photo,
+                lastMessageAt: userLastMessageMap.get(user._id.toString()),
+            }))
+            .sort((a, b) => {
+                // Sort by most recent message first
+                return (b.lastMessageAt?.getTime() || 0) - (a.lastMessageAt?.getTime() || 0);
+            });
+
+        res.json(usersWithLastMessage);
     },
 );
 

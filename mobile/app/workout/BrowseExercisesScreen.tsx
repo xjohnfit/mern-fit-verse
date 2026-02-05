@@ -23,6 +23,22 @@ import ExerciseInfoModal from '@/components/workout/ExerciseInfoModal';
 // Styles
 import createStyles from '@/styles/workout/BrowseExercisesScreenStyles';
 
+// Helper function to get category icon
+const getCategoryIcon = (category: string): keyof typeof Ionicons.glyphMap => {
+  const categoryLower = category.toLowerCase();
+
+  if (categoryLower.includes('arm')) return 'barbell-outline';
+  if (categoryLower.includes('back')) return 'body-outline';
+  if (categoryLower.includes('chest')) return 'fitness-outline';
+  if (categoryLower.includes('core') || categoryLower.includes('ab')) return 'remove-outline';
+  if (categoryLower.includes('glute') || categoryLower.includes('butt')) return 'triangle-outline';
+  if (categoryLower.includes('leg') || categoryLower.includes('thigh') || categoryLower.includes('calf')) return 'walk-outline';
+  if (categoryLower.includes('shoulder')) return 'chevron-up-outline';
+  if (categoryLower.includes('cardio')) return 'heart-outline';
+
+  return 'fitness';
+};
+
 const BrowseExercisesScreen = () => {
   const insets = useSafeAreaInsets();
   const colorScheme = useColorScheme();
@@ -152,7 +168,7 @@ const BrowseExercisesScreen = () => {
                       color={isDark ? '#FFFFFF' : '#7E22CE'}
                     />
                     <View style={styles.categoryIconCircle}>
-                      <Ionicons name="fitness" size={18} color="#9333ea" />
+                      <Ionicons name={getCategoryIcon(category)} size={18} color={isDark ? '#FFFFFF' : '#1F2937'} />
                     </View>
                     <Text style={styles.categoryTitle}>{category}</Text>
                     <View style={styles.categoryBadge}>

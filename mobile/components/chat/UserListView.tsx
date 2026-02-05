@@ -20,6 +20,7 @@ interface User {
     name: string;
     username: string;
     photo?: string;
+    lastMessageAt?: string;
 }
 
 interface UserListViewProps {
@@ -43,12 +44,23 @@ const UserListView: React.FC<UserListViewProps> = ({
     const insets = useSafeAreaInsets();
     const styles = useMemo(() => createStyles(colorScheme === 'dark'), [colorScheme]);
 
-    // Sort users: online users first, then offline users
-    const sortedUsers = users.sort((a: User, b: User) => {
+    // Sort users by latest message timestamp (most recent first)
+    // Backend already sorts by lastMessageAt, but we can add secondary sorting
+    const sortedUsers = [...users].sort((a: User, b: User) => {
+        // If both have lastMessageAt, sort by timestamp
+        if (a.lastMessageAt && b.lastMessageAt) {
+            return new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime();
+        }
+        // If only one has lastMessageAt, prioritize it
+        if (a.lastMessageAt && !b.lastMessageAt) return -1;
+        if (!a.lastMessageAt && b.lastMessageAt) return 1;
+        
+        // If neither has lastMessageAt, sort by online status
         const aOnline = onlineUsers.includes(a._id);
         const bOnline = onlineUsers.includes(b._id);
         if (aOnline && !bOnline) return -1;
         if (!aOnline && bOnline) return 1;
+        
         return 0;
     });
 
