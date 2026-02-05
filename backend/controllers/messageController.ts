@@ -159,7 +159,10 @@ export const getUsersWithMessages = asyncHandler(
                     !currentLastMessage ||
                     new Date(msg.createdAt) > currentLastMessage
                 ) {
-                    userLastMessageMap.set(otherUserId, new Date(msg.createdAt));
+                    userLastMessageMap.set(
+                        otherUserId,
+                        new Date(msg.createdAt),
+                    );
                 }
             }
         });
@@ -180,7 +183,10 @@ export const getUsersWithMessages = asyncHandler(
             }))
             .sort((a, b) => {
                 // Sort by most recent message first
-                return (b.lastMessageAt?.getTime() || 0) - (a.lastMessageAt?.getTime() || 0);
+                return (
+                    (b.lastMessageAt?.getTime() || 0) -
+                    (a.lastMessageAt?.getTime() || 0)
+                );
             });
 
         res.json(usersWithLastMessage);

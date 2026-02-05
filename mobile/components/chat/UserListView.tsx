@@ -54,13 +54,13 @@ const UserListView: React.FC<UserListViewProps> = ({
         // If only one has lastMessageAt, prioritize it
         if (a.lastMessageAt && !b.lastMessageAt) return -1;
         if (!a.lastMessageAt && b.lastMessageAt) return 1;
-        
+
         // If neither has lastMessageAt, sort by online status
         const aOnline = onlineUsers.includes(a._id);
         const bOnline = onlineUsers.includes(b._id);
         if (aOnline && !bOnline) return -1;
         if (!aOnline && bOnline) return 1;
-        
+
         return 0;
     });
 
