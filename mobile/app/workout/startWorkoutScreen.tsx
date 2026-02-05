@@ -32,7 +32,6 @@ import createStyles from '@/styles/workout/startWorkoutStyles';
 // Configure notification handler - this determines how notifications are presented when app is in foreground
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
-        shouldShowAlert: true,
         shouldSetBadge: true,
         shouldShowBanner: true,
         shouldShowList: true,
@@ -671,6 +670,15 @@ const StartWorkoutScreen = () => {
         });
 
         if (isCompleting) {
+            // Cancel any existing rest timer notification before starting a new one
+            if (restTimerNotificationId.current) {
+                Notifications.cancelScheduledNotificationAsync(restTimerNotificationId.current)
+                    .then(() => {
+                        restTimerNotificationId.current = null;
+                    })
+                    .catch((err) => console.error('Error canceling notification:', err));
+            }
+
             const currentExerciseIndex = selectedExercises.findIndex((ex) => ex.id === exerciseId);
             const updatedCurrentExercise = {
                 ...currentExercise,

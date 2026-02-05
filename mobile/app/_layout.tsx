@@ -22,7 +22,6 @@ import { useGetUserProfileQuery } from '../slices/usersApiSlice';
 // Configure notification handler at app level for background notifications
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
-        shouldShowAlert: true,
         shouldSetBadge: true,
         shouldShowBanner: true,
         shouldShowList: true,
