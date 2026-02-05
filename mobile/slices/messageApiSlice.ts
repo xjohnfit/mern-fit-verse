@@ -116,7 +116,10 @@ export const messageApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ['Message'],
         }),
-        markMessagesAsRead: builder.mutation<void, { userId: string; otherUserId: string }>({
+        markMessagesAsRead: builder.mutation<
+            void,
+            { userId: string; otherUserId: string }
+        >({
             query: (data) => ({
                 url: `${MESSAGE_URL}/mark-read`,
                 method: 'POST',
