@@ -15,7 +15,8 @@ import { useGetUserProfileQuery } from '@/slices/usersApiSlice';
 import {
   useSendMessageMutation,
   useLazyGetMessagesQuery,
-  useGetUsersWithMessagesQuery
+  useGetUsersWithMessagesQuery,
+  useMarkMessagesAsReadMutation
 } from '@/slices/messageApiSlice';
 
 // Hooks
@@ -115,6 +116,7 @@ const ChatScreen = () => {
 
   // Use lazy query for manual message fetching
   const [fetchMessages] = useLazyGetMessagesQuery();
+  const [markMessagesAsRead] = useMarkMessagesAsReadMutation();
 
   // Load cached messages and fetch latest when user is selected
   useEffect(() => {
@@ -125,6 +127,16 @@ const ChatScreen = () => {
 
       setIsInitialLoad(true);
       setHasMoreMessages(true);
+
+      // Mark messages as read when opening conversation
+      try {
+        await markMessagesAsRead({
+          userId: userInfo._id,
+          otherUserId: selectedUser._id,
+        });
+      } catch (error) {
+        console.error('Failed to mark messages as read:', error);
+      }
 
       // Load cached messages immediately for instant display
       const cached = await getCachedMessages(userInfo._id, selectedUser._id);

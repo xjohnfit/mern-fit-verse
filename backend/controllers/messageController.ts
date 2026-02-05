@@ -302,3 +302,29 @@ export const shareTemplate = asyncHandler(
         res.status(201).json(populatedMessage);
     },
 );
+
+// Mark messages as read
+export const markMessagesAsRead = asyncHandler(
+    async (req: Request, res: Response) => {
+        const { userId, otherUserId } = req.body;
+
+        if (!userId || !otherUserId) {
+            res.status(400);
+            throw new Error('User ID and other user ID are required');
+        }
+
+        // Mark all messages from otherUserId to userId as read
+        await Message.updateMany(
+            {
+                senderId: otherUserId,
+                receiverId: userId,
+                read: false,
+            },
+            {
+                $set: { read: true },
+            },
+        );
+
+        res.json({ message: 'Messages marked as read' });
+    },
+);

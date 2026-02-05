@@ -33,6 +33,13 @@ const UserListItem: React.FC<UserListItemProps> = ({ user, isOnline, onPress }) 
             .slice(0, 2);
     };
 
+    const toTitleCase = (name: string) => {
+        return name
+            .split(' ')
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+    };
+
     const getLastMessagePreview = () => {
         if (!user.lastMessage) {
             return 'No messages yet';
@@ -75,7 +82,7 @@ const UserListItem: React.FC<UserListItemProps> = ({ user, isOnline, onPress }) 
                     numberOfLines={1}
                     ellipsizeMode="tail"
                 >
-                    {user.name}
+                    {toTitleCase(user.name)}
                 </Text>
                 <Text
                     style={[

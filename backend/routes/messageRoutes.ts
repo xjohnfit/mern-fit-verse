@@ -3,6 +3,7 @@ import {
     sendMessage,
     getUsersWithMessages,
     shareTemplate,
+    markMessagesAsRead,
 } from '../controllers/messageController';
 import { protect } from '../middlewares/authMiddleware';
 import express from 'express';
@@ -13,5 +14,6 @@ router.get('/users/:userId', protect, getUsersWithMessages);
 router.get('/:senderId/:receiverId', protect, getMessages);
 router.post('/send', protect, sendMessage);
 router.post('/share-template', protect, shareTemplate);
+router.post('/mark-read', protect, markMessagesAsRead);
 
 export default router;
