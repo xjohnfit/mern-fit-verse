@@ -8,6 +8,8 @@ interface User {
     name: string;
     username: string;
     photo?: string;
+    lastMessage?: string;
+    lastMessageType?: string;
 }
 
 interface UserListItemProps {
@@ -28,6 +30,25 @@ const UserListItem: React.FC<UserListItemProps> = ({ user, isOnline, onPress }) 
             .join('')
             .toUpperCase()
             .slice(0, 2);
+    };
+
+    const getLastMessagePreview = () => {
+        if (!user.lastMessage) {
+            return 'No messages yet';
+        }
+
+        if (user.lastMessageType === 'template') {
+            return '📋 Shared a workout template';
+        }
+
+        if (user.lastMessageType === 'image') {
+            return '📷 Sent an image';
+        }
+
+        // Truncate text messages to 50 characters
+        return user.lastMessage.length > 50
+            ? user.lastMessage.substring(0, 50) + '...'
+            : user.lastMessage;
     };
 
     return (
@@ -54,10 +75,11 @@ const UserListItem: React.FC<UserListItemProps> = ({ user, isOnline, onPress }) 
                 <Text
                     style={[
                         styles.userStatus,
-                        { color: isOnline ? '#3B82F6' : '#6b7280' },
+                        { color: '#6b7280' },
                     ]}
+                    numberOfLines={1}
                 >
-                    {isOnline ? 'Online' : 'Offline'}
+                    {getLastMessagePreview()}
                 </Text>
             </View>
             <Ionicons name="chevron-forward" size={22} color="#06b6d4" />

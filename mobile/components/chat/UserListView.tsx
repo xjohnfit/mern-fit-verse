@@ -21,6 +21,8 @@ interface User {
     username: string;
     photo?: string;
     lastMessageAt?: string;
+    lastMessage?: string;
+    lastMessageType?: string;
 }
 
 interface UserListViewProps {

@@ -142,11 +142,18 @@ export const getUsersWithMessages = asyncHandler(
         const messages = await Message.find({
             $or: [{ senderId: userObjectId }, { receiverId: userObjectId }],
         })
-            .select('senderId receiverId createdAt')
+            .select('senderId receiverId createdAt text messageType')
+            .sort({ createdAt: -1 }) // Sort by most recent first
             .lean();
 
-        // Extract unique user IDs with their last message timestamp
-        const userLastMessageMap = new Map<string, Date>();
+        // Extract unique user IDs with their last message timestamp and content
+        const userLastMessageMap = new Map<
+            string,
+            { date: Date; text: string; messageType?: string }
+        >();
+
+        // Since messages are sorted by most recent first, the first message
+        // for each user will be their latest message
         messages.forEach((msg) => {
             const otherUserId =
                 msg.senderId.toString() === userId
@@ -154,10 +161,13 @@ export const getUsersWithMessages = asyncHandler(
                     : msg.senderId.toString();
 
             if (otherUserId !== userId && msg.createdAt) {
-                const currentLastMessage = userLastMessageMap.get(otherUserId);
-                const messageDate = new Date(msg.createdAt);
-                if (!currentLastMessage || messageDate > currentLastMessage) {
-                    userLastMessageMap.set(otherUserId, messageDate);
+                // Only set if we haven't seen this user yet (first = most recent)
+                if (!userLastMessageMap.has(otherUserId)) {
+                    userLastMessageMap.set(otherUserId, {
+                        date: new Date(msg.createdAt),
+                        text: msg.text || '',
+                        messageType: msg.messageType,
+                    });
                 }
             }
         });
@@ -170,7 +180,7 @@ export const getUsersWithMessages = asyncHandler(
         // Add lastMessageAt to each user and sort by latest message
         const usersWithLastMessage = users
             .map((user) => {
-                const lastMessageDate = userLastMessageMap.get(
+                const lastMessageData = userLastMessageMap.get(
                     user._id.toString(),
                 );
                 return {
@@ -178,9 +188,11 @@ export const getUsersWithMessages = asyncHandler(
                     name: user.name,
                     username: user.username,
                     photo: user.photo,
-                    lastMessageAt: lastMessageDate
-                        ? lastMessageDate.toISOString()
+                    lastMessageAt: lastMessageData
+                        ? lastMessageData.date.toISOString()
                         : undefined,
+                    lastMessage: lastMessageData?.text,
+                    lastMessageType: lastMessageData?.messageType,
                 };
             })
             .sort((a, b) => {
