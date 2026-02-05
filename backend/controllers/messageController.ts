@@ -174,19 +174,29 @@ export const getUsersWithMessages = asyncHandler(
 
         // Add lastMessageAt to each user and sort by latest message
         const usersWithLastMessage = users
-            .map((user) => ({
-                _id: user._id,
-                name: user.name,
-                username: user.username,
-                photo: user.photo,
-                lastMessageAt: userLastMessageMap.get(user._id.toString()),
-            }))
+            .map((user) => {
+                const lastMessageDate = userLastMessageMap.get(
+                    user._id.toString(),
+                );
+                return {
+                    _id: user._id,
+                    name: user.name,
+                    username: user.username,
+                    photo: user.photo,
+                    lastMessageAt: lastMessageDate
+                        ? lastMessageDate.toISOString()
+                        : undefined,
+                };
+            })
             .sort((a, b) => {
                 // Sort by most recent message first
-                return (
-                    (b.lastMessageAt?.getTime() || 0) -
-                    (a.lastMessageAt?.getTime() || 0)
-                );
+                const aTime = a.lastMessageAt
+                    ? new Date(a.lastMessageAt).getTime()
+                    : 0;
+                const bTime = b.lastMessageAt
+                    ? new Date(b.lastMessageAt).getTime()
+                    : 0;
+                return bTime - aTime;
             });
 
         res.json(usersWithLastMessage);
