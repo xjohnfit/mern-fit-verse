@@ -7,6 +7,7 @@ interface IMessage {
     image: string;
     messageType: 'text' | 'image' | 'template';
     templateData?: mongoose.Schema.Types.ObjectId;
+    read?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -34,6 +35,10 @@ const messageSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: 'WorkoutTemplate',
             required: false,
+        },
+        read: {
+            type: Boolean,
+            default: false,
         },
     },
     { timestamps: true },

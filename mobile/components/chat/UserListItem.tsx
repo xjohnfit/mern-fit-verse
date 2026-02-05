@@ -10,6 +10,7 @@ interface User {
     photo?: string;
     lastMessage?: string;
     lastMessageType?: string;
+    hasUnreadMessage?: boolean;
 }
 
 interface UserListItemProps {
@@ -69,13 +70,20 @@ const UserListItem: React.FC<UserListItemProps> = ({ user, isOnline, onPress }) 
                 />
             </View>
             <View style={styles.userInfo}>
-                <Text style={[styles.userName, { color: isDark ? '#f9fafb' : '#1f2937' }]}>
+                <Text
+                    style={[styles.userName, { color: isDark ? '#f9fafb' : '#1f2937' }]}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                >
                     {user.name}
                 </Text>
                 <Text
                     style={[
                         styles.userStatus,
-                        { color: '#6b7280' },
+                        {
+                            color: '#6b7280',
+                            fontWeight: user.hasUnreadMessage ? '700' : '400',
+                        },
                     ]}
                     numberOfLines={1}
                 >

@@ -47,6 +47,7 @@ export interface User {
     lastMessageAt?: string;
     lastMessage?: string;
     lastMessageType?: string;
+    hasUnreadMessage?: boolean;
 }
 
 const MESSAGE_URL = '/messages';

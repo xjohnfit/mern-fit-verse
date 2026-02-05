@@ -142,14 +142,19 @@ export const getUsersWithMessages = asyncHandler(
         const messages = await Message.find({
             $or: [{ senderId: userObjectId }, { receiverId: userObjectId }],
         })
-            .select('senderId receiverId createdAt text messageType')
+            .select('senderId receiverId createdAt text messageType read')
             .sort({ createdAt: -1 }) // Sort by most recent first
             .lean();
 
         // Extract unique user IDs with their last message timestamp and content
         const userLastMessageMap = new Map<
             string,
-            { date: Date; text: string; messageType?: string }
+            {
+                date: Date;
+                text: string;
+                messageType?: string;
+                isUnread: boolean;
+            }
         >();
 
         // Since messages are sorted by most recent first, the first message
@@ -163,10 +168,15 @@ export const getUsersWithMessages = asyncHandler(
             if (otherUserId !== userId && msg.createdAt) {
                 // Only set if we haven't seen this user yet (first = most recent)
                 if (!userLastMessageMap.has(otherUserId)) {
+                    // Check if message is unread (received by current user and not read)
+                    const isUnread =
+                        msg.receiverId.toString() === userId && !msg.read;
+
                     userLastMessageMap.set(otherUserId, {
                         date: new Date(msg.createdAt),
                         text: msg.text || '',
                         messageType: msg.messageType,
+                        isUnread: isUnread,
                     });
                 }
             }
@@ -193,6 +203,7 @@ export const getUsersWithMessages = asyncHandler(
                         : undefined,
                     lastMessage: lastMessageData?.text,
                     lastMessageType: lastMessageData?.messageType,
+                    hasUnreadMessage: lastMessageData?.isUnread || false,
                 };
             })
             .sort((a, b) => {

@@ -23,6 +23,7 @@ interface User {
     lastMessageAt?: string;
     lastMessage?: string;
     lastMessageType?: string;
+    hasUnreadMessage?: boolean;
 }
 
 interface UserListViewProps {
