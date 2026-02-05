@@ -241,7 +241,7 @@ const ChatScreen = () => {
         // Update cache with new message
         await appendMessageToCache(userInfo._id, otherUserId, message);
 
-        // If viewing this conversation, add to displayed messages (avoiding duplicates)
+        // If viewing this conversation, add to displayed messages and mark as read
         if (selectedUser?._id === otherUserId) {
           setAllMessages(prev => {
             // Avoid duplicates by checking if message ID already exists
@@ -249,11 +249,33 @@ const ChatScreen = () => {
             if (exists) return prev;
             return [...prev, message];
           });
+
+          // Mark as read since user is viewing the conversation
+          if (message.receiverId === userInfo._id) {
+            markMessagesAsRead({
+              userId: userInfo._id,
+              otherUserId: otherUserId,
+            });
+          }
+        } else if (message.receiverId === userInfo._id) {
+          // Only show notification if not viewing the conversation and it's for current user
+          const senderInfo = typeof message.senderId === 'string'
+            ? usersWithMessages?.find(u => u._id === message.senderId)
+            : message.senderId;
+
+          const notificationBody = message.messageType === 'template'
+            ? '📋 Shared a workout template'
+            : message.messageType === 'image'
+              ? '📷 Sent an image'
+              : message.text;
+
+          showMessageNotification(
+            senderInfo?.name || 'New Message',
+            notificationBody,
+            { senderId: messageSenderId, receiverId: message.receiverId }
+          );
         }
       }
-
-      // Note: Push notifications are sent from the backend via Expo's push service
-      // No need to show local notification here to avoid duplicates
     };
 
     socket.on('new-message', handleNewMessage);
@@ -261,7 +283,7 @@ const ChatScreen = () => {
     return () => {
       socket.off('new-message', handleNewMessage);
     };
-  }, [selectedUser?._id, userInfo?._id, usersWithMessages, dispatch]); // Update dependencies
+  }, [selectedUser?._id, userInfo?._id, usersWithMessages, markMessagesAsRead]); // Update dependencies
 
   // Track app state for notifications
   useEffect(() => {

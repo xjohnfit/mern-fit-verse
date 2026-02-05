@@ -2,15 +2,17 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppSelector } from '@/hooks/useRedux';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
+import { useGetUsersWithMessagesQuery } from '@/slices/messageApiSlice';
 
 type TabBarIconProps = {
     name: keyof typeof Ionicons.glyphMap;
     color: string;
     focused: boolean;
+    badge?: number;
 };
 
-const TabBarIcon = ({ name, color, focused }: TabBarIconProps) => {
+const TabBarIcon = ({ name, color, focused, badge }: TabBarIconProps) => {
     return (
         <View
             style={{
@@ -27,6 +29,34 @@ const TabBarIcon = ({ name, color, focused }: TabBarIconProps) => {
                 size={24}
                 color={color}
             />
+            {badge !== undefined && badge > 0 && (
+                <View
+                    style={{
+                        position: 'absolute',
+                        top: -4,
+                        right: 6,
+                        backgroundColor: '#ef4444',
+                        borderRadius: 10,
+                        minWidth: 20,
+                        height: 20,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingHorizontal: 5,
+                        borderWidth: 2,
+                        borderColor: '#111827',
+                    }}
+                >
+                    <Text
+                        style={{
+                            color: '#ffffff',
+                            fontSize: 11,
+                            fontWeight: 'bold',
+                        }}
+                    >
+                        {badge > 99 ? '99+' : badge}
+                    </Text>
+                </View>
+            )}
         </View>
     );
 };
@@ -35,6 +65,15 @@ export default function TabsLayout() {
     const { userInfo } = useAppSelector((state) => state.auth);
 
     const insets = useSafeAreaInsets();
+
+    // Get users with messages to count unread conversations
+    const { data: usersWithMessages } = useGetUsersWithMessagesQuery(
+        userInfo?._id ?? '',
+        { skip: !userInfo?._id }
+    );
+
+    // Count conversations with unread messages
+    const unreadCount = usersWithMessages?.filter((user: any) => user.hasUnreadMessage).length || 0;
 
     if (!userInfo) {
         return;
@@ -90,7 +129,7 @@ export default function TabsLayout() {
                 options={{
                     title: 'Chat',
                     tabBarIcon: ({ focused }) => (
-                        <TabBarIcon name='chatbubble' color='#06b6d4' focused={focused} />
+                        <TabBarIcon name='chatbubble' color='#06b6d4' focused={focused} badge={unreadCount} />
                     ),
                     tabBarActiveTintColor: '#06b6d4',
                 }}

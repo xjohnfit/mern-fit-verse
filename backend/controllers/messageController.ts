@@ -5,8 +5,6 @@ import mongoose from 'mongoose';
 import Message from '../models/messageModel';
 import WorkoutTemplate from '../models/workoutTemplateModel';
 import { io, getReceiverSocketId } from '../config/socket.io';
-
-import { sendPushNotification } from '../utils/pushNotifications';
 import User from '../models/userModel';
 
 export const getMessages = asyncHandler(async (req: Request, res: Response) => {
@@ -104,16 +102,6 @@ export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
         image: imageUrl,
     });
     const savedMessage = await newMessage.save();
-
-    // Send push notification to receiver if they have a push token
-    if (receiver?.expoPushToken) {
-        await sendPushNotification(
-            receiver.expoPushToken,
-            sender.name || 'New Message',
-            text,
-            { senderId, receiverId, text, image: imageUrl },
-        );
-    }
 
     // Emit the message to the receiver via Socket.IO
     const receiverSocketId = getReceiverSocketId(receiverId);
@@ -282,16 +270,6 @@ export const shareTemplate = asyncHandler(
         const populatedMessage = await Message.findById(savedMessage._id)
             .populate('templateData', 'name description exercises')
             .populate('senderId', 'name username photo');
-
-        // Send push notification
-        if (receiver?.expoPushToken) {
-            await sendPushNotification(
-                receiver.expoPushToken,
-                sender.name || 'New Template',
-                `${sender.name} shared a workout template: ${template.name}`,
-                { senderId, receiverId, templateId, messageType: 'template' },
-            );
-        }
 
         // Emit the message to the receiver via Socket.IO
         const receiverSocketId = getReceiverSocketId(receiverId);
