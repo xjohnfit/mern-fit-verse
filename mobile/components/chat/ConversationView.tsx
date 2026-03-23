@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useRef, useEffect, useCallback, useMemo, useState } from 'react';
 import {
     View,
     Text,
@@ -9,6 +9,7 @@ import {
     StatusBar,
     Keyboard,
     useColorScheme,
+    RefreshControl,
 } from 'react-native';
 import ChatHeader from './ChatHeader';
 import MessageBubble from './MessageBubble';
@@ -55,6 +56,7 @@ interface ConversationViewProps {
     isLoadingMore: boolean;
     hasMoreMessages: boolean;
     onLoadMore: () => void;
+    onRefresh?: () => Promise<void>;
 }
 
 const ConversationView: React.FC<ConversationViewProps> = ({
@@ -73,12 +75,22 @@ const ConversationView: React.FC<ConversationViewProps> = ({
     isLoadingMore,
     hasMoreMessages,
     onLoadMore,
+    onRefresh,
 }) => {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
     const styles = useMemo(() => createStyles(isDark), [isDark]);
     const flatListRef = useRef<FlatList>(null);
     const scrollTimeoutRef = useRef<any>(null);
+    const [refreshing, setRefreshing] = useState(false);
+
+    const handleRefresh = useCallback(async () => {
+        if (onRefresh) {
+            setRefreshing(true);
+            await onRefresh();
+            setRefreshing(false);
+        }
+    }, [onRefresh]);
 
     // Scroll to bottom when keyboard shows
     useEffect(() => {
@@ -151,6 +163,14 @@ const ConversationView: React.FC<ConversationViewProps> = ({
                         keyExtractor={(item) => item._id}
                         contentContainerStyle={styles.messagesContainer}
                         inverted={true}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={handleRefresh}
+                                tintColor="#06b6d4"
+                                colors={['#06b6d4']}
+                            />
+                        }
                         onScroll={(event) => {
                             const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
                             const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y;

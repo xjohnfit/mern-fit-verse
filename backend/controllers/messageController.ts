@@ -6,6 +6,7 @@ import Message from '../models/messageModel';
 import WorkoutTemplate from '../models/workoutTemplateModel';
 import { io, getReceiverSocketId } from '../config/socket.io';
 import User from '../models/userModel';
+import { sendPushNotification } from '../utils/pushNotifications';
 
 export const getMessages = asyncHandler(async (req: Request, res: Response) => {
     const { senderId, receiverId } = req.params;
@@ -103,10 +104,30 @@ export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
     });
     const savedMessage = await newMessage.save();
 
-    // Emit the message to the receiver via Socket.IO
+    // Emit the message to both sender and receiver via Socket.IO
     const receiverSocketId = getReceiverSocketId(receiverId);
+    const senderSocketId = getReceiverSocketId(senderId);
+
     if (receiverSocketId) {
         io.to(receiverSocketId).emit('new-message', savedMessage);
+    }
+
+    // Also emit to sender if they're online (for multi-device support)
+    if (senderSocketId && senderSocketId !== receiverSocketId) {
+        io.to(senderSocketId).emit('new-message', savedMessage);
+    }
+
+    // Send push notification when receiver has no active socket (app is in background/killed)
+    if (!receiverSocketId && receiver.expoPushToken) {
+        const notificationBody = imageUrl
+            ? '📷 Sent an image'
+            : text || 'Sent you a message';
+        await sendPushNotification(
+            receiver.expoPushToken,
+            sender.name || 'New Message',
+            notificationBody,
+            { senderId, receiverId, type: 'message' },
+        );
     }
 
     res.status(201).json(savedMessage);
@@ -271,10 +292,27 @@ export const shareTemplate = asyncHandler(
             .populate('templateData', 'name description exercises')
             .populate('senderId', 'name username photo');
 
-        // Emit the message to the receiver via Socket.IO
+        // Emit the message to both sender and receiver via Socket.IO
         const receiverSocketId = getReceiverSocketId(receiverId);
+        const senderSocketId = getReceiverSocketId(senderId);
+
         if (receiverSocketId) {
             io.to(receiverSocketId).emit('new-message', populatedMessage);
+        }
+
+        // Also emit to sender if they're online (for multi-device support)
+        if (senderSocketId && senderSocketId !== receiverSocketId) {
+            io.to(senderSocketId).emit('new-message', populatedMessage);
+        }
+
+        // Send push notification when receiver has no active socket (app is in background/killed)
+        if (!receiverSocketId && receiver.expoPushToken) {
+            await sendPushNotification(
+                receiver.expoPushToken,
+                sender.name || 'New Message',
+                `📋 Shared a workout template: ${template.name}`,
+                { senderId, receiverId, type: 'message' },
+            );
         }
 
         res.status(201).json(populatedMessage);

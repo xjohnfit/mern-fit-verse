@@ -230,23 +230,37 @@ const ChatScreen = () => {
   // Listen for real-time messages via socket.io
   useEffect(() => {
     const socket = getSocket();
-    if (!socket) return;
+    if (!socket) {
+      console.log('Socket not available');
+      return;
+    }
+
+    console.log('Setting up socket listener for new messages');
 
     const handleNewMessage = async (message: Message) => {
+      console.log('Received new message via socket:', message);
+
       // If message is for current user
       if (message.receiverId === userInfo?._id || message.senderId === userInfo?._id) {
         const messageSenderId = typeof message.senderId === 'string' ? message.senderId : message.senderId._id;
         const otherUserId = messageSenderId === userInfo._id ? message.receiverId : messageSenderId;
+
+        console.log('Message is for current user, otherUserId:', otherUserId, 'selectedUser:', selectedUser?._id);
 
         // Update cache with new message
         await appendMessageToCache(userInfo._id, otherUserId, message);
 
         // If viewing this conversation, add to displayed messages and mark as read
         if (selectedUser?._id === otherUserId) {
+          console.log('Adding message to current conversation');
           setAllMessages(prev => {
             // Avoid duplicates by checking if message ID already exists
             const exists = prev.some(m => m._id === message._id);
-            if (exists) return prev;
+            if (exists) {
+              console.log('Message already exists, skipping');
+              return prev;
+            }
+            console.log('Adding new message to state');
             return [...prev, message];
           });
 
@@ -373,6 +387,31 @@ const ChatScreen = () => {
     user.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Refresh messages for the selected user
+  const handleRefreshMessages = async () => {
+    if (!selectedUser || !userInfo) {
+      return;
+    }
+
+    try {
+      const result = await fetchMessages({
+        senderId: userInfo._id,
+        receiverId: selectedUser._id,
+        limit: 50,
+      }).unwrap();
+
+      if (result && result.messages && Array.isArray(result.messages)) {
+        setAllMessages(result.messages);
+        setHasMoreMessages(result.hasMore || false);
+
+        // Update cache with fetched messages
+        await cacheMessages(userInfo._id, selectedUser._id, result.messages);
+      }
+    } catch (error) {
+      console.error('Failed to refresh messages:', error);
+    }
+  };
+
   // User List View
   if (!selectedUser) {
     return (
@@ -407,6 +446,7 @@ const ChatScreen = () => {
       isLoadingMore={isLoadingMore}
       hasMoreMessages={hasMoreMessages}
       onLoadMore={loadOlderMessages}
+      onRefresh={handleRefreshMessages}
     />
   );
 };
