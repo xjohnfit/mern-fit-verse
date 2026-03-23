@@ -118,11 +118,12 @@ export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
     }
 
     // Send push notification when receiver has no active socket (app is in background/killed)
+    // Fire-and-forget: do not await so the HTTP response is not delayed
     if (!receiverSocketId && receiver.expoPushToken) {
         const notificationBody = imageUrl
             ? '📷 Sent an image'
             : text || 'Sent you a message';
-        await sendPushNotification(
+        sendPushNotification(
             receiver.expoPushToken,
             sender.name || 'New Message',
             notificationBody,
@@ -306,8 +307,9 @@ export const shareTemplate = asyncHandler(
         }
 
         // Send push notification when receiver has no active socket (app is in background/killed)
+        // Fire-and-forget: do not await so the HTTP response is not delayed
         if (!receiverSocketId && receiver.expoPushToken) {
-            await sendPushNotification(
+            sendPushNotification(
                 receiver.expoPushToken,
                 sender.name || 'New Message',
                 `📋 Shared a workout template: ${template.name}`,

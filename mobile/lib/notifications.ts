@@ -72,7 +72,6 @@ export async function showMessageNotification(
             body: message,
             data: { senderId, type: 'message' },
             priority: Notifications.AndroidNotificationPriority.HIGH,
-            categoryIdentifier: 'message',
         },
         trigger: null, // Show immediately
     });

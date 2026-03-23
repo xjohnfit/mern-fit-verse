@@ -286,7 +286,7 @@ const ChatScreen = () => {
           showMessageNotification(
             senderInfo?.name || 'New Message',
             notificationBody,
-            { senderId: messageSenderId, receiverId: message.receiverId }
+            messageSenderId
           );
         }
       }
