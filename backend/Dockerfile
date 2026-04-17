@@ -1,64 +1,59 @@
-# Multi-stage build for optimized backend API image
-
-# --- Build Stage ---
+# Build stage
 FROM node:20-alpine AS builder
 
+# Set working directory
 WORKDIR /app
 
-# Copy package files and TypeScript configuration
-COPY package.json package-lock.json ./
-COPY tsconfig.json ./
+# Copy package files
+COPY package*.json ./
 
-# Install all dependencies (including dev dependencies for build)
-RUN npm ci --ignore-scripts
+# Install dependencies (including dev dependencies for build)
+RUN npm ci
 
-# Copy backend source code
+# Copy source code
 COPY . .
 
-# Build TypeScript to JavaScript
+# Build TypeScript
 RUN npm run build
 
-# --- Production Stage ---
-FROM node:20-alpine AS production
+# Production stage
+FROM node:20-alpine
 
+# Create app directory
 WORKDIR /app
 
-# Install curl for health checks
-RUN apk add --no-cache curl
+# Install dumb-init to handle PID 1 properly
+RUN apk add --no-cache dumb-init
 
-# Create non-root user for security
+# Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
 # Copy package files
-COPY package.json package-lock.json ./
+COPY package*.json ./
 
-# Install production dependencies only
-RUN npm ci --only=production --ignore-scripts && \
+# Install only production dependencies
+RUN npm ci --only=production && \
     npm cache clean --force
 
-# Copy built files from builder
-COPY --from=builder /app/dist ./dist
-
-# Copy necessary runtime files
-COPY --from=builder /app/config ./config
-
-# Set ownership to non-root user
-RUN chown -R nodejs:nodejs /app
+# Copy built application from builder stage
+COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 
 # Switch to non-root user
 USER nodejs
 
-# Set environment variables
+# Expose port
+EXPOSE 4001
+
+# Set environment to production
 ENV NODE_ENV=production
-ENV PORT=5004
 
-# Expose backend API port
-EXPOSE 5004
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:4001/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
-# Add health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:5004/api/health || exit 1
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
 
-# Start the backend API
+# Start the application
 CMD ["node", "dist/index.js"]

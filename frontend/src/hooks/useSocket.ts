@@ -11,7 +11,7 @@ let socket: Socket | null = null;
 
 const SOCKET_URL =
     import.meta.env.VITE_MODE === 'development'
-        ? 'http://localhost:5004'
+        ? import.meta.env.VITE_BACKEND_URL
         : 'https://api.fitverse.codewithxjohn.com'; 
 
 export const useSocket = () => {

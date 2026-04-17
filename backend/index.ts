@@ -44,11 +44,11 @@ import supportRoutes from './routes/supportRoutes';
 // API Landing Screen
 import apiLandingScreen from './apiLandingScreen';
 
-const PORT: number = parseInt(process.env.PORT || '5004', 10);
+const PORT: number = parseInt(process.env.PORT || '4001', 10);
 
 // Define allowed origins for CORS (used by both Express and Socket.IO)
 const allowedOrigins = [
-    process.env.FRONTEND_URL || 'http://localhost:5173',
+    process.env.FRONTEND_URL || 'http://localhost:5002',
     'https://fitverse.codewithxjohn.com',
 ].filter(Boolean);
 

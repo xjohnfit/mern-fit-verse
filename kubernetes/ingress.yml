@@ -1,23 +1,15 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: mern-fit-verse
+  name: fitverse-ingress
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod" # Change to letsencrypt-prod after testing
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
+  ingressClassName: traefik
   rules:
-  # Backend API
-  - host: api.fitverse.codewithxjohn.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: mern-fit-verse-backend
-            port:
-              number: 5004
-  # Frontend
+  # Frontend - fitverse.codewithxjohn.com
   - host: fitverse.codewithxjohn.com
     http:
       paths:
@@ -25,11 +17,46 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: mern-fit-verse-frontend
+            name: fitverse-frontend
             port:
-              number: 5005
+              number: 80
+  # Frontend - www.fitverse.codewithxjohn.com
+  - host: www.fitverse.codewithxjohn.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: fitverse-frontend
+            port:
+              number: 80
+  # Backend API - api.fitverse.codewithxjohn.com
+  - host: api.fitverse.codewithxjohn.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: fitverse-backend
+            port:
+              number: 4001
+  # Backend API - www.api.fitverse.codewithxjohn.com
+  - host: www.api.fitverse.codewithxjohn.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: fitverse-backend
+            port:
+              number: 4001
   tls:
   - hosts:
-    - api.fitverse.codewithxjohn.com
     - fitverse.codewithxjohn.com
-    secretName: mern-fit-verse-tls
+    - www.fitverse.codewithxjohn.com
+    - api.fitverse.codewithxjohn.com
+    - www.api.fitverse.codewithxjohn.com
+    secretName: fitverse-tls

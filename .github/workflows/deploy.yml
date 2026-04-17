@@ -1,107 +1,148 @@
-name: Build and Deploy
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: 
-      - main
+    branches: [ main ]
+    paths-ignore:
+      - 'kubernetes/**'
+      - 'README.md'
+      - '.gitignore'
+  pull_request:
+    branches: [ main ]
 
-env:
-  BACKEND_IMAGE: xjohnfit/mern-fit-verse-backend
-  FRONTEND_IMAGE: xjohnfit/mern-fit-verse-frontend
+permissions:
+  contents: read
 
 jobs:
-  build-and-push:
+  trivy-scan:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+    - uses: actions/checkout@v6
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'table'
+        severity: 'CRITICAL,HIGH,MEDIUM'
+        scanners: 'vuln,secret,misconfig'
+        exit-code: '0'  # Don't fail the build, just show results
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push backend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./backend
-          file: ./backend/Dockerfile
-          push: true
-          tags: ${{ env.BACKEND_IMAGE }}:latest,${{ env.BACKEND_IMAGE }}:${{ github.sha }}
-          cache-from: type=registry,ref=${{ env.BACKEND_IMAGE }}:buildcache
-          cache-to: type=registry,ref=${{ env.BACKEND_IMAGE }}:buildcache,mode=max
-
-      - name: Build and push frontend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./frontend
-          file: ./frontend/Dockerfile
-          push: true
-          tags: ${{ env.FRONTEND_IMAGE }}:latest,${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
-          cache-from: type=registry,ref=${{ env.FRONTEND_IMAGE }}:buildcache
-          cache-to: type=registry,ref=${{ env.FRONTEND_IMAGE }}:buildcache,mode=max
+  build-and-push:
+    runs-on: ubuntu-latest
+    needs: [trivy-scan]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v6
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    
+    - name: Extract metadata for backend
+      id: meta-backend
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ secrets.DOCKERHUB_USERNAME }}/fitverse-backend
+        tags: |
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+    
+    - name: Build and push backend
+      uses: docker/build-push-action@v6
+      with:
+        context: ./backend
+        push: true
+        tags: ${{ steps.meta-backend.outputs.tags }}
+        labels: ${{ steps.meta-backend.outputs.labels }}
+        cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/fitverse-backend:buildcache
+        cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/fitverse-backend:buildcache,mode=max
+    
+    - name: Extract metadata for frontend
+      id: meta-frontend
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ secrets.DOCKERHUB_USERNAME }}/fitverse-frontend
+        tags: |
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+    
+    - name: Build and push frontend
+      uses: docker/build-push-action@v6
+      with:
+        context: ./frontend
+        push: true
+        tags: ${{ steps.meta-frontend.outputs.tags }}
+        labels: ${{ steps.meta-frontend.outputs.labels }}
+        cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/fitverse-frontend:buildcache
+        cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/fitverse-frontend:buildcache,mode=max
 
   deploy:
-    needs: build-and-push
-    runs-on: [self-hosted]
+    runs-on: ubuntu-latest
+    needs: [build-and-push]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Set up kubeconfig
-        run: |
-          mkdir -p $HOME/.kube
-          echo "$KUBECONFIG_K3S" > $HOME/.kube/config
-          chmod 600 $HOME/.kube/config
-        env:
-          KUBECONFIG_K3S: ${{ secrets.KUBECONFIG_K3S }}
-
-      - name: Create Docker registry secret
-        run: |
-          kubectl delete secret regcred --ignore-not-found
-          kubectl create secret docker-registry regcred \
-            --docker-server=https://index.docker.io/v1/ \
-            --docker-username=${{ secrets.DOCKERHUB_USERNAME }} \
-            --docker-password=${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Create application secrets
-        run:  |
-          kubectl delete secret mern-fit-verse-secrets --ignore-not-found
-          kubectl create secret generic mern-fit-verse-secrets \
-            --from-literal=mongo-uri="${{ secrets.MONGO_URI }}" \
-            --from-literal=jwt-secret="${{ secrets.JWT_SECRET }}" \
-            --from-literal=cloudinary-cloud-name="${{ secrets.CLOUDINARY_CLOUD_NAME }}" \
-            --from-literal=cloudinary-api-key="${{ secrets.CLOUDINARY_API_KEY }}" \
-            --from-literal=cloudinary-api-secret="${{ secrets.CLOUDINARY_API_SECRET }}" \
-            --from-literal=fatsecret-consumer-key="${{ secrets.FATSECRET_CONSUMER_KEY }}" \
-            --from-literal=fatsecret-consumer-secret="${{ secrets.FATSECRET_CONSUMER_SECRET }}"
-
-      - name: Apply Kubernetes manifests
-        run: kubectl apply -f kubernetes/
-
-      - name: Restart deployments
-        run: |
-          kubectl rollout restart deployment/mern-fit-verse-backend
-          kubectl rollout restart deployment/mern-fit-verse-frontend
-
-      - name: Wait for backend deployment
-        run: kubectl rollout status deployment/mern-fit-verse-backend --timeout=5m
-
-      - name: Wait for frontend deployment
-        run: kubectl rollout status deployment/mern-fit-verse-frontend --timeout=5m
-
-      - name: Get deployment status
-        if: always()
-        run: |
-          echo "=== Pods ==="
-          kubectl get pods -l app=mern-fit-verse-backend
-          kubectl get pods -l app=mern-fit-verse-frontend
-          echo "=== Services ==="
-          kubectl get svc -l app=mern-fit-verse-backend
-          kubectl get svc -l app=mern-fit-verse-frontend
-          echo "=== Ingress ==="
-          kubectl get ingress mern-fit-verse
+    - uses: actions/checkout@v6
+    
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v4
+      with:
+        version: 'latest'
+    
+    - name: Set up kubeconfig
+      run: |
+        mkdir -p $HOME/.kube
+        echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
+        chmod 600 $HOME/.kube/config
+    
+    - name: Set image tags
+      id: image-tags
+      run: |
+        echo "IMAGE_TAG=main-$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+    
+    - name: Create or update Kubernetes secrets
+      run: |
+        # Delete existing secret if it exists (ignore errors if it doesn't)
+        kubectl delete secret fitverse-secrets --ignore-not-found=true
+        
+        # Create new secret from GitHub Actions secrets
+        kubectl create secret generic fitverse-secrets \
+          --from-literal=MONGO_URI="${{ secrets.MONGO_URI }}" \
+          --from-literal=JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+          --from-literal=CLOUDINARY_CLOUD_NAME="${{ secrets.CLOUDINARY_CLOUD_NAME }}" \
+          --from-literal=CLOUDINARY_API_KEY="${{ secrets.CLOUDINARY_API_KEY }}" \
+          --from-literal=CLOUDINARY_API_SECRET="${{ secrets.CLOUDINARY_API_SECRET }}" \
+          --from-literal=FATSECRET_CONSUMER_KEY="${{ secrets.FATSECRET_CONSUMER_KEY }}" \
+          --from-literal=FATSECRET_CONSUMER_SECRET="${{ secrets.FATSECRET_CONSUMER_SECRET }}"
+    
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl apply -f kubernetes/cluster-issuer-staging.yml
+        kubectl apply -f kubernetes/cluster-issuer-prod.yml
+        kubectl apply -f kubernetes/backend-deployment.yml
+        kubectl apply -f kubernetes/backend-service.yml
+        kubectl apply -f kubernetes/frontend-deployment.yml
+        kubectl apply -f kubernetes/frontend-service.yml
+        kubectl apply -f kubernetes/ingress.yml
+    
+    - name: Update deployments with new image tags
+      run: |
+        kubectl set image deployment/fitverse-backend backend=${{ secrets.DOCKERHUB_USERNAME }}/fitverse-backend:${{ steps.image-tags.outputs.IMAGE_TAG }}
+        kubectl set image deployment/fitverse-frontend frontend=${{ secrets.DOCKERHUB_USERNAME }}/fitverse-frontend:${{ steps.image-tags.outputs.IMAGE_TAG }}
+    
+    - name: Wait for rollout to complete
+      run: |
+        kubectl rollout status deployment/fitverse-backend --timeout=5m
+        kubectl rollout status deployment/fitverse-frontend --timeout=5m
+    
+    - name: Verify deployment
+      run: |
+        kubectl get pods -l app=fitverse-backend
+        kubectl get pods -l app=fitverse-frontend
+        kubectl get ingress fitverse-ingress

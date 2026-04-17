@@ -1,83 +1,83 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mern-fit-verse-backend
+  name: fitverse-backend
+  labels:
+    app: fitverse-backend
 spec:
-  replicas: 1
-  selector: 
+  replicas: 2
+  selector:
     matchLabels:
-      app: mern-fit-verse-backend
+      app: fitverse-backend
   template:
     metadata:
       labels:
-        app: mern-fit-verse-backend
+        app: fitverse-backend
     spec:
       containers:
-        - name: backend
-          image:  xjohnfit/mern-fit-verse-backend:latest
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 5004
-          env:
-            - name: NODE_ENV
-              value: "production"
-            - name: PORT
-              value: "5004"
-            - name: FRONTEND_URL
-              value: "https://fitverse.codewithxjohn.com"
-            - name: MONGO_URI
-              valueFrom:
-                secretKeyRef:
-                  name: mern-fit-verse-secrets
-                  key: mongo-uri
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: mern-fit-verse-secrets
-                  key: jwt-secret
-            - name: CLOUDINARY_CLOUD_NAME
-              valueFrom:
-                secretKeyRef: 
-                  name: mern-fit-verse-secrets
-                  key: cloudinary-cloud-name
-            - name: CLOUDINARY_API_KEY
-              valueFrom:
-                secretKeyRef: 
-                  name: mern-fit-verse-secrets
-                  key: cloudinary-api-key
-            - name: CLOUDINARY_API_SECRET
-              valueFrom: 
-                secretKeyRef:
-                  name: mern-fit-verse-secrets
-                  key:  cloudinary-api-secret
-            - name: FATSECRET_CONSUMER_KEY
-              valueFrom:
-                secretKeyRef: 
-                  name: mern-fit-verse-secrets
-                  key: fatsecret-consumer-key
-            - name:  FATSECRET_CONSUMER_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: mern-fit-verse-secrets
-                  key: fatsecret-consumer-secret
-          resources:
-            limits:
-              cpu: "1"
-              memory: "512Mi"
-            requests:
-              cpu: "200m"
-              memory: "256Mi"
-          livenessProbe:
-            httpGet:
-              path: /api/health
-              port: 5004
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /api/health
-              port: 5004
-            initialDelaySeconds: 10
-            periodSeconds: 5
-      imagePullSecrets:
-        - name: regcred
+      - name: backend
+        image: xjohnfit/fitverse-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 4001
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "4001"
+        - name: FRONTEND_URL
+          value: "https://fitverse.codewithxjohn.com"
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: fitverse-secrets
+              key: MONGO_URI
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: fitverse-secrets
+              key: JWT_SECRET
+        - name: CLOUDINARY_CLOUD_NAME
+          valueFrom:
+            secretKeyRef:
+              name: fitverse-secrets
+              key: CLOUDINARY_CLOUD_NAME
+        - name: CLOUDINARY_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: fitverse-secrets
+              key: CLOUDINARY_API_KEY
+        - name: CLOUDINARY_API_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: fitverse-secrets
+              key: CLOUDINARY_API_SECRET
+        - name: FATSECRET_CONSUMER_KEY
+          valueFrom:
+            secretKeyRef:
+              name: fitverse-secrets
+              key: FATSECRET_CONSUMER_KEY
+        - name: FATSECRET_CONSUMER_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: fitverse-secrets
+              key: FATSECRET_CONSUMER_SECRET
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "400m"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 4001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 4001
+          initialDelaySeconds: 5
+          periodSeconds: 5
